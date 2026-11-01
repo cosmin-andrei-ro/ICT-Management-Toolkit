@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use InvalidArgumentException;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\TracksAuthors;
@@ -55,6 +56,23 @@ final class Queue extends Model
     use HasUuids;
     use SoftDeletes;
     use TracksAuthors;
+
+    protected static function booted(): void
+    {
+        // One default queue per organization (unique index): taking the flag moves it.
+        self::saving(function (self $queue): void {
+            if ($queue->is_default && $queue->isDirty('is_default')) {
+                self::query()->where('is_default', true)->when($queue->exists, fn ($query) => $query->whereKeyNot($queue->id))
+                    ->each(fn (self $previous) => $previous->forceFill(['is_default' => false])->saveQuietly());
+            }
+        });
+
+        self::creating(function (self $queue): void {
+            if (! Team::query()->whereKey($queue->team_id)->exists()) {
+                throw new InvalidArgumentException('The queue\'s team must belong to the current organization.');
+            }
+        });
+    }
 
     /**
      * @return BelongsTo<Team, $this>

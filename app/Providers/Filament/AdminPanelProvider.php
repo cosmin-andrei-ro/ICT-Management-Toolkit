@@ -73,7 +73,7 @@ final class AdminPanelProvider extends PanelProvider
     }
 
     /**
-     * Each enabled module may ship resources in src/Http/Filament/Resources.
+     * Each enabled module may ship resources and pages in src/Http/Filament/{Resources,Pages}.
      */
     private function discoverModuleResources(Panel $panel): void
     {
@@ -86,10 +86,15 @@ final class AdminPanelProvider extends PanelProvider
             }
 
             $provider = new ReflectionClass($module['provider']);
-            $directory = dirname((string) $provider->getFileName()).'/Http/Filament/Resources';
+            $base = dirname((string) $provider->getFileName()).'/Http/Filament';
+            $namespace = $provider->getNamespaceName().'\\Http\\Filament';
 
-            if (is_dir($directory)) {
-                $panel->discoverResources(in: $directory, for: $provider->getNamespaceName().'\\Http\\Filament\\Resources');
+            if (is_dir($base.'/Resources')) {
+                $panel->discoverResources(in: $base.'/Resources', for: $namespace.'\\Resources');
+            }
+
+            if (is_dir($base.'/Pages')) {
+                $panel->discoverPages(in: $base.'/Pages', for: $namespace.'\\Pages');
             }
         }
     }
