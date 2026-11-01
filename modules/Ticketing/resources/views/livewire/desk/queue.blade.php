@@ -1,10 +1,19 @@
 <div class="space-y-6">
     <h1 class="text-xl font-semibold">{{ __('ticketing::ui.desk.title') }}</h1>
 
-    <div class="grid gap-3 rounded-lg bg-white p-4 ring-1 ring-gray-200 sm:grid-cols-2 lg:grid-cols-6">
+    <div class="grid gap-3 rounded-lg bg-white p-4 ring-1 ring-gray-200 sm:grid-cols-2 lg:grid-cols-7">
         <label class="text-sm lg:col-span-2">
             <span class="block font-medium">{{ __('ticketing::ui.search') }}</span>
             <input type="search" wire:model.live.debounce.400ms="search" maxlength="200" placeholder="{{ __('ticketing::ui.desk.search_placeholder') }}" class="mt-1 block w-full rounded-md border-gray-300">
+        </label>
+        <label class="text-sm">
+            <span class="block font-medium">{{ __('ticketing::ui.fields.type_short') }}</span>
+            <select wire:model.live="type" class="mt-1 block w-full rounded-md border-gray-300">
+                <option value="">{{ __('ticketing::ui.filters.all') }}</option>
+                @foreach ($types as $option)
+                    <option value="{{ $option->value }}">{{ $option->label() }}</option>
+                @endforeach
+            </select>
         </label>
         <label class="text-sm">
             <span class="block font-medium">{{ __('ticketing::ui.fields.status') }}</span>

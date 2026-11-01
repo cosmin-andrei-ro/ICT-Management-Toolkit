@@ -67,7 +67,8 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('ticketing::catalog.menu', 'ticketing.catalog.index', 'ticketing.catalog.*', fn (User $user): bool => $user->can('ticketing.ticket.create'));
             $navigation->add('ticketing::ui.menu.portal', 'ticketing.portal.index', 'ticketing.portal.*', fn (User $user): bool => $user->can('ticketing.ticket.create'));
-            $navigation->add('ticketing::ui.menu.desk', 'ticketing.desk.index', 'ticketing.desk.*', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
+            $navigation->add('ticketing::ui.menu.desk', 'ticketing.desk.index', 'ticketing.desk.index', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
+            $navigation->add('ticketing::problems.ui.known_errors', 'ticketing.desk.known-errors', 'ticketing.desk.known-errors', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
         });
 
         Event::listen([TicketCreated::class, TicketAssigned::class, TicketResolved::class, TicketCommentAdded::class], SendTicketNotifications::class);

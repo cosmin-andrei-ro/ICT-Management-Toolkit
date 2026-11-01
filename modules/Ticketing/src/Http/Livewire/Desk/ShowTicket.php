@@ -23,9 +23,15 @@ use Modules\Ticketing\Application\Actions\CloseTicket;
 use Modules\Ticketing\Application\Actions\ReopenTicket;
 use Modules\Ticketing\Application\Actions\ResolveTicket;
 use Modules\Ticketing\Application\Actions\UpdateTicketDetails;
+use Modules\Ticketing\Application\Problems\CreateProblem;
+use Modules\Ticketing\Application\Problems\LinkIncidentToProblem;
+use Modules\Ticketing\Application\Problems\MarkKnownError;
+use Modules\Ticketing\Application\Problems\ResolveProblem;
+use Modules\Ticketing\Application\Problems\UpdateProblemAnalysis;
 use Modules\Ticketing\Domain\Enums\Impact;
 use Modules\Ticketing\Domain\Enums\ResolutionCode;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
+use Modules\Ticketing\Domain\Enums\TicketType;
 use Modules\Ticketing\Domain\Enums\Urgency;
 use Modules\Ticketing\Domain\Models\Category;
 use Modules\Ticketing\Domain\Models\Queue;
@@ -71,6 +77,14 @@ final class ShowTicket extends Component
     public ?string $categoryId = null;
 
     public string $reason = '';
+
+    public string $problemId = '';
+
+    public string $rootCause = '';
+
+    public string $workaround = '';
+
+    public bool $resolveIncidents = true;
 
     public function mount(Ticket $ticket): void
     {
@@ -139,13 +153,19 @@ final class ShowTicket extends Component
 
     public function resolve(ResolveTicket $resolveTicket): void
     {
-        $this->authorize('work', $this->ticket);
+        $ticket = $this->ticket;
+        $this->authorize($ticket->type === TicketType::Problem ? 'manageProblem' : 'work', $ticket);
         $this->validate([
             'resolutionCode' => ['required', Rule::enum(ResolutionCode::class)],
             'resolutionNote' => ['required', 'string', 'max:20000'],
         ]);
 
-        if ($this->attempt(fn () => $resolveTicket->handle($this->ticket, ResolutionCode::from($this->resolutionCode), $this->resolutionNote, $this->user()), 'resolutionNote')) {
+        $code = ResolutionCode::from($this->resolutionCode);
+        $resolved = $ticket->type === TicketType::Problem
+            ? $this->attempt(fn () => app(ResolveProblem::class)->handle($ticket, $code, $this->resolutionNote, $this->resolveIncidents, $this->user()), 'resolutionNote')
+            : $this->attempt(fn () => $resolveTicket->handle($ticket, $code, $this->resolutionNote, $this->user()), 'resolutionNote');
+
+        if ($resolved) {
             $this->reset('resolutionNote');
         }
     }
@@ -194,6 +214,51 @@ final class ShowTicket extends Component
         }
     }
 
+    public function linkProblem(LinkIncidentToProblem $link): void
+    {
+        $this->authorize('linkProblem', $this->ticket);
+        $this->validate(['problemId' => ['required', 'uuid']]);
+
+        // Scoped lookup: problems of other organizations do not exist here.
+        $problem = Ticket::query()->where('type', TicketType::Problem)->findOrFail($this->problemId);
+        $this->attempt(fn () => $link->handle($this->ticket, $problem->load('problemDetails'), $this->user()), 'problemId');
+    }
+
+    public function unlinkProblem(LinkIncidentToProblem $link): void
+    {
+        $this->authorize('linkProblem', $this->ticket);
+        $this->attempt(fn () => $link->handle($this->ticket, null, $this->user()), 'problemId');
+        $this->reset('problemId');
+    }
+
+    public function createProblemFromIncident(CreateProblem $createProblem): void
+    {
+        $incident = $this->ticket;
+        $this->authorize('linkProblem', $incident);
+        $this->authorize('createProblem', Ticket::class);
+
+        $problem = $createProblem->handle($incident->title, $incident->description, $incident->impact, $incident->urgency, $this->user(), [$incident]);
+
+        $this->redirectRoute('ticketing.desk.show', $problem);
+    }
+
+    public function saveAnalysis(UpdateProblemAnalysis $update): void
+    {
+        $this->authorize('manageProblem', $this->ticket);
+        $this->validate([
+            'rootCause' => ['nullable', 'string', 'max:'.UpdateProblemAnalysis::MAX_LENGTH],
+            'workaround' => ['nullable', 'string', 'max:'.UpdateProblemAnalysis::MAX_LENGTH],
+        ]);
+
+        $this->attempt(fn () => $update->handle($this->ticket, $this->rootCause, $this->workaround), 'workaround');
+    }
+
+    public function markKnownError(MarkKnownError $mark): void
+    {
+        $this->authorize('manageProblem', $this->ticket);
+        $this->attempt(fn () => $mark->handle($this->ticket), 'workaround');
+    }
+
     public function render(TicketWorkflow $workflow): View
     {
         $ticket = $this->ticket;
@@ -214,6 +279,12 @@ final class ShowTicket extends Component
             'assignees' => $queue?->team->members->sortBy('name')->values() ?? collect(),
             'categories' => Category::query()->where('is_active', true)->with('parent')->orderBy('name')->get(),
             'resolutionCodes' => ResolutionCode::cases(),
+            'linkedIncidents' => $ticket->type === TicketType::Problem
+                ? $ticket->incidents()->with('requester')->latest()->get()
+                : collect(),
+            'openProblems' => $ticket->type === TicketType::Incident
+                ? Ticket::query()->where('type', TicketType::Problem)->whereNotIn('status', [TicketStatus::Closed, TicketStatus::Cancelled])->orderByDesc('created_at')->limit(100)->get()
+                : collect(),
             'impacts' => Impact::cases(),
             'urgencies' => Urgency::cases(),
         ])->title($ticket->number);
@@ -228,5 +299,8 @@ final class ShowTicket extends Component
         $this->impact = $ticket->impact->value;
         $this->urgency = $ticket->urgency->value;
         $this->categoryId = $ticket->category_id;
+        $this->problemId = $ticket->problem_id ?? '';
+        $this->rootCause = $ticket->problemDetails->root_cause ?? '';
+        $this->workaround = $ticket->problemDetails->workaround ?? '';
     }
 }

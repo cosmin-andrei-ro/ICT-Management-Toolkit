@@ -16,6 +16,16 @@ Service desk following ITIL 4. Code: `modules/Ticketing/`. Data model: [ADR 0008
 - A requester's reply to a pending ticket brings it back into work.
 - Resolved tickets close automatically after 5 days (`TICKETING_AUTO_CLOSE_AFTER_DAYS`, `ticketing:tickets:auto-close`, hourly). Until then the requester can reopen them.
 
+## Problem management
+
+A **problem** (`PRB-…`) is the cause behind one or more incidents ([ADR 0012](../adr/0012-problem-management.md)).
+
+- From an incident on the desk, an agent can **link it** to an open problem or **open a new problem** from it.
+- On the problem, agents document the **root cause** and a **workaround**, then mark it as a **known error**.
+- **Known errors** (`/desk/known-errors`) lists them with their workarounds, searchable. Linking an incident to a known error adds its workaround to the incident as an internal note.
+- **Resolving a problem** can also resolve its open linked incidents (checked by default). Their requesters are notified and can reopen.
+- Problems have no SLA clocks and never appear in the portal. Permission: `ticketing.problem.manage` (agents and team leads by default).
+
 ## Service catalog
 
 - **Portal** (`/catalog`): people pick a service (new laptop, VPN access, …), answer its form and send a **service request**. Title, queue, category, impact and urgency come from the service. If the service's queue was deactivated, the request goes to the default queue.
@@ -64,6 +74,7 @@ curl -H "Authorization: Bearer <token>" -H "Accept: application/json" https://<h
 | `ticketing.ticket.view_all` | agent, team-lead | See every ticket of the organization, including internal notes |
 | `ticketing.ticket.work` | agent, team-lead | Triage, work, resolve; can be assigned |
 | `ticketing.ticket.assign` | agent, team-lead | Route tickets to queues and people |
-| `ticketing.settings.manage` | team-lead | Categories, queues, priority matrix |
+| `ticketing.settings.manage` | team-lead | Categories, queues, priority matrix, SLA targets, service catalog |
+| `ticketing.problem.manage` | agent, team-lead | Create, analyse and resolve problems |
 
 Administrators have every permission.

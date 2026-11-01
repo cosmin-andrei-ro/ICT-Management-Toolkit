@@ -18,6 +18,57 @@
 
         <x-ticketing::service-answers :ticket="$ticket" />
 
+        @if ($ticket->type->value === 'problem')
+            <section class="space-y-3 rounded-lg bg-white p-4 ring-1 ring-gray-200" aria-labelledby="analysis-heading">
+                <div class="flex items-center justify-between">
+                    <h2 id="analysis-heading" class="text-sm font-semibold">{{ __('ticketing::problems.ui.analysis') }}</h2>
+                    @if ($ticket->problemDetails?->isKnownError())
+                        <span class="rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800">{{ __('ticketing::problems.ui.known_error') }}</span>
+                    @endif
+                </div>
+                @can('manageProblem', $ticket)
+                    <form wire:submit="saveAnalysis" class="space-y-3">
+                        <label class="block text-sm">
+                            <span class="font-medium">{{ __('ticketing::problems.ui.root_cause') }}</span>
+                            <textarea wire:model="rootCause" rows="3" class="mt-1 block w-full rounded-md border-gray-300"></textarea>
+                        </label>
+                        <label class="block text-sm">
+                            <span class="font-medium">{{ __('ticketing::problems.ui.workaround') }}</span>
+                            <textarea wire:model="workaround" rows="3" class="mt-1 block w-full rounded-md border-gray-300"></textarea>
+                        </label>
+                        @error('workaround') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                        <div class="flex items-center gap-3">
+                            <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white">{{ __('ticketing::ui.save') }}</button>
+                            @unless ($ticket->problemDetails?->isKnownError())
+                                <button type="button" wire:click="markKnownError" class="rounded-md bg-white px-3 py-1.5 text-sm ring-1 ring-gray-300">{{ __('ticketing::problems.ui.mark_known_error') }}</button>
+                            @endunless
+                        </div>
+                    </form>
+                @else
+                    <dl class="space-y-2 text-sm">
+                        <dt class="font-medium">{{ __('ticketing::problems.ui.root_cause') }}</dt>
+                        <dd class="whitespace-pre-line text-gray-700">{{ $ticket->problemDetails?->root_cause ?? '—' }}</dd>
+                        <dt class="font-medium">{{ __('ticketing::problems.ui.workaround') }}</dt>
+                        <dd class="whitespace-pre-line text-gray-700">{{ $ticket->problemDetails?->workaround ?? '—' }}</dd>
+                    </dl>
+                @endcan
+            </section>
+
+            <section class="rounded-lg bg-white p-4 ring-1 ring-gray-200" aria-labelledby="incidents-heading">
+                <h2 id="incidents-heading" class="mb-2 text-sm font-semibold">{{ __('ticketing::problems.ui.linked_incidents', ['count' => $linkedIncidents->count()]) }}</h2>
+                <ul class="divide-y divide-gray-100 text-sm">
+                    @forelse ($linkedIncidents as $incident)
+                        <li wire:key="incident-{{ $incident->id }}" class="flex items-center justify-between py-1.5">
+                            <a href="{{ route('ticketing.desk.show', $incident) }}" class="text-blue-700 underline"><span class="font-mono">{{ $incident->number }}</span> {{ $incident->title }}</a>
+                            <span class="text-xs text-gray-500">{{ $incident->status->label() }}</span>
+                        </li>
+                    @empty
+                        <li class="py-1.5 text-gray-500">{{ __('ticketing::problems.ui.no_incidents') }}</li>
+                    @endforelse
+                </ul>
+            </section>
+        @endif
+
         <x-ticketing::conversation :comments="$comments" :attachments="$attachments" :show-internal="true" />
 
         @can('comment', $ticket)
@@ -51,6 +102,40 @@
     </div>
 
     <aside class="space-y-6">
+        @if ($ticket->type->value === 'incident')
+            <section class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200" aria-labelledby="problem-heading">
+                <h2 id="problem-heading" class="text-sm font-semibold">{{ __('ticketing::problems.ui.problem') }}</h2>
+                @if ($ticket->problem)
+                    <p class="text-sm">
+                        <a href="{{ route('ticketing.desk.show', $ticket->problem) }}" class="text-blue-700 underline"><span class="font-mono">{{ $ticket->problem->number }}</span> {{ $ticket->problem->title }}</a>
+                        @if ($ticket->problem->problemDetails?->isKnownError())
+                            <span class="ml-1 rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800">{{ __('ticketing::problems.ui.known_error') }}</span>
+                        @endif
+                    </p>
+                @endif
+                @can('linkProblem', $ticket)
+                    <form wire:submit="linkProblem" class="flex gap-2">
+                        <select wire:model="problemId" class="block w-full rounded-md border-gray-300 text-sm" aria-label="{{ __('ticketing::problems.ui.problem') }}">
+                            <option value="">—</option>
+                            @foreach ($openProblems as $option)
+                                <option value="{{ $option->id }}">{{ $option->number }} — {{ \Illuminate\Support\Str::limit($option->title, 50) }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white">{{ __('ticketing::problems.ui.link') }}</button>
+                    </form>
+                    @error('problemId') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    <div class="flex gap-3 text-sm">
+                        @if ($ticket->problem_id)
+                            <button type="button" wire:click="unlinkProblem" class="underline">{{ __('ticketing::problems.ui.unlink') }}</button>
+                        @endif
+                        @can('createProblem', \Modules\Ticketing\Domain\Models\Ticket::class)
+                            <button type="button" wire:click="createProblemFromIncident" class="underline">{{ __('ticketing::problems.ui.create_from_incident') }}</button>
+                        @endcan
+                    </div>
+                @endcan
+            </section>
+        @endif
+
         @if ($slaTimers->isNotEmpty())
             <section class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200" aria-labelledby="sla-heading">
                 <h2 id="sla-heading" class="text-sm font-semibold">{{ __('ticketing::sla.title') }}</h2>
@@ -118,6 +203,11 @@
                 </select>
                 <textarea wire:model="resolutionNote" rows="3" class="block w-full rounded-md border-gray-300 text-sm" aria-label="{{ __('ticketing::ui.fields.resolution_note') }}" placeholder="{{ __('ticketing::ui.desk.resolution_placeholder') }}"></textarea>
                 @error('resolutionNote') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                @if ($ticket->type->value === 'problem' && $linkedIncidents->isNotEmpty())
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" wire:model="resolveIncidents"> {{ __('ticketing::problems.ui.resolve_incidents', ['count' => $linkedIncidents->whereIn('status', \Modules\Ticketing\Domain\Enums\TicketStatus::open())->count()]) }}
+                    </label>
+                @endif
                 <button type="submit" class="rounded-md bg-green-700 px-3 py-1.5 text-sm font-semibold text-white">{{ __('ticketing::ui.desk.resolve') }}</button>
             </form>
 
