@@ -36,6 +36,7 @@ final readonly class SaveConfigurationItem
      * @param  array<string, mixed>  $properties  Attribute values, keyed by attribute key.
      *
      * @throws \Illuminate\Validation\ValidationException keyed by attribute key
+     * @throws InvalidArgumentException for a type, owner or team of another organization
      */
     public function handle(?ConfigurationItem $item, CiType $type, array $fields, array $properties): ConfigurationItem
     {

@@ -24,7 +24,9 @@ enum RelationshipType: string
      */
     public function label(): string
     {
-        return __('cmdb::relationships.types.'.$this->value.'.forward');
+        $label = __('cmdb::relationships.types.'.$this->value.'.forward');
+
+        return is_string($label) ? $label : $this->value;
     }
 
     /**
@@ -32,7 +34,9 @@ enum RelationshipType: string
      */
     public function inverseLabel(): string
     {
-        return __('cmdb::relationships.types.'.$this->value.'.inverse');
+        $label = __('cmdb::relationships.types.'.$this->value.'.inverse');
+
+        return is_string($label) ? $label : $this->value;
     }
 
     /**
