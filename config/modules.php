@@ -5,6 +5,7 @@
 
 declare(strict_types=1);
 
+use Modules\Cmdb\CmdbServiceProvider;
 use Modules\Core\CoreServiceProvider;
 use Modules\Ticketing\TicketingServiceProvider;
 
@@ -30,6 +31,10 @@ return [
         ],
         'ticketing' => [
             'provider' => TicketingServiceProvider::class,
+            'enabled' => true,
+        ],
+        'cmdb' => [
+            'provider' => CmdbServiceProvider::class,
             'enabled' => true,
         ],
     ],
