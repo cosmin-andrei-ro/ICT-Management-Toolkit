@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Modules\Core\Database\Factories\UserFactory;
 use Modules\Core\Domain\Concerns\Auditable;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Users are global to the instance; access to business data comes from
@@ -50,6 +51,7 @@ final class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory;
 
+    use HasRoles;
     use HasUuids;
     use Notifiable;
     use SoftDeletes;

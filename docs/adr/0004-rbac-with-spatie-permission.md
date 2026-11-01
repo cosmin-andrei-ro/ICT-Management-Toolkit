@@ -10,9 +10,12 @@ We need granular permissions per module and per action, deny by default, with us
 ## Decision
 
 - Use `spatie/laravel-permission` (MIT, actively maintained) with **teams** enabled. The team key is `organization_id`, so a user can hold different roles in different organizations.
-- The package tables are adapted to UUIDs (`model_morph_key`, and the role and permission keys).
+- The package tables are prefixed (`core_roles`, `core_permissions`, `core_model_has_roles`…) and use UUID keys, with real foreign keys to `core_organizations`.
+- Roles are either **global** (`organization_id` NULL, the code-defined defaults in `DefaultRole`) or **organization-specific**. A global role must be created with an explicit `organization_id => null`; otherwise the current organization is required, so a missing value can never produce a role shared by every organization.
 - Permission names follow `<module>.<entity>.<action>`, for example `ticketing.ticket.assign`.
-- Permissions are defined in code, in one seeder per module. Default roles are only a starting point and can be edited from the administration panel.
+- Permissions are defined in code: each module registers them, and grants to default roles, in `PermissionRegistry` from its service provider. `php artisan core:permissions:sync` writes them to the database on every deployment. It applies only differences, resets default roles to their code-defined permissions, and reports (but never deletes) permissions that are no longer defined.
+- Organizations that need different permission sets create their own roles; global roles are not editable from the UI.
+- Role and permission assignments are recorded in the audit log from the package's events (`role_assigned`, `role_revoked`, `permission_granted`, `permission_revoked`).
 - Checks happen **only through Policies**. Controllers, Livewire components and Filament resources never check roles directly.
 
 ## Rejected alternatives

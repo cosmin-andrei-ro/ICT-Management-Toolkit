@@ -10,6 +10,7 @@ namespace Modules\Core\Domain\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Modules\Core\Application\Policies\DepartmentPolicy;
 use Modules\Core\Database\Factories\DepartmentFactory;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
@@ -38,6 +40,7 @@ use Modules\Core\Domain\Concerns\TracksAuthors;
  */
 #[Table('core_departments')]
 #[UseFactory(DepartmentFactory::class)]
+#[UsePolicy(DepartmentPolicy::class)]
 #[Fillable(['parent_id', 'name', 'code', 'description', 'manager_id'])]
 final class Department extends Model
 {

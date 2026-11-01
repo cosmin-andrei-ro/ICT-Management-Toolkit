@@ -269,6 +269,9 @@ PHP și Composer rulează în containerul Sail (nu sunt instalate pe host).
 # migrații + date demo
 ./vendor/bin/sail artisan migrate --seed
 
+# permisiuni definite în cod → baza de date (la fiecare deploy)
+./vendor/bin/sail artisan core:permissions:sync
+
 # calitate
 ./vendor/bin/sail composer test      # Pest
 ./vendor/bin/sail composer analyse   # PHPStan
