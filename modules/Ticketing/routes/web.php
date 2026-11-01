@@ -18,6 +18,7 @@ use Modules\Ticketing\Http\Livewire\Desk\TicketQueue;
 use Modules\Ticketing\Http\Livewire\Portal\CreateTicket;
 use Modules\Ticketing\Http\Livewire\Portal\ShowTicket as PortalShowTicket;
 use Modules\Ticketing\Http\Livewire\Portal\TicketIndex;
+use Modules\Ticketing\Http\Livewire\Reports\TicketReports;
 
 // URLs carry the ticket UUID, never its sequential number (no enumeration).
 Route::middleware(['auth', 'organization'])->group(function (): void {
@@ -30,6 +31,7 @@ Route::middleware(['auth', 'organization'])->group(function (): void {
 
     Route::livewire('/desk', TicketQueue::class)->name('ticketing.desk.index');
     Route::livewire('/desk/known-errors', KnownErrors::class)->name('ticketing.desk.known-errors');
+    Route::livewire('/desk/reports', TicketReports::class)->name('ticketing.reports');
     Route::livewire('/desk/changes', ChangeCalendarView::class)->name('ticketing.changes.calendar');
     Route::livewire('/desk/changes/new', CreateChange::class)->name('ticketing.changes.create');
 

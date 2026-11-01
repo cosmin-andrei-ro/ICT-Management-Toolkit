@@ -54,6 +54,16 @@ return [
             'report' => false,
         ],
 
+        // Generated exports: private, downloaded only through an authorizing controller.
+        'exports' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/exports'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => true,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
