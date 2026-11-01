@@ -89,10 +89,11 @@ describe('items', function (): void {
     })->throws(QueryException::class, 'cmdb_configuration_items_identifier_unique');
 
     it('finds items by name, identifier and attribute values', function (): void {
-        $item = app(SaveConfigurationItem::class)->handle(null, $this->server, ['name' => 'payroll-db', 'identifier' => 'SRV-DB-07'], ['operating_system' => 'Windows Server 2025']);
+        $this->server->forceFill(['attribute_schema' => [...$this->server->attribute_schema, ['key' => 'ip_address', 'label' => 'IP address', 'type' => 'text']]])->save();
+        $item = app(SaveConfigurationItem::class)->handle(null, $this->server, ['name' => 'payroll-db', 'identifier' => 'SRV-DB-07'], ['operating_system' => 'Windows Server 2025', 'ip_address' => '10.20.30.40']);
         $this->cmdb->item('mail-gateway');
 
-        foreach (['payroll', 'SRV-DB', 'Windows'] as $terms) {
+        foreach (['payroll', 'SRV-DB', 'Windows', '10.20.30.40'] as $terms) {
             expect(ConfigurationItem::query()->search($terms)->pluck('id')->all())->toBe([$item->id]);
         }
     });

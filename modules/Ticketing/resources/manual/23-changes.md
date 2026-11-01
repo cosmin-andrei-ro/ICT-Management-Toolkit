@@ -40,6 +40,8 @@ If it is rejected, adjust the plan and submit it again: a new round starts, and 
 
 A change cannot be set to **In progress** or resolved until it is authorized. Work in the window, then resolve it with **Change implemented** or **Change rolled back**, and a note on what happened.
 
+Link the configuration items the change touches in the **Configuration items** panel (see the CMDB page of this manual). The panel shows what a failure of those items would affect, and the CAB sees the same when reviewing the change.
+
 If other submitted or authorized changes overlap the window, the change page lists them. Check that they do not touch the same systems, or agree on the order with their owners.
 
 ## Review after an emergency change

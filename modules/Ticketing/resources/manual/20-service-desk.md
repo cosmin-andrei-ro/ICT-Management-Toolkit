@@ -60,6 +60,10 @@ Under **Resolve**, choose what happened and describe what you did. The requester
 
 The requester can confirm or reopen. Resolved tickets close automatically after 5 days. **Cancel ticket** (with a reason the requester sees) is for tickets that should not be worked on at all.
 
+## Affected configuration items
+
+When the CMDB is in use, the **Configuration items** panel on the right links the items a ticket is about: type a name or an identifier and click the item. The panel then lists what a failure of those items affects, so you can see at once which services an incident takes down. See *CMDB (configuration items)*.
+
 ## Phone and walk-in requests
 
 For now, ask the person to raise the ticket themselves in **My tickets**, or create it as yourself and mention them in the details. Logging a ticket on behalf of someone else is planned.
