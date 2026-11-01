@@ -69,6 +69,116 @@
             </section>
         @endif
 
+        @if ($ticket->changeDetails)
+            @php($change = $ticket->changeDetails)
+            <section class="space-y-4 rounded-lg bg-white p-4 ring-1 ring-gray-200" aria-labelledby="change-heading">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h2 id="change-heading" class="text-sm font-semibold">{{ __('ticketing::changes.ui.change') }}</h2>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <span class="rounded bg-gray-100 px-2 py-0.5">{{ $change->change_type->label() }}</span>
+                        <span class="rounded bg-gray-100 px-2 py-0.5">{{ __('ticketing::changes.ui.risk') }}: {{ $change->risk->label() }}</span>
+                        <span @class([
+                            'rounded px-2 py-0.5 font-medium',
+                            'bg-green-100 text-green-800' => $change->approval_status->value === 'approved',
+                            'bg-amber-100 text-amber-800' => $change->approval_status->value === 'pending',
+                            'bg-red-100 text-red-800' => $change->approval_status->value === 'rejected',
+                            'bg-gray-100 text-gray-700' => $change->approval_status->value === 'draft',
+                        ])>{{ $change->approval_status->label() }}</span>
+                    </div>
+                </div>
+
+                @if (session('change_notice'))
+                    <p class="rounded-md bg-amber-50 p-2 text-sm text-amber-800">{{ session('change_notice') }}</p>
+                @endif
+
+                @if ($conflicts->isNotEmpty())
+                    <div class="rounded-md bg-amber-50 p-3 text-sm text-amber-900" role="alert">
+                        {{ __('ticketing::changes.ui.conflicts') }}
+                        <ul class="mt-1 list-disc pl-5">
+                            @foreach ($conflicts as $other)
+                                <li wire:key="conflict-{{ $other->id }}"><a href="{{ route('ticketing.desk.show', $other) }}" class="underline">{{ $other->number }}</a> — {{ $other->title }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @can('manageChange', $ticket)
+                    <form wire:submit="saveChangePlan" class="space-y-3">
+                        <x-ticketing::change-plan-fields :risks="$risks" :plan-disabled="$change->change_type->value === 'standard'" :disabled="! in_array($ticket->status->value, ['new', 'assigned'], true)" />
+                        @if (in_array($ticket->status->value, ['new', 'assigned'], true))
+                            <div class="flex items-center gap-3">
+                                <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white">{{ __('ticketing::changes.ui.save_plan') }}</button>
+                                @if (in_array($change->approval_status->value, ['pending', 'approved'], true) && $change->change_type->value !== 'standard')
+                                    <span class="text-xs text-amber-700">{{ __('ticketing::changes.ui.edit_withdraws') }}</span>
+                                @endif
+                            </div>
+                        @endif
+                    </form>
+                @else
+                    <dl class="space-y-2 text-sm">
+                        <dt class="font-medium">{{ __('ticketing::changes.ui.window') }}</dt>
+                        <dd>{{ $change->planned_start?->timezone(config('app.display_timezone'))->format('Y-m-d H:i') ?? '—' }} → {{ $change->planned_end?->timezone(config('app.display_timezone'))->format('Y-m-d H:i') ?? '—' }}</dd>
+                        @foreach (['implementation_plan', 'rollback_plan', 'test_plan'] as $field)
+                            <dt class="font-medium">{{ __('ticketing::changes.ui.'.$field) }}</dt>
+                            <dd class="whitespace-pre-line text-gray-700">{{ $change->{$field} ?? '—' }}</dd>
+                        @endforeach
+                    </dl>
+                @endcan
+
+                @if ($change->change_type->needsCab())
+                    <div class="space-y-2 border-t border-gray-100 pt-3">
+                        <h3 class="text-sm font-semibold">{{ $change->change_type->value === 'emergency' ? __('ticketing::changes.ui.ecab_approval') : __('ticketing::changes.ui.cab_approval') }}</h3>
+                        @if ($change->cabBoard)
+                            <p class="text-sm text-gray-600">{{ __('ticketing::changes.ui.board', ['board' => $change->cabBoard->name, 'round' => $change->approval_round]) }}</p>
+                        @endif
+                        <ul class="space-y-1 text-sm">
+                            @foreach ($approvals as $approval)
+                                <li wire:key="approval-{{ $approval->id }}">
+                                    <span class="font-medium">{{ $approval->user->name }}</span>:
+                                    {{ __('ticketing::changes.decisions.'.$approval->decision->value) }}
+                                    @if ($approval->comment) — <span class="whitespace-pre-line text-gray-700">{{ $approval->comment }}</span>@endif
+                                </li>
+                            @endforeach
+                        </ul>
+                        @can('manageChange', $ticket)
+                            @if (in_array($change->approval_status->value, ['draft', 'rejected'], true))
+                                <form wire:submit="submitChange" class="flex flex-wrap items-center gap-2">
+                                    <select wire:model="boardId" class="rounded-md border-gray-300 text-sm" aria-label="{{ __('ticketing::changes.ui.choose_board') }}">
+                                        <option value="">{{ __('ticketing::changes.ui.choose_board') }}</option>
+                                        @foreach ($boards as $board)
+                                            <option value="{{ $board->id }}">{{ $board->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white">{{ __('ticketing::changes.ui.submit') }}</button>
+                                </form>
+                                @error('boardId') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                            @endif
+                        @endcan
+                    </div>
+                @endif
+
+                @if ($ticket->status->value === 'resolved' || $change->review)
+                    <div class="space-y-2 border-t border-gray-100 pt-3">
+                        <h3 class="text-sm font-semibold">{{ __('ticketing::changes.ui.review') }}</h3>
+                        @if ($change->review)
+                            <p class="whitespace-pre-line text-sm text-gray-700">{{ $change->review }}</p>
+                        @elseif ($change->change_type->value === 'emergency')
+                            <p class="text-sm text-amber-700">{{ __('ticketing::changes.ui.review_required') }}</p>
+                        @endif
+                        @can('manageChange', $ticket)
+                            @if (! $change->review && $ticket->status->value === 'resolved')
+                                <form wire:submit="recordReview" class="space-y-2">
+                                    <textarea wire:model="review" rows="3" class="block w-full rounded-md border-gray-300 text-sm" aria-label="{{ __('ticketing::changes.ui.review') }}" placeholder="{{ __('ticketing::changes.ui.review_placeholder') }}"></textarea>
+                                    @error('review') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                                    <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white">{{ __('ticketing::changes.ui.save_review') }}</button>
+                                </form>
+                            @endif
+                        @endcan
+                    </div>
+                @endif
+            </section>
+        @endif
+
         <x-ticketing::conversation :comments="$comments" :attachments="$attachments" :show-internal="true" />
 
         @can('comment', $ticket)

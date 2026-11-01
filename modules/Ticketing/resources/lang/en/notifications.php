@@ -43,4 +43,16 @@ return [
         'subject' => '[:number] Resolution overdue',
         'line' => 'Ticket :number missed its resolution target.',
     ],
+    'change_submitted' => [
+        'subject' => '[:number] Change waiting for your approval',
+        'line' => 'Change :number was submitted to your board and needs your decision.',
+    ],
+    'change_approved' => [
+        'subject' => '[:number] Change authorized',
+        'line' => 'Every required board member approved change :number. You can implement it in its window.',
+    ],
+    'change_rejected' => [
+        'subject' => '[:number] Change rejected',
+        'line' => 'Change :number was rejected. Read the comment, adjust the plan and submit it again.',
+    ],
 ];

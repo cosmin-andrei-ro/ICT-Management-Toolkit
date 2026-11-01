@@ -22,6 +22,18 @@ enum ResolutionCode: string
     case Implemented = 'implemented';
     case RolledBack = 'rolled_back';
 
+    /**
+     * Changes close as implemented or rolled back; other tickets never do.
+     *
+     * @return list<self>
+     */
+    public static function forType(TicketType $type): array
+    {
+        return $type === TicketType::Change
+            ? [self::Implemented, self::RolledBack]
+            : [self::Fixed, self::Workaround, self::Fulfilled, self::NotReproducible, self::Duplicate, self::UserError, self::NoActionNeeded];
+    }
+
     public function label(): string
     {
         return __('ticketing::tickets.resolution_codes.'.$this->value);
