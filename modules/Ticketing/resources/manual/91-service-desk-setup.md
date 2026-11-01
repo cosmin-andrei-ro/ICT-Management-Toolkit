@@ -57,3 +57,20 @@ Each question has a label, a **key** (lowercase letters, digits and underscores,
 Editing a form never changes requests already made: each request keeps the questions and answers as they were.
 
 Deactivate a service to remove it from the catalog without losing its history.
+
+## Change advisory boards
+
+Under **CAB boards**, create the boards that authorize changes, and choose their members.
+
+- A **regular** board authorizes normal changes. Every member except the requester must approve.
+- Tick **Emergency CAB (ECAB)** for the board that authorizes emergency changes, such as a critical security patch. Keep it small, so it can decide in minutes.
+
+Members must belong to the organization. Only people with the **CAB member** or **Team lead** role are asked to decide; give that role to anyone else you add. Membership changes are recorded in the audit trail.
+
+Boards cannot be deleted, only deactivated. A deactivated board receives no new changes, but members can still decide on the changes already waiting for it. Normal changes need an active regular board, and emergency changes need an active ECAB.
+
+## Standard changes
+
+Under **Standard changes**, describe routine work that does not need the CAB each time: when it applies, its risk, and its implementation and rollback plans. Approving a template is a decision to pre-authorize that work, so keep templates to low-risk, well-known procedures. Agents choose a template when they create a standard change, and the change is authorized at once.
+
+Deactivate a template to stop its use without losing its history.

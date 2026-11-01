@@ -8,6 +8,10 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Modules\Ticketing\Http\Livewire\Catalog\RequestServiceForm;
 use Modules\Ticketing\Http\Livewire\Catalog\ServiceCatalog;
+use Modules\Ticketing\Http\Livewire\Changes\Approvals;
+use Modules\Ticketing\Http\Livewire\Changes\ChangeCalendarView;
+use Modules\Ticketing\Http\Livewire\Changes\CreateChange;
+use Modules\Ticketing\Http\Livewire\Changes\ReviewChange;
 use Modules\Ticketing\Http\Livewire\Desk\KnownErrors;
 use Modules\Ticketing\Http\Livewire\Desk\ShowTicket as DeskShowTicket;
 use Modules\Ticketing\Http\Livewire\Desk\TicketQueue;
@@ -26,5 +30,10 @@ Route::middleware(['auth', 'organization'])->group(function (): void {
 
     Route::livewire('/desk', TicketQueue::class)->name('ticketing.desk.index');
     Route::livewire('/desk/known-errors', KnownErrors::class)->name('ticketing.desk.known-errors');
+    Route::livewire('/desk/changes', ChangeCalendarView::class)->name('ticketing.changes.calendar');
+    Route::livewire('/desk/changes/new', CreateChange::class)->name('ticketing.changes.create');
+
+    Route::livewire('/approvals', Approvals::class)->name('ticketing.changes.approvals');
+    Route::livewire('/approvals/{ticket}', ReviewChange::class)->whereUuid('ticket')->name('ticketing.changes.approvals.review');
     Route::livewire('/desk/tickets/{ticket}', DeskShowTicket::class)->whereUuid('ticket')->name('ticketing.desk.show');
 });

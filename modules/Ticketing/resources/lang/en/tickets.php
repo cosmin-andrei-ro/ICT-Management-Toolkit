@@ -10,6 +10,7 @@ return [
         'incident' => 'Incident',
         'service_request' => 'Service request',
         'problem' => 'Problem',
+        'change' => 'Change',
     ],
     'statuses' => [
         'new' => 'New',
@@ -51,5 +52,7 @@ return [
         'duplicate' => 'Duplicate',
         'user_error' => 'User error / training',
         'no_action_needed' => 'No action needed',
+        'implemented' => 'Change implemented',
+        'rolled_back' => 'Change rolled back',
     ],
 ];

@@ -7,12 +7,14 @@ declare(strict_types=1);
 
 namespace Modules\Ticketing\Http\Livewire\Desk;
 
+use DomainException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use LogicException;
 use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Application\Actions\AddTicketAttachment;
 use Modules\Ticketing\Application\Actions\AddTicketComment;
@@ -23,20 +25,29 @@ use Modules\Ticketing\Application\Actions\CloseTicket;
 use Modules\Ticketing\Application\Actions\ReopenTicket;
 use Modules\Ticketing\Application\Actions\ResolveTicket;
 use Modules\Ticketing\Application\Actions\UpdateTicketDetails;
+use Modules\Ticketing\Application\Changes\ChangeCalendar;
+use Modules\Ticketing\Application\Changes\ChangePlan;
+use Modules\Ticketing\Application\Changes\RecordChangeReview;
+use Modules\Ticketing\Application\Changes\SubmitChange;
+use Modules\Ticketing\Application\Changes\UpdateChangePlan;
 use Modules\Ticketing\Application\Problems\CreateProblem;
 use Modules\Ticketing\Application\Problems\LinkIncidentToProblem;
 use Modules\Ticketing\Application\Problems\MarkKnownError;
 use Modules\Ticketing\Application\Problems\ResolveProblem;
 use Modules\Ticketing\Application\Problems\UpdateProblemAnalysis;
+use Modules\Ticketing\Domain\Changes\ChangeRisk;
+use Modules\Ticketing\Domain\Changes\ChangeType;
 use Modules\Ticketing\Domain\Enums\Impact;
 use Modules\Ticketing\Domain\Enums\ResolutionCode;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Enums\TicketType;
 use Modules\Ticketing\Domain\Enums\Urgency;
+use Modules\Ticketing\Domain\Models\CabBoard;
 use Modules\Ticketing\Domain\Models\Category;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Ticket;
 use Modules\Ticketing\Domain\Workflow\TicketWorkflow;
+use Modules\Ticketing\Http\Livewire\Concerns\EditsChangePlan;
 use Modules\Ticketing\Http\Livewire\Concerns\HandlesTicketActions;
 
 /**
@@ -48,6 +59,7 @@ use Modules\Ticketing\Http\Livewire\Concerns\HandlesTicketActions;
 #[Layout('core::components.layouts.app')]
 final class ShowTicket extends Component
 {
+    use EditsChangePlan;
     use HandlesTicketActions;
     use WithFileUploads;
 
@@ -85,6 +97,10 @@ final class ShowTicket extends Component
     public string $workaround = '';
 
     public bool $resolveIncidents = true;
+
+    public string $boardId = '';
+
+    public string $review = '';
 
     public function mount(Ticket $ticket): void
     {
@@ -259,6 +275,51 @@ final class ShowTicket extends Component
         $this->attempt(fn () => $mark->handle($this->ticket), 'workaround');
     }
 
+    public function saveChangePlan(UpdateChangePlan $update): void
+    {
+        $this->authorize('manageChange', $this->ticket);
+        $this->validate($this->planRules());
+
+        $saved = $this->attempt(function () use ($update): void {
+            if ($update->handle($this->ticket, $this->toPlan())) {
+                session()->flash('change_notice', __('ticketing::changes.ui.approvals_withdrawn'));
+            }
+        }, 'plannedStart');
+
+        if ($saved) {
+            $this->fillPlan($this->ticket->changeDetails ?? throw new LogicException('Not a change.'));
+        }
+    }
+
+    public function submitChange(SubmitChange $submit): void
+    {
+        $this->authorize('manageChange', $this->ticket);
+        $this->validate(['boardId' => ['required', 'uuid']]);
+
+        // Scoped lookup: boards of other organizations do not exist here.
+        $board = CabBoard::query()->findOrFail($this->boardId);
+
+        try {
+            $submit->handle($this->ticket, $board, $this->user());
+        } catch (DomainException $exception) {
+            $this->addError('boardId', $exception->getMessage());
+
+            return;
+        }
+
+        unset($this->ticket);
+    }
+
+    public function recordReview(RecordChangeReview $record): void
+    {
+        $this->authorize('manageChange', $this->ticket);
+        $this->validate(['review' => ['required', 'string', 'max:'.ChangePlan::MAX_LENGTH]]);
+
+        if ($this->attempt(fn () => $record->handle($this->ticket, $this->review), 'review')) {
+            $this->reset('review');
+        }
+    }
+
     public function render(TicketWorkflow $workflow): View
     {
         $ticket = $this->ticket;
@@ -278,7 +339,15 @@ final class ShowTicket extends Component
             // Assignment requires queue team membership; offer only those people.
             'assignees' => $queue?->team->members->sortBy('name')->values() ?? collect(),
             'categories' => Category::query()->where('is_active', true)->with('parent')->orderBy('name')->get(),
-            'resolutionCodes' => ResolutionCode::cases(),
+            'resolutionCodes' => ResolutionCode::forType($ticket->type),
+            'risks' => ChangeRisk::cases(),
+            'boards' => $ticket->changeDetails !== null
+                ? CabBoard::query()->where('is_active', true)->where('is_emergency', $ticket->changeDetails->change_type === ChangeType::Emergency)->orderBy('name')->get()
+                : collect(),
+            'approvals' => $ticket->changeDetails !== null
+                ? $ticket->changeApprovals()->where('round', $ticket->changeDetails->approval_round)->with('user')->orderBy('decided_at')->get()
+                : collect(),
+            'conflicts' => $ticket->changeDetails !== null ? app(ChangeCalendar::class)->conflictsWith($ticket) : collect(),
             'linkedIncidents' => $ticket->type === TicketType::Problem
                 ? $ticket->incidents()->with('requester')->latest()->get()
                 : collect(),
@@ -300,6 +369,11 @@ final class ShowTicket extends Component
         $this->urgency = $ticket->urgency->value;
         $this->categoryId = $ticket->category_id;
         $this->problemId = $ticket->problem_id ?? '';
+
+        if ($ticket->changeDetails !== null) {
+            $this->fillPlan($ticket->changeDetails);
+            $this->boardId = $ticket->changeDetails->cab_board_id ?? '';
+        }
         $this->rootCause = $ticket->problemDetails->root_cause ?? '';
         $this->workaround = $ticket->problemDetails->workaround ?? '';
     }

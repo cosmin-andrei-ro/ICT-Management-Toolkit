@@ -76,6 +76,7 @@ use Modules\Ticketing\Domain\Enums\Urgency;
  * @property-read ?Service $service
  * @property-read ?Ticket $problem
  * @property-read ?ProblemDetails $problemDetails
+ * @property-read ?ChangeDetails $changeDetails
  */
 #[Table('ticketing_tickets')]
 #[UseFactory(TicketFactory::class)]
@@ -167,6 +168,22 @@ final class Ticket extends Model
     public function problemDetails(): HasOne
     {
         return $this->hasOne(ProblemDetails::class, 'ticket_id');
+    }
+
+    /**
+     * @return HasOne<ChangeDetails, $this>
+     */
+    public function changeDetails(): HasOne
+    {
+        return $this->hasOne(ChangeDetails::class, 'ticket_id');
+    }
+
+    /**
+     * @return HasMany<ChangeApproval, $this>
+     */
+    public function changeApprovals(): HasMany
+    {
+        return $this->hasMany(ChangeApproval::class);
     }
 
     /**

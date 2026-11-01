@@ -57,6 +57,16 @@ final class Queue extends Model
     use SoftDeletes;
     use TracksAuthors;
 
+    /**
+     * Mirror the column defaults, so new instances know them before saving.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_default' => false,
+        'is_active' => true,
+    ];
+
     protected static function booted(): void
     {
         // One default queue per organization (unique index): taking the flag moves it.

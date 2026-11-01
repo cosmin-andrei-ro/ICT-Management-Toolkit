@@ -1,0 +1,82 @@
+<?php
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 ICT Management Toolkit contributors
+
+declare(strict_types=1);
+
+return [
+    'types' => [
+        'standard' => 'Standard',
+        'normal' => 'Normal',
+        'emergency' => 'Emergency',
+    ],
+    'type_help' => [
+        'standard' => 'routine work from a pre-approved template; no CAB needed.',
+        'normal' => 'planned change, authorized by the CAB.',
+        'emergency' => 'urgent change (e.g. a critical security patch), authorized by the emergency CAB (ECAB); a post-implementation review is required.',
+    ],
+    'risks' => [
+        'low' => 'Low',
+        'medium' => 'Medium',
+        'high' => 'High',
+    ],
+    'approval' => [
+        'draft' => 'Draft',
+        'pending' => 'Waiting for approval',
+        'approved' => 'Authorized',
+        'rejected' => 'Rejected',
+    ],
+    'decisions' => [
+        'approved' => 'approved',
+        'rejected' => 'rejected',
+    ],
+    'ui' => [
+        'change' => 'Change',
+        'new' => 'New change',
+        'create' => 'Create change',
+        'type' => 'Kind of change',
+        'template' => 'Standard change template',
+        'reason' => 'Why is this change needed?',
+        'risk' => 'Risk',
+        'window' => 'Planned window',
+        'window_start' => 'Starts',
+        'window_end' => 'Ends',
+        'window_help' => 'Times are in :timezone.',
+        'implementation_plan' => 'Implementation plan',
+        'rollback_plan' => 'Rollback plan',
+        'test_plan' => 'How to verify it worked',
+        'save_plan' => 'Save plan',
+        'edit_withdraws' => 'Saving changes withdraws the approvals: the CAB must approve the new plan.',
+        'approvals_withdrawn' => 'The plan changed: approvals were withdrawn. Submit the change again.',
+        'conflicts' => 'Other scheduled changes overlap this window:',
+        'cab_approval' => 'CAB approval',
+        'ecab_approval' => 'Emergency CAB (ECAB) approval',
+        'board' => ':board, round :round',
+        'choose_board' => 'Choose a board',
+        'submit' => 'Submit for approval',
+        'review' => 'Post-implementation review',
+        'review_required' => 'Required before this emergency change can be closed.',
+        'review_placeholder' => 'What happened, why it was urgent, what to improve.',
+        'save_review' => 'Save review',
+        'approvals' => 'Approvals',
+        'approvals_intro' => 'Changes waiting for your decision. Every member of the board except the requester must approve; a single rejection rejects the change.',
+        'nothing_to_approve' => 'Nothing is waiting for your decision.',
+        'back_to_approvals' => '← Approvals',
+        'decisions_so_far' => 'Decisions in this round',
+        'no_decisions' => 'No decisions yet.',
+        'comment' => 'Comment (required to reject)',
+        'approve' => 'Approve',
+        'reject' => 'Reject',
+        'reject_help' => 'Rejecting sends the change back to its requester with your comment.',
+        'decision_recorded' => 'Your decision is recorded.',
+        'calendar' => 'Change calendar',
+        'calendar_range' => ':from to :until (:timezone)',
+        'calendar_empty' => 'No changes are scheduled in this period.',
+        'from' => 'From',
+        'overlaps' => 'Overlaps',
+        'back_to_calendar' => '← Change calendar',
+        'menu_calendar' => 'Change calendar',
+        'menu_approvals' => 'Approvals',
+    ],
+];

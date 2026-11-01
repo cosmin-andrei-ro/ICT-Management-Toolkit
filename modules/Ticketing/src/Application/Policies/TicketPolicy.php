@@ -9,6 +9,8 @@ namespace Modules\Ticketing\Application\Policies;
 
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Ticketing\Application\Changes\CabApprovers;
+use Modules\Ticketing\Domain\Changes\ApprovalStatus;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Enums\TicketType;
 use Modules\Ticketing\Domain\Models\Ticket;
@@ -33,7 +35,10 @@ final readonly class TicketPolicy
             return false;
         }
 
-        return $user->can('ticketing.ticket.view_all') || $ticket->isRequester($user) || $ticket->isWatchedBy($user);
+        return $user->can('ticketing.ticket.view_all')
+            || $ticket->isRequester($user)
+            || $ticket->isWatchedBy($user)
+            || $this->sitsOnBoardOf($user, $ticket);
     }
 
     public function viewInternal(User $user, Ticket $ticket): bool
@@ -126,6 +131,48 @@ final readonly class TicketPolicy
     public function linkProblem(User $user, Ticket $ticket): bool
     {
         return $ticket->type === TicketType::Incident && ! $ticket->status->isFinal() && $this->work($user, $ticket);
+    }
+
+    public function createChange(User $user): bool
+    {
+        return $user->can('ticketing.change.create');
+    }
+
+    /**
+     * Plans, submission, implementation and review of a change.
+     */
+    public function manageChange(User $user, Ticket $ticket): bool
+    {
+        return $ticket->type === TicketType::Change
+            && ! $ticket->status->isFinal()
+            && $this->inCurrentOrganization($ticket)
+            && $user->can('ticketing.change.create')
+            && $user->can('ticketing.ticket.work');
+    }
+
+    /**
+     * Whether the user still has to decide on this change (CAB/ECAB member, not its requester).
+     */
+    public function decideOnChange(User $user, Ticket $ticket): bool
+    {
+        $details = $ticket->changeDetails;
+
+        if ($ticket->type !== TicketType::Change || $details === null || $details->approval_status !== ApprovalStatus::Pending || ! $this->inCurrentOrganization($ticket)) {
+            return false;
+        }
+
+        $alreadyDecided = $ticket->changeApprovals()->where('round', $details->approval_round)->where('user_id', $user->id)->exists();
+
+        return ! $alreadyDecided
+            && $details->cabBoard !== null
+            && app(CabApprovers::class)->for($ticket, $details->cabBoard)->contains('id', $user->id);
+    }
+
+    private function sitsOnBoardOf(User $user, Ticket $ticket): bool
+    {
+        $board = $ticket->type === TicketType::Change ? $ticket->changeDetails?->cabBoard : null;
+
+        return $board !== null && $user->can('ticketing.change.approve') && $board->hasMember($user);
     }
 
     private function inCurrentOrganization(Ticket $ticket): bool

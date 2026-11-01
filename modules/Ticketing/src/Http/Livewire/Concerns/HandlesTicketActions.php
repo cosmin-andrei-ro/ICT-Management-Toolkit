@@ -29,7 +29,7 @@ trait HandlesTicketActions
     #[Computed]
     public function ticket(): Ticket
     {
-        return Ticket::query()->with(['requester', 'assignee', 'queue', 'category.parent', 'problem.problemDetails', 'problemDetails'])->findOrFail($this->ticketId);
+        return Ticket::query()->with(['requester', 'assignee', 'queue', 'category.parent', 'problem.problemDetails', 'problemDetails', 'changeDetails.cabBoard', 'changeDetails.template'])->findOrFail($this->ticketId);
     }
 
     protected function user(): User
