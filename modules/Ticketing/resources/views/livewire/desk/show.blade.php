@@ -212,6 +212,8 @@
     </div>
 
     <aside class="space-y-6">
+        <x-ticketing::affected-items :items="$configurationItems" :editable="auth()->user()?->can('work', $ticket) ?? false" />
+
         @if ($ticket->type->value === 'incident')
             <section class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200" aria-labelledby="problem-heading">
                 <h2 id="problem-heading" class="text-sm font-semibold">{{ __('ticketing::problems.ui.problem') }}</h2>

@@ -12,9 +12,9 @@ Each person can have different roles in different organizations. Every role is a
 | Role | Typical person | What they can do |
 |---|---|---|
 | **Requester** | every employee | Raise tickets, request services, follow their own tickets. |
-| **Agent** | service desk staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, and raise changes. |
-| **Team lead** | service desk lead | Everything an agent can, plus see reports, approve changes and configure the service desk (categories, queues, SLA targets, catalog, CAB boards, standard changes). |
-| **CAB member** | change advisory board | Raise tickets; approve changes on the boards they sit on. |
+| **Agent** | service desk staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, raise changes, and keep the CMDB up to date. |
+| **Team lead** | service desk lead | Everything an agent can, plus see reports, approve changes, configure the service desk (categories, queues, SLA targets, catalog, CAB boards, standard changes) and define CMDB item types. |
+| **CAB member** | change advisory board | Raise tickets; approve changes on the boards they sit on; see the CMDB. |
 | **Administrator** | IT administrator | Everything, including the administration panel, Active Directory mappings, teams and business calendars. |
 
 The default roles are defined by the application and restored on every update. If you need a different combination of permissions, create an organization-specific role.

@@ -8,29 +8,23 @@ declare(strict_types=1);
 namespace Modules\Ticketing\Http\Filament\Resources\Services;
 
 use BackedEnum;
-use Closure;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use InvalidArgumentException;
-use Modules\Core\Domain\Forms\FieldType;
-use Modules\Core\Domain\Forms\FormSchema;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Core\Http\Filament\Components\FormSchemaEditor;
 use Modules\Ticketing\Domain\Enums\Impact;
 use Modules\Ticketing\Domain\Enums\Urgency;
 use Modules\Ticketing\Domain\Models\Category;
@@ -65,11 +59,6 @@ final class ServiceResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $types = [];
-        foreach (FieldType::cases() as $type) {
-            $types[$type->value] = $type->label();
-        }
-
         return $schema->components([
             TextInput::make('name')->label(__('ticketing::admin.name'))->required()->maxLength(100),
             Textarea::make('description')->label(__('ticketing::admin.description'))->maxLength(2000),
@@ -95,32 +84,7 @@ final class ServiceResource extends Resource
             Section::make(__('ticketing::admin.services.form'))
                 ->description(__('ticketing::admin.services.form_help'))
                 ->schema([
-                    Repeater::make('form_schema')
-                        ->hiddenLabel()
-                        ->schema([
-                            TextInput::make('label')->label(__('ticketing::admin.services.field_label'))->required()->maxLength(200),
-                            TextInput::make('key')->label(__('ticketing::admin.services.field_key'))
-                                ->helperText(__('ticketing::admin.services.field_key_help'))
-                                ->required()->regex('/\A[a-z][a-z0-9_]{0,49}\z/'),
-                            Select::make('type')->label(__('ticketing::admin.services.field_type'))->options($types)->in(array_keys($types))->required()->live(),
-                            Toggle::make('required')->label(__('ticketing::admin.services.field_required')),
-                            TextInput::make('help')->label(__('ticketing::admin.services.field_help'))->maxLength(300),
-                            TagsInput::make('options')->label(__('ticketing::admin.services.field_options'))
-                                ->visible(fn (Get $get): bool => $get('type') === FieldType::Select->value)
-                                ->required(fn (Get $get): bool => $get('type') === FieldType::Select->value),
-                        ])
-                        ->columns(2)
-                        ->defaultItems(0)
-                        ->maxItems(FormSchema::MAX_FIELDS)
-                        // Stored as a JSON list; drop the repeater's item keys and non-select options.
-                        ->mutateDehydratedStateUsing(fn (?array $state): array => self::normalizeFields($state ?? []))
-                        ->rule(fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
-                            try {
-                                FormSchema::fromArray(self::normalizeFields(is_array($value) ? $value : []));
-                            } catch (InvalidArgumentException $exception) {
-                                $fail($exception->getMessage());
-                            }
-                        }),
+                    FormSchemaEditor::make('form_schema'),
                 ])
                 ->columnSpanFull(),
         ]);
@@ -144,33 +108,6 @@ final class ServiceResource extends Resource
     public static function getPages(): array
     {
         return ['index' => ManageServices::route('/')];
-    }
-
-    /**
-     * @param  array<mixed>  $fields
-     * @return list<array<string, mixed>>
-     */
-    public static function normalizeFields(array $fields): array
-    {
-        $normalized = [];
-
-        foreach ($fields as $field) {
-            if (! is_array($field)) {
-                continue;
-            }
-
-            $isSelect = ($field['type'] ?? null) === FieldType::Select->value;
-            $normalized[] = [
-                'key' => $field['key'] ?? null,
-                'label' => $field['label'] ?? null,
-                'type' => $field['type'] ?? null,
-                'required' => (bool) ($field['required'] ?? false),
-                'help' => $field['help'] ?? null,
-                'options' => $isSelect && is_array($field['options'] ?? null) ? array_values($field['options']) : [],
-            ];
-        }
-
-        return $normalized;
     }
 
     /**

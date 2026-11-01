@@ -11,10 +11,13 @@ use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
+use Modules\Core\Domain\Links\LinkedRecord;
+use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
@@ -67,6 +70,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(TicketExport::TYPE, TicketExport::class, 'ticketing.report.view'));
+        $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('ticketing.ticket', self::linkedTickets(...)));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
 
         ApiAbility::register('tickets:read', 'ticketing::api.abilities.read');
@@ -116,6 +120,27 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([AutoCloseTicketsCommand::class, CheckSlaCommand::class, FetchMailCommand::class, PruneMailLogCommand::class]);
         }
+    }
+
+    /**
+     * Tickets linked elsewhere (e.g. to a configuration item), as the viewer may see them.
+     *
+     * @param  list<string>  $ids
+     * @return list<LinkedRecord>
+     */
+    private static function linkedTickets(array $ids, User $viewer): array
+    {
+        $gate = Gate::forUser($viewer);
+
+        return array_values(Ticket::query()->whereKey($ids)->latest()->limit(50)->get()
+            ->filter(fn (Ticket $ticket): bool => $gate->allows('view', $ticket))
+            ->map(fn (Ticket $ticket): LinkedRecord => new LinkedRecord(
+                $ticket->id,
+                $ticket->number.' '.$ticket->title,
+                route($gate->allows('work', $ticket) ? 'ticketing.desk.show' : 'ticketing.portal.show', $ticket),
+                $ticket->status->label(),
+            ))
+            ->all());
     }
 
     private function registerPermissions(PermissionRegistry $registry): void

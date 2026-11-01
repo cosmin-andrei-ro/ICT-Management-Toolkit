@@ -14,6 +14,7 @@ Open a change to see:
 - why it is needed and its risk;
 - the implementation plan, the rollback plan and how it will be verified;
 - the planned window, and other changes scheduled at the same time;
+- the configuration items it touches, and what their failure would affect;
 - the decisions already made in this round.
 
 ## Deciding

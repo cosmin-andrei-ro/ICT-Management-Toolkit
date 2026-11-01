@@ -85,4 +85,12 @@ return [
         'portal' => 'My tickets',
         'desk' => 'Service desk',
     ],
+    'items' => [
+        'title' => 'Configuration items',
+        'none' => 'None linked.',
+        'search' => 'Link an item: type a name or identifier',
+        'remove' => 'Remove',
+        'invalid' => 'This item cannot be linked.',
+        'impact' => 'If these fail, :count other item(s) are affected:',
+    ],
 ];

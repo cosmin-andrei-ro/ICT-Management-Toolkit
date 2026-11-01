@@ -4,7 +4,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 ## Standards and compliance
 
-> The application is **not certified** and has not been audited by a third party. Regulations such as NIS2, DORA and GDPR apply to **organizations**, not to software: the toolkit gives you the records, workflows and evidence these regulations ask for, but compliance also depends on your own processes. The tables say what is in place today (**Yes**), partly (**Partial**) or not yet (**Planned**).
+> The application is **not certified** and has not been audited by a third party. Regulations such as NIS2, DORA and GDPR apply to **organizations**, not to software: the toolkit gives you the records, workflows and evidence these regulations ask for, but compliance also depends on your own processes. The tables say what is in place today (**Yes**), partly (**Partial**), not yet (**Planned**), or left out on purpose (**Not planned**).
 
 ### How the software is built
 
@@ -36,16 +36,16 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 | Framework | Status | What is covered |
 |---|---|---|
-| ITIL 4 | Partial | Incident management, service request management with a service catalog, problem management with a known error database, change enablement with CAB and emergency CAB, service level management (SLA clocks in working time), service desk reporting. Configuration management (CMDB) and IT asset management are planned. |
+| ITIL 4 | Partial | Incident management, service request management with a service catalog, problem management with a known error database, change enablement with CAB and emergency CAB, service level management (SLA clocks in working time), service configuration management (CMDB with relationships and impact analysis), service desk reporting. IT asset management is planned. |
 
 ### Regulations and information security frameworks
 
 | Requirement | Status | How the toolkit helps |
 |---|---|---|
-| **NIS2** (Directive (EU) 2022/2555), Art. 21 risk-management measures | Partial | Incident handling (21(2)(b)): ticketing with priorities, SLAs, problem management. Access control and multi-factor authentication (21(2)(i)(j)). Logging through the audit trail. Change management for secure maintenance (21(2)(e)). **Planned:** business continuity (21(2)(c)), supply chain (21(2)(d)), risk analysis (21(2)(a)), and support for the 24-hour / 72-hour incident notifications of Art. 23. |
-| **DORA** (Regulation (EU) 2022/2554), financial entities | Partial | ICT-related incident management process (Art. 17): detection, logging, follow-up and root cause. ICT change management (Art. 9(4)(e)): approved, planned, reversible changes with post-implementation review of emergency changes. Strong authentication (Art. 9(4)(d)). **Planned:** classification and reporting of major incidents (Art. 18–19), register of ICT third-party providers (Art. 28), business continuity and testing (Art. 11–12, 24–25). |
-| **ISO/IEC 27001:2022**, Annex A | Partial | 5.15–5.18 access control and identities, 5.24–5.27 incident management and learning from incidents, 8.5 secure authentication, 8.15 logging, 8.32 change management. **Planned:** the Audit & Compliance module, to map controls to evidence. |
-| **GDPR** (Regulation (EU) 2016/679) | Partial | Data minimization (exports leave requesters out, comment text is never emailed), storage limitation (the incoming email log is kept 90 days, exports 7 days), security of processing (Art. 32: encryption of secrets, access control, audit trail), separation of organizations. **Planned:** export and anonymization of a person's data on request (Art. 15–17, 20), configurable retention for tickets. |
+| **NIS2** (Directive (EU) 2022/2555), Art. 21 risk-management measures | Partial | Incident handling (21(2)(b)): ticketing with priorities, SLAs, problem management. Access control, multi-factor authentication and asset management (21(2)(i)(j)): the CMDB records what you run and what depends on what. Logging through the audit trail. Change management for secure maintenance (21(2)(e)). **Planned:** business continuity (21(2)(c)), supply chain (21(2)(d)), risk analysis (21(2)(a)). **Not planned:** the notifications to authorities of Art. 23, which you send outside the toolkit. |
+| **DORA** (Regulation (EU) 2022/2554), financial entities | Partial | Identification of ICT assets and their dependencies (Art. 8): the CMDB. ICT-related incident management process (Art. 17): detection, logging, follow-up and root cause. ICT change management (Art. 9(4)(e)): approved, planned, reversible changes with post-implementation review of emergency changes. Strong authentication (Art. 9(4)(d)). **Planned:** register of ICT third-party providers (Art. 28), business continuity and testing (Art. 11–12, 24–25). **Not planned:** classification and reporting of major incidents to authorities (Art. 18–19). |
+| **ISO/IEC 27001:2022**, Annex A | Partial | 5.9 inventory of information and other associated assets (CMDB), 5.15–5.18 access control and identities, 5.24–5.27 incident management and learning from incidents, 8.5 secure authentication, 8.15 logging, 8.32 change management. **Planned:** the Audit & Compliance module, to map controls to evidence. |
+| **GDPR** (Regulation (EU) 2016/679) | Partial | Data minimization (exports leave requesters out, comment text is never emailed), storage limitation (the incoming email log is kept 90 days, exports 7 days), security of processing (Art. 32: encryption of secrets, access control, audit trail), separation of organizations. **Not planned:** export and anonymization of a person's data on request (Art. 15–17, 20), configurable retention for tickets. |
 
 ## What it does today
 
@@ -67,7 +67,13 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Email-to-ticket**: tickets and replies by email, from IMAP mailboxes (e.g. Exchange).
 - **Reports**: resolution times, SLA compliance, reopen rate, backlog and volume, exported to Excel or CSV.
 
-**Planned modules:** CMDB, IT asset management, datacenter infrastructure, application portfolio, business impact analysis, continuity and recovery, risk assessment, audit and compliance, projects.
+**CMDB**
+- **Configuration items** of extensible types (servers, applications, databases, services…) with their own attributes, and typed **relationships** between them.
+- **Impact analysis**: what a failure affects and what an item needs, plus an interactive dependency map.
+- Items linked to tickets, so incidents show the services they take down and the CAB sees what a change touches.
+- **Import** from CSV or Excel, with preview.
+
+**Planned modules:** IT asset management, datacenter infrastructure, application portfolio, business impact analysis, continuity and recovery, risk assessment, audit and compliance, projects.
 
 **Not done yet:** security keys and passkeys (WebAuthn) as a second factor; single sign-on with OIDC or SAML.
 

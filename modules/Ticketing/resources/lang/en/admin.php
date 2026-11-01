@@ -33,13 +33,6 @@ return [
         'queue_help' => 'Requests for this service go to this queue; empty means the default queue.',
         'form' => 'Request form',
         'form_help' => 'Questions asked when someone requests this service. Answers are kept with each request, so editing the form later does not change past requests.',
-        'field_label' => 'Question',
-        'field_key' => 'Key',
-        'field_key_help' => 'Lowercase letters, digits and underscores, e.g. laptop_model. Unique within the form.',
-        'field_type' => 'Type',
-        'field_required' => 'Required',
-        'field_help' => 'Help text',
-        'field_options' => 'Choices',
     ],
     'cab_boards' => [
         'label' => 'CAB board',

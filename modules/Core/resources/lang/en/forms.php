@@ -16,4 +16,13 @@ return [
     ],
     'yes' => 'Yes',
     'no' => 'No',
+    'editor' => [
+        'label' => 'Label',
+        'key' => 'Key',
+        'key_help' => 'Lowercase letters, digits and underscores, e.g. laptop_model. Unique within the form.',
+        'type' => 'Type',
+        'required' => 'Required',
+        'help' => 'Help text',
+        'options' => 'Choices',
+    ],
 ];
