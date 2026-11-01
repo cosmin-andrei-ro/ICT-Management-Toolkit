@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Core\Database\Factories\OrganizationFactory;
+use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 
 /**
@@ -39,6 +40,8 @@ use Modules\Core\Domain\Concerns\TracksAuthors;
 #[Fillable(['name', 'slug', 'legal_name', 'registration_number', 'is_active'])]
 final class Organization extends Model
 {
+    use Auditable;
+
     /** @use HasFactory<OrganizationFactory> */
     use HasFactory;
 

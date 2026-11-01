@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Core\Database\Factories\DepartmentFactory;
+use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 
@@ -40,6 +41,7 @@ use Modules\Core\Domain\Concerns\TracksAuthors;
 #[Fillable(['parent_id', 'name', 'code', 'description', 'manager_id'])]
 final class Department extends Model
 {
+    use Auditable;
     use BelongsToOrganization;
 
     /** @use HasFactory<DepartmentFactory> */

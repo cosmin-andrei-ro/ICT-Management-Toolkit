@@ -21,6 +21,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Modules\Core\Database\Factories\UserFactory;
+use Modules\Core\Domain\Concerns\Auditable;
 
 /**
  * Users are global to the instance; access to business data comes from
@@ -44,6 +45,8 @@ use Modules\Core\Database\Factories\UserFactory;
 #[Hidden(['password', 'remember_token'])]
 final class User extends Authenticatable
 {
+    use Auditable;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory;
 
@@ -72,6 +75,16 @@ final class User extends Authenticatable
         $organizationId = $organization instanceof Organization ? $organization->id : $organization;
 
         return $this->organizations()->whereKey($organizationId)->exists();
+    }
+
+    /**
+     * Logins are recorded as security events, not as user updates.
+     *
+     * @return list<string>
+     */
+    public function auditExclude(): array
+    {
+        return ['last_login_at'];
     }
 
     /**
