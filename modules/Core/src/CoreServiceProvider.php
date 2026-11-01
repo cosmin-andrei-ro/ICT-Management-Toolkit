@@ -38,6 +38,7 @@ use Modules\Core\Domain\Authorization\Role;
 use Modules\Core\Domain\Directory\Directory;
 use Modules\Core\Domain\Directory\DirectoryGroupMapping;
 use Modules\Core\Domain\Models\Attachment;
+use Modules\Core\Domain\Models\BusinessCalendar;
 use Modules\Core\Domain\Models\Comment;
 use Modules\Core\Domain\Models\Department;
 use Modules\Core\Domain\Models\Organization;
@@ -136,6 +137,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.team' => Team::class,
             'core.comment' => Comment::class,
             'core.attachment' => Attachment::class,
+            'core.business_calendar' => BusinessCalendar::class,
         ]);
 
         Event::listen(
@@ -189,6 +191,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.directory.manage',
             'core.team.view',
             'core.team.manage',
+            'core.calendar.manage',
         ]);
 
         $directory = ['core.user.view', 'core.department.view', 'core.team.view'];
