@@ -19,6 +19,7 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
@@ -111,6 +112,12 @@ final class CoreServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        $proxies = $this->app->make('config')->get('core.http.trusted_proxies');
+
+        if (is_array($proxies) && $proxies !== []) {
+            TrustProxies::at(array_values(array_filter($proxies, 'is_string')));
+        }
 
         // NIST SP 800-63B: length over composition rules; long passphrases allowed.
         Password::defaults(fn (): Password => Password::min(12)->max(128));
