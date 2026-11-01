@@ -74,3 +74,20 @@ Boards cannot be deleted, only deactivated. A deactivated board receives no new 
 Under **Standard changes**, describe routine work that does not need the CAB each time: when it applies, its risk, and its implementation and rollback plans. Approving a template is a decision to pre-authorize that work, so keep templates to low-risk, well-known procedures. Agents choose a template when they create a standard change, and the change is authorized at once.
 
 Deactivate a template to stop its use without losing its history.
+
+## Mailboxes (email-to-ticket)
+
+Administrators connect support mailboxes under **Mailboxes**, so people can raise tickets and reply by email. The application reads them over IMAP every minute.
+
+- **Email address:** the support address people write to. Ticket emails use it as their reply address, so replies come back to the ticket.
+- **IMAP server, port, encryption:** for Exchange, usually port 993 with SSL/TLS, or 143 with STARTTLS. Unencrypted connections are refused. Only the ports allowed by the installation can be used, and addresses such as `localhost` are refused.
+- **Username and password:** a mailbox account with read access. The password is stored encrypted and never shown again; leave it empty when editing to keep it.
+- **Folder to read:** usually `INBOX`. **Move processed messages to:** an existing folder; empty means processed messages are only marked as read.
+- **New tickets are** incidents or service requests, in the chosen **queue** (empty means the default queue).
+
+**Test connection** checks the server, the sign-in and the folders. The list shows when each mailbox was last read and, if reading failed, why.
+
+Only people with an account in the organization can raise tickets by email; other senders are ignored without an answer. Automatic messages (out-of-office replies, delivery failures, mailing lists) are ignored too, to prevent mail loops.
+
+**Incoming email** lists every message read and what happened to it. Entries are deleted after 90 days. A message that failed is marked as read in the mailbox; mark it as unread there to have it read again.
+

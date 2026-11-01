@@ -42,8 +42,7 @@ final readonly class StoreAttachment
             throw CrossOrganizationAccess::onCreate(Attachment::class);
         }
 
-        $mimeType = $this->detectMimeType($file);
-        $this->validate($file, $mimeType);
+        $mimeType = $this->assertAcceptable($file);
 
         $configuredDisk = $this->config->get('core.attachments.disk');
         $disk = is_string($configuredDisk) && $configuredDisk !== '' ? $configuredDisk : 'attachments';
@@ -88,6 +87,22 @@ final readonly class StoreAttachment
         }
 
         return $attachment;
+    }
+
+    /**
+     * Checks a file against the attachment rules without storing it, for callers
+     * that must know up front (e.g. email intake listing refused files).
+     *
+     * @return string The detected MIME type.
+     *
+     * @throws ValidationException keyed to "file".
+     */
+    public function assertAcceptable(UploadedFile $file): string
+    {
+        $mimeType = $this->detectMimeType($file);
+        $this->validate($file, $mimeType);
+
+        return $mimeType;
     }
 
     /**
