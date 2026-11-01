@@ -24,6 +24,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rules\Password;
 use InvalidArgumentException;
 use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
@@ -37,11 +38,13 @@ use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Authorization\Role;
 use Modules\Core\Domain\Directory\Directory;
 use Modules\Core\Domain\Directory\DirectoryGroupMapping;
+use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\BusinessCalendar;
 use Modules\Core\Domain\Models\Comment;
 use Modules\Core\Domain\Models\Department;
+use Modules\Core\Domain\Models\Export;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
@@ -51,6 +54,8 @@ use Modules\Core\Http\Middleware\SecurityHeaders;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Core\Infrastructure\Console\IssueApiTokenCommand;
+use Modules\Core\Infrastructure\Console\PruneExportsCommand;
+use Modules\Core\Infrastructure\Console\SetupCommand;
 use Modules\Core\Infrastructure\Console\SyncDirectoryCommand;
 use Modules\Core\Infrastructure\Console\SyncPermissionsCommand;
 use Modules\Core\Infrastructure\Console\TestDirectoryCommand;
@@ -79,6 +84,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->singleton(PermissionRegistry::class);
         $this->app->singleton(Navigation::class);
         $this->app->singleton(Manual::class);
+        $this->app->singleton(ExportRegistry::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */
@@ -105,6 +111,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        // NIST SP 800-63B: length over composition rules; long passphrases allowed.
+        Password::defaults(fn (): Password => Password::min(12)->max(128));
 
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('organization', SetCurrentOrganization::class);
@@ -141,6 +150,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.comment' => Comment::class,
             'core.attachment' => Attachment::class,
             'core.business_calendar' => BusinessCalendar::class,
+            'core.export' => Export::class,
         ]);
 
         Event::listen(
@@ -151,6 +161,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         Event::listen([Login::class, Failed::class, Logout::class, Lockout::class], RecordAuthenticationEvent::class);
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $schedule->command(PruneExportsCommand::class)->hourly()->onOneServer();
             $config = $this->app->make('config');
 
             if ($config->get('core.directory.enabled') !== true) {
@@ -170,7 +181,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class, IssueApiTokenCommand::class]);
+            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class, IssueApiTokenCommand::class, PruneExportsCommand::class, SetupCommand::class]);
         }
     }
 

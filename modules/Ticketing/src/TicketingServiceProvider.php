@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Event;
 use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
@@ -22,6 +23,7 @@ use Modules\Ticketing\Application\Email\ReplyAddress;
 use Modules\Ticketing\Application\Notifications\SendChangeNotifications;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
+use Modules\Ticketing\Application\Reports\TicketExport;
 use Modules\Ticketing\Domain\Events\ChangeApproved;
 use Modules\Ticketing\Domain\Events\ChangeRejected;
 use Modules\Ticketing\Domain\Events\ChangeSubmitted;
@@ -64,6 +66,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         $this->app->scoped(ReplyAddress::class);
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(TicketExport::TYPE, TicketExport::class, 'ticketing.report.view'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
 
         ApiAbility::register('tickets:read', 'ticketing::api.abilities.read');
@@ -95,6 +98,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             $navigation->add('ticketing::ui.menu.desk', 'ticketing.desk.index', 'ticketing.desk.index', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
             $navigation->add('ticketing::changes.ui.menu_calendar', 'ticketing.changes.calendar', 'ticketing.changes.calendar', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
             $navigation->add('ticketing::changes.ui.menu_approvals', 'ticketing.changes.approvals', 'ticketing.changes.approvals*', fn (User $user): bool => $user->can('ticketing.change.approve'));
+            $navigation->add('ticketing::reports.menu', 'ticketing.reports', 'ticketing.reports', fn (User $user): bool => $user->can('ticketing.report.view'));
             $navigation->add('ticketing::problems.ui.known_errors', 'ticketing.desk.known-errors', 'ticketing.desk.known-errors', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
         });
 
@@ -127,6 +131,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.change.approve',
             // Mailbox credentials: administrators only (they hold every permission).
             'ticketing.mailbox.manage',
+            'ticketing.report.view',
         ]);
 
         // Owner's decision: every agent may manage problems; a separate permission keeps it adjustable.
@@ -135,6 +140,6 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::Requester, ['ticketing.ticket.create']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, ['ticketing.ticket.create', 'ticketing.change.approve']);
         $registry->grantToDefaultRole(DefaultRole::Agent, $agent);
-        $registry->grantToDefaultRole(DefaultRole::TeamLead, [...$agent, 'ticketing.settings.manage', 'ticketing.change.approve']);
+        $registry->grantToDefaultRole(DefaultRole::TeamLead, [...$agent, 'ticketing.settings.manage', 'ticketing.change.approve', 'ticketing.report.view']);
     }
 }

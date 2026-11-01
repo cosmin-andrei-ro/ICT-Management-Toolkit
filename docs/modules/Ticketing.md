@@ -49,6 +49,14 @@ Support mailboxes are read over IMAP every minute ([ADR 0015](../adr/0015-email-
 - Administration: **Mailboxes** (password encrypted, write-only; test connection) and **Incoming email** (log, pruned after `TICKETING_MAIL_RETENTION_DAYS`, 90 by default). Commands: `ticketing:mail:fetch` (every minute), `ticketing:mail:prune` (daily).
 - Configuration: `TICKETING_MAIL_ALLOWED_PORTS` (993,143), `TICKETING_MAIL_ALLOW_UNENCRYPTED` (false), `TICKETING_MAIL_VERIFY_CERTIFICATES` (true).
 
+## Reports
+
+`/desk/reports` (`ticketing.report.view`: team leads and administrators), incidents and service requests only, for a period of up to a year in the display time zone:
+
+- created and resolved tickets, average and median calendar hours to resolve, reopen rate (tickets resolved in the period and reopened in it), SLA compliance per metric (clocks completed in the period, cancelled ones excluded);
+- open backlog per queue with the oldest ticket's age, and volume per category;
+- export to XLSX (tickets and summary sheets) or CSV (tickets) through the Core export mechanism ([ADR 0016](../adr/0016-exports.md)): queued, private, downloadable by the requester for 7 days, audited. Requesters are not exported.
+
 ## Service catalog
 
 - **Portal** (`/catalog`): people pick a service (new laptop, VPN access, …), answer its form and send a **service request**. Title, queue, category, impact and urgency come from the service. If the service's queue was deactivated, the request goes to the default queue.
@@ -103,5 +111,6 @@ curl -H "Authorization: Bearer <token>" -H "Accept: application/json" https://<h
 | `ticketing.change.create` | agent, team-lead | Create and manage changes |
 | `ticketing.change.approve` | cab-member, team-lead | Decide on changes of the boards they sit on |
 | `ticketing.mailbox.manage` | administrator | Mailboxes (credentials) and the incoming email log |
+| `ticketing.report.view` | team-lead | Reports and their exports |
 
 Administrators have every permission.
