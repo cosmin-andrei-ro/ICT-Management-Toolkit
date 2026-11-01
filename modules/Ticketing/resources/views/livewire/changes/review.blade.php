@@ -12,6 +12,8 @@
         <p class="rounded-md bg-green-50 p-3 text-sm text-green-800">{{ session('decided') }}</p>
     @endif
 
+    <x-ticketing::affected-items :items="$configurationItems" />
+
     @if ($conflicts->isNotEmpty())
         <div class="rounded-md bg-amber-50 p-3 text-sm text-amber-900" role="alert">
             {{ __('ticketing::changes.ui.conflicts') }}

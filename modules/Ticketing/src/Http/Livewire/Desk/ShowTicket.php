@@ -15,6 +15,7 @@ use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use LogicException;
+use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Application\Actions\AddTicketAttachment;
 use Modules\Ticketing\Application\Actions\AddTicketComment;
@@ -49,6 +50,7 @@ use Modules\Ticketing\Domain\Models\Ticket;
 use Modules\Ticketing\Domain\Workflow\TicketWorkflow;
 use Modules\Ticketing\Http\Livewire\Concerns\EditsChangePlan;
 use Modules\Ticketing\Http\Livewire\Concerns\HandlesTicketActions;
+use Modules\Ticketing\Http\Livewire\Concerns\LinksConfigurationItems;
 
 /**
  * The agent's view: everything, including internal notes, plus triage,
@@ -61,6 +63,7 @@ final class ShowTicket extends Component
 {
     use EditsChangePlan;
     use HandlesTicketActions;
+    use LinksConfigurationItems;
     use WithFileUploads;
 
     public string $comment = '';
@@ -320,13 +323,14 @@ final class ShowTicket extends Component
         }
     }
 
-    public function render(TicketWorkflow $workflow): View
+    public function render(TicketWorkflow $workflow, ConfigurationItems $configurationItems): View
     {
         $ticket = $this->ticket;
         $queue = $this->queueId !== '' ? Queue::query()->with('team.members')->find($this->queueId) : null;
 
         return view('ticketing::livewire.desk.show', [
             'ticket' => $ticket,
+            'configurationItems' => $this->configurationItemData($configurationItems, $ticket),
             'comments' => $ticket->comments()->with('author')->get(),
             'attachments' => $ticket->attachments()->get(),
             'transitions' => $ticket->statusTransitions()->with('user')->get(),

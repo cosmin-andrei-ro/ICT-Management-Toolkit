@@ -18,8 +18,12 @@ use Livewire\Component;
 use Modules\Cmdb\Application\Actions\ManageRelationships;
 use Modules\Cmdb\Application\Impact\ImpactAnalysis;
 use Modules\Cmdb\Domain\Enums\RelationshipType;
+use Modules\Cmdb\Domain\Models\CiLink;
 use Modules\Cmdb\Domain\Models\ConfigurationItem;
 use Modules\Cmdb\Domain\Models\Relationship;
+use Modules\Core\Domain\Links\LinkedRecord;
+use Modules\Core\Domain\Links\LinkedRecords;
+use Modules\Core\Domain\Models\User;
 
 /**
  * One item: what it is, how it relates to others, and what a failure would affect.
@@ -102,7 +106,7 @@ final class ShowItem extends Component
         $this->redirectRoute('cmdb.items.index');
     }
 
-    public function render(ImpactAnalysis $impact): View
+    public function render(ImpactAnalysis $impact, LinkedRecords $linkedRecords): View
     {
         $item = $this->item;
         $search = trim($this->otherSearch);
@@ -117,7 +121,31 @@ final class ShowItem extends Component
                 ? ConfigurationItem::query()->with('type')->search(mb_substr($search, 0, 200))->whereKeyNot($item->id)->orderBy('name')->limit(10)->get()
                 : collect(),
             'graph' => $this->graph($item),
+            'linkedRecords' => $this->linkedRecords($item, $linkedRecords),
         ])->title($item->name);
+    }
+
+    /**
+     * Records of other modules linked to this item (tickets…), as the viewer may see them.
+     *
+     * @return list<LinkedRecord>
+     */
+    private function linkedRecords(ConfigurationItem $item, LinkedRecords $linkedRecords): array
+    {
+        $viewer = auth()->user();
+
+        if (! $viewer instanceof User) {
+            return [];
+        }
+
+        $records = [];
+
+        foreach (CiLink::query()->where('configuration_item_id', $item->id)->latest('created_at')->limit(200)->get()->groupBy('linkable_type') as $type => $links) {
+            $ids = array_values(array_filter($links->pluck('linkable_id')->all(), is_string(...)));
+            $records = [...$records, ...$linkedRecords->resolve((string) $type, $ids, $viewer)];
+        }
+
+        return $records;
     }
 
     /**

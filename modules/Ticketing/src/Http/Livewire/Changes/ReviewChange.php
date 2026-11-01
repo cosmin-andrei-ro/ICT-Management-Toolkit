@@ -14,6 +14,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Application\Changes\ChangeCalendar;
 use Modules\Ticketing\Application\Changes\DecideOnChange;
@@ -59,7 +60,7 @@ final class ReviewChange extends Component
         $this->decide($decide, ApprovalDecision::Rejected);
     }
 
-    public function render(ChangeCalendar $calendar): View
+    public function render(ChangeCalendar $calendar, ConfigurationItems $configurationItems): View
     {
         $change = $this->change;
         $details = $change->changeDetails;
@@ -69,6 +70,12 @@ final class ReviewChange extends Component
             'details' => $details,
             'approvals' => $details !== null ? $change->changeApprovals()->where('round', $details->approval_round)->with('user')->orderBy('decided_at')->get() : collect(),
             'conflicts' => $calendar->conflictsWith($change),
+            'configurationItems' => [
+                'available' => $configurationItems->isAvailable(),
+                'linked' => $configurationItems->linkedTo($change),
+                'candidates' => [],
+                'impact' => $configurationItems->impactOf($change),
+            ],
         ])->title($change->number);
     }
 

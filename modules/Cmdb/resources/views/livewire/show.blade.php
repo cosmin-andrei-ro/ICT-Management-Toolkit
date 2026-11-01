@@ -102,6 +102,20 @@
         @endcan
     </section>
 
+    <section aria-labelledby="records-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+        <h2 id="records-heading" class="text-sm font-semibold">{{ __('cmdb::items.ui.linked_records') }}</h2>
+        <ul class="space-y-1 text-sm">
+            @forelse ($linkedRecords as $record)
+                <li wire:key="record-{{ $record->id }}">
+                    <a href="{{ $record->url }}" class="text-blue-700 underline">{{ $record->title }}</a>
+                    @if ($record->status) <span class="text-xs text-gray-500">{{ $record->status }}</span> @endif
+                </li>
+            @empty
+                <li class="text-gray-500">{{ __('cmdb::items.ui.no_linked_records') }}</li>
+            @endforelse
+        </ul>
+    </section>
+
     <div class="grid gap-6 lg:grid-cols-2">
         @foreach (['affected' => $affected, 'dependencies' => $dependencies] as $kind => $list)
             <section aria-labelledby="{{ $kind }}-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200" wire:key="impact-{{ $kind }}">
