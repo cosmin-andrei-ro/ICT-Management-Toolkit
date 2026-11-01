@@ -13,6 +13,10 @@
             <directory>tests/Feature</directory>
             <directory>modules/*/tests/Feature</directory>
         </testsuite>
+        <!-- Needs external services; each test skips itself unless enabled. -->
+        <testsuite name="Integration">
+            <directory>modules/*/tests/Integration</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>

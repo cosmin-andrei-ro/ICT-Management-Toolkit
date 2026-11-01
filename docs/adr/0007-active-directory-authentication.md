@@ -44,5 +44,5 @@ Companies running the platform need their staff to sign in with their on-premise
 ## Consequences
 
 - A user disabled in AD keeps an existing session until it expires. A scheduled `core:directory:sync` to deactivate such accounts between sign-ins is planned as a follow-up.
-- Tests use an in-memory directory for the flow, and LdapRecord's `LdapFake` for the LDAP implementation (filters, escaping, binds). Running against a real domain controller remains a manual step before production.
+- Tests use an in-memory directory for the flow, and LdapRecord's `LdapFake` for the LDAP implementation (filters, escaping, binds). An opt-in integration suite (`--group=active-directory`) runs the full sign-in against a Samba AD domain controller in Docker (`docker/samba-ad`, profile `ad`). Validation against the customer's own AD remains a step before production.
 - Entra ID (Azure AD) through OIDC is not covered. It would be a separate source (`oidc`) under the same rules.

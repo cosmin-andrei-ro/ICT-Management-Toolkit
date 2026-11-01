@@ -10,4 +10,4 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(LazilyRefreshDatabase::class)
-    ->in('Feature', '../modules/*/tests/Feature');
+    ->in('Feature', '../modules/*/tests/Feature', '../modules/*/tests/Integration');
