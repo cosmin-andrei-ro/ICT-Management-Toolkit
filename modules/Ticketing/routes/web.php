@@ -34,6 +34,6 @@ Route::middleware(['auth', 'organization'])->group(function (): void {
     Route::livewire('/desk/changes/new', CreateChange::class)->name('ticketing.changes.create');
 
     Route::livewire('/approvals', Approvals::class)->name('ticketing.changes.approvals');
-    Route::livewire('/approvals/{ticket}', ReviewChange::class)->whereUuid('ticket')->name('ticketing.changes.review');
+    Route::livewire('/approvals/{ticket}', ReviewChange::class)->whereUuid('ticket')->name('ticketing.changes.approvals.review');
     Route::livewire('/desk/tickets/{ticket}', DeskShowTicket::class)->whereUuid('ticket')->name('ticketing.desk.show');
 });

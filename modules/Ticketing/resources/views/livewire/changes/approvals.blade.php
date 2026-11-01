@@ -6,7 +6,7 @@
         @forelse ($waiting as $change)
             <li wire:key="waiting-{{ $change->id }}" class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
                 <div>
-                    <a href="{{ route('ticketing.changes.review', $change) }}" class="font-semibold text-blue-700 underline"><span class="font-mono">{{ $change->number }}</span> {{ $change->title }}</a>
+                    <a href="{{ route('ticketing.changes.approvals.review', $change) }}" class="font-semibold text-blue-700 underline"><span class="font-mono">{{ $change->number }}</span> {{ $change->title }}</a>
                     <p class="text-sm text-gray-600">
                         {{ $change->changeDetails?->change_type->label() }} · {{ __('ticketing::changes.ui.risk') }}: {{ $change->changeDetails?->risk->label() }} ·
                         {{ $change->changeDetails?->planned_start?->timezone(config('app.display_timezone'))->format('Y-m-d H:i') }}

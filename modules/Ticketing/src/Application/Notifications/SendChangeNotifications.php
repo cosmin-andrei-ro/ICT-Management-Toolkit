@@ -27,7 +27,7 @@ final readonly class SendChangeNotifications
         $board = $change->changeDetails?->cabBoard;
 
         [$kind, $recipients, $url] = match (true) {
-            $event instanceof ChangeSubmitted => ['change_submitted', $board !== null ? $this->approvers->for($change, $board)->all() : [], route('ticketing.changes.review', $change)],
+            $event instanceof ChangeSubmitted => ['change_submitted', $board !== null ? $this->approvers->for($change, $board)->all() : [], route('ticketing.changes.approvals.review', $change)],
             $event instanceof ChangeApproved => ['change_approved', [$change->requester], route('ticketing.desk.show', $change)],
             $event instanceof ChangeRejected => ['change_rejected', [$change->requester], route('ticketing.desk.show', $change)],
         };

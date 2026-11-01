@@ -4,7 +4,7 @@ Service desk following ITIL 4. Code: `modules/Ticketing/`. Data model: [ADR 0008
 
 ## Concepts
 
-- **Ticket:** an incident (`INC-…`) or a service request (`REQ-…`), with status, impact, urgency (from which the priority is derived), category, queue, assignee, watchers, comments (public or internal) and attachments.
+- **Ticket:** an incident (`INC-…`), a service request (`REQ-…`), a problem (`PRB-…`) or a change (`CHG-…`), with status, impact, urgency (from which the priority is derived), category, queue, assignee, watchers, comments (public or internal) and attachments.
 - **Queue:** where tickets wait, routed to a Core team. Each organization can mark one queue as default.
 - **Category:** a two-level classification for routing and reporting.
 
@@ -25,6 +25,18 @@ A **problem** (`PRB-…`) is the cause behind one or more incidents ([ADR 0012](
 - **Known errors** (`/desk/known-errors`) lists them with their workarounds, searchable. Linking an incident to a known error adds its workaround to the incident as an internal note.
 - **Resolving a problem** can also resolve its open linked incidents (checked by default). Their requesters are notified and can reopen.
 - Problems have no SLA clocks and never appear in the portal. Permission: `ticketing.problem.manage` (agents and team leads by default).
+
+## Change enablement
+
+A **change** (`CHG-…`) is planned work on a live system, authorized before it starts ([ADR 0014](../adr/0014-change-enablement.md)).
+
+- **Kinds:** *standard* (from a pre-approved template, authorized at once), *normal* (authorized by a CAB), *emergency* (authorized by an ECAB, with a mandatory post-implementation review before closing).
+- **Creating:** `/desk/changes/new`, agents and team leads only (`ticketing.change.create`). Plans (implementation, rollback, verification) and the window are edited on the desk page; the window is entered in `APP_DISPLAY_TIMEZONE`.
+- **Approval:** submitted to a board; every active member with `ticketing.change.approve` must approve, except the requester. One rejection with a comment rejects it. Editing the plan after submission withdraws approvals; resubmitting starts a new round.
+- **Board members** decide at `/approvals`, without needing desk access: the review page shows the plans, the window, overlapping changes and the decisions of the round.
+- **Implementation:** no `in_progress` or resolution before authorization; changes resolve as *implemented* or *rolled back*.
+- **Calendar:** `/desk/changes`, the next 30 days, overlapping windows marked.
+- **Administration:** CAB boards (members, ECAB flag; deactivated rather than deleted) and standard change templates.
 
 ## Service catalog
 
@@ -54,8 +66,9 @@ Each ticket gets two clocks, **first response** and **resolution**, counted in w
 
 - **Self-service portal** (`/tickets`): my tickets, new ticket with attachments, ticket page with the public conversation, reply, confirm or reopen a resolution, withdraw a new ticket.
 - **Service desk** (`/desk`): every ticket of the organization, most urgent first, filtered by status, queue, assignee and full-text search. The ticket page adds internal notes, assignment (limited to members of the queue's team), working states, resolution and triage.
-- **Administration** (`/admin`, Service desk group): categories, queues, priority matrix. Teams are under Access.
-- **Email notifications** (queued): ticket received, assigned to you, resolved, new reply. They contain the number, title and a link, never the comment text. Nobody is notified about their own action, and internal notes never reach requesters.
+- **Change calendar** (`/desk/changes`), **new change** (`/desk/changes/new`) and **approvals** (`/approvals`) for board members.
+- **Administration** (`/admin`, Service desk group): categories, queues, priority matrix, SLA targets, service catalog, CAB boards, standard changes. Teams are under Access.
+- **Email notifications** (queued): ticket received, assigned to you, resolved, new reply, SLA warnings; change waiting for your approval, change authorized or rejected. They contain the number, title and a link, never the comment text. Nobody is notified about their own action, and internal notes never reach requesters.
 
 ## API
 
@@ -74,7 +87,9 @@ curl -H "Authorization: Bearer <token>" -H "Accept: application/json" https://<h
 | `ticketing.ticket.view_all` | agent, team-lead | See every ticket of the organization, including internal notes |
 | `ticketing.ticket.work` | agent, team-lead | Triage, work, resolve; can be assigned |
 | `ticketing.ticket.assign` | agent, team-lead | Route tickets to queues and people |
-| `ticketing.settings.manage` | team-lead | Categories, queues, priority matrix, SLA targets, service catalog |
+| `ticketing.settings.manage` | team-lead | Categories, queues, priority matrix, SLA targets, service catalog, CAB boards, standard changes |
 | `ticketing.problem.manage` | agent, team-lead | Create, analyse and resolve problems |
+| `ticketing.change.create` | agent, team-lead | Create and manage changes |
+| `ticketing.change.approve` | cab-member, team-lead | Decide on changes of the boards they sit on |
 
 Administrators have every permission.

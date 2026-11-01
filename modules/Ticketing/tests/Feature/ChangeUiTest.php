@@ -143,7 +143,7 @@ it('keeps the review page from people outside the board', function (): void {
     $change = submittedChange($this->desk, $this->cab);
     $outsider = $this->desk->member(DefaultRole::CabMember);
 
-    $this->actingAs($outsider)->get(route('ticketing.changes.review', $change))->assertForbidden();
+    $this->actingAs($outsider)->get(route('ticketing.changes.approvals.review', $change))->assertForbidden();
     $this->actingAs($this->desk->requester)->get(route('ticketing.changes.approvals'))->assertForbidden();
 });
 

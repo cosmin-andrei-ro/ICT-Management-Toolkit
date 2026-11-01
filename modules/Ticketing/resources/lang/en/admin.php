@@ -41,6 +41,20 @@ return [
         'field_help' => 'Help text',
         'field_options' => 'Choices',
     ],
+    'cab_boards' => [
+        'label' => 'CAB board',
+        'plural_label' => 'CAB boards',
+        'members' => 'Members',
+        'members_help' => 'Every member except the requester must approve each change. Only members with the "approve changes" permission (CAB member or team lead role) are asked.',
+        'emergency' => 'Emergency CAB (ECAB)',
+        'emergency_help' => 'Authorizes emergency changes only, such as a critical security patch. Keep it small so it can decide quickly. Regular boards authorize normal changes.',
+    ],
+    'change_templates' => [
+        'label' => 'Standard change template',
+        'plural_label' => 'Standard changes',
+        'description_help' => 'When this routine change is appropriate. Agents read it before using the template.',
+        'active_help' => 'Inactive templates cannot be used for new changes.',
+    ],
     'sla_targets' => [
         'title' => 'SLA targets',
         'response' => 'First response',

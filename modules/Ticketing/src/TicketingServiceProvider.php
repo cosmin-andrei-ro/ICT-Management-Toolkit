@@ -83,7 +83,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             $navigation->add('ticketing::ui.menu.portal', 'ticketing.portal.index', 'ticketing.portal.*', fn (User $user): bool => $user->can('ticketing.ticket.create'));
             $navigation->add('ticketing::ui.menu.desk', 'ticketing.desk.index', 'ticketing.desk.index', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
             $navigation->add('ticketing::changes.ui.menu_calendar', 'ticketing.changes.calendar', 'ticketing.changes.calendar', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
-            $navigation->add('ticketing::changes.ui.menu_approvals', 'ticketing.changes.approvals', 'ticketing.changes.*', fn (User $user): bool => $user->can('ticketing.change.approve'));
+            $navigation->add('ticketing::changes.ui.menu_approvals', 'ticketing.changes.approvals', 'ticketing.changes.approvals*', fn (User $user): bool => $user->can('ticketing.change.approve'));
             $navigation->add('ticketing::problems.ui.known_errors', 'ticketing.desk.known-errors', 'ticketing.desk.known-errors', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
         });
 
