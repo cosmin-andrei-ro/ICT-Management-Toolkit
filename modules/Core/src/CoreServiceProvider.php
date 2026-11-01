@@ -30,8 +30,11 @@ use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Authorization\Role;
 use Modules\Core\Domain\Directory\Directory;
 use Modules\Core\Domain\Directory\DirectoryGroupMapping;
+use Modules\Core\Domain\Models\Attachment;
+use Modules\Core\Domain\Models\Comment;
 use Modules\Core\Domain\Models\Department;
 use Modules\Core\Domain\Models\Organization;
+use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Middleware\CaptureRequestContext;
@@ -108,6 +111,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.role' => Role::class,
             'core.permission' => Permission::class,
             'core.directory_group_mapping' => DirectoryGroupMapping::class,
+            'core.team' => Team::class,
+            'core.comment' => Comment::class,
+            'core.attachment' => Attachment::class,
         ]);
 
         Event::listen(
@@ -155,9 +161,11 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.department.delete',
             'core.audit.view',
             'core.directory.manage',
+            'core.team.view',
+            'core.team.manage',
         ]);
 
-        $directory = ['core.user.view', 'core.department.view'];
+        $directory = ['core.user.view', 'core.department.view', 'core.team.view'];
 
         $registry->grantToDefaultRole(DefaultRole::TeamLead, [...$directory, 'core.audit.view']);
         $registry->grantToDefaultRole(DefaultRole::Agent, $directory);
