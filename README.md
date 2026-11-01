@@ -2,6 +2,51 @@
 
 Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT information in one place. Each area of IT work is a module, and every module is linked through a shared core: people, organizations, roles, comments, attachments and an audit trail of every change.
 
+## Standards and compliance
+
+> The application is **not certified** and has not been audited by a third party. Regulations such as NIS2, DORA and GDPR apply to **organizations**, not to software: the toolkit gives you the records, workflows and evidence these regulations ask for, but compliance also depends on your own processes. The tables say what is in place today (**Yes**), partly (**Partial**) or not yet (**Planned**).
+
+### How the software is built
+
+| Standard or practice | Status | How |
+|---|---|---|
+| PSR-12 coding style, PSR-4 autoloading | Yes | Laravel Pint (Laravel preset, strict types and strict comparisons), checked in CI |
+| Static analysis | Yes | PHPStan / Larastan at the highest level, checked in CI |
+| Automated tests | Yes | Pest on PostgreSQL: every action, authorization (including the "no permission" case), validation, and isolation between organizations |
+| Dependency vulnerabilities | Yes | `composer audit` and `npm audit` in CI; only licenses compatible with AGPLv3 |
+| Architecture decisions | Yes | Recorded as ADRs in [docs/adr](docs/adr/) |
+| Licensing | Yes | AGPL-3.0-or-later, SPDX header in every source file, link to the source code in the interface (AGPL §13) |
+| Commit history | Yes | Conventional Commits |
+
+### Security
+
+| Standard | Status | What is covered |
+|---|---|---|
+| OWASP ASVS 4.0 | Partial (design target) | Level 2 as the minimum, level 3 for authentication, authorization and secrets. Not formally verified. |
+| OWASP Top 10 | Yes | Authorization on every action and deny by default, query binding only (no SQL concatenation), escaped output, CSRF protection, strict Content Security Policy without `unsafe-eval` outside the admin panel, SSRF guard on mail servers, upload checks by content (not by name), CSV/formula injection neutralized in exports |
+| NIST SP 800-63B (passwords and authenticators) | Yes | Passwords of 12–128 characters without composition rules; rate limiting and lockout; time-based one-time codes from an authenticator app, each accepted once; recovery codes stored as hashes; all other sessions end on a password change |
+| RFC 6238 (TOTP) | Yes | Two-factor authentication, required for IT staff |
+| RFC 3834 (automatic responses) | Yes | Email-to-ticket ignores auto-replies and bounces; outgoing emails are marked as automatic, to prevent mail loops |
+| HTTP security headers | Yes | HSTS, CSP with nonces, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Secure/HttpOnly/SameSite cookies |
+| Secrets at rest | Yes | Mailbox passwords and two-factor secrets are encrypted with the application key, never shown again, never logged or audited |
+| Audit trail | Yes | Append-only (enforced by a database trigger): every change to business data with old and new values, sign-ins, failed sign-ins, role changes, two-factor events, exports and downloads |
+| Single sign-on (OIDC, SAML2) and WebAuthn | Planned | Active Directory (LDAPS) sign-in is available today |
+
+### Service management
+
+| Framework | Status | What is covered |
+|---|---|---|
+| ITIL 4 | Partial | Incident management, service request management with a service catalog, problem management with a known error database, change enablement with CAB and emergency CAB, service level management (SLA clocks in working time), service desk reporting. Configuration management (CMDB) and IT asset management are planned. |
+
+### Regulations and information security frameworks
+
+| Requirement | Status | How the toolkit helps |
+|---|---|---|
+| **NIS2** (Directive (EU) 2022/2555), Art. 21 risk-management measures | Partial | Incident handling (21(2)(b)): ticketing with priorities, SLAs, problem management. Access control and multi-factor authentication (21(2)(i)(j)). Logging through the audit trail. Change management for secure maintenance (21(2)(e)). **Planned:** business continuity (21(2)(c)), supply chain (21(2)(d)), risk analysis (21(2)(a)), and support for the 24-hour / 72-hour incident notifications of Art. 23. |
+| **DORA** (Regulation (EU) 2022/2554), financial entities | Partial | ICT-related incident management process (Art. 17): detection, logging, follow-up and root cause. ICT change management (Art. 9(4)(e)): approved, planned, reversible changes with post-implementation review of emergency changes. Strong authentication (Art. 9(4)(d)). **Planned:** classification and reporting of major incidents (Art. 18–19), register of ICT third-party providers (Art. 28), business continuity and testing (Art. 11–12, 24–25). |
+| **ISO/IEC 27001:2022**, Annex A | Partial | 5.15–5.18 access control and identities, 5.24–5.27 incident management and learning from incidents, 8.5 secure authentication, 8.15 logging, 8.32 change management. **Planned:** the Audit & Compliance module, to map controls to evidence. |
+| **GDPR** (Regulation (EU) 2016/679) | Partial | Data minimization (exports leave requesters out, comment text is never emailed), storage limitation (the incoming email log is kept 90 days, exports 7 days), security of processing (Art. 32: encryption of secrets, access control, audit trail), separation of organizations. **Planned:** export and anonymization of a person's data on request (Art. 15–17, 20), configurable retention for tickets. |
+
 ## What it does today
 
 **Core**
