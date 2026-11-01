@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Core\Http\Controllers\AttachmentController;
 use Modules\Core\Http\Controllers\LogoutController;
 use Modules\Core\Http\Livewire\Auth\Login;
 
@@ -20,4 +21,5 @@ Route::middleware('auth')->group(function (): void {
 
 Route::middleware(['auth', 'organization'])->group(function (): void {
     Route::view('/', 'core::home')->name('home');
+    Route::get('/attachments/{attachment}', AttachmentController::class)->name('core.attachments.download');
 });

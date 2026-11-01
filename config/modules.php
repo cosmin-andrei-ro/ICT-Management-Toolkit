@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Modules\Core\CoreServiceProvider;
+use Modules\Ticketing\TicketingServiceProvider;
 
 return [
 
@@ -25,6 +26,10 @@ return [
     'modules' => [
         'core' => [
             'provider' => CoreServiceProvider::class,
+            'enabled' => true,
+        ],
+        'ticketing' => [
+            'provider' => TicketingServiceProvider::class,
             'enabled' => true,
         ],
     ],

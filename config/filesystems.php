@@ -43,6 +43,17 @@ return [
             'report' => false,
         ],
 
+        // Core attachments: private, served only through an authorizing controller.
+        // Point ATTACHMENTS_DISK at an S3-compatible disk to store them elsewhere.
+        'attachments' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/attachments'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => true,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
