@@ -26,6 +26,13 @@ return [
         'default' => 'Default queue',
         'default_help' => 'New tickets without a queue land here. Only one queue can be the default.',
     ],
+    'sla_targets' => [
+        'title' => 'SLA targets',
+        'response' => 'First response',
+        'resolution' => 'Resolution',
+        'minutes' => 'working minutes',
+        'help' => 'Working minutes, counted with the organization\'s default business calendar (Monday–Friday 09:00–17:00 with Romanian public holidays unless configured). 480 minutes = one working day. Changes apply to new or re-prioritized tickets.',
+    ],
     'priority_matrix' => [
         'title' => 'Priority matrix',
         'impact' => 'Impact: :impact',

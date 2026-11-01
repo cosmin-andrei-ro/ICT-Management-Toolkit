@@ -43,6 +43,9 @@ final class TicketQueue extends Component
     #[Url]
     public string $assignee = 'any';
 
+    #[Url]
+    public string $sla = 'any';
+
     public function mount(): void
     {
         abort_unless($this->user()->can('ticketing.ticket.view_all'), 403);
@@ -50,7 +53,7 @@ final class TicketQueue extends Component
 
     public function updated(string $property): void
     {
-        if (in_array($property, ['search', 'status', 'queue', 'priority', 'assignee'], true)) {
+        if (in_array($property, ['search', 'status', 'queue', 'priority', 'assignee', 'sla'], true)) {
             $this->resetPage();
         }
     }
@@ -70,7 +73,12 @@ final class TicketQueue extends Component
             ->when(in_array($this->priority, $priorities, true), fn ($query) => $query->where('priority', $this->priority))
             ->when($this->assignee === 'me', fn ($query) => $query->where('assignee_id', $this->user()->id))
             ->when($this->assignee === 'unassigned', fn ($query) => $query->whereNull('assignee_id'))
-            ->with(['requester', 'assignee', 'queue'])
+            ->when($this->sla === 'at_risk', fn ($query) => $query->whereHas('slaTimers', fn ($timers) => $timers
+                ->whereNotNull('running_since')
+                ->where(fn ($risk) => $risk->whereNotNull('warned_at')->orWhereNotNull('breached_at'))))
+            ->when($this->sla === 'breached', fn ($query) => $query->whereHas('slaTimers', fn ($timers) => $timers
+                ->whereNotNull('running_since')->whereNotNull('breached_at')))
+            ->with(['requester', 'assignee', 'queue', 'slaTimers'])
             ->orderByRaw("CASE priority WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END")
             ->oldest()
             ->paginate(25);

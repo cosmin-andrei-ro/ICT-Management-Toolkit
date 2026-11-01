@@ -1,7 +1,7 @@
 <div class="space-y-6">
     <h1 class="text-xl font-semibold">{{ __('ticketing::ui.desk.title') }}</h1>
 
-    <div class="grid gap-3 rounded-lg bg-white p-4 ring-1 ring-gray-200 sm:grid-cols-2 lg:grid-cols-5">
+    <div class="grid gap-3 rounded-lg bg-white p-4 ring-1 ring-gray-200 sm:grid-cols-2 lg:grid-cols-6">
         <label class="text-sm lg:col-span-2">
             <span class="block font-medium">{{ __('ticketing::ui.search') }}</span>
             <input type="search" wire:model.live.debounce.400ms="search" maxlength="200" placeholder="{{ __('ticketing::ui.desk.search_placeholder') }}" class="mt-1 block w-full rounded-md border-gray-300">
@@ -26,6 +26,14 @@
             </select>
         </label>
         <label class="text-sm">
+            <span class="block font-medium">{{ __('ticketing::sla.filter.label') }}</span>
+            <select wire:model.live="sla" class="mt-1 block w-full rounded-md border-gray-300">
+                <option value="any">{{ __('ticketing::sla.filter.any') }}</option>
+                <option value="at_risk">{{ __('ticketing::sla.filter.at_risk') }}</option>
+                <option value="breached">{{ __('ticketing::sla.filter.breached') }}</option>
+            </select>
+        </label>
+        <label class="text-sm">
             <span class="block font-medium">{{ __('ticketing::ui.fields.assignee') }}</span>
             <select wire:model.live="assignee" class="mt-1 block w-full rounded-md border-gray-300">
                 <option value="any">{{ __('ticketing::ui.filters.anyone') }}</option>
@@ -45,6 +53,7 @@
                     <th class="px-4 py-2">{{ __('ticketing::ui.fields.requester') }}</th>
                     <th class="px-4 py-2">{{ __('ticketing::ui.fields.queue') }}</th>
                     <th class="px-4 py-2">{{ __('ticketing::ui.fields.assignee') }}</th>
+                    <th class="px-4 py-2">{{ __('ticketing::sla.due') }}</th>
                     <th class="px-4 py-2">{{ __('ticketing::ui.fields.age') }}</th>
                 </tr>
             </thead>
@@ -57,10 +66,15 @@
                         <td class="px-4 py-2">{{ $ticket->requester->name }}</td>
                         <td class="px-4 py-2">{{ $ticket->queue?->name ?? '—' }}</td>
                         <td class="px-4 py-2">{{ $ticket->assignee?->name ?? __('ticketing::ui.filters.unassigned') }}</td>
+                        <td class="px-4 py-2">
+                            {{-- The response clock matters until the first reply, then the resolution clock. --}}
+                            @php($response = $ticket->slaTimers->firstWhere('metric', \Modules\Ticketing\Domain\Sla\SlaMetric::Response))
+                            <x-ticketing::sla-badge :timer="$response !== null && ! $response->isCompleted() ? $response : $ticket->slaTimers->firstWhere('metric', \Modules\Ticketing\Domain\Sla\SlaMetric::Resolution)" />
+                        </td>
                         <td class="px-4 py-2 text-gray-500">{{ $ticket->created_at?->diffForHumans(short: true) }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="px-4 py-6 text-center text-gray-500">{{ __('ticketing::ui.desk.empty') }}</td></tr>
+                    <tr><td colspan="8" class="px-4 py-6 text-center text-gray-500">{{ __('ticketing::ui.desk.empty') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

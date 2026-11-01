@@ -14,6 +14,14 @@ final readonly class SlaTarget
         public int $resolutionMinutes,
     ) {}
 
+    /**
+     * Value equality; === on objects would compare identity.
+     */
+    public function equals(self $other): bool
+    {
+        return $this->responseMinutes === $other->responseMinutes && $this->resolutionMinutes === $other->resolutionMinutes;
+    }
+
     public function minutesFor(SlaMetric $metric): int
     {
         return $metric === SlaMetric::Response ? $this->responseMinutes : $this->resolutionMinutes;

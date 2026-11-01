@@ -84,6 +84,9 @@ return [
 
     'timezone' => 'UTC',
 
+    // Times are stored in UTC and shown to people in this time zone.
+    'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'Europe/Bucharest'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
