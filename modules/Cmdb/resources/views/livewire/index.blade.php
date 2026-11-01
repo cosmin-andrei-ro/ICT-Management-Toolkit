@@ -5,7 +5,10 @@
             <p class="text-sm text-gray-600">{{ __('cmdb::items.ui.intro') }}</p>
         </div>
         @can('create', \Modules\Cmdb\Domain\Models\ConfigurationItem::class)
-            <a href="{{ route('cmdb.items.create') }}" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('cmdb::items.ui.new') }}</a>
+            <div class="flex gap-2">
+                <a href="{{ route('cmdb.import') }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('cmdb::import.title') }}</a>
+                <a href="{{ route('cmdb.items.create') }}" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('cmdb::items.ui.new') }}</a>
+            </div>
         @endcan
     </div>
 
