@@ -44,14 +44,18 @@
             "Database\\Seeders\\": "database/seeders/",
             "Modules\\Core\\": "modules/Core/src/",
             "Modules\\Core\\Database\\Factories\\": "modules/Core/database/factories/",
-            "Modules\\Core\\Database\\Seeders\\": "modules/Core/database/seeders/"
+            "Modules\\Core\\Database\\Seeders\\": "modules/Core/database/seeders/",
+            "Modules\\Ticketing\\": "modules/Ticketing/src/",
+            "Modules\\Ticketing\\Database\\Factories\\": "modules/Ticketing/database/factories/",
+            "Modules\\Ticketing\\Database\\Seeders\\": "modules/Ticketing/database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/",
             "Tests\\Fixtures\\DummyModule\\": "tests/Fixtures/modules/Dummy/src/",
-            "Modules\\Core\\Tests\\": "modules/Core/tests/"
+            "Modules\\Core\\Tests\\": "modules/Core/tests/",
+            "Modules\\Ticketing\\Tests\\": "modules/Ticketing/tests/"
         }
     },
     "scripts": {
