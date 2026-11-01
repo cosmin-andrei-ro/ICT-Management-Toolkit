@@ -7,24 +7,37 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Core\Application\Authorization\SyncPermissions;
+use Modules\Core\Domain\Authorization\DefaultRole;
+use Modules\Core\Domain\Models\Organization;
+use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Tenancy\OrganizationContext;
+use RuntimeException;
 
-class DatabaseSeeder extends Seeder
+final class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
-     * Seed the application's database.
+     * Demo data for local development only: the demo account has a well-known password.
      */
-    public function run(): void
+    public function run(SyncPermissions $syncPermissions, OrganizationContext $context): void
     {
-        // User::factory(10)->create();
+        if (! app()->environment(['local', 'testing'])) {
+            throw new RuntimeException('Demo data may only be seeded in the local or testing environment.');
+        }
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $syncPermissions->handle();
+
+        $organization = Organization::factory()->create([
+            'name' => 'Demo Organization',
+            'slug' => 'demo',
         ]);
+
+        $admin = User::factory()->memberOf($organization)->create([
+            'name' => 'Demo Administrator',
+            'email' => 'admin@example.com',
+        ]);
+
+        $context->runAs($organization, fn () => $admin->assignRole(DefaultRole::Administrator->value));
     }
 }

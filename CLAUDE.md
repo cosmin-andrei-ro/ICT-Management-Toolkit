@@ -66,6 +66,7 @@ Module noi se adaugă doar respectând structura din §5. Nu duplica entități 
 - **Framework:** Laravel (ultima versiune stabilă).
 - **Bază de date:** PostgreSQL (versiune curentă suportată). Folosim intenționat funcționalitățile Postgres: `jsonb`, `uuid`, CTE recursive (grafic CMDB), full-text search (`tsvector`), constrângeri `CHECK`, indecși parțiali/GIN.
 - **Frontend:** Blade + Livewire + Alpine.js + Tailwind CSS pentru portal și consolele de lucru; Filament pentru ecranele de administrare/CRUD (vezi `docs/adr/0003-livewire-and-filament.md`).
+  - **CSP strict (ADR 0006):** în afara panoului Filament, Alpine rulează fără `eval`. Componentele Alpine se înregistrează în JS (`Alpine.data(...)` în `resources/js`) și se referă prin nume în `x-data`; fără expresii JS arbitrare în atribute. Nu folosi scripturi inline fără nonce.
 - **Cozi / cache / sesiuni:** Redis.
 - **Căutare:** Postgres FTS implicit; Meilisearch opțional prin Laravel Scout.
 - **Fișiere:** Laravel Filesystem (local / S3-compatibil, ex. MinIO).
@@ -268,6 +269,9 @@ PHP și Composer rulează în containerul Sail (nu sunt instalate pe host).
 
 # migrații + date demo
 ./vendor/bin/sail artisan migrate --seed
+
+# permisiuni definite în cod → baza de date (la fiecare deploy)
+./vendor/bin/sail artisan core:permissions:sync
 
 # calitate
 ./vendor/bin/sail composer test      # Pest

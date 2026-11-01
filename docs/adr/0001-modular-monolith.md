@@ -11,7 +11,7 @@ The platform covers many domains: ITSM, CMDB, ITAM, DCIM, BIA, BCM, Risk and Aud
 
 We build a **modular monolith** in Laravel. Each module lives in `modules/<Name>/` and follows the layout in `CLAUDE.md` §5.1.
 
-- Each module has its own PSR-4 namespaces, for example `Modules\Ticketing\` → `modules/Ticketing/src/` and `Modules\Ticketing\Database\` → `modules/Ticketing/database/`. The entries are added to `composer.json` when the module is created.
+- Each module has its own PSR-4 namespaces, for example `Modules\Ticketing\` → `modules/Ticketing/src/`, `Modules\Ticketing\Database\Factories\` → `modules/Ticketing/database/factories/` and `Modules\Ticketing\Database\Seeders\` → `modules/Ticketing/database/seeders/`. The entries are added to `composer.json` when the module is created.
 - Each module has a service provider extending `App\Support\Modules\ModuleServiceProvider`. The base class loads the module's migrations, views, translations and routes. `routes/web.php` gets the `web` middleware; `routes/api.php` is mounted under `/api/v1`.
 - Modules are enabled in `config/modules.php`. `App\Providers\ModulesServiceProvider` registers only enabled modules and rejects a provider that does not extend the base class.
 - A module never touches another module's tables. Modules communicate through public contracts, domain events or Core entities.

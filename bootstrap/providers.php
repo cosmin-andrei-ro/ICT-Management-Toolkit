@@ -6,9 +6,11 @@
 declare(strict_types=1);
 
 use App\Providers\AppServiceProvider;
+use App\Providers\Filament\AdminPanelProvider;
 use App\Providers\ModulesServiceProvider;
 
 return [
     AppServiceProvider::class,
     ModulesServiceProvider::class,
+    AdminPanelProvider::class,
 ];

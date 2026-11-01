@@ -40,13 +40,17 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Modules\\Core\\": "modules/Core/src/",
+            "Modules\\Core\\Database\\Factories\\": "modules/Core/database/factories/",
+            "Modules\\Core\\Database\\Seeders\\": "modules/Core/database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/",
-            "Tests\\Fixtures\\DummyModule\\": "tests/Fixtures/modules/Dummy/src/"
+            "Tests\\Fixtures\\DummyModule\\": "tests/Fixtures/modules/Dummy/src/",
+            "Modules\\Core\\Tests\\": "modules/Core/tests/"
         }
     },
     "scripts": {
@@ -77,7 +81,9 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan vendor:publish --tag=livewire:assets --ansi --force",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
