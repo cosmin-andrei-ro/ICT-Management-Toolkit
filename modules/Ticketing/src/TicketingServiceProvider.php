@@ -25,6 +25,7 @@ use Modules\Ticketing\Domain\Events\TicketCommentAdded;
 use Modules\Ticketing\Domain\Events\TicketCreated;
 use Modules\Ticketing\Domain\Events\TicketResolved;
 use Modules\Ticketing\Domain\Models\Category;
+use Modules\Ticketing\Domain\Models\ProblemDetails;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Service;
 use Modules\Ticketing\Domain\Models\SlaTimer;
@@ -59,6 +60,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.category' => Category::class,
             'ticketing.queue' => Queue::class,
             'ticketing.service' => Service::class,
+            'ticketing.problem_details' => ProblemDetails::class,
             'ticketing.sla_timer' => SlaTimer::class,
         ]);
 
@@ -89,9 +91,11 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.ticket.work',
             'ticketing.ticket.assign',
             'ticketing.settings.manage',
+            'ticketing.problem.manage',
         ]);
 
-        $agent = ['ticketing.ticket.create', 'ticketing.ticket.view_all', 'ticketing.ticket.work', 'ticketing.ticket.assign'];
+        // Owner's decision: every agent may manage problems; a separate permission keeps it adjustable.
+        $agent = ['ticketing.ticket.create', 'ticketing.ticket.view_all', 'ticketing.ticket.work', 'ticketing.ticket.assign', 'ticketing.problem.manage'];
 
         $registry->grantToDefaultRole(DefaultRole::Requester, ['ticketing.ticket.create']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, ['ticketing.ticket.create']);

@@ -44,6 +44,11 @@ final readonly class SlaClock
 
     public function start(Ticket $ticket): void
     {
+        // Problems are investigated, not answered to a requester: no service level applies.
+        if (! $ticket->type->hasSla()) {
+            return;
+        }
+
         $now = $this->now();
         $target = $this->targets->resolve($ticket->organization_id, $ticket->priority);
         $schedule = $this->calendars->forCurrentOrganization();

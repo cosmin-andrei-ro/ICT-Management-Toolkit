@@ -28,7 +28,7 @@ final class StoreTicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['required', Rule::enum(TicketType::class)],
+            'type' => ['required', Rule::enum(TicketType::class)->only(TicketType::requestable())],
             'title' => ['required', 'string', 'min:5', 'max:200'],
             'description' => ['required', 'string', 'max:20000'],
             'impact' => ['sometimes', Rule::enum(Impact::class)],

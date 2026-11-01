@@ -10,6 +10,7 @@ namespace Modules\Ticketing\Application\Policies;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
+use Modules\Ticketing\Domain\Enums\TicketType;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
@@ -101,6 +102,30 @@ final readonly class TicketPolicy
 
         return $this->work($user, $ticket)
             || ($this->inCurrentOrganization($ticket) && $ticket->isRequester($user) && $ticket->status === TicketStatus::New);
+    }
+
+    public function createProblem(User $user): bool
+    {
+        return $user->can('ticketing.problem.manage');
+    }
+
+    /**
+     * Root cause, workaround, known error and resolution of a problem.
+     */
+    public function manageProblem(User $user, Ticket $ticket): bool
+    {
+        return $ticket->type === TicketType::Problem
+            && ! $ticket->status->isFinal()
+            && $this->inCurrentOrganization($ticket)
+            && $user->can('ticketing.problem.manage');
+    }
+
+    /**
+     * Linking an incident to the problem behind it.
+     */
+    public function linkProblem(User $user, Ticket $ticket): bool
+    {
+        return $ticket->type === TicketType::Incident && ! $ticket->status->isFinal() && $this->work($user, $ticket);
     }
 
     private function inCurrentOrganization(Ticket $ticket): bool

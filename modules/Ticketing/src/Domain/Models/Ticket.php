@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Core\Domain\Concerns\Auditable;
@@ -55,6 +56,7 @@ use Modules\Ticketing\Domain\Enums\Urgency;
  * @property ?string $queue_id
  * @property ?string $category_id
  * @property ?string $service_id
+ * @property ?string $problem_id
  * @property ?Carbon $first_responded_at
  * @property ?Carbon $resolved_at
  * @property ?Carbon $closed_at
@@ -72,6 +74,8 @@ use Modules\Ticketing\Domain\Enums\Urgency;
  * @property-read ?Queue $queue
  * @property-read ?Category $category
  * @property-read ?Service $service
+ * @property-read ?Ticket $problem
+ * @property-read ?ProblemDetails $problemDetails
  */
 #[Table('ticketing_tickets')]
 #[UseFactory(TicketFactory::class)]
@@ -135,6 +139,34 @@ final class Ticket extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * The problem behind this incident.
+     *
+     * @return BelongsTo<self, $this>
+     */
+    public function problem(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'problem_id');
+    }
+
+    /**
+     * Incidents caused by this problem.
+     *
+     * @return HasMany<self, $this>
+     */
+    public function incidents(): HasMany
+    {
+        return $this->hasMany(self::class, 'problem_id');
+    }
+
+    /**
+     * @return HasOne<ProblemDetails, $this>
+     */
+    public function problemDetails(): HasOne
+    {
+        return $this->hasOne(ProblemDetails::class, 'ticket_id');
     }
 
     /**
@@ -205,9 +237,11 @@ final class Ticket extends Model
      */
     public function scopeVisibleToRequester(Builder $query, User $user): void
     {
-        $query->where(fn (Builder $inner) => $inner
-            ->where('requester_id', $user->id)
-            ->orWhereHas('watchers', fn (Builder $watchers) => $watchers->whereKey($user->id)));
+        // Problems are internal to the service desk and never appear in the portal.
+        $query->whereIn('type', TicketType::requestable())
+            ->where(fn (Builder $inner) => $inner
+                ->where('requester_id', $user->id)
+                ->orWhereHas('watchers', fn (Builder $watchers) => $watchers->whereKey($user->id)));
     }
 
     /**
