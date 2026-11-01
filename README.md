@@ -7,6 +7,8 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 **Core**
 - Several organizations (legal entities) in one installation, with their data kept apart.
 - Sign-in with local accounts or **Active Directory** (LDAPS). AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
+- **Two-factor authentication** with an authenticator app, required for IT staff, plus recovery codes.
+- **People management**: invitations to local accounts by email, roles, deactivation. Password reset by email and password change for local accounts.
 - Role-based permissions: requester, agent, team lead, CAB member, administrator.
 - Teams, business calendars (working hours, Romanian public holidays), API tokens.
 - Append-only **audit trail**: who changed what, when, with old and new values; sign-ins, role changes, exports.
@@ -22,7 +24,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 **Planned modules:** CMDB, IT asset management, datacenter infrastructure, application portfolio, business impact analysis, continuity and recovery, risk assessment, audit and compliance, projects.
 
-**Not done yet** (needed before relying on local accounts in production): user management screens, password reset, and multi-factor authentication. Until then, prefer Active Directory sign-in. The only local account is the administrator created at installation.
+**Not done yet:** security keys and passkeys (WebAuthn) as a second factor; single sign-on with OIDC or SAML.
 
 ## Requirements
 
@@ -49,7 +51,7 @@ docker run --rm -v "$(pwd)":/var/www/html -w /var/www/html laravelsail/php84-com
 ./vendor/bin/sail npm install && ./vendor/bin/sail npm run build
 ```
 
-Open http://localhost and sign in as `admin@example.com` with the password `password` (demo data, local environment only). Email sent by the application lands in Mailpit at http://localhost:8025.
+Open http://localhost and sign in as `admin@example.com` with the password `password` (demo data, local environment only). You are then asked to set up two-factor authentication with an authenticator app, as every administrator is. Email sent by the application lands in Mailpit at http://localhost:8025.
 
 Optional containers for development:
 
@@ -115,6 +117,8 @@ The commands below run on the server, in the application directory, as the web s
    php artisan core:setup
    ```
 
+   At the first sign-in, the administrator sets up two-factor authentication with an authenticator app (required for every role other than *Requester*). They then invite people under **Administration → Access → People**, or map Active Directory groups (see below).
+
 5. **Optimize** for production.
 
    ```bash
@@ -123,9 +127,15 @@ The commands below run on the server, in the application directory, as the web s
 
 6. **Web server.** Point the document root to `public/` and serve the site over HTTPS only. The application sends strict security headers (CSP, HSTS). `storage/` and `bootstrap/cache/` must be writable by the web server's user.
 
-   Behind a reverse proxy that terminates TLS, the proxy must be trusted in `bootstrap/app.php`; this is not yet a setting.
+   Behind a reverse proxy or load balancer that terminates TLS, list it in `.env`, otherwise the application sees every visitor with the proxy's address and believes the connection is plain HTTP:
 
-7. **Background work** — see the next section. Without it, no email is sent or read, SLA clocks do not warn, and exports are never generated.
+   ```dotenv
+   TRUSTED_PROXIES=10.0.0.5
+   ```
+
+   Never list addresses that are not your proxies: anyone sending requests from them could fake their IP address.
+
+7. **Background work** — see the next section. Without it, no email is sent or read (invitations and password resets included), SLA clocks do not warn, and exports are never generated.
 
 ## Background work: scheduler and queue
 
@@ -221,6 +231,7 @@ Settings, for special cases:
 | Variable | Default | Meaning |
 |---|---|---|
 | `APP_DISPLAY_TIMEZONE` | `Europe/Bucharest` | Time zone of dates shown and entered; data is stored in UTC |
+| `TRUSTED_PROXIES` | empty | Reverse proxies whose forwarded headers are believed (addresses or CIDR ranges) |
 | `APP_SOURCE_URL` | this repository | Link to the source code shown in the interface (AGPL §13); point it to your fork if you modify the code |
 | `TICKETING_AUTO_CLOSE_AFTER_DAYS` | `5` | Days a resolved ticket waits before closing; `0` disables |
 | `EXPORTS_RETENTION_DAYS` | `7` | Days an export can be downloaded |

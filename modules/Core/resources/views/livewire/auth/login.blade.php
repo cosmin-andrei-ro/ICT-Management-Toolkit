@@ -1,3 +1,7 @@
+<div>
+@if (session('status'))
+    <p class="mb-4 rounded-md bg-green-50 p-3 text-sm text-green-800" role="status">{{ session('status') }}</p>
+@endif
 <form wire:submit="login" class="space-y-5" novalidate>
     <div>
         <label for="login" class="block text-sm font-medium">{{ __('core::auth.login.identifier') }}</label>
@@ -31,4 +35,6 @@
             class="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 disabled:opacity-60">
         {{ __('core::auth.login.submit') }}
     </button>
+    <p class="text-center text-sm"><a href="{{ route('password.request') }}" class="text-gray-600 underline">{{ __('core::security.forgot.link') }}</a></p>
 </form>
+</div>

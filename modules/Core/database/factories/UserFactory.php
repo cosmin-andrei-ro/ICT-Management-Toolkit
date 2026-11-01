@@ -61,6 +61,19 @@ final class UserFactory extends Factory
     /**
      * Adds the user to the organization and makes it their current one.
      */
+    /**
+     * Two-factor authentication already set up (required for staff roles).
+     * The secret is a fixed test value; use TwoFactorAuthentication to set up real ones.
+     */
+    public function withTwoFactor(): static
+    {
+        return $this->state(fn (): array => [
+            'two_factor_secret' => 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP',
+            'two_factor_confirmed_at' => now(),
+            'two_factor_recovery_codes' => [],
+        ]);
+    }
+
     public function memberOf(Organization $organization): static
     {
         return $this

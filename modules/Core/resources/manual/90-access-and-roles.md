@@ -19,6 +19,20 @@ Each person can have different roles in different organizations. Every role is a
 
 The default roles are defined by the application and restored on every update. If you need a different combination of permissions, create an organization-specific role.
 
+## People
+
+**Administration → Access → People** lists the people of your organization: their account type, roles, whether they use two-factor authentication, and their last sign-in.
+
+- **Invite** adds someone. A new person receives an email with a link, valid for 3 days, to choose their own password: you never know it. Someone who already has an account (in another organization, or through Active Directory) is added to yours without an email. **Send the invitation again** if the link expired.
+- **Edit** changes the name and roles of local accounts. Roles of Active Directory accounts come from the AD group mappings, so they cannot be changed here.
+- **Active** turns an account off: the person cannot sign in anymore. It is offered only for people who belong to your organization alone; otherwise **remove** them from it.
+- **Remove from organization** takes away their roles and their access to your organization. Their account and their history stay.
+- **Reset two-factor** is for someone who lost their phone and their recovery codes. Make sure the request really comes from them, for example by calling them. They set it up again at their next sign-in.
+
+You cannot change your own roles, deactivate yourself or remove yourself, so you cannot lock yourself out by mistake. Ask another administrator.
+
+Invitations, role changes, resets and removals are recorded in the audit trail.
+
 ## Teams
 
 **Administration → Access → Teams.** A team groups people who work together, such as "Service Desk" or "Network". Service desk queues are routed to teams, and a ticket in a queue can only be assigned to members of that queue's team. Only members of the organization can join a team.

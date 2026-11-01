@@ -12,6 +12,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,9 +24,12 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Core\Application\Notifications\PasswordLink;
+use Modules\Core\Application\Policies\UserPolicy;
 use Modules\Core\Database\Factories\UserFactory;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Directory\AuthSource;
+use SensitiveParameter;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -46,13 +50,18 @@ use Spatie\Permission\Traits\HasRoles;
  * @property ?string $current_organization_id
  * @property ?Carbon $last_login_at
  * @property ?string $remember_token
+ * @property ?string $two_factor_secret
+ * @property ?Carbon $two_factor_confirmed_at
+ * @property ?list<string> $two_factor_recovery_codes
+ * @property ?int $two_factor_last_used_step
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
  */
 #[UseFactory(UserFactory::class)]
+#[UsePolicy(UserPolicy::class)]
 #[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 final class User extends Authenticatable implements FilamentUser
 {
     use Auditable;
@@ -121,13 +130,25 @@ final class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Queued and only for local accounts (the caller filters): AD passwords are
+     * changed in Windows.
+     *
+     * @param  string  $token
+     */
+    public function sendPasswordResetNotification(#[SensitiveParameter] $token): void
+    {
+        $this->notify(new PasswordLink($token));
+    }
+
+    /**
      * Logins are recorded as security events, not as user updates.
      *
      * @return list<string>
      */
     public function auditExclude(): array
     {
-        return ['last_login_at', 'directory_synced_at'];
+        // Two-factor changes have their own audit events (mfa_*).
+        return ['last_login_at', 'directory_synced_at', 'two_factor_confirmed_at', 'two_factor_last_used_step'];
     }
 
     /**
@@ -148,6 +169,10 @@ final class User extends Authenticatable implements FilamentUser
             'auth_source' => AuthSource::class,
             'directory_synced_at' => 'datetime',
             'directory_disabled_at' => 'datetime',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_confirmed_at' => 'datetime',
+            'two_factor_recovery_codes' => 'array',
+            'two_factor_last_used_step' => 'integer',
         ];
     }
 }

@@ -71,7 +71,7 @@ describe('admin panel', function (): void {
 
     function memberWithRole(Organization $organization, DefaultRole $role): User
     {
-        $user = User::factory()->memberOf($organization)->create();
+        $user = User::factory()->memberOf($organization)->withTwoFactor()->create();
         app(OrganizationContext::class)->runAs($organization, fn () => $user->assignRole($role->value));
 
         return $user;

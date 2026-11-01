@@ -10,7 +10,11 @@ use Modules\Core\Http\Controllers\AttachmentController;
 use Modules\Core\Http\Controllers\ExportController;
 use Modules\Core\Http\Controllers\LogoutController;
 use Modules\Core\Http\Controllers\ManualController;
+use Modules\Core\Http\Livewire\Account\AccountSecurity;
+use Modules\Core\Http\Livewire\Auth\ForgotPassword;
 use Modules\Core\Http\Livewire\Auth\Login;
+use Modules\Core\Http\Livewire\Auth\ResetPassword;
+use Modules\Core\Http\Livewire\Auth\TwoFactorChallenge;
 
 // Public: needed most by people who cannot sign in.
 Route::get('/manual', [ManualController::class, 'index'])->name('manual.index');
@@ -18,6 +22,10 @@ Route::get('/manual/{page}', [ManualController::class, 'show'])->where('page', '
 
 Route::middleware('guest')->group(function (): void {
     Route::livewire('/login', Login::class)->name('login');
+    Route::livewire('/login/code', TwoFactorChallenge::class)->name('login.challenge');
+    Route::livewire('/forgot-password', ForgotPassword::class)->name('password.request');
+    Route::livewire('/reset-password/{token}', ResetPassword::class)->name('password.reset');
+    Route::livewire('/welcome/{token}', ResetPassword::class)->name('invitation.accept');
 });
 
 Route::middleware('auth')->group(function (): void {
@@ -25,7 +33,12 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/logout', LogoutController::class)->name('logout');
 });
 
-Route::middleware(['auth', 'organization'])->group(function (): void {
+// Without "mfa": where people who must use two-factor authentication set it up.
+Route::middleware(['auth', 'auth.session', 'organization'])->group(function (): void {
+    Route::livewire('/account/security', AccountSecurity::class)->name('account.security');
+});
+
+Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(function (): void {
     Route::view('/', 'core::home')->name('home');
     Route::get('/attachments/{attachment}', AttachmentController::class)->name('core.attachments.download');
     Route::get('/exports/{export}', ExportController::class)->whereUuid('export')->name('core.exports.download');

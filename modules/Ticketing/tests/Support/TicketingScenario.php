@@ -62,7 +62,9 @@ final class TicketingScenario
     public function member(DefaultRole $role, ?Organization $organization = null): User
     {
         $organization ??= $this->organization;
-        $user = User::factory()->memberOf($organization)->create();
+        // Staff roles must use two-factor authentication.
+        $factory = User::factory()->memberOf($organization);
+        $user = ($role === DefaultRole::Requester ? $factory : $factory->withTwoFactor())->create();
         app(OrganizationContext::class)->runAs($organization, fn () => $user->assignRole($role->value));
 
         return User::query()->findOrFail($user->id);

@@ -28,4 +28,13 @@ enum AuditEvent: string
     case LoginDenied = 'login_denied';
     case Exported = 'exported';
     case ExportDownloaded = 'export_downloaded';
+    case MfaEnabled = 'mfa_enabled';
+    case MfaDisabled = 'mfa_disabled';
+    case MfaReset = 'mfa_reset';
+    case MfaFailed = 'mfa_failed';
+    case MfaRecoveryCodeUsed = 'mfa_recovery_code_used';
+    case MfaRecoveryCodesRegenerated = 'mfa_recovery_codes_regenerated';
+    case PasswordChanged = 'password_changed';
+    case PasswordReset = 'password_reset';
+    case Invited = 'invited';
 }

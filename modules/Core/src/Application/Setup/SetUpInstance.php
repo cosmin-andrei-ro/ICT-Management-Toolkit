@@ -15,10 +15,10 @@ use Illuminate\Validation\ValidationException;
 use LogicException;
 use Modules\Core\Application\Authorization\SyncPermissions;
 use Modules\Core\Domain\Authorization\DefaultRole;
+use Modules\Core\Domain\Authorization\Role;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
-use Spatie\Permission\Models\Role;
 
 /**
  * First run of a new installation: the first organization and its administrator
