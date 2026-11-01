@@ -56,11 +56,11 @@ use Spatie\Permission\Traits\HasRoles;
 final class User extends Authenticatable implements FilamentUser
 {
     use Auditable;
-
     use HasApiTokens;
 
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+
     use HasRoles;
     use HasUuids;
     use Notifiable;

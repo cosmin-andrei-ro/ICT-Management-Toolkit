@@ -83,7 +83,8 @@
             "@php vendor/bin/pint"
         ],
         "lint:check": [
-            "@php vendor/bin/pint --test"
+            "@php -r \"@unlink('storage/framework/cache/pint-check.cache');\"",
+            "@php vendor/bin/pint --test --cache-file=storage/framework/cache/pint-check.cache"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
