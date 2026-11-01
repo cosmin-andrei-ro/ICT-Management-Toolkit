@@ -12,6 +12,7 @@ use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
@@ -36,6 +37,7 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Middleware\CaptureRequestContext;
 use Modules\Core\Http\Middleware\SecurityHeaders;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
+use Modules\Core\Infrastructure\Console\SyncDirectoryCommand;
 use Modules\Core\Infrastructure\Console\SyncPermissionsCommand;
 use Modules\Core\Infrastructure\Console\TestDirectoryCommand;
 use Modules\Core\Infrastructure\Directory\DisabledDirectory;
@@ -115,8 +117,23 @@ final class CoreServiceProvider extends ModuleServiceProvider
 
         Event::listen([Login::class, Failed::class, Logout::class, Lockout::class], RecordAuthenticationEvent::class);
 
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $config = $this->app->make('config');
+
+            if ($config->get('core.directory.enabled') !== true) {
+                return;
+            }
+
+            $expression = $config->get('core.directory.sync_schedule');
+
+            $schedule->command(SyncDirectoryCommand::class)
+                ->cron(is_string($expression) && $expression !== '' ? $expression : '*/15 * * * *')
+                ->withoutOverlapping()
+                ->onOneServer();
+        });
+
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class]);
+            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class]);
         }
     }
 

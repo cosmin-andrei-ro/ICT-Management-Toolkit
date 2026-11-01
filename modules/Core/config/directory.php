@@ -42,4 +42,8 @@ return [
 
     'timeout' => (int) env('LDAP_TIMEOUT', 5),
 
+    // How often core:directory:sync re-checks accounts (cron expression). Accounts
+    // disabled in AD keep an open session at most this long.
+    'sync_schedule' => (string) env('LDAP_SYNC_SCHEDULE', '*/15 * * * *'),
+
 ];

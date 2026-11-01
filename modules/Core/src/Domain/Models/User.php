@@ -40,6 +40,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property ?string $directory_guid
  * @property ?string $directory_username
  * @property ?Carbon $directory_synced_at
+ * @property ?Carbon $directory_disabled_at
  * @property bool $is_active
  * @property ?string $current_organization_id
  * @property ?Carbon $last_login_at
@@ -94,7 +95,15 @@ final class User extends Authenticatable implements FilamentUser
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_active && $this->can('core.admin.access');
+        return $this->canSignIn() && $this->can('core.admin.access');
+    }
+
+    /**
+     * Deactivated locally, or disabled/removed in AD as seen by the last directory sync.
+     */
+    public function canSignIn(): bool
+    {
+        return $this->is_active && $this->directory_disabled_at === null;
     }
 
     public function isDirectoryAccount(): bool
@@ -136,6 +145,7 @@ final class User extends Authenticatable implements FilamentUser
             'is_active' => 'boolean',
             'auth_source' => AuthSource::class,
             'directory_synced_at' => 'datetime',
+            'directory_disabled_at' => 'datetime',
         ];
     }
 }

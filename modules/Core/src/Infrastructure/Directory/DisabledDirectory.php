@@ -25,6 +25,11 @@ final class DisabledDirectory implements Directory
         return null;
     }
 
+    public function findByGuid(string $guid): ?DirectoryUser
+    {
+        return null;
+    }
+
     public function authenticate(DirectoryUser $user, string $password): bool
     {
         return false;

@@ -35,7 +35,7 @@ final readonly class SetCurrentOrganization
         }
 
         // Deactivation takes effect on the next request, not at the next login.
-        abort_unless($user->is_active, Response::HTTP_FORBIDDEN, __('core::errors.account_inactive'));
+        abort_unless($user->canSignIn(), Response::HTTP_FORBIDDEN, __('core::errors.account_inactive'));
 
         $organization = $this->resolveOrganization($user);
 

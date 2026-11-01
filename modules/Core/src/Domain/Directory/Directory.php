@@ -20,6 +20,13 @@ interface Directory
     public function findUser(string $identifier): ?DirectoryUser;
 
     /**
+     * Finds an account by its objectGUID, the identity that survives renames.
+     *
+     * @throws DirectoryUnavailable
+     */
+    public function findByGuid(string $guid): ?DirectoryUser;
+
+    /**
      * Verifies the password by binding as the user. An empty password is always
      * rejected: LDAP treats it as an unauthenticated bind, which "succeeds".
      *

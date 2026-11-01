@@ -52,6 +52,19 @@ Groups are in `OU=Groups,DC=corp,DC=example`, for example `CN=IT-ServiceDesk,OU=
 
 You can override the passwords with `SAMBA_ADMIN_PASSWORD`, `SAMBA_USER_PASSWORD` and `SAMBA_SERVICE_PASSWORD` before the first start.
 
+## Periodic sync
+
+```bash
+./vendor/bin/sail artisan core:directory:sync
+```
+
+To see it block an account, sign in once as `jdoe`, then disable the account in AD and sync again:
+
+```bash
+docker compose exec samba-ad samba-tool user disable jdoe   # enable jdoe to undo
+./vendor/bin/sail artisan core:directory:sync
+```
+
 ## Integration tests
 
 ```bash
