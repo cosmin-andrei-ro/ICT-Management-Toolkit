@@ -8,7 +8,12 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Modules\Core\Http\Controllers\AttachmentController;
 use Modules\Core\Http\Controllers\LogoutController;
+use Modules\Core\Http\Controllers\ManualController;
 use Modules\Core\Http\Livewire\Auth\Login;
+
+// Public: needed most by people who cannot sign in.
+Route::get('/manual', [ManualController::class, 'index'])->name('manual.index');
+Route::get('/manual/{page}', [ManualController::class, 'show'])->where('page', '[a-z0-9-]+')->name('manual.show');
 
 Route::middleware('guest')->group(function (): void {
     Route::livewire('/login', Login::class)->name('login');

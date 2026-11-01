@@ -205,6 +205,7 @@ Implicit: o instanță = o companie, cu suport pentru **mai multe entități jur
 3. Autorizare și validare acoperite.
 4. Etichetele UI adăugate în fișierele de traducere (`lang/en`).
 5. Documentația actualizată (README modul, OpenAPI, ADR dacă e o decizie de arhitectură).
+   **Manualul de utilizare** (`modules/<Modul>/resources/manual/*.md`, în engleză, vezi ADR 0013) acoperă orice funcționalitate vizibilă utilizatorilor, scris pentru audiența ei (everyone / agents / administrators); nu descrie funcții care nu există încă.
 6. Audit trail funcțional pentru entitățile noi.
 
 ---

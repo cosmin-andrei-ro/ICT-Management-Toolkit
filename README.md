@@ -30,6 +30,7 @@ docker run --rm -v "$(pwd)":/var/www/html -w /var/www/html laravelsail/php84-com
 
 ## Documentation
 
+- User manual: `/manual` in the running application (sources in `modules/*/resources/manual`)
 - [Architecture decision records](docs/adr/)
 - [Contributor and AI agent guide](CLAUDE.md)
 

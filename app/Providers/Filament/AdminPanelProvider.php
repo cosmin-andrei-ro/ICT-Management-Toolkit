@@ -11,10 +11,12 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -46,6 +48,12 @@ final class AdminPanelProvider extends PanelProvider
             ])
             ->widgets([
                 AccountWidget::class,
+            ])
+            ->navigationItems([
+                NavigationItem::make(fn (): string => __('core::manual.title'))
+                    ->url(fn (): string => route('manual.index'), shouldOpenInNewTab: true)
+                    ->icon(Heroicon::OutlinedBookOpen)
+                    ->sort(1000),
             ])
             ->middleware([
                 EncryptCookies::class,
