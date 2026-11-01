@@ -1,26 +1,39 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "ict-management-toolkit/ict-management-toolkit",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Open-source platform that centralizes a company's IT information: ITSM, CMDB, ITAM, DCIM, BIA, BCM, risk and compliance.",
     "keywords": [
-        "laravel",
-        "framework"
+        "itsm",
+        "itil",
+        "cmdb",
+        "itam",
+        "dcim",
+        "grc",
+        "laravel"
     ],
-    "license": "MIT",
+    "license": "AGPL-3.0-or-later",
     "require": {
         "php": "^8.3",
+        "filament/filament": "^5.11",
         "laravel/framework": "^13.17",
-        "laravel/tinker": "^3.0"
+        "laravel/sanctum": "^4.3",
+        "laravel/tinker": "^3.0",
+        "livewire/livewire": "^4.4",
+        "spatie/laravel-permission": "^8.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.13",
+        "laravel/boost": "^2.10",
         "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",
         "laravel/pint": "^1.27",
         "laravel/sail": "^1.69",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-laravel": "^4.1",
         "phpunit/phpunit": "^12.5.12"
     },
     "autoload": {
@@ -32,7 +45,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Tests\\Fixtures\\DummyModule\\": "tests/Fixtures/modules/Dummy/src/"
         }
     },
     "scripts": {
@@ -50,7 +64,16 @@
         ],
         "test": [
             "@php artisan config:clear --ansi @no_additional_args",
-            "@php artisan test"
+            "@php vendor/bin/pest"
+        ],
+        "analyse": [
+            "@php vendor/bin/phpstan analyse --memory-limit=1G"
+        ],
+        "lint": [
+            "@php vendor/bin/pint"
+        ],
+        "lint:check": [
+            "@php vendor/bin/pint --test"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
