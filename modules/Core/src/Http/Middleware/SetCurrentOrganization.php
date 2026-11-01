@@ -25,10 +25,12 @@ final readonly class SetCurrentOrganization
 
     /**
      * @param  Closure(Request): Response  $next
+     * @param  ?string  $guard  "sanctum" on API routes: the token is resolved by its own
+     *                          guard, since this middleware runs before authentication.
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ?string $guard = null): Response
     {
-        $user = $request->user();
+        $user = $request->user($guard);
 
         if (! $user instanceof User) {
             return $next($request);
