@@ -12,6 +12,7 @@ use Illuminate\Database\ConnectionInterface;
 use Modules\Core\Application\Collaboration\AddComment;
 use Modules\Core\Domain\Models\Comment;
 use Modules\Core\Domain\Models\User;
+use Modules\Ticketing\Application\Sla\SlaClock;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Events\TicketCommentAdded;
 use Modules\Ticketing\Domain\Models\Ticket;
@@ -26,6 +27,7 @@ final readonly class AddTicketComment
         private ConnectionInterface $db,
         private TicketLifecycle $lifecycle,
         private AddComment $addComment,
+        private SlaClock $sla,
         private Dispatcher $events,
     ) {}
 
@@ -39,6 +41,7 @@ final readonly class AddTicketComment
             if (! $internal && ! $ticket->isRequester($author) && $author->can('ticketing.ticket.work')) {
                 $ticket->first_responded_at ??= now();
                 $ticket->save();
+                $this->sla->responded($ticket);
             }
 
             if ($ticket->isRequester($author) && $ticket->status === TicketStatus::Pending) {

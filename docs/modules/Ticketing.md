@@ -16,6 +16,23 @@ Service desk following ITIL 4. Code: `modules/Ticketing/`. Data model: [ADR 0008
 - A requester's reply to a pending ticket brings it back into work.
 - Resolved tickets close automatically after 5 days (`TICKETING_AUTO_CLOSE_AFTER_DAYS`, `ticketing:tickets:auto-close`, hourly). Until then the requester can reopen them.
 
+## Service levels (SLA)
+
+Each ticket gets two clocks, **first response** and **resolution**, counted in working time with the organization's default business calendar ([ADR 0010](../adr/0010-sla.md)).
+
+| Priority | First response | Resolution |
+|---|---|---|
+| Critical | 15 min | 4 h |
+| High | 1 h | 8 h |
+| Medium | 4 h | 3 working days |
+| Low | 8 h | 5 working days |
+
+- Defaults can be changed per organization in Administration → Service desk → SLA targets.
+- Clocks pause while a ticket is pending (waiting for the requester), and restart when it is reopened.
+- At 75 % of a target the assignee and the team lead are warned; at the due time the breach is recorded and they are notified again. If nobody owns the ticket, the whole queue team is notified.
+- The desk shows the current deadline in the list, can filter tickets at risk, and shows both clocks on the ticket page.
+- The scheduler must run for warnings and breaches (`ticketing:sla:check`, every minute).
+
 ## Screens
 
 - **Self-service portal** (`/tickets`): my tickets, new ticket with attachments, ticket page with the public conversation, reply, confirm or reopen a resolution, withdraw a new ticket.

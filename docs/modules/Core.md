@@ -42,6 +42,10 @@ The foundation every other module builds on. Code: `modules/Core/`.
 
 For development, an optional Samba AD container provides a test domain: see [docs/development/active-directory.md](../development/active-directory.md).
 
+## Business calendars
+
+Working hours per weekday in a time zone, extra days off, and optionally Romanian public holidays (computed each year, including Orthodox Easter and Pentecost). An organization's default calendar drives working-time calculations such as SLA deadlines. Without one, Monday–Friday 09:00–17:00, Europe/Bucharest, with Romanian holidays applies. Managed in Administration → Organization → Business calendars (`core.calendar.manage`).
+
 ## Administration panel
 
 Filament at `/admin`, for users with `core.admin.access`. It uses the application login. See ADR 0006 for its CSP exception.
@@ -61,3 +65,5 @@ A strict CSP with a per-request nonce, plus the standard hardening headers on ev
 | `core.department.view` / `.create` / `.update` / `.delete` | Departments |
 | `core.audit.view` | Read the audit log |
 | `core.directory.manage` | Manage AD group mappings |
+| `core.team.view` / `.manage` | Teams |
+| `core.calendar.manage` | Business calendars |

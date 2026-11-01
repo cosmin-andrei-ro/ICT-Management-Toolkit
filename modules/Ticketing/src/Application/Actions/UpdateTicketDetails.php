@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Ticketing\Application\Actions;
 
+use Modules\Ticketing\Application\Sla\SlaClock;
 use Modules\Ticketing\Domain\Enums\Impact;
 use Modules\Ticketing\Domain\Enums\Urgency;
 use Modules\Ticketing\Domain\Models\Category;
@@ -22,6 +23,7 @@ final readonly class UpdateTicketDetails
     public function __construct(
         private TicketLifecycle $lifecycle,
         private PriorityMatrix $priorities,
+        private SlaClock $sla,
     ) {}
 
     public function handle(Ticket $ticket, string $title, string $description, Impact $impact, Urgency $urgency, ?string $categoryId): Ticket
@@ -34,9 +36,14 @@ final readonly class UpdateTicketDetails
         $ticket->description = trim($description);
         $ticket->impact = $impact;
         $ticket->urgency = $urgency;
+        $previousPriority = $ticket->priority;
         $ticket->priority = $this->priorities->resolve($ticket->organization_id, $impact, $urgency);
         $ticket->category_id = $category?->id;
         $ticket->save();
+
+        if ($ticket->priority !== $previousPriority) {
+            $this->sla->retarget($ticket);
+        }
 
         return $ticket;
     }

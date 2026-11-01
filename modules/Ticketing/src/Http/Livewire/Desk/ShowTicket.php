@@ -204,6 +204,7 @@ final class ShowTicket extends Component
             'comments' => $ticket->comments()->with('author')->get(),
             'attachments' => $ticket->attachments()->get(),
             'transitions' => $ticket->statusTransitions()->with('user')->get(),
+            'slaTimers' => $ticket->slaTimers()->orderBy('metric', 'desc')->get(),
             'workingTargets' => array_values(array_filter(
                 $workflow->allowedFrom($ticket->status),
                 fn (TicketStatus $status): bool => in_array($status, [TicketStatus::New, TicketStatus::InProgress, TicketStatus::Pending], true),
