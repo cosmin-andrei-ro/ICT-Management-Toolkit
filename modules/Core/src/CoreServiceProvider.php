@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
+use Livewire\Livewire;
 use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
 use Modules\Core\Domain\Audit\RequestContext;
@@ -40,6 +41,7 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Middleware\CaptureRequestContext;
 use Modules\Core\Http\Middleware\SecurityHeaders;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
+use Modules\Core\Http\Navigation\Navigation;
 use Modules\Core\Infrastructure\Console\SyncDirectoryCommand;
 use Modules\Core\Infrastructure\Console\SyncPermissionsCommand;
 use Modules\Core\Infrastructure\Console\TestDirectoryCommand;
@@ -66,6 +68,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->scoped(OrganizationContext::class);
         $this->app->scoped(RequestContext::class);
         $this->app->singleton(PermissionRegistry::class);
+        $this->app->singleton(Navigation::class);
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */
             $config = $app->make('config')->get('core.directory', []);
@@ -93,6 +96,10 @@ final class CoreServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         $this->app->make(Router::class)->aliasMiddleware('organization', SetCurrentOrganization::class);
+
+        // Livewire update requests do not run route middleware unless it is persistent;
+        // without this, components would act with no organization context.
+        Livewire::addPersistentMiddleware([SetCurrentOrganization::class]);
         $kernel = $this->app->make(Kernel::class);
         $kernel->prependMiddleware(CaptureRequestContext::class);
         $kernel->pushMiddleware(SecurityHeaders::class);
@@ -136,6 +143,10 @@ final class CoreServiceProvider extends ModuleServiceProvider
                 ->cron(is_string($expression) && $expression !== '' ? $expression : '*/15 * * * *')
                 ->withoutOverlapping()
                 ->onOneServer();
+        });
+
+        $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
+            $navigation->add('core::layout.admin', 'filament.admin.pages.dashboard', 'filament.admin.*', fn (User $user): bool => $user->can('core.admin.access'));
         });
 
         if ($this->app->runningInConsole()) {

@@ -10,8 +10,16 @@ namespace Modules\Ticketing;
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Event;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Models\User;
+use Modules\Core\Http\Navigation\Navigation;
+use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
+use Modules\Ticketing\Domain\Events\TicketAssigned;
+use Modules\Ticketing\Domain\Events\TicketCommentAdded;
+use Modules\Ticketing\Domain\Events\TicketCreated;
+use Modules\Ticketing\Domain\Events\TicketResolved;
 use Modules\Ticketing\Domain\Models\Category;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Ticket;
@@ -41,6 +49,13 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.category' => Category::class,
             'ticketing.queue' => Queue::class,
         ]);
+
+        $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
+            $navigation->add('ticketing::ui.menu.portal', 'ticketing.portal.index', 'ticketing.portal.*', fn (User $user): bool => $user->can('ticketing.ticket.create'));
+            $navigation->add('ticketing::ui.menu.desk', 'ticketing.desk.index', 'ticketing.desk.*', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
+        });
+
+        Event::listen([TicketCreated::class, TicketAssigned::class, TicketResolved::class, TicketCommentAdded::class], SendTicketNotifications::class);
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(AutoCloseTicketsCommand::class)->hourly()->withoutOverlapping()->onOneServer();

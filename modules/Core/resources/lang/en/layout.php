@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 return [
     'home' => 'Home',
+    'main_menu' => 'Main menu',
+    'admin' => 'Administration',
     'welcome' => 'Welcome, :name',
     'source_code' => 'Source code',
     'license' => 'AGPL-3.0-or-later',
