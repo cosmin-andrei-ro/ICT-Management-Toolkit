@@ -12,4 +12,6 @@ parameters:
         - routes
     excludePaths:
         - modules/*/tests/*
+        # Config files read env(), which is correct there (as for the root config/).
+        - modules/*/config/*
     tmpDir: storage/framework/cache/phpstan

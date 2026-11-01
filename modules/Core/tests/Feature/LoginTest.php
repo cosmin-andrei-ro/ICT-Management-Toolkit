@@ -24,7 +24,7 @@ beforeEach(function (): void {
 function attemptLogin(string $email, string $password): Testable
 {
     return Livewire::test(Login::class)
-        ->set('email', $email)
+        ->set('login', $email)
         ->set('password', $password)
         ->call('login');
 }
@@ -59,7 +59,7 @@ it('matches the email case-insensitively', function (): void {
 
 it('rejects a wrong password without echoing it back', function (): void {
     attemptLogin('jane@example.com', 'wrong-password')
-        ->assertHasErrors(['email'])
+        ->assertHasErrors(['login'])
         ->assertSet('password', '');
 
     $this->assertGuest();
@@ -72,8 +72,8 @@ it('rejects a wrong password without echoing it back', function (): void {
 it('gives the same answer for unknown and inactive accounts', function (): void {
     $this->user->forceFill(['is_active' => false])->save();
 
-    $inactive = attemptLogin('jane@example.com', 'correct-horse-battery')->errors()->get('email');
-    $unknown = attemptLogin('nobody@example.com', 'correct-horse-battery')->errors()->get('email');
+    $inactive = attemptLogin('jane@example.com', 'correct-horse-battery')->errors()->get('login');
+    $unknown = attemptLogin('nobody@example.com', 'correct-horse-battery')->errors()->get('login');
 
     expect($inactive)->toBe($unknown)->toBe([__('auth.failed')]);
     $this->assertGuest();
@@ -85,7 +85,7 @@ it('locks out after five failed attempts and records the lockout', function (): 
     }
 
     attemptLogin('jane@example.com', 'correct-horse-battery')
-        ->assertHasErrors(['email']);
+        ->assertHasErrors(['login']);
 
     $this->assertGuest();
     expect(AuditLog::query()->where('event', AuditEvent::Lockout)->exists())->toBeTrue();
@@ -93,10 +93,10 @@ it('locks out after five failed attempts and records the lockout', function (): 
 
 it('validates the input', function (): void {
     Livewire::test(Login::class)
-        ->set('email', 'not-an-email')
+        ->set('login', '')
         ->set('password', '')
         ->call('login')
-        ->assertHasErrors(['email' => 'email', 'password' => 'required']);
+        ->assertHasErrors(['login' => 'required', 'password' => 'required']);
 });
 
 it('logs out, invalidates the session and records it', function (): void {

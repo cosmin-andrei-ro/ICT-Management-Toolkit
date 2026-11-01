@@ -24,6 +24,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Modules\Core\Http\Middleware\AllowUnsafeEval;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
+use ReflectionClass;
 
 /**
  * Administration panel shared by all modules (ADR 0003). Sign-in goes through the
@@ -33,7 +34,7 @@ final class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panel
             ->default()
             ->id('admin')
             ->path('admin')
@@ -64,5 +65,32 @@ final class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+
+        // After id(): resource discovery keys its cache by panel id.
+        $this->discoverModuleResources($panel);
+
+        return $panel;
+    }
+
+    /**
+     * Each enabled module may ship resources in src/Http/Filament/Resources.
+     */
+    private function discoverModuleResources(Panel $panel): void
+    {
+        /** @var array<string, array{provider: class-string, enabled: bool}> $modules */
+        $modules = config('modules.modules', []);
+
+        foreach ($modules as $module) {
+            if (! $module['enabled']) {
+                continue;
+            }
+
+            $provider = new ReflectionClass($module['provider']);
+            $directory = dirname((string) $provider->getFileName()).'/Http/Filament/Resources';
+
+            if (is_dir($directory)) {
+                $panel->discoverResources(in: $directory, for: $provider->getNamespaceName().'\\Http\\Filament\\Resources');
+            }
+        }
     }
 }

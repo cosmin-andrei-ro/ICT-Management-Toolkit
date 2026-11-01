@@ -25,9 +25,18 @@ The foundation every other module builds on. Code: `modules/Core/`.
 ## Authentication
 
 - Login at `/login` (Livewire), logout via `POST /logout`.
-- Throttling: 5 attempts per minute per email and IP address, and 20 attempts per 15 minutes per email.
+- **Local accounts** sign in with their email. **Active Directory accounts** sign in with their username, `DOMAIN\username`, UPN or email (ADR 0007). Each account has a fixed source, with no fallback between them.
+- AD accounts are created at first sign-in. Their organizations and roles come only from **AD group mappings** (admin panel → Access), and are re-synced on every sign-in.
+- Throttling: 5 attempts per minute per identifier and IP address, and 20 attempts per 15 minutes per identifier.
 - Inactive and unknown accounts get the same error. Accounts deactivated while signed in lose access on their next request.
-- MFA, password reset and SSO are not implemented yet.
+- MFA, password reset and OIDC/SAML SSO are not implemented yet.
+
+### Configuring Active Directory
+
+1. Set the `LDAP_*` variables (see `.env.example`). Use LDAPS (port 636), or StartTLS (port 389) with `LDAP_ENCRYPTION=starttls`. Set `LDAP_CA_CERT` to your internal CA if the domain controllers' certificates are not publicly trusted.
+2. Use a dedicated, read-only service account for `LDAP_USERNAME`/`LDAP_PASSWORD`.
+3. Run `php artisan core:directory:test` to check the connection, then `php artisan core:directory:test jdoe` to see how a user would be mapped.
+4. Map AD groups to roles in each organization (admin panel → Access → AD group mappings).
 
 ## Administration panel
 
@@ -47,3 +56,4 @@ A strict CSP with a per-request nonce, plus the standard hardening headers on ev
 | `core.role.view` / `.manage` | Organization-specific roles |
 | `core.department.view` / `.create` / `.update` / `.delete` | Departments |
 | `core.audit.view` | Read the audit log |
+| `core.directory.manage` | Manage AD group mappings |

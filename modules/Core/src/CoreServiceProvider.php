@@ -13,10 +13,13 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
+use InvalidArgumentException;
 use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
 use Modules\Core\Domain\Audit\RequestContext;
@@ -24,6 +27,8 @@ use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\Permission;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Authorization\Role;
+use Modules\Core\Domain\Directory\Directory;
+use Modules\Core\Domain\Directory\DirectoryGroupMapping;
 use Modules\Core\Domain\Models\Department;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\User;
@@ -32,6 +37,11 @@ use Modules\Core\Http\Middleware\CaptureRequestContext;
 use Modules\Core\Http\Middleware\SecurityHeaders;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
 use Modules\Core\Infrastructure\Console\SyncPermissionsCommand;
+use Modules\Core\Infrastructure\Console\TestDirectoryCommand;
+use Modules\Core\Infrastructure\Directory\DisabledDirectory;
+use Modules\Core\Infrastructure\Directory\LdapConnectionFactory;
+use Modules\Core\Infrastructure\Directory\LdapDirectory;
+use Modules\Core\Infrastructure\Directory\UnavailableDirectory;
 use Spatie\Permission\Events\PermissionAttachedEvent;
 use Spatie\Permission\Events\PermissionDetachedEvent;
 use Spatie\Permission\Events\RoleAttachedEvent;
@@ -46,9 +56,29 @@ final class CoreServiceProvider extends ModuleServiceProvider
 
     public function register(): void
     {
+        parent::register();
+
         $this->app->scoped(OrganizationContext::class);
         $this->app->scoped(RequestContext::class);
         $this->app->singleton(PermissionRegistry::class);
+        $this->app->scoped(Directory::class, function (Application $app): Directory {
+            /** @var array<string, mixed> $config */
+            $config = $app->make('config')->get('core.directory', []);
+
+            if (($config['enabled'] ?? false) !== true) {
+                return new DisabledDirectory;
+            }
+
+            try {
+                $connection = LdapConnectionFactory::make($config);
+            } catch (InvalidArgumentException $exception) {
+                $app->make(ExceptionHandler::class)->report($exception);
+
+                return new UnavailableDirectory($exception->getMessage());
+            }
+
+            return new LdapDirectory($connection, is_string($config['base_dn'] ?? null) ? $config['base_dn'] : '');
+        });
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
     }
@@ -75,6 +105,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.department' => Department::class,
             'core.role' => Role::class,
             'core.permission' => Permission::class,
+            'core.directory_group_mapping' => DirectoryGroupMapping::class,
         ]);
 
         Event::listen(
@@ -85,7 +116,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         Event::listen([Login::class, Failed::class, Logout::class, Lockout::class], RecordAuthenticationEvent::class);
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncPermissionsCommand::class]);
+            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class]);
         }
     }
 
@@ -106,6 +137,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.department.update',
             'core.department.delete',
             'core.audit.view',
+            'core.directory.manage',
         ]);
 
         $directory = ['core.user.view', 'core.department.view'];
