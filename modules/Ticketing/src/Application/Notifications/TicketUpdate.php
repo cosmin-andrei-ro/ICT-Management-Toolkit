@@ -49,8 +49,11 @@ final class TicketUpdate extends Notification implements ShouldQueue
                 $email->getHeaders()->addTextHeader('X-Auto-Response-Suppress', 'All');
             });
 
-        if ($this->replyTo !== null) {
-            $message->replyTo($this->replyTo)
+        // "??": notifications queued by an older version have no replyTo at all.
+        $replyTo = $this->replyTo ?? null;
+
+        if ($replyTo !== null) {
+            $message->replyTo($replyTo)
                 ->line(EmailBody::MARKER)
                 ->line(__('ticketing::notifications.reply_by_email'));
         }
