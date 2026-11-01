@@ -94,7 +94,7 @@ final class CreateTicket extends Component
     {
         return view('ticketing::livewire.portal.create', [
             'categories' => Category::query()->where('is_active', true)->with('parent')->orderBy('sort_order')->orderBy('name')->get(),
-            'types' => TicketType::cases(),
+            'types' => TicketType::requestable(),
             'impacts' => Impact::cases(),
             'urgencies' => Urgency::cases(),
         ])->title(__('ticketing::ui.portal.new'));
@@ -106,7 +106,7 @@ final class CreateTicket extends Component
     protected function rules(): array
     {
         return [
-            'type' => ['required', Rule::enum(TicketType::class)],
+            'type' => ['required', Rule::enum(TicketType::class)->only(TicketType::requestable())],
             'title' => ['required', 'string', 'min:5', 'max:200'],
             'description' => ['required', 'string', 'max:20000'],
             // Restricted to the current organization: another organization's category does not exist here.

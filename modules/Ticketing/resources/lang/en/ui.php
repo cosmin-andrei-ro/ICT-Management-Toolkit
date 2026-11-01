@@ -31,6 +31,7 @@ return [
     'fields' => [
         'number' => 'Number',
         'type' => 'What do you need?',
+        'type_short' => 'Type',
         'title' => 'Summary',
         'description' => 'Details',
         'category' => 'Category',

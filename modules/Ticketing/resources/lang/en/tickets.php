@@ -9,6 +9,7 @@ return [
     'types' => [
         'incident' => 'Incident',
         'service_request' => 'Service request',
+        'problem' => 'Problem',
     ],
     'statuses' => [
         'new' => 'New',

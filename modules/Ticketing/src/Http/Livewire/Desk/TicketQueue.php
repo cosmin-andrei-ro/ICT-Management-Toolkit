@@ -16,6 +16,7 @@ use Livewire\WithPagination;
 use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Domain\Enums\Priority;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
+use Modules\Ticketing\Domain\Enums\TicketType;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Ticket;
 
@@ -46,6 +47,9 @@ final class TicketQueue extends Component
     #[Url]
     public string $sla = 'any';
 
+    #[Url]
+    public string $type = '';
+
     public function mount(): void
     {
         abort_unless($this->user()->can('ticketing.ticket.view_all'), 403);
@@ -53,7 +57,7 @@ final class TicketQueue extends Component
 
     public function updated(string $property): void
     {
-        if (in_array($property, ['search', 'status', 'queue', 'priority', 'assignee', 'sla'], true)) {
+        if (in_array($property, ['search', 'status', 'queue', 'priority', 'assignee', 'sla', 'type'], true)) {
             $this->resetPage();
         }
     }
@@ -70,6 +74,7 @@ final class TicketQueue extends Component
             ->when($this->status === 'open', fn ($query) => $query->whereIn('status', TicketStatus::open()))
             ->when(in_array($this->status, $statuses, true), fn ($query) => $query->where('status', $this->status))
             ->when($this->queue !== '', fn ($query) => $query->where('queue_id', $this->queue))
+            ->when(TicketType::tryFrom($this->type) !== null, fn ($query) => $query->where('type', $this->type))
             ->when(in_array($this->priority, $priorities, true), fn ($query) => $query->where('priority', $this->priority))
             ->when($this->assignee === 'me', fn ($query) => $query->where('assignee_id', $this->user()->id))
             ->when($this->assignee === 'unassigned', fn ($query) => $query->whereNull('assignee_id'))
@@ -88,6 +93,7 @@ final class TicketQueue extends Component
             'queues' => Queue::query()->where('is_active', true)->orderBy('name')->get(),
             'statuses' => TicketStatus::cases(),
             'priorities' => Priority::cases(),
+            'types' => TicketType::cases(),
         ])->title(__('ticketing::ui.desk.title'));
     }
 
