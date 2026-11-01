@@ -6,5 +6,6 @@
 declare(strict_types=1);
 
 return [
+    'account_inactive' => 'Your account has been deactivated. Contact your administrator.',
     'no_organization' => 'Your account is not a member of any active organization. Contact your administrator.',
 ];

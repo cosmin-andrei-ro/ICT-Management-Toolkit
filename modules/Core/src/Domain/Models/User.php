@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Modules\Core\Domain\Models;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -44,7 +46,7 @@ use Spatie\Permission\Traits\HasRoles;
 #[UseFactory(UserFactory::class)]
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
-final class User extends Authenticatable
+final class User extends Authenticatable implements FilamentUser
 {
     use Auditable;
 
@@ -70,6 +72,15 @@ final class User extends Authenticatable
     public function currentOrganization(): BelongsTo
     {
         return $this->belongsTo(Organization::class, 'current_organization_id');
+    }
+
+    /**
+     * Requires the organization context, which the panel's "organization"
+     * middleware sets before Filament's authentication check runs.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->is_active && $this->can('core.admin.access');
     }
 
     public function isMemberOf(Organization|string $organization): bool

@@ -24,8 +24,8 @@ use Modules\Core\Domain\Models\User;
  * @property ?string $organization_id
  * @property ?string $user_id
  * @property AuditEvent $event
- * @property string $auditable_type
- * @property string $auditable_id
+ * @property ?string $auditable_type
+ * @property ?string $auditable_id
  * @property ?array<string, mixed> $old_values
  * @property ?array<string, mixed> $new_values
  * @property ?string $ip_address

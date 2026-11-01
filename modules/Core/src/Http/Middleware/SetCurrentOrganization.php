@@ -15,8 +15,9 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Sets the organization context for an authenticated user. Must run after the
- * authentication middleware (route alias "organization").
+ * Sets the organization context for an authenticated user (route alias
+ * "organization"). Guests pass through untouched, leaving the decision to the
+ * authentication middleware; with no context, scoped queries return nothing.
  */
 final readonly class SetCurrentOrganization
 {
@@ -29,7 +30,12 @@ final readonly class SetCurrentOrganization
     {
         $user = $request->user();
 
-        abort_unless($user instanceof User, Response::HTTP_UNAUTHORIZED);
+        if (! $user instanceof User) {
+            return $next($request);
+        }
+
+        // Deactivation takes effect on the next request, not at the next login.
+        abort_unless($user->is_active, Response::HTTP_FORBIDDEN, __('core::errors.account_inactive'));
 
         $organization = $this->resolveOrganization($user);
 

@@ -8,10 +8,16 @@ declare(strict_types=1);
 namespace Modules\Core;
 
 use App\Support\Modules\ModuleServiceProvider;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
+use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
 use Modules\Core\Domain\Audit\RequestContext;
 use Modules\Core\Domain\Authorization\DefaultRole;
@@ -23,6 +29,7 @@ use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Middleware\CaptureRequestContext;
+use Modules\Core\Http\Middleware\SecurityHeaders;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
 use Modules\Core\Infrastructure\Console\SyncPermissionsCommand;
 use Spatie\Permission\Events\PermissionAttachedEvent;
@@ -51,7 +58,14 @@ final class CoreServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         $this->app->make(Router::class)->aliasMiddleware('organization', SetCurrentOrganization::class);
-        $this->app->make(Kernel::class)->prependMiddleware(CaptureRequestContext::class);
+        $kernel = $this->app->make(Kernel::class);
+        $kernel->prependMiddleware(CaptureRequestContext::class);
+        $kernel->pushMiddleware(SecurityHeaders::class);
+
+        // Laravel sorts middleware by priority and would run authentication first. The
+        // organization must be known before it: Filament's canAccessPanel() checks an
+        // organization-scoped permission. Guests pass through, so this order is safe.
+        $kernel->addToMiddlewarePriorityBefore(AuthenticatesRequests::class, SetCurrentOrganization::class);
 
         // Stored in polymorphic columns (audit log, comments, roles): class renames
         // must not orphan history, and every morphable model must be listed.
@@ -68,6 +82,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
             RecordAuthorizationChange::class,
         );
 
+        Event::listen([Login::class, Failed::class, Logout::class, Lockout::class], RecordAuthenticationEvent::class);
+
         if ($this->app->runningInConsole()) {
             $this->commands([SyncPermissionsCommand::class]);
         }
@@ -76,6 +92,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
     private function registerPermissions(PermissionRegistry $registry): void
     {
         $registry->register([
+            'core.admin.access',
             'core.organization.view',
             'core.organization.update',
             'core.user.view',

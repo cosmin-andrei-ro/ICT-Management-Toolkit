@@ -61,6 +61,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Source Code URL
+    |--------------------------------------------------------------------------
+    |
+    | AGPL-3.0 §13 requires offering the source of the running version to users
+    | interacting with it over a network. Point this at your fork if you modify it.
+    |
+    */
+
+    'source_url' => env('APP_SOURCE_URL', 'https://github.com/cosmin-andrei-ro/ICT-Management-Toolkit'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

@@ -55,6 +55,17 @@ it('forbids users without any organization', function (): void {
         ->assertJsonPath('message', __('core::errors.no_organization'));
 });
 
+it('blocks a user deactivated after signing in', function (): void {
+    $organization = Organization::factory()->create();
+    $user = User::factory()->memberOf($organization)->create();
+    $user->forceFill(['is_active' => false])->save();
+
+    $this->actingAs($user)
+        ->getJson('/__test/current-organization')
+        ->assertForbidden()
+        ->assertJsonPath('message', __('core::errors.account_inactive'));
+});
+
 it('requires authentication', function (): void {
     $this->getJson('/__test/current-organization')->assertUnauthorized();
 });

@@ -25,20 +25,24 @@ final readonly class AuditTrail
     ) {}
 
     /**
+     * $model is null only for security events without a known subject
+     * (e.g. a failed login for an unknown email). $userId overrides the
+     * authenticated user, for events fired before or after authentication.
+     *
      * @param  array<string, mixed>|null  $oldValues
      * @param  array<string, mixed>|null  $newValues
      */
-    public function record(AuditEvent $event, Model $model, ?array $oldValues, ?array $newValues): void
+    public function record(AuditEvent $event, ?Model $model, ?array $oldValues, ?array $newValues, ?string $userId = null): void
     {
-        $organizationId = $model->getAttribute('organization_id') ?? $this->organization->id();
-        $userId = $this->auth->guard()->id();
+        $organizationId = $model?->getAttribute('organization_id') ?? $this->organization->id();
+        $userId ??= $this->auth->guard()->id();
 
         (new AuditLog)->forceFill([
             'organization_id' => is_string($organizationId) ? $organizationId : null,
             'user_id' => is_string($userId) ? $userId : null,
             'event' => $event,
-            'auditable_type' => $model->getMorphClass(),
-            'auditable_id' => $model->getKey(),
+            'auditable_type' => $model?->getMorphClass(),
+            'auditable_id' => $model?->getKey(),
             'old_values' => $oldValues,
             'new_values' => $newValues,
             'ip_address' => $this->request->ipAddress,

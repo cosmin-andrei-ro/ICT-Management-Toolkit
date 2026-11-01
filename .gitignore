@@ -28,3 +28,9 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
+
+# Published by composer scripts (post-autoload-dump)
+/public/css/filament
+/public/js/filament
+/public/fonts/filament
+/public/vendor/livewire

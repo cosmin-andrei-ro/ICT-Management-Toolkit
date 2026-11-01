@@ -21,4 +21,8 @@ enum AuditEvent: string
     case RoleRevoked = 'role_revoked';
     case PermissionGranted = 'permission_granted';
     case PermissionRevoked = 'permission_revoked';
+    case Login = 'login';
+    case LoginFailed = 'login_failed';
+    case Logout = 'logout';
+    case Lockout = 'lockout';
 }
