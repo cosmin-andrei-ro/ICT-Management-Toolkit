@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Core\Infrastructure\Directory;
 
+use InvalidArgumentException;
 use LdapRecord\Connection;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\AccountControl;
@@ -60,6 +61,25 @@ final readonly class LdapDirectory implements Directory
             })
             ->select(self::USER_ATTRIBUTES)
             // Two are enough to detect ambiguity, which is treated as "not found".
+            ->limit(2)
+            ->get());
+
+        return count($entries) === 1 && is_array($entries[0]) ? $this->toDirectoryUser($entries[0]) : null;
+    }
+
+    public function findByGuid(string $guid): ?DirectoryUser
+    {
+        try {
+            // Guid validates the format, so the raw (pre-escaped hex) filter value is safe.
+            $encoded = (new Guid($guid))->getEncodedHex();
+        } catch (InvalidArgumentException) {
+            return null;
+        }
+
+        $entries = $this->run(fn (): array => $this->query()
+            ->where('objectclass', '=', 'user')
+            ->whereRaw('objectguid', '=', $encoded)
+            ->select(self::USER_ATTRIBUTES)
             ->limit(2)
             ->get());
 

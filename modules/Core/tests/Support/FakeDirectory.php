@@ -63,6 +63,20 @@ final class FakeDirectory implements Directory
         return count($matches) === 1 ? $matches[0]['user'] : null;
     }
 
+    public function findByGuid(string $guid): ?DirectoryUser
+    {
+        $this->failIfUnavailable();
+
+        return $this->accounts[$guid]['user'] ?? null;
+    }
+
+    public function removeUser(string $guid): self
+    {
+        unset($this->accounts[$guid]);
+
+        return $this;
+    }
+
     public function authenticate(DirectoryUser $user, string $password): bool
     {
         $this->failIfUnavailable();

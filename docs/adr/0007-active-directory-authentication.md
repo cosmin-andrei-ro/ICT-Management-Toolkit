@@ -43,6 +43,11 @@ Companies running the platform need their staff to sign in with their on-premise
 
 ## Consequences
 
-- A user disabled in AD keeps an existing session until it expires. A scheduled `core:directory:sync` to deactivate such accounts between sign-ins is planned as a follow-up.
+- `core:directory:sync` runs on the scheduler (`LDAP_SYNC_SCHEDULE`, every 15 minutes by default). It re-checks every active directory account by `objectGUID`:
+  - Accounts disabled or removed in AD get `directory_disabled_at`, and their next request is refused.
+  - The flag is separate from `is_active`, which records an administrator's decision. Re-enabling the account in AD restores access with the roles it had.
+  - Group changes re-sync organizations and roles. An account left without a mapped group loses all access.
+  - The sync reads everything before changing anything. It aborts without changes if AD is unreachable, or if more than half of the accounts appear missing, which usually means a wrong base DN. `--force` overrides the second check.
+- An account disabled in AD can keep using an open session until the next sync run, so the schedule bounds that delay.
 - Tests use an in-memory directory for the flow, and LdapRecord's `LdapFake` for the LDAP implementation (filters, escaping, binds). An opt-in integration suite (`--group=active-directory`) runs the full sign-in against a Samba AD domain controller in Docker (`docker/samba-ad`, profile `ad`). Validation against the customer's own AD remains a step before production.
 - Entra ID (Azure AD) through OIDC is not covered. It would be a separate source (`oidc`) under the same rules.

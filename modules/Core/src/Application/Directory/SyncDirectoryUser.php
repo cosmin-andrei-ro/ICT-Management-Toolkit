@@ -43,12 +43,7 @@ final readonly class SyncDirectoryUser
             throw new DirectoryAccessDenied(DirectoryAccessDenied::ACCOUNT_DISABLED);
         }
 
-        /** @var Collection<int, DirectoryGroupMapping> $mappings */
-        $mappings = DirectoryGroupMapping::query()
-            ->withoutGlobalScope(OrganizationScope::class)
-            ->whereIn('group_dn', $groups)
-            ->with('role')
-            ->get();
+        $mappings = $this->mappingsFor($groups);
 
         if ($mappings->isEmpty()) {
             throw new DirectoryAccessDenied(DirectoryAccessDenied::NO_MAPPED_GROUP);
@@ -62,12 +57,70 @@ final readonly class SyncDirectoryUser
                 'email' => $directoryUser->email,
                 'directory_username' => $directoryUser->username,
                 'directory_synced_at' => now(),
+                'directory_disabled_at' => null,
             ])->save();
 
             $this->syncOrganizationsAndRoles($user, $mappings);
 
             return $user;
         });
+    }
+
+    /**
+     * Periodic re-check of an existing directory account (core:directory:sync).
+     * Unlike sign-in, a user without mapped groups is not an error here: their
+     * memberships and roles are revoked.
+     *
+     * @param  ?DirectoryUser  $directoryUser  Null when the account no longer exists in AD.
+     * @param  list<string>  $groups
+     */
+    public function refresh(User $user, ?DirectoryUser $directoryUser, array $groups): DirectorySyncOutcome
+    {
+        if ($directoryUser === null || ! $directoryUser->enabled) {
+            // Roles are kept: access is blocked by the flag, and restored as is if AD re-enables the account.
+            if ($user->directory_disabled_at === null) {
+                $user->forceFill(['directory_disabled_at' => now()])->save();
+            }
+
+            return $directoryUser === null ? DirectorySyncOutcome::NotFound : DirectorySyncOutcome::Disabled;
+        }
+
+        return $this->db->transaction(function () use ($user, $directoryUser, $groups): DirectorySyncOutcome {
+            $emailTaken = User::query()->withTrashed()
+                ->where('email', $directoryUser->email)
+                ->whereKeyNot($user->id)
+                ->exists();
+
+            $user->forceFill([
+                'name' => $directoryUser->name,
+                // A colliding email is left as it was; the next sign-in will be denied and logged.
+                'email' => $emailTaken ? $user->email : $directoryUser->email,
+                'directory_username' => $directoryUser->username,
+                'directory_synced_at' => now(),
+                'directory_disabled_at' => null,
+            ])->save();
+
+            $this->syncOrganizationsAndRoles($user, $this->mappingsFor($groups));
+
+            return $emailTaken ? DirectorySyncOutcome::EmailConflict : DirectorySyncOutcome::Active;
+        });
+    }
+
+    /**
+     * @param  list<string>  $groups
+     * @return Collection<int, DirectoryGroupMapping>
+     */
+    private function mappingsFor(array $groups): Collection
+    {
+        if ($groups === []) {
+            return new Collection;
+        }
+
+        return DirectoryGroupMapping::query()
+            ->withoutGlobalScope(OrganizationScope::class)
+            ->whereIn('group_dn', $groups)
+            ->with('role')
+            ->get();
     }
 
     private function findOrNewUser(DirectoryUser $directoryUser): User
@@ -130,7 +183,7 @@ final readonly class SyncDirectoryUser
         }
 
         if (! in_array($user->current_organization_id, $current, true)) {
-            $user->forceFill(['current_organization_id' => $current[0]])->save();
+            $user->forceFill(['current_organization_id' => $current[0] ?? null])->save();
         }
     }
 

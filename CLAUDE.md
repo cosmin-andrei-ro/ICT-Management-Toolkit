@@ -275,6 +275,7 @@ PHP și Composer rulează în containerul Sail (nu sunt instalate pe host).
 
 # verificare conexiune Active Directory (și maparea unui utilizator)
 ./vendor/bin/sail artisan core:directory:test [utilizator]
+./vendor/bin/sail artisan core:directory:sync    # rulează și programat, prin scheduler
 
 # calitate
 ./vendor/bin/sail composer test      # Pest

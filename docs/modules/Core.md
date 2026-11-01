@@ -38,6 +38,8 @@ The foundation every other module builds on. Code: `modules/Core/`.
 3. Run `php artisan core:directory:test` to check the connection, then `php artisan core:directory:test jdoe` to see how a user would be mapped.
 4. Map AD groups to roles in each organization (admin panel → Access → AD group mappings).
 
+5. Make sure the Laravel scheduler runs (`* * * * * php artisan schedule:run` in cron, or `php artisan schedule:work`). It runs `core:directory:sync` every 15 minutes (`LDAP_SYNC_SCHEDULE`). The sync blocks accounts disabled or removed in AD, and re-syncs roles after group changes. You can also run it by hand: `php artisan core:directory:sync`.
+
 For development, an optional Samba AD container provides a test domain: see [docs/development/active-directory.md](../development/active-directory.md).
 
 ## Administration panel

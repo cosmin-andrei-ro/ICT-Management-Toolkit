@@ -30,6 +30,11 @@ final readonly class UnavailableDirectory implements Directory
         throw new DirectoryUnavailable($this->reason);
     }
 
+    public function findByGuid(string $guid): ?DirectoryUser
+    {
+        throw new DirectoryUnavailable($this->reason);
+    }
+
     public function authenticate(DirectoryUser $user, string $password): bool
     {
         throw new DirectoryUnavailable($this->reason);
