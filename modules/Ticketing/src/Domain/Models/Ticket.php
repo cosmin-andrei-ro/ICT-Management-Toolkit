@@ -144,6 +144,14 @@ final class Ticket extends Model
     }
 
     /**
+     * @return HasMany<SlaTimer, $this>
+     */
+    public function slaTimers(): HasMany
+    {
+        return $this->hasMany(SlaTimer::class);
+    }
+
+    /**
      * @return HasMany<StatusTransition, $this>
      */
     public function statusTransitions(): HasMany

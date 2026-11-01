@@ -9,6 +9,7 @@ namespace Modules\Ticketing\Application\Actions;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Modules\Core\Domain\Models\User;
+use Modules\Ticketing\Application\Sla\SlaClock;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Events\TicketStatusChanged;
 use Modules\Ticketing\Domain\Models\StatusTransition;
@@ -19,12 +20,14 @@ use Modules\Ticketing\Domain\Workflow\TicketWorkflow;
  * The single place where a ticket's status changes: validates the transition,
  * records it for reporting and dispatches the event. Callers set any other
  * attributes on the ticket first, and run this inside their transaction.
+ * SLA clocks follow every status change from here.
  */
 final readonly class TicketLifecycle
 {
     public function __construct(
         private TicketWorkflow $workflow,
         private Dispatcher $events,
+        private SlaClock $sla,
     ) {}
 
     public function transition(Ticket $ticket, TicketStatus $to, ?User $actor): void
@@ -36,6 +39,7 @@ final readonly class TicketLifecycle
         $ticket->save();
 
         $this->record($ticket, $from, $to, $actor);
+        $this->sla->onTransition($ticket, $from, $to);
         $this->events->dispatch(new TicketStatusChanged($ticket, $actor, $from, $to));
     }
 

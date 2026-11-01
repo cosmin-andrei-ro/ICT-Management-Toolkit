@@ -16,15 +16,20 @@ use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
+use Modules\Ticketing\Domain\Events\SlaBreached;
+use Modules\Ticketing\Domain\Events\SlaWarning;
 use Modules\Ticketing\Domain\Events\TicketAssigned;
 use Modules\Ticketing\Domain\Events\TicketCommentAdded;
 use Modules\Ticketing\Domain\Events\TicketCreated;
 use Modules\Ticketing\Domain\Events\TicketResolved;
 use Modules\Ticketing\Domain\Models\Category;
 use Modules\Ticketing\Domain\Models\Queue;
+use Modules\Ticketing\Domain\Models\SlaTimer;
 use Modules\Ticketing\Domain\Models\Ticket;
 use Modules\Ticketing\Infrastructure\Console\AutoCloseTicketsCommand;
+use Modules\Ticketing\Infrastructure\Console\CheckSlaCommand;
 
 final class TicketingServiceProvider extends ModuleServiceProvider
 {
@@ -52,6 +57,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.ticket' => Ticket::class,
             'ticketing.category' => Category::class,
             'ticketing.queue' => Queue::class,
+            'ticketing.sla_timer' => SlaTimer::class,
         ]);
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
@@ -60,13 +66,15 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         });
 
         Event::listen([TicketCreated::class, TicketAssigned::class, TicketResolved::class, TicketCommentAdded::class], SendTicketNotifications::class);
+        Event::listen([SlaWarning::class, SlaBreached::class], SendSlaNotifications::class);
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(AutoCloseTicketsCommand::class)->hourly()->withoutOverlapping()->onOneServer();
+            $schedule->command(CheckSlaCommand::class)->everyMinute()->withoutOverlapping()->onOneServer();
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([AutoCloseTicketsCommand::class]);
+            $this->commands([AutoCloseTicketsCommand::class, CheckSlaCommand::class]);
         }
     }
 

@@ -12,6 +12,7 @@ use Illuminate\Database\ConnectionInterface;
 use InvalidArgumentException;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Ticketing\Application\Sla\SlaClock;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Events\TicketCreated;
 use Modules\Ticketing\Domain\Models\Category;
@@ -28,6 +29,7 @@ final readonly class CreateTicket
         private TicketNumberGenerator $numbers,
         private PriorityMatrix $priorities,
         private TicketLifecycle $lifecycle,
+        private SlaClock $sla,
         private Dispatcher $events,
     ) {}
 
@@ -70,6 +72,7 @@ final readonly class CreateTicket
             ])->save();
 
             $this->lifecycle->record($ticket, null, TicketStatus::New, $actor);
+            $this->sla->start($ticket);
 
             return $ticket;
         });

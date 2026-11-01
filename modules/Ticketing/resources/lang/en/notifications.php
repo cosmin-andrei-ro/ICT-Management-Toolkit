@@ -27,4 +27,20 @@ return [
         'subject' => '[:number] The requester replied',
         'line' => 'The requester replied on ticket :number.',
     ],
+    'sla_response_warning' => [
+        'subject' => '[:number] First response due soon',
+        'line' => 'Ticket :number has used three quarters of its first-response time.',
+    ],
+    'sla_resolution_warning' => [
+        'subject' => '[:number] Resolution due soon',
+        'line' => 'Ticket :number has used three quarters of its resolution time.',
+    ],
+    'sla_response_breached' => [
+        'subject' => '[:number] First response overdue',
+        'line' => 'Ticket :number missed its first-response target.',
+    ],
+    'sla_resolution_breached' => [
+        'subject' => '[:number] Resolution overdue',
+        'line' => 'Ticket :number missed its resolution target.',
+    ],
 ];
