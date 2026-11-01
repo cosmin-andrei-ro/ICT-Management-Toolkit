@@ -9,6 +9,7 @@ namespace Modules\Ticketing\Application\Actions;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Modules\Core\Domain\Models\User;
+use Modules\Ticketing\Application\Changes\ChangeGuard;
 use Modules\Ticketing\Application\Sla\SlaClock;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Events\TicketStatusChanged;
@@ -28,12 +29,14 @@ final readonly class TicketLifecycle
         private TicketWorkflow $workflow,
         private Dispatcher $events,
         private SlaClock $sla,
+        private ChangeGuard $changes,
     ) {}
 
     public function transition(Ticket $ticket, TicketStatus $to, ?User $actor): void
     {
         $from = $ticket->status;
         $this->workflow->assertCanTransition($from, $to);
+        $this->changes->assertCanTransition($ticket, $to);
 
         $ticket->status = $to;
         $ticket->save();

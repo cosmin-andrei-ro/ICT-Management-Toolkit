@@ -65,6 +65,19 @@ final class Service extends Model
     use SoftDeletes;
     use TracksAuthors;
 
+    /**
+     * Mirror the column defaults, so new instances know them before saving.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'impact' => 'low',
+        'urgency' => 'low',
+        'form_schema' => '[]',
+        'is_active' => true,
+        'sort_order' => 0,
+    ];
+
     protected static function booted(): void
     {
         // An invalid form must never be stored. Returns nothing: "saving" halts on a value.

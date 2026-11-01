@@ -53,6 +53,16 @@ final class Category extends Model
     use TracksAuthors;
 
     /**
+     * Mirror the column defaults, so new instances know them before saving.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
+        'sort_order' => 0,
+    ];
+
+    /**
      * @return BelongsTo<self, $this>
      */
     public function parent(): BelongsTo

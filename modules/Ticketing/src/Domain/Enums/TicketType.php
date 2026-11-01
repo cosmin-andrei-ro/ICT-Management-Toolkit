@@ -8,14 +8,14 @@ declare(strict_types=1);
 namespace Modules\Ticketing\Domain\Enums;
 
 /**
- * Mirrored by ticketing_tickets_type_check. Changes arrive with their own workflow
- * in a later stage.
+ * Mirrored by ticketing_tickets_type_check.
  */
 enum TicketType: string
 {
     case Incident = 'incident';
     case ServiceRequest = 'service_request';
     case Problem = 'problem';
+    case Change = 'change';
 
     public function numberPrefix(): string
     {
@@ -23,12 +23,13 @@ enum TicketType: string
             self::Incident => 'INC',
             self::ServiceRequest => 'REQ',
             self::Problem => 'PRB',
+            self::Change => 'CHG',
         };
     }
 
     /**
-     * Types people may raise themselves (portal, API). Problems are opened by the
-     * service desk only.
+     * Types people may raise themselves (portal, API). Problems and changes are
+     * opened by the service desk only.
      *
      * @return list<self>
      */
@@ -39,7 +40,8 @@ enum TicketType: string
 
     public function hasSla(): bool
     {
-        return $this !== self::Problem;
+        // Problems are investigated and changes are scheduled: neither has response targets.
+        return $this === self::Incident || $this === self::ServiceRequest;
     }
 
     public function label(): string

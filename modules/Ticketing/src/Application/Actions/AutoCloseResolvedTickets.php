@@ -10,6 +10,7 @@ namespace Modules\Ticketing\Application\Actions;
 use Illuminate\Contracts\Config\Repository as Config;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Domain\Tenancy\OrganizationScope;
+use Modules\Ticketing\Domain\Changes\ChangeType;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Models\Ticket;
 
@@ -39,6 +40,8 @@ final readonly class AutoCloseResolvedTickets
             ->withoutGlobalScope(OrganizationScope::class)
             ->where('status', TicketStatus::Resolved)
             ->where('resolved_at', '<=', now()->subDays($days))
+            // Emergency changes wait for their post-implementation review.
+            ->whereDoesntHave('changeDetails', fn ($details) => $details->where('change_type', ChangeType::Emergency)->whereNull('reviewed_at'))
             ->orderBy('id')
             ->each(function (Ticket $ticket) use (&$closed): void {
                 $this->context->runAs($ticket->organization_id, fn () => $this->closeTicket->handle($ticket, null));

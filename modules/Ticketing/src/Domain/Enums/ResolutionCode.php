@@ -19,6 +19,8 @@ enum ResolutionCode: string
     case Duplicate = 'duplicate';
     case UserError = 'user_error';
     case NoActionNeeded = 'no_action_needed';
+    case Implemented = 'implemented';
+    case RolledBack = 'rolled_back';
 
     public function label(): string
     {
