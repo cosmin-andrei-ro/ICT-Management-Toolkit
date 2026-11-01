@@ -37,6 +37,7 @@ use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Authorization\Role;
 use Modules\Core\Domain\Directory\Directory;
 use Modules\Core\Domain\Directory\DirectoryGroupMapping;
+use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\BusinessCalendar;
 use Modules\Core\Domain\Models\Comment;
@@ -77,6 +78,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->scoped(RequestContext::class);
         $this->app->singleton(PermissionRegistry::class);
         $this->app->singleton(Navigation::class);
+        $this->app->singleton(Manual::class);
+        $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */
             $config = $app->make('config')->get('core.directory', []);

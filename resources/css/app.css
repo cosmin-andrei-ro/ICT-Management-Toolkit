@@ -8,3 +8,78 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* User manual: Markdown rendered by ManualPage::html(). */
+.manual-content {
+    color: var(--color-gray-800);
+    line-height: 1.7;
+}
+.manual-content h2 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+.manual-content h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+.manual-content p,
+.manual-content ul,
+.manual-content ol,
+.manual-content table,
+.manual-content pre {
+    margin-bottom: 1rem;
+}
+.manual-content ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+}
+.manual-content ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+}
+.manual-content li + li {
+    margin-top: 0.25rem;
+}
+.manual-content a {
+    color: var(--color-blue-700);
+    text-decoration: underline;
+}
+.manual-content code {
+    border-radius: 0.25rem;
+    background: var(--color-gray-100);
+    padding: 0.1rem 0.3rem;
+    font-size: 0.875em;
+}
+.manual-content pre {
+    overflow-x: auto;
+    border-radius: 0.5rem;
+    background: var(--color-gray-900);
+    padding: 1rem;
+    color: var(--color-gray-100);
+}
+.manual-content pre code {
+    background: transparent;
+    padding: 0;
+}
+.manual-content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+.manual-content th,
+.manual-content td {
+    border: 1px solid var(--color-gray-200);
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+    vertical-align: top;
+}
+.manual-content th {
+    background: var(--color-gray-50);
+    font-weight: 600;
+}

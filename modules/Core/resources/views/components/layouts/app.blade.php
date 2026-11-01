@@ -16,6 +16,9 @@
             </div>
 
             <div class="flex items-center gap-4 text-sm">
+                <a href="{{ route('manual.index') }}" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-gray-600 ring-1 ring-gray-300 hover:bg-gray-50 hover:text-gray-900">
+                    <span aria-hidden="true">?</span> {{ __('core::manual.title') }}
+                </a>
                 <span class="text-gray-600">{{ auth()->user()?->name }}</span>
 
                 <form method="POST" action="{{ route('logout') }}">

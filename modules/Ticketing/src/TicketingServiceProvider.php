@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Event;
 use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
@@ -45,6 +46,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         parent::register();
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
 
         ApiAbility::register('tickets:read', 'ticketing::api.abilities.read');
         ApiAbility::register('tickets:write', 'ticketing::api.abilities.write');
