@@ -6,6 +6,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Ticketing\Http\Livewire\Catalog\RequestServiceForm;
+use Modules\Ticketing\Http\Livewire\Catalog\ServiceCatalog;
 use Modules\Ticketing\Http\Livewire\Desk\ShowTicket as DeskShowTicket;
 use Modules\Ticketing\Http\Livewire\Desk\TicketQueue;
 use Modules\Ticketing\Http\Livewire\Portal\CreateTicket;
@@ -14,6 +16,9 @@ use Modules\Ticketing\Http\Livewire\Portal\TicketIndex;
 
 // URLs carry the ticket UUID, never its sequential number (no enumeration).
 Route::middleware(['auth', 'organization'])->group(function (): void {
+    Route::livewire('/catalog', ServiceCatalog::class)->name('ticketing.catalog.index');
+    Route::livewire('/catalog/{service}', RequestServiceForm::class)->whereUuid('service')->name('ticketing.catalog.request');
+
     Route::livewire('/tickets', TicketIndex::class)->name('ticketing.portal.index');
     Route::livewire('/tickets/new', CreateTicket::class)->name('ticketing.portal.create');
     Route::livewire('/tickets/{ticket}', PortalShowTicket::class)->whereUuid('ticket')->name('ticketing.portal.show');

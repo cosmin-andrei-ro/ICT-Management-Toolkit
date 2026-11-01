@@ -42,6 +42,10 @@ The foundation every other module builds on. Code: `modules/Core/`.
 
 For development, an optional Samba AD container provides a test domain: see [docs/development/active-directory.md](../development/active-directory.md).
 
+## Form schemas
+
+`Modules\Core\Domain\Forms\FormSchema` defines small configurable forms (text, textarea, number, date, select, checkbox), stored as `jsonb`. It validates answers and stores them with the labels of the moment ([ADR 0011](../adr/0011-form-schemas.md)). It is used by the service catalog, and meant for custom fields in other modules.
+
 ## Business calendars
 
 Working hours per weekday in a time zone, extra days off, and optionally Romanian public holidays (computed each year, including Orthodox Easter and Pentecost). An organization's default calendar drives working-time calculations such as SLA deadlines. Without one, Monday–Friday 09:00–17:00, Europe/Bucharest, with Romanian holidays applies. Managed in Administration → Organization → Business calendars (`core.calendar.manage`).

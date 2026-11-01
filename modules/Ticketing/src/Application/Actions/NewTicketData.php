@@ -23,5 +23,8 @@ final readonly class NewTicketData
         public TicketChannel $channel = TicketChannel::Portal,
         public ?string $categoryId = null,
         public ?string $queueId = null,
+        public ?string $serviceId = null,
+        /** @var array<string, mixed> Stored in the ticket's custom_fields (e.g. service form answers). */
+        public array $customFields = [],
     ) {}
 }

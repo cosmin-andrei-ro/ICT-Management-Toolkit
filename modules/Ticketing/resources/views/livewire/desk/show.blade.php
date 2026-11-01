@@ -16,6 +16,8 @@
             <p class="whitespace-pre-line text-sm text-gray-800">{{ $ticket->description }}</p>
         </section>
 
+        <x-ticketing::service-answers :ticket="$ticket" />
+
         <x-ticketing::conversation :comments="$comments" :attachments="$attachments" :show-internal="true" />
 
         @can('comment', $ticket)

@@ -36,6 +36,8 @@ final class TicketResource extends JsonResource
             'assignee' => $this->whenLoaded('assignee', fn (): ?array => $this->assignee !== null ? ['id' => $this->assignee->id, 'name' => $this->assignee->name] : null),
             'queue' => $this->whenLoaded('queue', fn (): ?array => $this->queue !== null ? ['id' => $this->queue->id, 'name' => $this->queue->name] : null),
             'category' => $this->whenLoaded('category', fn (): ?array => $this->category !== null ? ['id' => $this->category->id, 'name' => $this->category->name] : null),
+            'service' => $this->whenLoaded('service', fn (): ?array => $this->service !== null ? ['id' => $this->service->id, 'name' => $this->service->name] : null),
+            'service_answers' => $this->serviceAnswers(),
             'resolution_code' => $this->resolution_code?->value,
             'first_responded_at' => $this->first_responded_at?->toIso8601String(),
             'resolved_at' => $this->resolved_at?->toIso8601String(),
