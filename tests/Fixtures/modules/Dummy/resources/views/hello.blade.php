@@ -1,0 +1,1 @@
+{{ __('dummy::messages.hello') }}
