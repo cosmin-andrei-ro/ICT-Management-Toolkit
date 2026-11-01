@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Modules\Core\Database\Factories\UserFactory;
 use Modules\Core\Domain\Concerns\Auditable;
+use Modules\Core\Domain\Directory\AuthSource;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -34,7 +35,11 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $name
  * @property string $email
  * @property ?Carbon $email_verified_at
- * @property string $password
+ * @property ?string $password
+ * @property AuthSource $auth_source
+ * @property ?string $directory_guid
+ * @property ?string $directory_username
+ * @property ?Carbon $directory_synced_at
  * @property bool $is_active
  * @property ?string $current_organization_id
  * @property ?Carbon $last_login_at
@@ -57,6 +62,15 @@ final class User extends Authenticatable implements FilamentUser
     use HasUuids;
     use Notifiable;
     use SoftDeletes;
+
+    /**
+     * Mirrors the column default, so new instances know their source before saving.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'auth_source' => 'local',
+    ];
 
     /**
      * @return BelongsToMany<Organization, $this>
@@ -83,6 +97,11 @@ final class User extends Authenticatable implements FilamentUser
         return $this->is_active && $this->can('core.admin.access');
     }
 
+    public function isDirectoryAccount(): bool
+    {
+        return $this->auth_source === AuthSource::Ldap;
+    }
+
     public function isMemberOf(Organization|string $organization): bool
     {
         $organizationId = $organization instanceof Organization ? $organization->id : $organization;
@@ -97,7 +116,7 @@ final class User extends Authenticatable implements FilamentUser
      */
     public function auditExclude(): array
     {
-        return ['last_login_at'];
+        return ['last_login_at', 'directory_synced_at'];
     }
 
     /**
@@ -115,6 +134,8 @@ final class User extends Authenticatable implements FilamentUser
             'last_login_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'auth_source' => AuthSource::class,
+            'directory_synced_at' => 'datetime',
         ];
     }
 }

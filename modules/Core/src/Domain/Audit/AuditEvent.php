@@ -25,4 +25,5 @@ enum AuditEvent: string
     case LoginFailed = 'login_failed';
     case Logout = 'logout';
     case Lockout = 'lockout';
+    case LoginDenied = 'login_denied';
 }

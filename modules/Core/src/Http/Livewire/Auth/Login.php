@@ -13,11 +13,13 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Modules\Core\Application\Authentication\AttemptLogin;
+use Modules\Core\Domain\Directory\Directory;
 
 #[Layout('core::components.layouts.guest')]
 final class Login extends Component
 {
-    public string $email = '';
+    /** Email, or AD username / DOMAIN\username / UPN. */
+    public string $login = '';
 
     public string $password = '';
 
@@ -25,11 +27,11 @@ final class Login extends Component
 
     public function login(AttemptLogin $attemptLogin, Request $request): void
     {
-        $this->email = trim($this->email);
+        $this->login = trim($this->login);
         $this->validate();
 
         try {
-            $attemptLogin->handle($request, $this->email, $this->password, $this->remember);
+            $attemptLogin->handle($request, $this->login, $this->password, $this->remember);
         } catch (ValidationException $exception) {
             // Never send the typed password back in the component snapshot.
             $this->reset('password');
@@ -42,7 +44,9 @@ final class Login extends Component
 
     public function render(): View
     {
-        return view('core::livewire.auth.login')->title(__('core::auth.login.title'));
+        return view('core::livewire.auth.login', [
+            'directoryEnabled' => app(Directory::class)->isEnabled(),
+        ])->title(__('core::auth.login.title'));
     }
 
     /**
@@ -51,7 +55,7 @@ final class Login extends Component
     protected function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email', 'max:255'],
+            'login' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'max:1024'],
             'remember' => ['boolean'],
         ];

@@ -1,11 +1,11 @@
 <form wire:submit="login" class="space-y-5" novalidate>
     <div>
-        <label for="email" class="block text-sm font-medium">{{ __('core::auth.login.email') }}</label>
-        <input wire:model="email" id="email" type="email" autocomplete="username" required autofocus
+        <label for="login" class="block text-sm font-medium">{{ __('core::auth.login.identifier') }}</label>
+        <input wire:model="login" id="login" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus
                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-gray-900 focus:ring-gray-900"
-               @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
-        @error('email')
-            <p id="email-error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
+               @error('login') aria-invalid="true" aria-describedby="login-error" @enderror>
+        @error('login')
+            <p id="login-error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
         @enderror
     </div>
 
@@ -23,6 +23,9 @@
         <input wire:model="remember" type="checkbox" class="rounded border-gray-300">
         {{ __('core::auth.login.remember') }}
     </label>
+    @if ($directoryEnabled)
+        <p class="-mt-3 text-xs text-gray-500">{{ __('core::auth.login.remember_local_only') }}</p>
+    @endif
 
     <button type="submit" wire:loading.attr="disabled"
             class="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 disabled:opacity-60">

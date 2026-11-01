@@ -273,6 +273,9 @@ PHP și Composer rulează în containerul Sail (nu sunt instalate pe host).
 # permisiuni definite în cod → baza de date (la fiecare deploy)
 ./vendor/bin/sail artisan core:permissions:sync
 
+# verificare conexiune Active Directory (și maparea unui utilizator)
+./vendor/bin/sail artisan core:directory:test [utilizator]
+
 # calitate
 ./vendor/bin/sail composer test      # Pest
 ./vendor/bin/sail composer analyse   # PHPStan

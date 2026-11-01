@@ -10,6 +10,7 @@ namespace Modules\Core\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Modules\Core\Domain\Directory\AuthSource;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\User;
 
@@ -37,6 +38,19 @@ final class UserFactory extends Factory
     public function unverified(): static
     {
         return $this->state(fn (): array => ['email_verified_at' => null]);
+    }
+
+    /**
+     * An Active Directory account: no local password, identified by its GUID.
+     */
+    public function fromDirectory(?string $guid = null): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'auth_source' => AuthSource::Ldap,
+            'password' => null,
+            'directory_guid' => $guid ?? (string) Str::uuid(),
+            'directory_username' => is_string($attributes['email']) ? Str::before($attributes['email'], '@') : null,
+        ]);
     }
 
     public function inactive(): static

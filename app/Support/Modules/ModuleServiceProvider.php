@@ -26,6 +26,19 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     abstract public function moduleKey(): string;
 
+    /**
+     * Merges modules/<Name>/config/<file>.php into "<moduleKey>.<file>". Subclasses
+     * overriding register() must call parent::register().
+     */
+    public function register(): void
+    {
+        $configPath = $this->modulePath('config');
+
+        foreach (glob($configPath.'/*.php') ?: [] as $file) {
+            $this->mergeConfigFrom($file, $this->moduleKey().'.'.basename($file, '.php'));
+        }
+    }
+
     public function boot(): void
     {
         $root = $this->modulePath();

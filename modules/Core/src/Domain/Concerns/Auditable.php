@@ -56,8 +56,9 @@ trait Auditable
             $trail->record($event, $model, $trail->filter($model, $model->getOriginal()), null);
         });
 
+        // registerModelEvent rather than restored(): the latter only exists on soft-deleting models.
         if (in_array(SoftDeletes::class, class_uses_recursive(static::class), true)) {
-            static::restored(function (Model $model): void {
+            static::registerModelEvent('restored', function (Model $model): void {
                 app(AuditTrail::class)->record(AuditEvent::Restored, $model, null, null);
             });
         }
