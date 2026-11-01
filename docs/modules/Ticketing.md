@@ -38,6 +38,17 @@ A **change** (`CHG-…`) is planned work on a live system, authorized before it 
 - **Calendar:** `/desk/changes`, the next 30 days, overlapping windows marked.
 - **Administration:** CAB boards (members, ECAB flag; deactivated rather than deleted) and standard change templates.
 
+## Email-to-ticket
+
+Support mailboxes are read over IMAP every minute ([ADR 0015](../adr/0015-email-to-ticket.md); development server: [docs/development/email-to-ticket.md](../development/email-to-ticket.md)).
+
+- A message from an active user of the organization opens a ticket (channel *email*) in the mailbox's queue; attachments follow the upload rules.
+- A reply with the ticket number in the subject (`[INC-000123]`) becomes a public comment, cut at the reply marker or the quoted conversation. Replies to closed tickets open a follow-up ticket.
+- Unknown senders, automatic messages, failed SPF/DMARC, floods (`TICKETING_MAIL_MAX_PER_SENDER_PER_HOUR`) and oversized messages are ignored and logged, never answered.
+- Ticket emails use the mailbox as Reply-To and carry anti-loop headers.
+- Administration: **Mailboxes** (password encrypted, write-only; test connection) and **Incoming email** (log, pruned after `TICKETING_MAIL_RETENTION_DAYS`, 90 by default). Commands: `ticketing:mail:fetch` (every minute), `ticketing:mail:prune` (daily).
+- Configuration: `TICKETING_MAIL_ALLOWED_PORTS` (993,143), `TICKETING_MAIL_ALLOW_UNENCRYPTED` (false), `TICKETING_MAIL_VERIFY_CERTIFICATES` (true).
+
 ## Service catalog
 
 - **Portal** (`/catalog`): people pick a service (new laptop, VPN access, …), answer its form and send a **service request**. Title, queue, category, impact and urgency come from the service. If the service's queue was deactivated, the request goes to the default queue.
@@ -91,5 +102,6 @@ curl -H "Authorization: Bearer <token>" -H "Accept: application/json" https://<h
 | `ticketing.problem.manage` | agent, team-lead | Create, analyse and resolve problems |
 | `ticketing.change.create` | agent, team-lead | Create and manage changes |
 | `ticketing.change.approve` | cab-member, team-lead | Decide on changes of the boards they sit on |
+| `ticketing.mailbox.manage` | administrator | Mailboxes (credentials) and the incoming email log |
 
 Administrators have every permission.

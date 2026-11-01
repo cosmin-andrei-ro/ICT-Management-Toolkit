@@ -17,6 +17,8 @@ use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Ticketing\Application\Email\MailboxReader;
+use Modules\Ticketing\Application\Email\ReplyAddress;
 use Modules\Ticketing\Application\Notifications\SendChangeNotifications;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
@@ -34,6 +36,7 @@ use Modules\Ticketing\Domain\Models\Category;
 use Modules\Ticketing\Domain\Models\ChangeApproval;
 use Modules\Ticketing\Domain\Models\ChangeDetails;
 use Modules\Ticketing\Domain\Models\ChangeTemplate;
+use Modules\Ticketing\Domain\Models\Mailbox;
 use Modules\Ticketing\Domain\Models\ProblemDetails;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Service;
@@ -41,6 +44,9 @@ use Modules\Ticketing\Domain\Models\SlaTimer;
 use Modules\Ticketing\Domain\Models\Ticket;
 use Modules\Ticketing\Infrastructure\Console\AutoCloseTicketsCommand;
 use Modules\Ticketing\Infrastructure\Console\CheckSlaCommand;
+use Modules\Ticketing\Infrastructure\Console\FetchMailCommand;
+use Modules\Ticketing\Infrastructure\Console\PruneMailLogCommand;
+use Modules\Ticketing\Infrastructure\Email\ImapMailboxReader;
 
 final class TicketingServiceProvider extends ModuleServiceProvider
 {
@@ -52,6 +58,10 @@ final class TicketingServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+
+        $this->app->bind(MailboxReader::class, ImapMailboxReader::class);
+        // Scoped: a long-running worker must see mailboxes added later.
+        $this->app->scoped(ReplyAddress::class);
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
@@ -75,6 +85,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.change_approval' => ChangeApproval::class,
             'ticketing.change_template' => ChangeTemplate::class,
             'ticketing.cab_board' => CabBoard::class,
+            'ticketing.mailbox' => Mailbox::class,
             'ticketing.sla_timer' => SlaTimer::class,
         ]);
 
@@ -94,10 +105,12 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(AutoCloseTicketsCommand::class)->hourly()->withoutOverlapping()->onOneServer();
             $schedule->command(CheckSlaCommand::class)->everyMinute()->withoutOverlapping()->onOneServer();
+            $schedule->command(FetchMailCommand::class)->everyMinute()->withoutOverlapping()->onOneServer();
+            $schedule->command(PruneMailLogCommand::class)->daily()->onOneServer();
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([AutoCloseTicketsCommand::class, CheckSlaCommand::class]);
+            $this->commands([AutoCloseTicketsCommand::class, CheckSlaCommand::class, FetchMailCommand::class, PruneMailLogCommand::class]);
         }
     }
 
@@ -112,6 +125,8 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.problem.manage',
             'ticketing.change.create',
             'ticketing.change.approve',
+            // Mailbox credentials: administrators only (they hold every permission).
+            'ticketing.mailbox.manage',
         ]);
 
         // Owner's decision: every agent may manage problems; a separate permission keeps it adjustable.

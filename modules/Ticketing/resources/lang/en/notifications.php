@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'reply_by_email' => 'You can reply to this email: your reply is added to the ticket.',
     'open_ticket' => 'Open the ticket',
     'created' => [
         'subject' => '[:number] We received your request',

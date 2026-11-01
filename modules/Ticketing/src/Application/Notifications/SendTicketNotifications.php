@@ -9,6 +9,7 @@ namespace Modules\Ticketing\Application\Notifications;
 
 use Illuminate\Support\Collection;
 use Modules\Core\Domain\Models\User;
+use Modules\Ticketing\Application\Email\ReplyAddress;
 use Modules\Ticketing\Domain\Events\TicketAssigned;
 use Modules\Ticketing\Domain\Events\TicketCommentAdded;
 use Modules\Ticketing\Domain\Events\TicketCreated;
@@ -19,8 +20,10 @@ use Modules\Ticketing\Domain\Models\Ticket;
  * Who hears about what. Nobody is notified of their own action, accounts that
  * cannot sign in are skipped, and internal notes never reach requesters.
  */
-final class SendTicketNotifications
+final readonly class SendTicketNotifications
 {
+    public function __construct(private ReplyAddress $replyAddress) {}
+
     public function handle(TicketCreated|TicketAssigned|TicketResolved|TicketCommentAdded $event): void
     {
         $ticket = $event->ticket;
@@ -58,7 +61,7 @@ final class SendTicketNotifications
      */
     private function notifyRequesterSide(Ticket $ticket, string $kind, iterable $recipients, ?User $actor): void
     {
-        $this->send($recipients, $actor, new TicketUpdate($kind, $ticket->number, $ticket->title, route('ticketing.portal.show', $ticket)));
+        $this->send($recipients, $actor, new TicketUpdate($kind, $ticket->number, $ticket->title, route('ticketing.portal.show', $ticket), $this->replyAddress->for($ticket->organization_id)));
     }
 
     /**
@@ -66,7 +69,7 @@ final class SendTicketNotifications
      */
     private function notifyDeskSide(Ticket $ticket, string $kind, iterable $recipients, ?User $actor): void
     {
-        $this->send($recipients, $actor, new TicketUpdate($kind, $ticket->number, $ticket->title, route('ticketing.desk.show', $ticket)));
+        $this->send($recipients, $actor, new TicketUpdate($kind, $ticket->number, $ticket->title, route('ticketing.desk.show', $ticket), $this->replyAddress->for($ticket->organization_id)));
     }
 
     /**
