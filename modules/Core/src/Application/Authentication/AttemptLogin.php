@@ -9,12 +9,12 @@ namespace Modules\Core\Application\Authentication;
 
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -27,6 +27,7 @@ use Modules\Core\Domain\Directory\Directory;
 use Modules\Core\Domain\Directory\DirectoryAccessDenied;
 use Modules\Core\Domain\Directory\DirectoryUnavailable;
 use Modules\Core\Domain\Models\User;
+use SensitiveParameter;
 
 /**
  * Signs a user in with a local or an Active Directory account (ADR 0007).
@@ -47,19 +48,20 @@ final readonly class AttemptLogin
         private AuthFactory $auth,
         private RateLimiter $limiter,
         private Dispatcher $events,
-        private Session $session,
         private Directory $directory,
         private SyncDirectoryUser $syncDirectoryUser,
         private AuditTrail $trail,
         private ExceptionHandler $exceptions,
+        private CompleteLogin $completeLogin,
     ) {}
 
     /**
      * @param  string  $identifier  Email for local accounts; username, DOMAIN\username, UPN or email for AD.
+     * @return bool Whether the user must now give a second factor (CompleteLogin::withCode).
      *
      * @throws ValidationException keyed to "login".
      */
-    public function handle(Request $request, string $identifier, string $password, bool $remember): User
+    public function handle(Request $request, string $identifier, #[SensitiveParameter] string $password, bool $remember): bool
     {
         $identifier = Str::lower(trim($identifier));
         $throttleKeys = [
@@ -69,8 +71,9 @@ final readonly class AttemptLogin
 
         $this->ensureNotThrottled($request, $throttleKeys);
 
-        $user = $this->usesLocalAccount($identifier)
-            ? $this->attemptLocal($identifier, $password, $remember)
+        $local = $this->usesLocalAccount($identifier);
+        $user = $local
+            ? $this->attemptLocal($identifier, $password)
             : $this->attemptDirectory($identifier, $password);
 
         if ($user === null) {
@@ -83,11 +86,9 @@ final readonly class AttemptLogin
 
         $this->limiter->clear((string) array_key_first($throttleKeys));
 
-        // Prevents session fixation.
-        $this->session->regenerate();
-        $user->forceFill(['last_login_at' => now()])->save();
-
-        return $user;
+        // Directory accounts never get a "remember me" cookie: a long-lived cookie
+        // would outlive a deactivation in AD.
+        return $this->completeLogin->afterPassword($user, $remember && $local);
     }
 
     private function usesLocalAccount(string $identifier): bool
@@ -102,26 +103,33 @@ final readonly class AttemptLogin
             ->exists();
     }
 
-    private function attemptLocal(string $email, string $password, bool $remember): ?User
+    /**
+     * Checks the password without signing in: the second factor may still be needed.
+     */
+    private function attemptLocal(string $email, #[SensitiveParameter] string $password): ?User
     {
         // Inactive accounts fail exactly like a wrong password, so the response does
         // not reveal which accounts exist or are disabled.
         $credentials = ['email' => $email, 'password' => $password, 'is_active' => true, 'auth_source' => AuthSource::Local->value];
+        $guard = $this->guard();
 
-        if (! $this->guard()->attempt($credentials, $remember)) {
+        if (! $guard instanceof SessionGuard) {
+            throw new LogicException('The web guard must be session based.');
+        }
+
+        if (! $guard->validate($credentials)) {
+            $attempted = $guard->getLastAttempted();
+            $this->events->dispatch(new Failed('web', $attempted instanceof User ? $attempted : null, ['email' => $email]));
+
             return null;
         }
 
-        $user = $this->guard()->user();
+        $user = $guard->getLastAttempted();
 
         return $user instanceof User ? $user : null;
     }
 
-    /**
-     * Directory accounts never get a "remember me" cookie: a long-lived cookie would
-     * outlive a deactivation in AD.
-     */
-    private function attemptDirectory(string $identifier, string $password): ?User
+    private function attemptDirectory(string $identifier, #[SensitiveParameter] string $password): ?User
     {
         try {
             $directoryUser = $this->directory->findUser($identifier);
@@ -156,8 +164,6 @@ final readonly class AttemptLogin
             // The password was right, so a distinct message tells an attacker nothing new.
             throw ValidationException::withMessages(['login' => __('core::auth.access_denied')]);
         }
-
-        $this->guard()->login($user);
 
         return $user;
     }

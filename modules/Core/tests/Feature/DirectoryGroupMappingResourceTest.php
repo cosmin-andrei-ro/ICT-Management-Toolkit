@@ -26,7 +26,7 @@ beforeEach(function (): void {
     $this->orgA = Organization::factory()->create();
     $this->orgB = Organization::factory()->create();
 
-    $this->admin = User::factory()->memberOf($this->orgA)->create();
+    $this->admin = User::factory()->memberOf($this->orgA)->withTwoFactor()->create();
     $this->context->runAs($this->orgA, fn () => $this->admin->assignRole(DefaultRole::Administrator->value));
 });
 
@@ -88,7 +88,7 @@ it('rejects invalid DNs, duplicates and roles of other organizations', function 
 });
 
 it('is forbidden without core.directory.manage', function (): void {
-    $agent = User::factory()->memberOf($this->orgA)->create();
+    $agent = User::factory()->memberOf($this->orgA)->withTwoFactor()->create();
     $this->context->runAs($this->orgA, function () use ($agent): void {
         $agent->assignRole(DefaultRole::Agent->value);
         // Admin panel access alone must not be enough to manage mappings.

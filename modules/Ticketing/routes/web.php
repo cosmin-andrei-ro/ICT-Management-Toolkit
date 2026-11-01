@@ -21,7 +21,7 @@ use Modules\Ticketing\Http\Livewire\Portal\TicketIndex;
 use Modules\Ticketing\Http\Livewire\Reports\TicketReports;
 
 // URLs carry the ticket UUID, never its sequential number (no enumeration).
-Route::middleware(['auth', 'organization'])->group(function (): void {
+Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(function (): void {
     Route::livewire('/catalog', ServiceCatalog::class)->name('ticketing.catalog.index');
     Route::livewire('/catalog/{service}', RequestServiceForm::class)->whereUuid('service')->name('ticketing.catalog.request');
 

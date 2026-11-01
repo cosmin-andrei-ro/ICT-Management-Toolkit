@@ -31,12 +31,20 @@ final class Login extends Component
         $this->validate();
 
         try {
-            $attemptLogin->handle($request, $this->login, $this->password, $this->remember);
+            $needsCode = $attemptLogin->handle($request, $this->login, $this->password, $this->remember);
         } catch (ValidationException $exception) {
             // Never send the typed password back in the component snapshot.
             $this->reset('password');
 
             throw $exception;
+        }
+
+        $this->reset('password');
+
+        if ($needsCode) {
+            $this->redirectRoute('login.challenge');
+
+            return;
         }
 
         $this->redirectIntended(route('home'));

@@ -25,6 +25,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Modules\Core\Http\Middleware\AllowUnsafeEval;
+use Modules\Core\Http\Middleware\RequireTwoFactor;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
 use ReflectionClass;
 
@@ -72,7 +73,8 @@ final class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+                RequireTwoFactor::class,
+            ], isPersistent: true);
 
         // After id(): resource discovery keys its cache by panel id.
         $this->discoverModuleResources($panel);

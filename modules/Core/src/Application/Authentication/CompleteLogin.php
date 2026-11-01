@@ -1,0 +1,118 @@
+<?php
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 ICT Management Toolkit contributors
+
+declare(strict_types=1);
+
+namespace Modules\Core\Application\Authentication;
+
+use Illuminate\Cache\RateLimiter;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Validation\ValidationException;
+use LogicException;
+use Modules\Core\Domain\Audit\AuditEvent;
+use Modules\Core\Domain\Audit\AuditTrail;
+use Modules\Core\Domain\Models\User;
+use SensitiveParameter;
+
+/**
+ * Signs a user in, or, when they use two-factor authentication, holds the
+ * sign-in until they give a code. The pending sign-in lives in the session for
+ * five minutes and is tied to it: nothing is sent to the browser.
+ */
+final readonly class CompleteLogin
+{
+    private const string PENDING = 'login.pending';
+
+    private const int PENDING_SECONDS = 300;
+
+    /** Codes per account per minute: a 6-digit code must not be guessable. */
+    private const int MAX_CODES_PER_MINUTE = 5;
+
+    public function __construct(
+        private AuthFactory $auth,
+        private Session $session,
+        private TwoFactorAuthentication $twoFactor,
+        private RateLimiter $limiter,
+        private AuditTrail $trail,
+    ) {}
+
+    /**
+     * @return bool Whether a second factor is still needed.
+     */
+    public function afterPassword(User $user, bool $remember): bool
+    {
+        // Prevents session fixation.
+        $this->session->regenerate();
+
+        if (! $this->twoFactor->isEnabled($user)) {
+            $this->signIn($user, $remember);
+
+            return false;
+        }
+
+        $this->session->put(self::PENDING, ['user_id' => $user->id, 'remember' => $remember, 'expires_at' => now()->getTimestamp() + self::PENDING_SECONDS]);
+
+        return true;
+    }
+
+    public function pendingUser(): ?User
+    {
+        $pending = $this->session->get(self::PENDING);
+
+        if (! is_array($pending) || ! is_string($pending['user_id'] ?? null) || ! is_int($pending['expires_at'] ?? null) || $pending['expires_at'] < now()->getTimestamp()) {
+            return null;
+        }
+
+        $user = User::query()->find($pending['user_id']);
+
+        return $user !== null && $user->is_active && $user->canSignIn() ? $user : null;
+    }
+
+    /**
+     * @throws ValidationException keyed to "code".
+     */
+    public function withCode(#[SensitiveParameter] string $code): User
+    {
+        $user = $this->pendingUser() ?? throw ValidationException::withMessages(['code' => __('core::security.challenge.expired')]);
+        $key = 'login:mfa:'.$user->id;
+
+        if ($this->limiter->tooManyAttempts($key, self::MAX_CODES_PER_MINUTE)) {
+            throw ValidationException::withMessages(['code' => __('auth.throttle', ['seconds' => $this->limiter->availableIn($key)])]);
+        }
+
+        if (! $this->twoFactor->verify($user, $code)) {
+            $this->limiter->hit($key, 60);
+            $this->trail->record(AuditEvent::MfaFailed, $user, null, null, $user->id);
+
+            throw ValidationException::withMessages(['code' => __('core::security.challenge.invalid')]);
+        }
+
+        $this->limiter->clear($key);
+        $pending = $this->session->pull(self::PENDING);
+        $this->session->regenerate();
+        $this->signIn($user, is_array($pending) && ($pending['remember'] ?? false) === true);
+
+        return $user;
+    }
+
+    private function signIn(User $user, bool $remember): void
+    {
+        $this->guard()->login($user, $remember);
+        $user->forceFill(['last_login_at' => now()])->save();
+    }
+
+    private function guard(): StatefulGuard
+    {
+        $guard = $this->auth->guard('web');
+
+        if (! $guard instanceof StatefulGuard) {
+            throw new LogicException('The web guard must be session based.');
+        }
+
+        return $guard;
+    }
+}

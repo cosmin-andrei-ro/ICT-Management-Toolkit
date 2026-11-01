@@ -29,9 +29,9 @@ beforeEach(function (): void {
 
     $this->organization = Organization::factory()->create();
     app(OrganizationContext::class)->set($this->organization);
-    $this->user = User::factory()->memberOf($this->organization)->create();
+    $this->user = User::factory()->memberOf($this->organization)->withTwoFactor()->create();
     $this->user->assignRole(DefaultRole::Administrator->value);
-    $this->other = User::factory()->memberOf($this->organization)->create();
+    $this->other = User::factory()->memberOf($this->organization)->withTwoFactor()->create();
     $this->other->assignRole(DefaultRole::Administrator->value);
 });
 

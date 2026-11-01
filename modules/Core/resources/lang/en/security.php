@@ -1,0 +1,81 @@
+<?php
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 ICT Management Toolkit contributors
+
+declare(strict_types=1);
+
+return [
+    'title' => 'Account security',
+    'required' => 'Your role requires two-factor authentication. Set it up to continue.',
+    'mfa' => [
+        'title' => 'Two-factor authentication',
+        'intro' => 'After your password, you also give a 6-digit code from an authenticator app on your phone (Microsoft Authenticator, Google Authenticator or similar). A stolen password alone is then not enough.',
+        'set_up' => 'Set up two-factor authentication',
+        'step_install' => 'Install an authenticator app on your phone, if you do not have one.',
+        'step_scan' => 'In the app, add an account and scan this code:',
+        'qr_alt' => 'QR code to add this account to your authenticator app',
+        'manual_key' => 'Cannot scan? Enter this key instead:',
+        'step_confirm' => 'Enter the 6-digit code the app shows:',
+        'turn_on' => 'Turn on',
+        'on' => 'On. Unused recovery codes: :count.',
+        'recovery_codes_intro' => 'Recovery codes: keep them somewhere safe, such as a password manager. Each works once, if you lose your phone. They are shown only now.',
+        'confirm_code' => 'Code from your app, to confirm',
+        'new_recovery_codes' => 'Make new recovery codes',
+        'turn_off' => 'Turn off',
+        'new_phone' => 'Move to a new phone',
+    ],
+    'challenge' => [
+        'title' => 'Two-factor authentication',
+        'intro' => 'Open your authenticator app and enter the code it shows for this account.',
+        'code' => 'Code',
+        'recovery_hint' => 'Lost your phone? Enter one of your recovery codes instead.',
+        'submit' => 'Verify',
+        'invalid' => 'This code is not valid. Codes change every 30 seconds and work once.',
+        'expired' => 'Your sign-in expired. Start again.',
+        'back' => 'Back to sign in',
+    ],
+    'password' => [
+        'title' => 'Password',
+        'directory' => 'You sign in with your Windows (Active Directory) account. Change your password in Windows.',
+        'current' => 'Current password',
+        'new' => 'New password',
+        'confirm' => 'Repeat the new password',
+        'rules' => 'At least 12 characters. A sentence of several words is easy to remember and hard to guess.',
+        'submit' => 'Change password',
+        'current_wrong' => 'The current password is not correct.',
+        'changed' => 'Password changed. You were signed out everywhere else.',
+    ],
+    'forgot' => [
+        'title' => 'Forgot your password?',
+        'link' => 'Forgot your password?',
+        'intro' => 'Enter the email of your account. If it has a password in this application, you will receive a link to choose a new one. Windows (Active Directory) accounts change their password in Windows.',
+        'email' => 'Email',
+        'submit' => 'Send the link',
+        'sent' => 'If this address has an account here, a link is on its way. It works for 60 minutes.',
+    ],
+    'reset' => [
+        'title' => 'Choose a new password',
+        'intro' => 'Choose a new password for your account.',
+        'welcome_title' => 'Welcome',
+        'welcome_intro' => 'Choose the password for your new account.',
+        'submit' => 'Save password',
+        'invalid_link' => 'This link is not valid or has expired. Ask for a new one.',
+        'done' => 'Your password is saved. You can sign in.',
+    ],
+    'mail' => [
+        'reset' => [
+            'subject' => 'Choose a new password for :app',
+            'line' => 'Someone asked to reset the password of your :app account.',
+            'action' => 'Choose a new password',
+            'expiry' => 'The link works for 60 minutes.',
+        ],
+        'invitation' => [
+            'subject' => 'Your :app account',
+            'line' => 'An account was created for you in :app. Choose your password to start.',
+            'action' => 'Choose your password',
+            'expiry' => 'The link works for 3 days.',
+        ],
+        'ignore' => 'If you did not expect this email, ignore it: nothing changes.',
+    ],
+];

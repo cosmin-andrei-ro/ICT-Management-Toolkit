@@ -19,8 +19,10 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
+use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -50,6 +52,7 @@ use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Middleware\CaptureRequestContext;
+use Modules\Core\Http\Middleware\RequireTwoFactor;
 use Modules\Core\Http\Middleware\SecurityHeaders;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
 use Modules\Core\Http\Navigation\Navigation;
@@ -112,11 +115,18 @@ final class CoreServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
+        $proxies = $this->app->make('config')->get('core.http.trusted_proxies');
+
+        if (is_array($proxies) && $proxies !== []) {
+            TrustProxies::at(array_values(array_filter($proxies, 'is_string')));
+        }
+
         // NIST SP 800-63B: length over composition rules; long passphrases allowed.
         Password::defaults(fn (): Password => Password::min(12)->max(128));
 
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('organization', SetCurrentOrganization::class);
+        $router->aliasMiddleware('mfa', RequireTwoFactor::class);
         $router->aliasMiddleware('abilities', CheckAbilities::class);
         $router->aliasMiddleware('ability', CheckForAnyAbility::class);
 
@@ -127,7 +137,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
 
         // Livewire update requests do not run route middleware unless it is persistent;
         // without this, components would act with no organization context.
-        Livewire::addPersistentMiddleware([SetCurrentOrganization::class]);
+        Livewire::addPersistentMiddleware([SetCurrentOrganization::class, AuthenticateSession::class, RequireTwoFactor::class]);
         $kernel = $this->app->make(Kernel::class);
         $kernel->prependMiddleware(CaptureRequestContext::class);
         $kernel->pushMiddleware(SecurityHeaders::class);
