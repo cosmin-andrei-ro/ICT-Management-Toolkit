@@ -277,6 +277,10 @@ PHP și Composer rulează în containerul Sail (nu sunt instalate pe host).
 ./vendor/bin/sail artisan core:directory:test [utilizator]
 ./vendor/bin/sail artisan core:directory:sync    # rulează și programat, prin scheduler
 
+# token API (afișat o singură dată) și regenerarea specificației OpenAPI
+./vendor/bin/sail artisan core:api-token <email> "<scop>" --ability=tickets:read
+./vendor/bin/sail artisan scramble:export --path=docs/api/openapi.json
+
 # calitate
 ./vendor/bin/sail composer test      # Pest
 ./vendor/bin/sail composer analyse   # PHPStan

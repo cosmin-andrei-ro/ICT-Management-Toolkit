@@ -11,6 +11,7 @@ use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Models\User;
@@ -37,6 +38,9 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         parent::register();
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+
+        ApiAbility::register('tickets:read', 'ticketing::api.abilities.read');
+        ApiAbility::register('tickets:write', 'ticketing::api.abilities.write');
     }
 
     public function boot(): void

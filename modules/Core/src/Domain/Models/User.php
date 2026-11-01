@@ -22,6 +22,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 use Modules\Core\Database\Factories\UserFactory;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Directory\AuthSource;
@@ -55,6 +56,7 @@ use Spatie\Permission\Traits\HasRoles;
 final class User extends Authenticatable implements FilamentUser
 {
     use Auditable;
+    use HasApiTokens;
 
     /** @use HasFactory<UserFactory> */
     use HasFactory;

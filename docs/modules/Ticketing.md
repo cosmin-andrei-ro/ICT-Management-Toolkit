@@ -23,6 +23,15 @@ Service desk following ITIL 4. Code: `modules/Ticketing/`. Data model: [ADR 0008
 - **Administration** (`/admin`, Service desk group): categories, queues, priority matrix. Teams are under Access.
 - **Email notifications** (queued): ticket received, assigned to you, resolved, new reply. They contain the number, title and a link, never the comment text. Nobody is notified about their own action, and internal notes never reach requesters.
 
+## API
+
+`/api/v1/tickets` (list, create), `/api/v1/tickets/{id}` (show, with the comments the user may see), `/api/v1/tickets/{id}/comments` (add). Token abilities are `tickets:read` and `tickets:write`. See [ADR 0009](../adr/0009-rest-api.md) and [docs/api/openapi.json](../api/openapi.json).
+
+```bash
+php artisan core:api-token jane@example.com "Monitoring" --ability=tickets:write --days=90
+curl -H "Authorization: Bearer <token>" -H "Accept: application/json" https://<host>/api/v1/tickets?status=open
+```
+
 ## Permissions
 
 | Permission | Default roles | Purpose |

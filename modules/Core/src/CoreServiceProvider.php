@@ -12,15 +12,21 @@ use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use InvalidArgumentException;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Livewire\Livewire;
 use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
@@ -42,6 +48,7 @@ use Modules\Core\Http\Middleware\CaptureRequestContext;
 use Modules\Core\Http\Middleware\SecurityHeaders;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Core\Infrastructure\Console\IssueApiTokenCommand;
 use Modules\Core\Infrastructure\Console\SyncDirectoryCommand;
 use Modules\Core\Infrastructure\Console\SyncPermissionsCommand;
 use Modules\Core\Infrastructure\Console\TestDirectoryCommand;
@@ -95,7 +102,15 @@ final class CoreServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        $this->app->make(Router::class)->aliasMiddleware('organization', SetCurrentOrganization::class);
+        $router = $this->app->make(Router::class);
+        $router->aliasMiddleware('organization', SetCurrentOrganization::class);
+        $router->aliasMiddleware('abilities', CheckAbilities::class);
+        $router->aliasMiddleware('ability', CheckForAnyAbility::class);
+
+        RateLimiter::for('api', fn (Request $request): Limit => Limit::perMinute(60)->by($request->user()?->getAuthIdentifier() ?? $request->ip()));
+
+        // OpenAPI docs (Scramble): administrators only outside the local environment.
+        Gate::define('viewApiDocs', fn (User $user): bool => $user->can('core.admin.access'));
 
         // Livewire update requests do not run route middleware unless it is persistent;
         // without this, components would act with no organization context.
@@ -150,7 +165,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class]);
+            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class, IssueApiTokenCommand::class]);
         }
     }
 
