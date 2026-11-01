@@ -26,6 +26,7 @@ use Modules\Ticketing\Domain\Events\TicketCreated;
 use Modules\Ticketing\Domain\Events\TicketResolved;
 use Modules\Ticketing\Domain\Models\Category;
 use Modules\Ticketing\Domain\Models\Queue;
+use Modules\Ticketing\Domain\Models\Service;
 use Modules\Ticketing\Domain\Models\SlaTimer;
 use Modules\Ticketing\Domain\Models\Ticket;
 use Modules\Ticketing\Infrastructure\Console\AutoCloseTicketsCommand;
@@ -57,10 +58,12 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.ticket' => Ticket::class,
             'ticketing.category' => Category::class,
             'ticketing.queue' => Queue::class,
+            'ticketing.service' => Service::class,
             'ticketing.sla_timer' => SlaTimer::class,
         ]);
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
+            $navigation->add('ticketing::catalog.menu', 'ticketing.catalog.index', 'ticketing.catalog.*', fn (User $user): bool => $user->can('ticketing.ticket.create'));
             $navigation->add('ticketing::ui.menu.portal', 'ticketing.portal.index', 'ticketing.portal.*', fn (User $user): bool => $user->can('ticketing.ticket.create'));
             $navigation->add('ticketing::ui.menu.desk', 'ticketing.desk.index', 'ticketing.desk.*', fn (User $user): bool => $user->can('ticketing.ticket.view_all'));
         });

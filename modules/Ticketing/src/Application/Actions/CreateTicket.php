@@ -17,6 +17,7 @@ use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Events\TicketCreated;
 use Modules\Ticketing\Domain\Models\Category;
 use Modules\Ticketing\Domain\Models\Queue;
+use Modules\Ticketing\Domain\Models\Service;
 use Modules\Ticketing\Domain\Models\Ticket;
 use Modules\Ticketing\Domain\Workflow\PriorityMatrix;
 use Modules\Ticketing\Infrastructure\TicketNumberGenerator;
@@ -53,7 +54,11 @@ final readonly class CreateTicket
             ? Queue::query()->where('is_active', true)->findOrFail($data->queueId)
             : Queue::query()->where('is_active', true)->where('is_default', true)->first();
 
-        $ticket = $this->db->transaction(function () use ($data, $requester, $actor, $organizationId, $category, $queue): Ticket {
+        $service = $data->serviceId !== null
+            ? Service::query()->where('is_active', true)->findOrFail($data->serviceId)
+            : null;
+
+        $ticket = $this->db->transaction(function () use ($data, $requester, $actor, $organizationId, $category, $queue, $service): Ticket {
             $ticket = new Ticket;
             $ticket->forceFill([
                 'organization_id' => $organizationId,
@@ -69,7 +74,15 @@ final readonly class CreateTicket
                 'requester_id' => $requester->id,
                 'category_id' => $category?->id,
                 'queue_id' => $queue?->id,
-            ])->save();
+                'service_id' => $service?->id,
+            ]);
+
+            // PHP's [] encodes as a JSON list; leave the column's '{}' default unless there is data.
+            if ($data->customFields !== []) {
+                $ticket->custom_fields = $data->customFields;
+            }
+
+            $ticket->save();
 
             $this->lifecycle->record($ticket, null, TicketStatus::New, $actor);
             $this->sla->start($ticket);

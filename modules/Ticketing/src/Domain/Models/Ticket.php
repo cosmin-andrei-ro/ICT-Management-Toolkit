@@ -54,6 +54,7 @@ use Modules\Ticketing\Domain\Enums\Urgency;
  * @property ?string $assignee_id
  * @property ?string $queue_id
  * @property ?string $category_id
+ * @property ?string $service_id
  * @property ?Carbon $first_responded_at
  * @property ?Carbon $resolved_at
  * @property ?Carbon $closed_at
@@ -70,6 +71,7 @@ use Modules\Ticketing\Domain\Enums\Urgency;
  * @property-read ?User $assignee
  * @property-read ?Queue $queue
  * @property-read ?Category $category
+ * @property-read ?Service $service
  */
 #[Table('ticketing_tickets')]
 #[UseFactory(TicketFactory::class)]
@@ -133,6 +135,33 @@ final class Ticket extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return BelongsTo<Service, $this>
+     */
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(Service::class);
+    }
+
+    /**
+     * Answers to the service form, as stored at request time (labels included).
+     *
+     * @return list<array{key: string, label: string, type: string, value: mixed}>
+     */
+    public function serviceAnswers(): array
+    {
+        $stored = $this->custom_fields['service_form'] ?? [];
+        $answers = [];
+
+        foreach (is_array($stored) ? $stored : [] as $answer) {
+            if (is_array($answer) && is_string($answer['key'] ?? null) && is_string($answer['label'] ?? null) && is_string($answer['type'] ?? null)) {
+                $answers[] = ['key' => $answer['key'], 'label' => $answer['label'], 'type' => $answer['type'], 'value' => $answer['value'] ?? null];
+            }
+        }
+
+        return $answers;
     }
 
     /**

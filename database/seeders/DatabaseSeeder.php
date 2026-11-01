@@ -13,6 +13,7 @@ use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Ticketing\Database\Seeders\TicketingDemoSeeder;
 use RuntimeException;
 
 final class DatabaseSeeder extends Seeder
@@ -39,5 +40,7 @@ final class DatabaseSeeder extends Seeder
         ]);
 
         $context->runAs($organization, fn () => $admin->assignRole(DefaultRole::Administrator->value));
+
+        $this->callWith(TicketingDemoSeeder::class, ['organization' => $organization, 'agent' => $admin]);
     }
 }

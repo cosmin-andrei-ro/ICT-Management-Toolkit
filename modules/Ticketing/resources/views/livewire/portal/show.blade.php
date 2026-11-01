@@ -15,6 +15,8 @@
         <p class="whitespace-pre-line text-sm text-gray-800">{{ $ticket->description }}</p>
     </section>
 
+    <x-ticketing::service-answers :ticket="$ticket" />
+
     @error('action') <p class="rounded-md bg-red-50 p-3 text-sm text-red-700">{{ $message }}</p> @enderror
 
     @if ($ticket->status->value === 'resolved')

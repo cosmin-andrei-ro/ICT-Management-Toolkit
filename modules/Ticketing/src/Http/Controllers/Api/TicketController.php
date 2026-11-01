@@ -51,7 +51,7 @@ final readonly class TicketController
             ->when($status === 'open', fn ($query) => $query->whereIn('status', TicketStatus::open()))
             ->when($status === 'closed', fn ($query) => $query->whereNotIn('status', TicketStatus::open()))
             ->when(TicketStatus::tryFrom($status) !== null, fn ($query) => $query->where('status', $status))
-            ->with(['requester', 'assignee', 'queue', 'category'])
+            ->with(['requester', 'assignee', 'queue', 'category', 'service'])
             ->latest()
             ->paginate($request->integer('per_page', 25));
 
@@ -90,7 +90,7 @@ final readonly class TicketController
 
         $showInternal = $this->user($request)->can('viewInternal', $ticket);
 
-        $ticket->load(['requester', 'assignee', 'queue', 'category', 'comments' => fn ($query) => $query
+        $ticket->load(['requester', 'assignee', 'queue', 'category', 'service', 'comments' => fn ($query) => $query
             ->when(! $showInternal, fn ($inner) => $inner->where('is_internal', false))
             ->with('author')]);
 

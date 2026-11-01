@@ -16,6 +16,13 @@ Service desk following ITIL 4. Code: `modules/Ticketing/`. Data model: [ADR 0008
 - A requester's reply to a pending ticket brings it back into work.
 - Resolved tickets close automatically after 5 days (`TICKETING_AUTO_CLOSE_AFTER_DAYS`, `ticketing:tickets:auto-close`, hourly). Until then the requester can reopen them.
 
+## Service catalog
+
+- **Portal** (`/catalog`): people pick a service (new laptop, VPN access, …), answer its form and send a **service request**. Title, queue, category, impact and urgency come from the service. If the service's queue was deactivated, the request goes to the default queue.
+- **Forms** are built per service in Administration → Service desk → Service catalog, with short text, long text, number, date, choice and checkbox fields ([ADR 0011](../adr/0011-form-schemas.md)).
+- Answers are stored with the ticket together with the field labels of that moment, so editing a form never changes past requests. They are shown on the ticket in the portal, the desk and the API (`service_answers`).
+- Approval workflows for services are not implemented yet.
+
 ## Service levels (SLA)
 
 Each ticket gets two clocks, **first response** and **resolution**, counted in working time with the organization's default business calendar ([ADR 0010](../adr/0010-sla.md)).
