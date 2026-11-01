@@ -258,3 +258,16 @@ it('puts the reply marker and anti-loop headers in ticket emails', function (): 
         ->and($mail->introLines[0])->toBe(EmailBody::MARKER)
         ->and($mail->callbacks)->toHaveCount(1);
 });
+
+it('still sends ticket emails queued by a version without the reply address', function (): void {
+    // Serialized as before the reply address existed: the property is simply absent.
+    $current = serialize(new TicketUpdate('created', 'INC-000001', 'Printer', 'https://example.com'));
+    $old = (string) preg_replace('/s:7:"replyTo";N;/', '', $current);
+    $old = (string) preg_replace('/^(O:\d+:"[^"]+":)(\d+)/', '${1}'.((int) preg_replace('/^O:\d+:"[^"]+":(\d+).*/s', '$1', $current) - 1), $old);
+
+    $mail = unserialize($old)->toMail($this->desk->requester);
+
+    expect($old)->not->toContain('replyTo')
+        ->and($mail->replyTo)->toBe([])
+        ->and($mail->subject)->toContain('INC-000001');
+});
