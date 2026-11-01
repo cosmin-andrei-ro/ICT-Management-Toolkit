@@ -38,6 +38,8 @@ The foundation every other module builds on. Code: `modules/Core/`.
 3. Run `php artisan core:directory:test` to check the connection, then `php artisan core:directory:test jdoe` to see how a user would be mapped.
 4. Map AD groups to roles in each organization (admin panel → Access → AD group mappings).
 
+For development, an optional Samba AD container provides a test domain: see [docs/development/active-directory.md](../development/active-directory.md).
+
 ## Administration panel
 
 Filament at `/admin`, for users with `core.admin.access`. It uses the application login. See ADR 0006 for its CSP exception.

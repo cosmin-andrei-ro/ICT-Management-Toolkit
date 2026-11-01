@@ -19,6 +19,8 @@ services:
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
             - '.:/var/www/html'
+            # CA of the optional Samba AD container (profile "ad"); empty otherwise.
+            - 'samba-ad-tls:/etc/ssl/samba-ad:ro'
         networks:
             - sail
         depends_on:
@@ -72,6 +74,23 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+    # Optional Active Directory for development: COMPOSE_PROFILES=ad ./vendor/bin/sail up -d
+    # Test domain CORP.EXAMPLE with demo passwords; see docs/development/active-directory.md.
+    samba-ad:
+        build:
+            context: ./docker/samba-ad
+        image: 'ictmt/samba-ad-dev'
+        profiles:
+            - ad
+        hostname: dc1
+        domainname: corp.example
+        volumes:
+            - 'samba-ad-data:/var/lib/samba'
+            - 'samba-ad-tls:/export/tls'
+        networks:
+            sail:
+                aliases:
+                    - dc1.corp.example
 networks:
     sail:
         driver: bridge
@@ -79,4 +98,8 @@ volumes:
     sail-pgsql:
         driver: local
     sail-redis:
+        driver: local
+    samba-ad-data:
+        driver: local
+    samba-ad-tls:
         driver: local
