@@ -68,6 +68,8 @@
             "Modules\\Risk\\": "modules/Risk/src/",
             "Modules\\Risk\\Database\\Factories\\": "modules/Risk/database/factories/",
             "Modules\\Audit\\": "modules/Audit/src/",
+            "Modules\\Documentation\\": "modules/Documentation/src/",
+            "Modules\\Documentation\\Database\\Factories\\": "modules/Documentation/database/factories/",
             "Modules\\Audit\\Database\\Factories\\": "modules/Audit/database/factories/"
         }
     },
@@ -83,7 +85,8 @@
             "Modules\\Bcm\\Tests\\": "modules/Bcm/tests/",
             "Modules\\Applications\\Tests\\": "modules/Applications/tests/",
             "Modules\\Risk\\Tests\\": "modules/Risk/tests/",
-            "Modules\\Audit\\Tests\\": "modules/Audit/tests/"
+            "Modules\\Audit\\Tests\\": "modules/Audit/tests/",
+            "Modules\\Documentation\\Tests\\": "modules/Documentation/tests/"
         }
     },
     "scripts": {

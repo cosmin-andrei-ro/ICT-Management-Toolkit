@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Core\Domain\Manual;
 
-use Illuminate\Support\Str;
+use Modules\Core\Domain\Text\Markdown;
 
 final readonly class ManualPage
 {
@@ -25,9 +25,6 @@ final readonly class ManualPage
      */
     public function html(): string
     {
-        return Str::markdown($this->markdown, [
-            'html_input' => 'strip',
-            'allow_unsafe_links' => false,
-        ]);
+        return Markdown::toSafeHtml($this->markdown);
     }
 }

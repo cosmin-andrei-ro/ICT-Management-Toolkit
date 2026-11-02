@@ -9,79 +9,99 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* User manual: Markdown rendered by ManualPage::html(). */
-.manual-content {
+/* Markdown rendered by Core's Markdown::toSafeHtml(): the user manual and documentation pages. */
+:is(.manual-content, .markdown-content) {
     color: var(--color-gray-800);
     line-height: 1.7;
 }
-.manual-content h2 {
+:is(.manual-content, .markdown-content) h2 {
     margin-top: 2rem;
     margin-bottom: 0.75rem;
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--color-gray-900);
 }
-.manual-content h3 {
+:is(.manual-content, .markdown-content) h3 {
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
     font-size: 1.05rem;
     font-weight: 600;
     color: var(--color-gray-900);
 }
-.manual-content p,
-.manual-content ul,
-.manual-content ol,
-.manual-content table,
-.manual-content pre {
+:is(.manual-content, .markdown-content) p,
+:is(.manual-content, .markdown-content) ul,
+:is(.manual-content, .markdown-content) ol,
+:is(.manual-content, .markdown-content) table,
+:is(.manual-content, .markdown-content) pre {
     margin-bottom: 1rem;
 }
-.manual-content ul {
+:is(.manual-content, .markdown-content) ul {
     list-style: disc;
     padding-left: 1.5rem;
 }
-.manual-content ol {
+:is(.manual-content, .markdown-content) ol {
     list-style: decimal;
     padding-left: 1.5rem;
 }
-.manual-content li + li {
+:is(.manual-content, .markdown-content) li + li {
     margin-top: 0.25rem;
 }
-.manual-content a {
+:is(.manual-content, .markdown-content) a {
     color: var(--color-blue-700);
     text-decoration: underline;
 }
-.manual-content code {
+:is(.manual-content, .markdown-content) code {
     border-radius: 0.25rem;
     background: var(--color-gray-100);
     padding: 0.1rem 0.3rem;
     font-size: 0.875em;
 }
-.manual-content pre {
+:is(.manual-content, .markdown-content) pre {
     overflow-x: auto;
     border-radius: 0.5rem;
     background: var(--color-gray-900);
     padding: 1rem;
     color: var(--color-gray-100);
 }
-.manual-content pre code {
+:is(.manual-content, .markdown-content) pre code {
     background: transparent;
     padding: 0;
 }
-.manual-content table {
+:is(.manual-content, .markdown-content) table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
 }
-.manual-content th,
-.manual-content td {
+:is(.manual-content, .markdown-content) th,
+:is(.manual-content, .markdown-content) td {
     border: 1px solid var(--color-gray-200);
     padding: 0.4rem 0.6rem;
     text-align: left;
     vertical-align: top;
 }
-.manual-content th {
+:is(.manual-content, .markdown-content) th {
     background: var(--color-gray-50);
     font-weight: 600;
+}
+:is(.manual-content, .markdown-content) h1 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+:is(.manual-content, .markdown-content) blockquote {
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--color-gray-300);
+    padding-left: 1rem;
+    color: var(--color-gray-600);
+}
+:is(.manual-content, .markdown-content) hr {
+    margin: 1.5rem 0;
+    border-color: var(--color-gray-200);
+}
+:is(.manual-content, .markdown-content) img {
+    max-width: 100%;
 }
 
 /*
