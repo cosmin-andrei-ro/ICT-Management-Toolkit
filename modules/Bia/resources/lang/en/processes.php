@@ -78,7 +78,7 @@ return [
     'mine' => [
         'menu' => 'My processes',
         'title' => 'My processes',
-        'intro' => 'The business processes you own or deputize for. Assess how an interruption would affect them; the BIA coordinator approves.',
+        'intro' => 'The business processes you own or deputize for. Assess how an interruption would affect them; the continuity coordinator approves.',
         'empty' => 'You own no business process.',
         'to_start' => 'Assessment to fill in',
         'returned' => 'Returned to you: see the comment',

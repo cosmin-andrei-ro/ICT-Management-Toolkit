@@ -5,6 +5,7 @@
 
 declare(strict_types=1);
 
+use Modules\Bcm\BcmServiceProvider;
 use Modules\Bia\BiaServiceProvider;
 use Modules\Cmdb\CmdbServiceProvider;
 use Modules\Core\CoreServiceProvider;
@@ -45,6 +46,10 @@ return [
         ],
         'bia' => [
             'provider' => BiaServiceProvider::class,
+            'enabled' => true,
+        ],
+        'bcm' => [
+            'provider' => BcmServiceProvider::class,
             'enabled' => true,
         ],
     ],

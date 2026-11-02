@@ -14,7 +14,7 @@ use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 
 /**
- * Weekly, per organization: what the BIA coordinators should chase — reviews
+ * Weekly, per organization: what the continuity coordinators should chase — reviews
  * overdue, processes never assessed, assessments waiting for approval. Nothing
  * is sent when there is nothing to chase.
  */

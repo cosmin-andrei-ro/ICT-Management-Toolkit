@@ -12,7 +12,7 @@ use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 
 /**
- * The BIA coordinator keeps the list of processes (bia.process.manage); people
+ * The continuity coordinator keeps the list of processes (bia.process.manage); people
  * with bia.process.view read it. A process's owner and deputy see their own
  * process and fill in its assessments, whatever their role (owner's decision).
  */

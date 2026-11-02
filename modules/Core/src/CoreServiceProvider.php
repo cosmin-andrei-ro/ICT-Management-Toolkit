@@ -41,9 +41,11 @@ use Modules\Core\Domain\Authorization\Role;
 use Modules\Core\Domain\Directory\Directory;
 use Modules\Core\Domain\Directory\DirectoryGroupMapping;
 use Modules\Core\Domain\Exports\ExportRegistry;
+use Modules\Core\Domain\Links\BusinessProcesses;
 use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Links\ContractDependents;
 use Modules\Core\Domain\Links\LinkedRecords;
+use Modules\Core\Domain\Links\NoBusinessProcesses;
 use Modules\Core\Domain\Links\NoConfigurationItems;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\Attachment;
@@ -101,6 +103,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->singleton(ContractDependents::class);
         // Replaced by the CMDB module when it is enabled.
         $this->app->bindIf(ConfigurationItems::class, NoConfigurationItems::class);
+        // Replaced by the BIA module when it is enabled.
+        $this->app->bindIf(BusinessProcesses::class, NoBusinessProcesses::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */
@@ -250,8 +254,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         // Panel access only opens the door: every page and resource in it checks its own permission.
         $registry->grantToDefaultRole(DefaultRole::TeamLead, [...$directory, 'core.audit.view', 'core.admin.access', ...$contracts]);
         $registry->grantToDefaultRole(DefaultRole::AssetManager, [...$directory, 'core.admin.access', ...$contracts]);
-        // The BIA coordinator keeps the organization chart processes hang from, and reads suppliers and locations for dependencies.
-        $registry->grantToDefaultRole(DefaultRole::BiaCoordinator, [...$directory, 'core.admin.access', 'core.department.create', 'core.department.update', 'core.supplier.view', 'core.location.manage']);
+        // The continuity coordinator keeps the organization chart processes hang from, and reads suppliers and locations for dependencies.
+        $registry->grantToDefaultRole(DefaultRole::ContinuityCoordinator, [...$directory, 'core.admin.access', 'core.department.create', 'core.department.update', 'core.supplier.view', 'core.location.manage']);
         $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
     }

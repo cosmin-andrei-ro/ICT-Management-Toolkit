@@ -46,7 +46,7 @@ return [
         'submitted_by' => 'Submitted by :name on :date.',
         'decided_by' => ':status by :name on :date.',
         'read_only' => 'This version can no longer change.',
-        'waiting' => 'Waiting for the BIA coordinator.',
+        'waiting' => 'Waiting for the continuity coordinator.',
     ],
     'errors' => [
         'incomplete' => 'Score every kind of impact at every period before submitting.',

@@ -67,7 +67,7 @@ Modules add entries through `Modules\Core\Http\Navigation\Navigation::add()`: a 
 
 ## Administration panel
 
-Filament at `/admin`, for users with `core.admin.access`: administrators, team leads, asset managers and BIA coordinators. Every resource and page checks its own permission, so each sees only what they may manage. It uses the application login. See ADR 0006 for its CSP exception.
+Filament at `/admin`, for users with `core.admin.access`: administrators, team leads, asset managers and continuity coordinators. Every resource and page checks its own permission, so each sees only what they may manage. It uses the application login. See ADR 0006 for its CSP exception.
 
 ## Security headers (ADR 0006)
 

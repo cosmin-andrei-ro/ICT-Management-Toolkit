@@ -1,0 +1,30 @@
+# Continuity and recovery (BCM/DRP) module
+
+Business continuity plans (BCP) and IT disaster recovery plans (DRP). Code: `modules/Bcm/`. Decisions: [ADR 0026](../adr/0026-continuity-and-recovery-plans.md).
+
+## Concepts
+
+- **Plan** (`bcm_plans`): type (BCP or DRP), name, owner and deputy, status; the version in force and next review date.
+- **Plan version** (`bcm_plan_versions`): scope (BIA processes in `bcm_version_processes`, CMDB items through `ConfigurationItems`), scenarios, objective, activation criteria and authority, strategy, communication, assumptions. Statuses: draft, submitted, returned, approved, superseded.
+- **Crisis team** (`bcm_team_members`): role, person of the organization or outside contact (business details), deputy flag, responsibilities.
+- **Runbook** (`bcm_steps`): ordered steps by phase (activation, recovery, resumption, restoration), responsible role or person, estimated duration, system concerned. Activation + recovery are compared with the strictest RTO of the processes in scope.
+
+## Screens
+
+- `/bcm`: plans with filters (type, retired).
+- `/bcm/plans/new`, `/bcm/plans/{id}/edit`, `/bcm/plans/{id}` (versions; write, continue or review).
+- `/bcm/versions/{id}`: scope, scenarios and texts, team, runbook, recovery time against RTO; submit; approve or return.
+- `/bcm/plans/{id}/print`: the version in force, to print or save as PDF for offline use.
+- `/bcm/mine`: plans the signed-in person owns, for owners without `bcm.plan.view`.
+- CMDB item pages list the plans covering the item.
+
+## Permissions
+
+| Permission | Default roles | Purpose |
+|---|---|---|
+| `bcm.plan.view` | continuity-coordinator, team-lead, agent | See every plan |
+| `bcm.plan.manage` | continuity-coordinator | Create and edit any plan |
+| `bcm.drp.manage` | continuity-coordinator, team-lead | Create and edit IT disaster recovery plans |
+| `bcm.plan.approve` | continuity-coordinator | Approve or return submitted versions (never one's own) |
+
+Owners and deputies edit their plans without a permission. Administrators have every permission.
