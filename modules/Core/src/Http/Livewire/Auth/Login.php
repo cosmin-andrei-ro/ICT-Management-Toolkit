@@ -79,7 +79,7 @@ final class Login extends Component
         return view('core::livewire.auth.login', [
             'directoryEnabled' => app(Directory::class)->isEnabled(),
             // Before sign-in there is no organization: every enabled provider is offered.
-            'ssoProviders' => SsoProvider::query()->withoutGlobalScope(OrganizationScope::class)->where('is_enabled', true)->orderBy('name')->get(['id', 'name']),
+            'ssoProviders' => SsoProvider::query()->withoutGlobalScope(OrganizationScope::class)->where('is_enabled', true)->orderBy('name')->get(['id', 'name', 'protocol']),
         ])->title(__('core::auth.login.title'));
     }
 

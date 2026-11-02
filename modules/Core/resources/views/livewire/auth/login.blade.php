@@ -40,7 +40,7 @@
 <div class="mt-6 space-y-3 border-t border-gray-200 pt-6">
     @if (session('sso_error')) <p class="rounded-md bg-red-50 p-2 text-sm text-red-800" role="alert">{{ session('sso_error') }}</p> @endif
     @foreach ($ssoProviders as $ssoProvider)
-        <a href="{{ route('login.sso', $ssoProvider->id) }}" wire:key="sso-{{ $ssoProvider->id }}" class="block w-full rounded-md bg-white px-4 py-2 text-center text-sm font-semibold ring-1 ring-gray-300 hover:bg-gray-50">{{ __('core::sso.sign_in_with', ['provider' => $ssoProvider->name]) }}</a>
+        <a href="{{ route($ssoProvider->protocol === \Modules\Core\Domain\Sso\SsoProtocol::Saml ? 'login.saml' : 'login.sso', $ssoProvider->id) }}" wire:key="sso-{{ $ssoProvider->id }}" class="block w-full rounded-md bg-white px-4 py-2 text-center text-sm font-semibold ring-1 ring-gray-300 hover:bg-gray-50">{{ __('core::sso.sign_in_with', ['provider' => $ssoProvider->name]) }}</a>
     @endforeach
     <div x-data="webauthn" data-mode="get" data-start="passkeyOptions" data-finish="signInWithPasskey" data-unsupported="{{ __('core::security.keys.unsupported') }}" data-failed="{{ __('core::security.keys.cancelled') }}" class="space-y-2">
         <button type="button" x-on:click="run" x-bind:disabled="busy" class="w-full rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300 hover:bg-gray-50 disabled:opacity-60">{{ __('core::security.keys.passkey_sign_in') }}</button>

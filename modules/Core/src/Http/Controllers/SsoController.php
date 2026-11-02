@@ -14,6 +14,7 @@ use Modules\Core\Application\Authentication\CompleteLogin;
 use Modules\Core\Application\Sso\OpenIdConnect;
 use Modules\Core\Application\Sso\SignInWithSso;
 use Modules\Core\Application\Sso\SsoFailed;
+use Modules\Core\Domain\Sso\SsoProtocol;
 use Modules\Core\Domain\Sso\SsoProvider;
 use Modules\Core\Domain\Tenancy\OrganizationScope;
 
@@ -65,7 +66,8 @@ final readonly class SsoController
     private function provider(string $id): SsoProvider
     {
         // Before sign-in there is no organization context: providers are looked up across organizations.
-        $provider = SsoProvider::query()->withoutGlobalScope(OrganizationScope::class)->whereKey($id)->where('is_enabled', true)->first();
+        $provider = SsoProvider::query()->withoutGlobalScope(OrganizationScope::class)
+            ->whereKey($id)->where('protocol', SsoProtocol::Oidc->value)->where('is_enabled', true)->first();
         abort_if($provider === null, 404);
 
         return $provider;

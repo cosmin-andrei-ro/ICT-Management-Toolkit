@@ -66,7 +66,7 @@ Things to know:
 
 ## Single sign-on
 
-People can sign in with their company account at your identity provider - Microsoft Entra ID, Google Workspace, Okta, Keycloak or any OpenID Connect provider. Each organization connects its own providers in **Administration → Access → Single sign-on**.
+People can sign in with their company account at your identity provider - Microsoft Entra ID, Google Workspace, Okta, Keycloak, ADFS or any provider speaking OpenID Connect or SAML 2.0. Each organization connects its own providers in **Administration → Access → Single sign-on**.
 
 ### Connecting a provider
 
@@ -76,6 +76,15 @@ People can sign in with their company account at your identity provider - Micros
 4. To give roles by group, have the provider send the groups in the ID token (Entra ID: *groups claim*; Keycloak: a *group membership* mapper) and set the claim's name if it is not `groups`.
 
 The client secret is stored encrypted and never shown again; leave it empty when editing to keep it.
+
+### Connecting a SAML 2.0 provider (ADFS, Shibboleth…)
+
+1. In **Single sign-on**, click **New** and choose the protocol **SAML 2.0**. From the identity provider's metadata, enter its **entity ID**, its **single sign-on URL** and its **signing certificate**, and the email domains of your people.
+2. Edit the provider: give the identity provider the **service provider metadata URL** shown (or the entity ID and the **reply URL** next to it). In ADFS this is a *relying party trust*; in Entra ID an *enterprise application* with SAML.
+3. Have the identity provider send the person's **email** (the usual Microsoft or LDAP attributes are recognised; otherwise name the attribute), their **name**, and their **groups** in the attribute you set.
+4. Assertions must be signed with SHA-256 or stronger.
+
+Signing out of the toolkit does not sign out of the identity provider.
 
 ### Who gets in, with which role
 
