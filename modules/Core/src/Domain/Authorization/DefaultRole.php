@@ -17,5 +17,6 @@ enum DefaultRole: string
     case TeamLead = 'team-lead';
     case Agent = 'agent';
     case CabMember = 'cab-member';
+    case AssetManager = 'asset-manager';
     case Requester = 'requester';
 }

@@ -163,6 +163,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         $agent = ['ticketing.ticket.create', 'ticketing.ticket.view_all', 'ticketing.ticket.work', 'ticketing.ticket.assign', 'ticketing.problem.manage', 'ticketing.change.create'];
 
         $registry->grantToDefaultRole(DefaultRole::Requester, ['ticketing.ticket.create']);
+        $registry->grantToDefaultRole(DefaultRole::AssetManager, ['ticketing.ticket.create']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, ['ticketing.ticket.create', 'ticketing.change.approve']);
         $registry->grantToDefaultRole(DefaultRole::Agent, $agent);
         $registry->grantToDefaultRole(DefaultRole::TeamLead, [...$agent, 'ticketing.settings.manage', 'ticketing.change.approve', 'ticketing.report.view']);

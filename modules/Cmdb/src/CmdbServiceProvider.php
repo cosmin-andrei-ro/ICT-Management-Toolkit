@@ -64,5 +64,7 @@ final class CmdbServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::Agent, ['cmdb.ci.view', 'cmdb.ci.manage']);
         $registry->grantToDefaultRole(DefaultRole::TeamLead, ['cmdb.ci.view', 'cmdb.ci.manage', 'cmdb.type.manage']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, ['cmdb.ci.view']);
+        // Asset managers link assets to the items they are.
+        $registry->grantToDefaultRole(DefaultRole::AssetManager, ['cmdb.ci.view']);
     }
 }

@@ -48,9 +48,13 @@ use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\BusinessCalendar;
 use Modules\Core\Domain\Models\Comment;
+use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\Department;
 use Modules\Core\Domain\Models\Export;
+use Modules\Core\Domain\Models\Location;
 use Modules\Core\Domain\Models\Organization;
+use Modules\Core\Domain\Models\Supplier;
+use Modules\Core\Domain\Models\SupplierContact;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
@@ -61,6 +65,7 @@ use Modules\Core\Http\Middleware\SetCurrentOrganization;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Core\Infrastructure\Console\IssueApiTokenCommand;
 use Modules\Core\Infrastructure\Console\PruneExportsCommand;
+use Modules\Core\Infrastructure\Console\SendContractRemindersCommand;
 use Modules\Core\Infrastructure\Console\SetupCommand;
 use Modules\Core\Infrastructure\Console\SyncDirectoryCommand;
 use Modules\Core\Infrastructure\Console\SyncPermissionsCommand;
@@ -167,6 +172,10 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.attachment' => Attachment::class,
             'core.business_calendar' => BusinessCalendar::class,
             'core.export' => Export::class,
+            'core.location' => Location::class,
+            'core.supplier' => Supplier::class,
+            'core.supplier_contact' => SupplierContact::class,
+            'core.contract' => Contract::class,
         ]);
 
         Event::listen(
@@ -178,6 +187,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(PruneExportsCommand::class)->hourly()->onOneServer();
+            $schedule->command(SendContractRemindersCommand::class)->dailyAt('07:00')->withoutOverlapping()->onOneServer();
             $config = $this->app->make('config');
 
             if ($config->get('core.directory.enabled') !== true) {
@@ -193,11 +203,13 @@ final class CoreServiceProvider extends ModuleServiceProvider
         });
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
+            $navigation->add('core::suppliers.menu', 'core.suppliers.index', 'core.suppliers.*', fn (User $user): bool => $user->can('core.supplier.view'));
+            $navigation->add('core::contracts.menu', 'core.contracts.index', 'core.contracts.*', fn (User $user): bool => $user->can('core.contract.view'));
             $navigation->add('core::layout.admin', 'filament.admin.pages.dashboard', 'filament.admin.*', fn (User $user): bool => $user->can('core.admin.access'));
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class, IssueApiTokenCommand::class, PruneExportsCommand::class, SetupCommand::class]);
+            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class, IssueApiTokenCommand::class, PruneExportsCommand::class, SetupCommand::class, SendContractRemindersCommand::class]);
         }
     }
 
@@ -222,12 +234,21 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.team.view',
             'core.team.manage',
             'core.calendar.manage',
+            'core.location.manage',
+            'core.supplier.view',
+            'core.supplier.manage',
+            // Contracts show values and terms: not every agent sees them (owner's decision).
+            'core.contract.view',
+            'core.contract.manage',
         ]);
 
         $directory = ['core.user.view', 'core.department.view', 'core.team.view'];
+        $contracts = ['core.location.manage', 'core.supplier.view', 'core.supplier.manage', 'core.contract.view', 'core.contract.manage'];
 
-        $registry->grantToDefaultRole(DefaultRole::TeamLead, [...$directory, 'core.audit.view']);
-        $registry->grantToDefaultRole(DefaultRole::Agent, $directory);
+        // Panel access only opens the door: every page and resource in it checks its own permission.
+        $registry->grantToDefaultRole(DefaultRole::TeamLead, [...$directory, 'core.audit.view', 'core.admin.access', ...$contracts]);
+        $registry->grantToDefaultRole(DefaultRole::AssetManager, [...$directory, 'core.admin.access', ...$contracts]);
+        $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
     }
 }
