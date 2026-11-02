@@ -46,6 +46,14 @@ final readonly class ProjectPolicy
     }
 
     /**
+     * The sponsor decides on stage gates.
+     */
+    public function decideGate(User $user, Project $project): bool
+    {
+        return $this->inCurrentOrganization($project) && $project->sponsor_id === $user->id;
+    }
+
+    /**
      * Moving a task on the board: who runs the project, or the person it is assigned to.
      */
     public function workOn(User $user, Project $project, Task $task): bool

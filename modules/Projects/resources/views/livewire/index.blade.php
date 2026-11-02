@@ -13,6 +13,9 @@
                 <option value="closed">{{ __('projects::projects.filter.closed') }}</option>
                 <option value="">{{ __('projects::projects.filter.all') }}</option>
             </select>
+            @if (auth()->user()?->can('projects.project.view') || auth()->user()?->can('projects.project.manage'))
+                <a href="{{ route('projects.portfolio') }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('projects::governance.portfolio') }}</a>
+            @endif
             <a href="{{ route('projects.tasks.mine') }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('projects::projects.my_tasks') }}</a>
             @can('create', \Modules\Projects\Domain\Models\Project::class)
                 <a href="{{ route('projects.create') }}" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('projects::projects.new') }}</a>

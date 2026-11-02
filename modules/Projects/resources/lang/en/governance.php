@@ -1,0 +1,81 @@
+<?php
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 ICT Management Toolkit contributors
+
+declare(strict_types=1);
+
+return [
+    'gate_heading' => 'Stage gate',
+    'in_phase' => 'The project is in its :phase phase.',
+    'gate_note' => 'What the sponsor should know (optional)',
+    'request_move' => 'Ask to move to :to',
+    'request_close' => 'Ask to close the project',
+    'pending_move' => ':name asks to move to :to.',
+    'pending_close' => ':name asks to close the project.',
+    'waiting_for' => 'Waiting for the sponsor, :name.',
+    'decision_note' => 'Comment (required to send it back)',
+    'approve' => 'Approve',
+    'approve_close' => 'Approve and close',
+    'reject' => 'Send back',
+    'ended' => 'The project is :status.',
+    'closing' => 'Closing the project',
+    'to_phase' => 'to :phase',
+    'by' => 'by :name',
+    'reports_heading' => 'Status reports',
+    'write_report' => 'Write a status report',
+    'save_report' => 'Save report',
+    'no_reports' => 'No status report yet.',
+    'report_due' => 'The last report is more than :days days old; a new one is due.',
+    'portfolio' => 'Portfolio',
+    'portfolio_intro' => 'Every open project: its phase, its latest status, and gates waiting for a sponsor.',
+    'latest_status' => 'Latest status',
+    'never_reported' => 'Never reported',
+    'unreported' => 'Without a report',
+    'gate_waiting' => 'Gate waiting for the sponsor',
+    'your_decisions' => 'Waiting for your decision as sponsor',
+    'gate_statuses' => [
+        'pending' => 'Waiting',
+        'approved' => 'Approved',
+        'rejected' => 'Sent back',
+    ],
+    'rag' => [
+        'green' => 'Green',
+        'amber' => 'Amber',
+        'red' => 'Red',
+    ],
+    'dimensions' => [
+        'overall' => 'Overall',
+        'schedule' => 'Schedule',
+        'budget' => 'Budget',
+        'scope' => 'Scope',
+    ],
+    'fields' => [
+        'achievements' => 'Done since the last report',
+        'nextSteps' => 'Next steps',
+        'issues' => 'Issues and risks',
+    ],
+    'errors' => [
+        'not_active' => 'Only an active project moves to its next phase.',
+        'no_sponsor' => 'Name a sponsor first: the sponsor approves the gates.',
+        'own_sponsor' => 'You sponsor this project and cannot approve your own request; name another sponsor or ask another project manager.',
+        'no_phase' => 'No phase is under way.',
+        'pending' => 'A request is already waiting for the sponsor.',
+        'not_yours' => 'Only the sponsor decides, and never on their own request.',
+        'reason' => 'Say why the request goes back.',
+    ],
+    'mail' => [
+        'requested_subject' => ':project: your approval is needed',
+        'requested_move' => ':requester asks to move :project from :from to :to. As its sponsor, please approve or send it back.',
+        'requested_close' => ':requester asks to close :project. As its sponsor, please approve or send it back.',
+        'approved_subject' => ':project: approved by :sponsor',
+        'rejected_subject' => ':project: sent back by :sponsor',
+        'approved' => ':sponsor approved: :project moves to :to.',
+        'closed' => ':sponsor approved: :project is closed.',
+        'rejected' => ':sponsor sent the request back for :project.',
+        'note' => 'Comment: :note',
+        'open' => 'Open the project',
+        'reports_subject' => '{1} One project needs a status report|[2,*] :count projects need a status report',
+        'reports_intro' => 'These projects have no recent status report:',
+    ],
+];

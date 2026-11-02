@@ -8,15 +8,19 @@ declare(strict_types=1);
 namespace Modules\Projects;
 
 use App\Support\Modules\ModuleServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Projects\Domain\Models\GateRequest;
 use Modules\Projects\Domain\Models\Phase;
 use Modules\Projects\Domain\Models\Project;
+use Modules\Projects\Domain\Models\StatusReport;
 use Modules\Projects\Domain\Models\Task;
+use Modules\Projects\Infrastructure\Console\RemindReportsCommand;
 
 final class ProjectsServiceProvider extends ModuleServiceProvider
 {
@@ -41,7 +45,17 @@ final class ProjectsServiceProvider extends ModuleServiceProvider
             'projects.project' => Project::class,
             'projects.phase' => Phase::class,
             'projects.task' => Task::class,
+            'projects.gate_request' => GateRequest::class,
+            'projects.status_report' => StatusReport::class,
         ]);
+
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $schedule->command(RemindReportsCommand::class)->weeklyOn(1, '08:30')->withoutOverlapping()->onOneServer();
+        });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([RemindReportsCommand::class]);
+        }
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             // Team members see the projects they work on even without the permission.

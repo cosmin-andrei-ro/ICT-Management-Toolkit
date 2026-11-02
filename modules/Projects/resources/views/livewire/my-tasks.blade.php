@@ -5,6 +5,16 @@
         <p class="text-sm text-gray-600">{{ __('projects::projects.my_tasks_intro') }}</p>
     </header>
     @php($user = auth()->user())
+    @if ($decisions->isNotEmpty())
+        <section aria-labelledby="decisions-heading" class="space-y-2 rounded-lg bg-amber-50 p-4 ring-1 ring-amber-200">
+            <h2 id="decisions-heading" class="text-sm font-semibold">{{ __('projects::governance.your_decisions') }}</h2>
+            <ul class="text-sm">
+                @foreach ($decisions as $gate)
+                    <li wire:key="decision-{{ $gate->id }}"><a href="{{ route('projects.show', $gate->project) }}" class="text-blue-700 underline">{{ $gate->project->code }} · {{ $gate->project->name }}</a> — {{ $gate->closesProject() ? __('projects::governance.closing') : __('projects::governance.to_phase', ['phase' => $gate->toPhase?->key->label()]) }} <span class="text-xs text-gray-600">({{ $gate->requester?->name }})</span></li>
+                @endforeach
+            </ul>
+        </section>
+    @endif
     @forelse ($groups as $projectId => $tasks)
         @php($project = $tasks->first()->project)
         <section wire:key="group-{{ $projectId }}" aria-labelledby="group-{{ $projectId }}" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
