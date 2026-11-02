@@ -83,8 +83,8 @@ Each ticket gets two clocks, **first response** and **resolution**, counted in w
 
 ## Screens
 
-- **Self-service portal** (`/tickets`): my tickets, new ticket with attachments, ticket page with the public conversation, reply, confirm or reopen a resolution, withdraw a new ticket.
-- **Service desk** (`/desk`): every ticket of the organization, most urgent first, filtered by status, queue, assignee and full-text search. The ticket page adds internal notes, assignment (limited to members of the queue's team), working states, resolution and triage.
+- **Self-service portal** (`/tickets`): my tickets, new ticket with attachments and knowledge articles suggested from its title, ticket page with the public conversation and the articles linked to it, reply, confirm or reopen a resolution, withdraw a new ticket.
+- **Service desk** (`/desk`): every ticket of the organization, most urgent first, filtered by status, queue, assignee and full-text search. The ticket page adds the knowledge base (articles linked to the ticket and suggested from its title, through Core's `KnowledgeArticles`), internal notes, assignment (limited to members of the queue's team), working states, resolution and triage.
 - **Change calendar** (`/desk/changes`), **new change** (`/desk/changes/new`) and **approvals** (`/approvals`) for board members.
 - **Administration** (`/admin`, Service desk group): categories, queues, priority matrix, SLA targets, service catalog, CAB boards, standard changes. Teams are under Access.
 - **Email notifications** (queued): ticket received, assigned to you, resolved, new reply, SLA warnings; change waiting for your approval, change authorized or rejected. They contain the number, title and a link, never the comment text. Nobody is notified about their own action, and internal notes never reach requesters.

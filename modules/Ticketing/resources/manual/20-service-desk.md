@@ -60,6 +60,10 @@ Under **Resolve**, choose what happened and describe what you did. The requester
 
 The requester can confirm or reopen. Resolved tickets close automatically after 5 days. **Cancel ticket** (with a reason the requester sees) is for tickets that should not be worked on at all.
 
+## Knowledge base
+
+The ticket page shows the **knowledge base** articles linked to the ticket, and others that may help, found from its title. To link an article, open it and add the ticket under **About**. Requesters see the articles linked to their ticket that they may read - a guide for employees, not an internal procedure. Known errors, being problems, show their articles the same way.
+
 ## Affected configuration items
 
 When the CMDB is in use, the **Configuration items** panel on the right links the items a ticket is about: type a name or an identifier and click the item. The panel then lists what a failure of those items affects, so you can see at once which services an incident takes down. See *CMDB (configuration items)*.

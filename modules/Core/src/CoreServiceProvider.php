@@ -49,10 +49,12 @@ use Modules\Core\Domain\Links\Applications;
 use Modules\Core\Domain\Links\BusinessProcesses;
 use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Links\ContractDependents;
+use Modules\Core\Domain\Links\KnowledgeArticles;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Links\NoApplications;
 use Modules\Core\Domain\Links\NoBusinessProcesses;
 use Modules\Core\Domain\Links\NoConfigurationItems;
+use Modules\Core\Domain\Links\NoKnowledgeArticles;
 use Modules\Core\Domain\Links\NoRisks;
 use Modules\Core\Domain\Links\NoServiceDeskTickets;
 use Modules\Core\Domain\Links\Risks;
@@ -127,6 +129,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->bindIf(Applications::class, NoApplications::class);
         // Replaced by the Risk module when it is enabled.
         $this->app->bindIf(Risks::class, NoRisks::class);
+        // Replaced by the Documentation module when it is enabled.
+        $this->app->bindIf(KnowledgeArticles::class, NoKnowledgeArticles::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
             $records->register('core.contract', ContractRecords::resolve(...));

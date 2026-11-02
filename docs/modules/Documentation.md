@@ -1,6 +1,6 @@
 # Documentation module
 
-Procedures, how-tos and reference pages, organised in spaces. Code: `modules/Documentation/`. Decisions: [ADR 0040](../adr/0040-documentation-spaces-and-pages.md), [ADR 0041](../adr/0041-documentation-publishing-and-review.md).
+Procedures, how-tos and reference pages, organised in spaces. Code: `modules/Documentation/`. Decisions: [ADR 0040](../adr/0040-documentation-spaces-and-pages.md), [ADR 0041](../adr/0041-documentation-publishing-and-review.md), [ADR 0042](../adr/0042-knowledge-articles-for-the-service-desk.md).
 
 ## Concepts
 
@@ -24,6 +24,12 @@ Procedures, how-tos and reference pages, organised in spaces. Code: `modules/Doc
 - `/docs/pages/{id}/print` and `/pdf`: the published version with its approval.
 - Space page: pages waiting for approval, pages to review.
 
+## For other modules
+
+- Core `KnowledgeArticles` (implemented by `DocumentationArticles`): `suggest()` published pages matching any word of a text, `about()` pages linked to a record; only pages the viewer reads.
+- `LinkedRecords` type `documentation.page` (resolve and search): other modules link published pages.
+- The service desk shows them on the portal request form, the requester's ticket page and the agent's ticket page.
+
 ## Scheduled tasks
 
 - `documentation:digest` (Mondays 08:20): each space owner gets the pages waiting for their approval and those overdue or due for review within 30 days, if any.
@@ -41,5 +47,5 @@ Owners change their space's settings and write in it; members of a space's editi
 
 1. Spaces, pages, versions, search, links and files — **done**.
 2. Drafts and approval in controlled spaces, review dates with reminders, page PDF — **done**.
-3. Articles for employees in the portal, suggested when raising a ticket; links with tickets and known errors.
+3. Articles for employees in the portal, suggested when raising a ticket; links with tickets and known errors — **done**.
 4. Pages generated for applications when their documentation comes into force (CLAUDE.md §9), with free notes.

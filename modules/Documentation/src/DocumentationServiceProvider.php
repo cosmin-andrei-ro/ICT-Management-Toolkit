@@ -13,9 +13,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Links\KnowledgeArticles;
+use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Documentation\Application\Links\DocumentationArticles;
 use Modules\Documentation\Application\SpaceAccess;
 use Modules\Documentation\Domain\Models\Page;
 use Modules\Documentation\Domain\Models\Space;
@@ -34,6 +37,12 @@ final class DocumentationServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+        $this->app->bind(KnowledgeArticles::class, DocumentationArticles::class);
+        // Other modules link documentation pages (e.g. a procedure as evidence of a control).
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->register('documentation.page', fn (array $ids, User $viewer): array => app(DocumentationArticles::class)->resolve($ids, $viewer));
+            $records->registerSearch('documentation.page', 'documentation::docs.linked_kind', fn (string $term, User $viewer): array => app(DocumentationArticles::class)->search($term, $viewer));
+        });
     }
 
     public function boot(): void

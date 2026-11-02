@@ -11,7 +11,7 @@ Use **My tickets** to tell IT that something is broken, and to follow everything
 2. Choose what you need:
    - **Incident:** something that worked has stopped working, or works badly ("the printer is offline", "VPN disconnects").
    - **Service request:** you need something new. For common requests, the **Request a service** catalog is faster and asks the right questions.
-3. Write a short **summary** and the **details**: what you were doing, what you expected, what happened, and any error message.
+3. Write a short **summary** and the **details**: what you were doing, what you expected, what happened, and any error message. While you type the summary, **articles that may solve it** appear under it: they open in a new tab, so you can come back and submit if they did not help.
 4. Answer the two questions that set the priority:
    - **Who is affected?** One person, a team or department, or many users / a critical service.
    - **How urgent is it?** It can wait, your work is slowed down, or your work is stopped.

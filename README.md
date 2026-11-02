@@ -123,6 +123,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Spaces** read by IT staff, by everyone or by chosen teams, written by their owners and editing teams.
 - **Pages** in a tree, written in Markdown with a toolbar and live preview; every save kept as a version, with a line diff and restore; saving over someone else's newer version is refused.
 - **Controlled spaces** for procedures and policies: drafts published once a space owner other than the author approves them; review dates with a weekly digest for owners; pages to print or as PDF with their approval.
+- **Help for employees**: articles of spaces open to everyone suggested while a ticket is written in the portal, and shown on tickets they are linked to; agents see linked and suggested articles on every ticket.
 - **Full-text search** across the spaces you read; pages linked to applications, CMDB items, plans, risks, contracts or tickets, and files attached.
 
 **Planned modules:** datacenter infrastructure, projects.

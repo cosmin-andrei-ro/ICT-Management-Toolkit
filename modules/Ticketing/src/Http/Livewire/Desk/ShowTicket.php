@@ -16,6 +16,8 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use LogicException;
 use Modules\Core\Domain\Links\ConfigurationItems;
+use Modules\Core\Domain\Links\KnowledgeArticles;
+use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Application\Actions\AddTicketAttachment;
 use Modules\Ticketing\Application\Actions\AddTicketComment;
@@ -323,9 +325,12 @@ final class ShowTicket extends Component
         }
     }
 
-    public function render(TicketWorkflow $workflow, ConfigurationItems $configurationItems): View
+    public function render(TicketWorkflow $workflow, ConfigurationItems $configurationItems, KnowledgeArticles $articles): View
     {
         $ticket = $this->ticket;
+        $viewer = auth()->user();
+        $linkedArticles = $viewer instanceof User ? $articles->about($ticket->getMorphClass(), $ticket->id, $viewer) : [];
+        $linkedIds = array_map(fn (LinkedRecord $article): string => $article->id, $linkedArticles);
         $queue = $this->queueId !== '' ? Queue::query()->with('team.members')->find($this->queueId) : null;
 
         return view('ticketing::livewire.desk.show', [
@@ -360,6 +365,10 @@ final class ShowTicket extends Component
                 : collect(),
             'impacts' => Impact::cases(),
             'urgencies' => Urgency::cases(),
+            'articles' => $linkedArticles,
+            'suggestedArticles' => $viewer instanceof User
+                ? array_values(array_filter($articles->suggest($ticket->title, $viewer), fn (LinkedRecord $article): bool => ! in_array($article->id, $linkedIds, true)))
+                : [],
         ])->title($ticket->number);
     }
 
