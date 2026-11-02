@@ -42,7 +42,8 @@ The menu at the top shows only what you are allowed to use. Entries marked **▾
 | **My equipment** | people who have IT equipment or software | The devices IT handed to you, and your software. |
 | **My processes** | owners of business processes | The processes you own and their impact analysis. |
 | **Service desk ▾** | IT staff | Work on tickets (**Service desk**), find documented workarounds (**Known errors**), plan changes (**Change calendar**), approve them (**Approvals**, CAB members) and see **Reports** (team leads). |
-| **Configuration & assets ▾** | IT staff | What IT runs and how it depends on each other (**CMDB**), the equipment register (**Assets**) and software **Licences**. |
+| **Configuration & assets ▾** | IT staff | What IT runs and how it depends on each other (**CMDB**), the equipment register (**Assets**), software **Licences** and the **Application portfolio** with each application's technical documentation. |
+| **My applications** | owners of applications | The applications whose documentation you keep up to date. |
 | **My plans** | owners of continuity plans | The continuity and recovery plans you keep up to date and exercise. |
 | **Risk & continuity ▾** | IT staff, continuity coordinators | The **business impact analysis**, **recovery gaps**, **continuity plans** with their exercises and activations, and **continuity coverage**. |
 | **Suppliers & contracts ▾** | IT staff | Whom to call at a supplier (**Suppliers**) and, for asset managers and team leads, the **Contracts** with them. |
