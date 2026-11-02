@@ -11,14 +11,15 @@
                 · {{ $rack->max_power_watts ? __('dcim::racks.power_of', ['used' => $power, 'max' => $rack->max_power_watts]) : __('dcim::racks.power_only', ['used' => $power]) }}
             </p>
         </div>
+        <div class="flex gap-2">
+            <a href="{{ route('dcim.racks.print', $rack) }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('dcim::reports.sheet.button') }}</a>
         @if ($canManage)
-            <div class="flex gap-2">
                 <a href="{{ route('dcim.racks.edit', $rack) }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('dcim::racks.edit') }}</a>
                 @if ($mounts->isEmpty())
                     <button type="button" wire:click="deleteRack" wire:confirm="{{ __('dcim::racks.delete_confirm') }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-red-700 ring-1 ring-gray-300">{{ __('dcim::racks.delete') }}</button>
                 @endif
-            </div>
         @endif
+        </div>
     </header>
     @error('rack') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
     @if ($rack->notes) <p class="whitespace-pre-line text-sm text-gray-700">{{ $rack->notes }}</p> @endif

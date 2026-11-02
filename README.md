@@ -137,6 +137,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 - **Power**: feeds, UPSs and PDUs in a chain with their capacity; load from each device's draw, in normal operation and if the other side fails; equipment without two independent supplies; what a UPS or PDU failure takes down, up to the services in the CMDB; single-fed equipment suggested as risks.
 - **IP addresses**: VLANs, IPv4 and IPv6 subnets nested by containment with gateway and purpose, addresses given to equipment or CMDB items; utilisation, the next free address, and no duplicates (checked by PostgreSQL's own network types).
+- **Reports**: data centre indicators on the dashboards and in the monthly report; the whole data centre in Excel; a rack sheet to print or as PDF with both sides, the equipment, its power and its cables.
 
 **Planned modules:** projects.
 
