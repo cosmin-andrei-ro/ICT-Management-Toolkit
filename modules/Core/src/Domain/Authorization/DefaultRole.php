@@ -24,5 +24,6 @@ enum DefaultRole: string
     case RiskManager = 'risk-manager';
     case ComplianceManager = 'compliance-manager';
     case Auditor = 'auditor';
+    case ProjectManager = 'project-manager';
     case Requester = 'requester';
 }

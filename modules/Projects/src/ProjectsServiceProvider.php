@@ -1,0 +1,69 @@
+<?php
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 ICT Management Toolkit contributors
+
+declare(strict_types=1);
+
+namespace Modules\Projects;
+
+use App\Support\Modules\ModuleServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Modules\Core\Domain\Authorization\DefaultRole;
+use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Manual\Manual;
+use Modules\Core\Domain\Models\User;
+use Modules\Core\Http\Navigation\Navigation;
+use Modules\Projects\Domain\Models\Phase;
+use Modules\Projects\Domain\Models\Project;
+use Modules\Projects\Domain\Models\Task;
+
+final class ProjectsServiceProvider extends ModuleServiceProvider
+{
+    public function moduleKey(): string
+    {
+        return 'projects';
+    }
+
+    public function register(): void
+    {
+        parent::register();
+
+        $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        Relation::morphMap([
+            'projects.project' => Project::class,
+            'projects.phase' => Phase::class,
+            'projects.task' => Task::class,
+        ]);
+
+        $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
+            // Team members see the projects they work on even without the permission.
+            $navigation->add('projects::projects.menu', 'projects.index', 'projects.*', fn (User $user): bool => $user->can('projects.project.view')
+                || $user->can('projects.project.manage') || Project::query()->involving($user)->exists(), order: 36);
+        });
+    }
+
+    private function registerPermissions(PermissionRegistry $registry): void
+    {
+        $registry->register([
+            // Every project, read only.
+            'projects.project.view',
+            // Start projects and run any of them.
+            'projects.project.manage',
+        ]);
+
+        foreach ([DefaultRole::TeamLead, DefaultRole::AssetManager, DefaultRole::ApplicationManager, DefaultRole::ContinuityCoordinator, DefaultRole::SecurityOfficer, DefaultRole::RiskManager, DefaultRole::ComplianceManager, DefaultRole::Auditor] as $role) {
+            $registry->grantToDefaultRole($role, ['projects.project.view']);
+        }
+
+        $registry->grantToDefaultRole(DefaultRole::ProjectManager, ['projects.project.view', 'projects.project.manage']);
+        $registry->grantToDefaultRole(DefaultRole::TeamLead, ['projects.project.manage']);
+    }
+}

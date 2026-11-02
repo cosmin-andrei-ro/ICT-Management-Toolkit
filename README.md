@@ -57,7 +57,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - Sign-in with local accounts, **Active Directory** (LDAPS) or **single sign-on** through each organization's OpenID Connect or SAML 2.0 provider (Entra ID, Google, Okta, Keycloak, ADFS), with roles from its groups. AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
 - **Two-factor authentication** with an authenticator app, required for IT staff, plus recovery codes; **security keys and passkeys** (WebAuthn), also to sign in without a password.
 - **People management**: invitations to local accounts by email, roles, deactivation. Password reset by email and password change for local accounts.
-- Role-based permissions: requester, agent, team lead, CAB member, asset manager, continuity coordinator, application manager, security officer, risk manager, compliance manager, auditor, administrator.
+- Role-based permissions: requester, agent, team lead, CAB member, asset manager, continuity coordinator, application manager, security officer, risk manager, compliance manager, auditor, project manager, administrator.
 - **Suppliers** with their support contacts, **contracts** with documents, deadlines and email reminders before each notice deadline, and nested **locations** (sites, buildings, rooms).
 - Teams, business calendars (working hours, Romanian public holidays), API tokens.
 - Append-only **audit trail**: who changed what, when, with old and new values; sign-ins, role changes, exports.
@@ -139,7 +139,9 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **IP addresses**: VLANs, IPv4 and IPv6 subnets nested by containment with gateway and purpose, addresses given to equipment or CMDB items; utilisation, the next free address, and no duplicates (checked by PostgreSQL's own network types).
 - **Reports**: data centre indicators on the dashboards and in the monthly report; the whole data centre in Excel; a rack sheet to print or as PDF with both sides, the equipment, its power and its cables.
 
-**Planned modules:** projects.
+**Projects**
+- **Projects** with a code, sponsor, manager and team, in four phases (initiation, planning, execution, closure) with their dates.
+- **Tasks** per phase on a board (to do, in progress, blocked, done) or as a list; overdue tasks marked; **My tasks** across every open project.
 
 **Not done yet:** single logout (SAML SLO).
 

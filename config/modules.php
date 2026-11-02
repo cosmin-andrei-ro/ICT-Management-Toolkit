@@ -14,6 +14,7 @@ use Modules\Core\CoreServiceProvider;
 use Modules\Dcim\DcimServiceProvider;
 use Modules\Documentation\DocumentationServiceProvider;
 use Modules\Itam\ItamServiceProvider;
+use Modules\Projects\ProjectsServiceProvider;
 use Modules\Reporting\ReportingServiceProvider;
 use Modules\Risk\RiskServiceProvider;
 use Modules\Ticketing\TicketingServiceProvider;
@@ -76,6 +77,10 @@ return [
         ],
         'dcim' => [
             'provider' => DcimServiceProvider::class,
+            'enabled' => true,
+        ],
+        'projects' => [
+            'provider' => ProjectsServiceProvider::class,
             'enabled' => true,
         ],
         'reporting' => [
