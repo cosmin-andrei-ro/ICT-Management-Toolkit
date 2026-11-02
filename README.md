@@ -135,7 +135,9 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Racks** in the organization's rooms, drawn from the front and from the rear; assets of the asset register mounted on their units (full or half depth, side 0U equipment), never two on the same unit; the asset's page says where it is mounted.
 - **Cabling**: ports on each device (added in series, patch panels with their rear ports), labelled cables between them, one per port; every connection traced end to end through the patch panels.
 
-**Planned modules:** projects; for the data centre, power and IP addresses.
+- **Power**: feeds, UPSs and PDUs in a chain with their capacity; load from each device's draw, in normal operation and if the other side fails; equipment without two independent supplies; what a UPS or PDU failure takes down, up to the services in the CMDB; single-fed equipment suggested as risks.
+
+**Planned modules:** projects; for the data centre, IP addresses.
 
 **Not done yet:** single logout (SAML SLO).
 

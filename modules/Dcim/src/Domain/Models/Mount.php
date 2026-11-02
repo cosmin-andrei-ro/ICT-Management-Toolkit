@@ -78,6 +78,14 @@ final class Mount extends Model
         return $this->hasMany(Port::class)->orderBy('side')->orderBy('position');
     }
 
+    /**
+     * @return HasMany<PowerConnection, $this>
+     */
+    public function powerConnections(): HasMany
+    {
+        return $this->hasMany(PowerConnection::class);
+    }
+
     public function isZeroU(): bool
     {
         return $this->position_u === null;

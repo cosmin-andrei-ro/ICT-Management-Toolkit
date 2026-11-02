@@ -14,11 +14,15 @@ use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Links\RackPlacements;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Dcim\Application\Links\MountedAssets;
+use Modules\Dcim\Application\Risks\PowerRiskSignals;
 use Modules\Dcim\Domain\Models\Cable;
 use Modules\Dcim\Domain\Models\Mount;
 use Modules\Dcim\Domain\Models\Port;
+use Modules\Dcim\Domain\Models\PowerConnection;
+use Modules\Dcim\Domain\Models\PowerSource;
 use Modules\Dcim\Domain\Models\Rack;
 
 final class DcimServiceProvider extends ModuleServiceProvider
@@ -35,6 +39,7 @@ final class DcimServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->app->bind(RackPlacements::class, MountedAssets::class);
+        $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('dcim', fn (): array => app(PowerRiskSignals::class)()));
     }
 
     public function boot(): void
@@ -46,10 +51,13 @@ final class DcimServiceProvider extends ModuleServiceProvider
             'dcim.mount' => Mount::class,
             'dcim.port' => Port::class,
             'dcim.cable' => Cable::class,
+            'dcim.power_source' => PowerSource::class,
+            'dcim.power_connection' => PowerConnection::class,
         ]);
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('dcim::racks.menu', 'dcim.racks.index', 'dcim.racks.*', fn (User $user): bool => $user->can('dcim.infrastructure.view'), Navigation::CONFIGURATION);
+            $navigation->add('dcim::power.menu', 'dcim.power.index', 'dcim.power.*', fn (User $user): bool => $user->can('dcim.infrastructure.view'), Navigation::CONFIGURATION);
             $navigation->add('dcim::cabling.menu', 'dcim.cables.index', 'dcim.cables.*', fn (User $user): bool => $user->can('dcim.infrastructure.view'), Navigation::CONFIGURATION);
         });
     }

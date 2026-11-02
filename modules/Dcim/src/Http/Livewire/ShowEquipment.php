@@ -18,7 +18,9 @@ use Modules\Core\Domain\Models\User;
 use Modules\Dcim\Application\Actions\AddPorts;
 use Modules\Dcim\Application\Actions\ConnectPorts;
 use Modules\Dcim\Application\Actions\DeletePort;
+use Modules\Dcim\Application\Actions\PlugIn;
 use Modules\Dcim\Application\CablePath;
+use Modules\Dcim\Application\PowerGrid;
 use Modules\Dcim\Domain\Enums\CableStatus;
 use Modules\Dcim\Domain\Enums\CableType;
 use Modules\Dcim\Domain\Enums\MountFace;
@@ -26,6 +28,8 @@ use Modules\Dcim\Domain\Enums\PortKind;
 use Modules\Dcim\Domain\Models\Cable;
 use Modules\Dcim\Domain\Models\Mount;
 use Modules\Dcim\Domain\Models\Port;
+use Modules\Dcim\Domain\Models\PowerConnection;
+use Modules\Dcim\Domain\Models\PowerSource;
 
 /**
  * Mounted equipment: its ports, the cables on them, and where each
@@ -73,6 +77,10 @@ final class ShowEquipment extends Component
     public string $cableNotes = '';
 
     public ?string $tracingPortId = null;
+
+    public string $powerSourceId = '';
+
+    public string $outlet = '';
 
     public function mount(Mount $mount): void
     {
@@ -195,6 +203,25 @@ final class ShowEquipment extends Component
         $this->tracingPortId = $this->tracingPortId === $portId ? null : $this->port($portId)->id;
     }
 
+    public function plugIn(PlugIn $plug): void
+    {
+        $this->authorizeManage();
+        $this->resetErrorBag();
+        $this->validate([
+            'powerSourceId' => ['required', 'uuid'],
+            'outlet' => ['nullable', 'string', 'max:32'],
+        ]);
+
+        $plug->handle($this->equipment, PowerSource::query()->findOrFail($this->powerSourceId), trim($this->outlet) !== '' ? trim($this->outlet) : null);
+        $this->reset('powerSourceId', 'outlet');
+    }
+
+    public function unplug(string $connectionId, PlugIn $plug): void
+    {
+        $this->authorizeManage();
+        $plug->unplug(PowerConnection::query()->where('mount_id', $this->mountId)->findOrFail($connectionId));
+    }
+
     public function render(PhysicalAssets $assets): View
     {
         $equipment = $this->equipment;
@@ -240,6 +267,10 @@ final class ShowEquipment extends Component
             'candidates' => $candidates,
             'otherMount' => $otherMount,
             'canManage' => $this->actor()->can('update', $equipment->rack),
+            'powerConnections' => PowerConnection::query()->with('source')->where('mount_id', $equipment->id)->get(),
+            'powerSources' => PowerSource::query()->where('kind', '!=', 'feed')->orderBy('name')->get(),
+            'redundant' => ($grid = PowerGrid::read())->isRedundant($equipment->id),
+            'powered' => $grid->isPowered($equipment->id),
             'kinds' => PortKind::cases(),
             'sides' => MountFace::cases(),
             'cableTypes' => CableType::cases(),

@@ -46,6 +46,15 @@ interface ConfigurationItems
     public function impactOf(Model $record): array;
 
     /**
+     * Items a failure of these items would affect, nearest first (not the
+     * items themselves): for modules that know items but not the record.
+     *
+     * @param  list<string>  $itemIds
+     * @return list<ConfigurationItemSummary>
+     */
+    public function impactOfItems(array $itemIds): array;
+
+    /**
      * Items linked to records of one kind, by record id, in one query.
      *
      * @param  list<string>  $recordIds

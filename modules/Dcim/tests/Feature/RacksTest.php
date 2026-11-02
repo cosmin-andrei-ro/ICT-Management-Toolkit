@@ -13,7 +13,6 @@ use Modules\Core\Domain\Audit\AuditLog;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Models\Location;
 use Modules\Core\Domain\Models\Organization;
-use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Dcim\Application\Elevation;
 use Modules\Dcim\Domain\Enums\MountFace;
@@ -22,6 +21,7 @@ use Modules\Dcim\Domain\Models\Rack;
 use Modules\Dcim\Http\Livewire\RackForm;
 use Modules\Dcim\Http\Livewire\RackIndex;
 use Modules\Dcim\Http\Livewire\ShowRack;
+use Modules\Dcim\Tests\Support\DcimScenario;
 use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Http\Livewire\ShowAsset;
 
@@ -29,19 +29,10 @@ beforeEach(function (): void {
     app(SyncPermissions::class)->handle();
     $this->organization = Organization::factory()->create();
     app(OrganizationContext::class)->set($this->organization);
-    $this->manager = dcimMember($this->organization, DefaultRole::AssetManager);
-    $this->agent = dcimMember($this->organization, DefaultRole::Agent);
+    $this->manager = DcimScenario::member($this->organization, DefaultRole::AssetManager);
+    $this->agent = DcimScenario::member($this->organization, DefaultRole::Agent);
     $this->room = Location::factory()->create(['name' => 'Server room', 'kind' => 'room']);
 });
-
-function dcimMember(Organization $organization, DefaultRole $role): User
-{
-    $factory = User::factory()->memberOf($organization);
-    $user = ($role === DefaultRole::Requester ? $factory : $factory->withTwoFactor())->create();
-    app(OrganizationContext::class)->runAs($organization, fn () => $user->assignRole($role->value));
-
-    return User::query()->findOrFail($user->id);
-}
 
 function mountForm(Rack $rack, Asset $asset, int|string $position, int $height = 1, string $face = 'front', bool $fullDepth = true): Testable
 {
@@ -70,7 +61,7 @@ it('lets asset managers add racks to rooms, and shows them by room to IT staff',
     $this->get(route('dcim.racks.create'))->assertForbidden();
     Livewire::test(ShowRack::class, ['rack' => $rack])->assertDontSee(__('dcim::racks.mount_heading'));
 
-    $requester = dcimMember($this->organization, DefaultRole::Requester);
+    $requester = DcimScenario::member($this->organization, DefaultRole::Requester);
     $this->actingAs($requester)->get(route('dcim.racks.index'))->assertForbidden();
 });
 
