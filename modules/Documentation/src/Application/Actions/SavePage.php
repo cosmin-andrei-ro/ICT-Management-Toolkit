@@ -15,12 +15,16 @@ use Modules\Documentation\Domain\Models\PageVersion;
 use Modules\Documentation\Domain\Models\Space;
 
 /**
- * Writes a page: each save is a new version, kept as it was. Saving a page
- * someone else changed since it was opened is refused, so no change is lost.
+ * Writes a page: each save is a new version, kept as it was, and published at
+ * once in a free space. Saving a page someone else changed since it was
+ * opened is refused, so no change is lost.
  */
 final readonly class SavePage
 {
-    public function __construct(private ConnectionInterface $db) {}
+    public function __construct(
+        private ConnectionInterface $db,
+        private PublishPage $publish,
+    ) {}
 
     /**
      * @param  ?int  $baseVersion  The version the editor started from.
@@ -75,6 +79,13 @@ final readonly class SavePage
                 'summary' => $summary !== null && trim($summary) !== '' ? mb_substr(trim($summary), 0, 500) : null,
                 'author_id' => $author->id,
             ])->save();
+
+            if (! $space->requires_approval) {
+                $this->publish->publish($page, $version, null);
+            } elseif ($page->pending_version !== null) {
+                // A newer draft withdraws the one submitted: the approver would otherwise approve stale text.
+                $page->forceFill(['pending_version' => null, 'submitted_by' => null, 'submitted_at' => null])->save();
+            }
 
             return $page;
         });

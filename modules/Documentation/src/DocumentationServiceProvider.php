@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Documentation;
 
 use App\Support\Modules\ModuleServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Core\Domain\Authorization\DefaultRole;
@@ -18,6 +19,7 @@ use Modules\Core\Http\Navigation\Navigation;
 use Modules\Documentation\Application\SpaceAccess;
 use Modules\Documentation\Domain\Models\Page;
 use Modules\Documentation\Domain\Models\Space;
+use Modules\Documentation\Infrastructure\Console\SendDocumentationDigestCommand;
 
 final class DocumentationServiceProvider extends ModuleServiceProvider
 {
@@ -42,6 +44,14 @@ final class DocumentationServiceProvider extends ModuleServiceProvider
             'documentation.space' => Space::class,
             'documentation.page' => Page::class,
         ]);
+
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $schedule->command(SendDocumentationDigestCommand::class)->weeklyOn(1, '08:20')->withoutOverlapping()->onOneServer();
+        });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([SendDocumentationDigestCommand::class]);
+        }
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('documentation::docs.menu', 'documentation.index', 'documentation.*', fn (User $user): bool => $user->can('documentation.staff.read')

@@ -36,6 +36,7 @@ use Modules\Documentation\Domain\Enums\SpaceVisibility;
  * @property ?string $description
  * @property SpaceVisibility $visibility
  * @property bool $requires_approval
+ * @property int $review_months
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -59,6 +60,7 @@ final class Space extends Model
     protected $attributes = [
         'visibility' => 'staff',
         'requires_approval' => false,
+        'review_months' => 12,
     ];
 
     /**
@@ -106,6 +108,7 @@ final class Space extends Model
         return [
             'visibility' => SpaceVisibility::class,
             'requires_approval' => 'boolean',
+            'review_months' => 'integer',
         ];
     }
 }

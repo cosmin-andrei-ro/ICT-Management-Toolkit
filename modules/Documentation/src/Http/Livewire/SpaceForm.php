@@ -36,6 +36,10 @@ final class SpaceForm extends Component
 
     public string $visibility = 'staff';
 
+    public bool $requiresApproval = false;
+
+    public int $reviewMonths = 12;
+
     /** @var list<string> */
     public array $ownerIds = [];
 
@@ -59,6 +63,8 @@ final class SpaceForm extends Component
         $this->name = $space->name;
         $this->description = $space->description ?? '';
         $this->visibility = $space->visibility->value;
+        $this->requiresApproval = $space->requires_approval;
+        $this->reviewMonths = $space->review_months;
         $this->ownerIds = array_values(array_filter($space->owners()->pluck('users.id')->all(), is_string(...)));
 
         foreach ($space->teamAccess() as $teamId => $access) {
@@ -81,6 +87,8 @@ final class SpaceForm extends Component
             'name' => ['required', 'string', 'max:150', $this->uniqueName(...)],
             'description' => ['nullable', 'string', 'max:2000'],
             'visibility' => ['required', Rule::enum(SpaceVisibility::class)],
+            'requiresApproval' => ['boolean'],
+            'reviewMonths' => ['required', 'integer', 'between:1,60'],
             'ownerIds' => ['required', 'array', 'min:1', 'max:20'],
             'ownerIds.*' => ['uuid', Rule::in($people)],
             'readTeamIds' => ['array', 'max:50', Rule::requiredIf($this->visibility === SpaceVisibility::Teams->value && $this->editTeamIds === [])],
@@ -93,7 +101,8 @@ final class SpaceForm extends Component
             'name' => $this->name,
             'description' => $this->description,
             'visibility' => SpaceVisibility::from($this->visibility),
-            'requires_approval' => $space !== null && $space->requires_approval,
+            'requires_approval' => $this->requiresApproval,
+            'review_months' => $this->reviewMonths,
         ], $this->ownerIds, $this->readTeamIds, $this->editTeamIds, $this->actor());
 
         $this->redirectRoute('documentation.spaces.show', $saved);

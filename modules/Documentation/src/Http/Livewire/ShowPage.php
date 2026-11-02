@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Documentation\Http\Livewire;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
@@ -15,15 +16,19 @@ use InvalidArgumentException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Modules\Core\Application\Collaboration\StoreAttachment;
+use Modules\Core\Application\Pdf\PdfDownload;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\User;
 use Modules\Documentation\Application\Actions\DeletePage;
 use Modules\Documentation\Application\Actions\ManagePageLinks;
+use Modules\Documentation\Application\Actions\PublishPage;
 use Modules\Documentation\Domain\Models\Page;
+use Modules\Documentation\Domain\Models\PageVersion;
 
 /**
  * A page to read, with its sub-pages, what it is about and its files.
@@ -37,6 +42,12 @@ final class ShowPage extends Component
 
     #[Locked]
     public string $pageId = '';
+
+    /** Editors: the latest version instead of the published one. */
+    #[Url]
+    public bool $draft = false;
+
+    public string $rejectionNote = '';
 
     public string $linkType = '';
 
@@ -99,6 +110,47 @@ final class ShowPage extends Component
         Attachment::query()->where('attachable_type', $page->getMorphClass())->where('attachable_id', $page->id)->findOrFail($attachmentId)->delete();
     }
 
+    public function submit(PublishPage $publish): void
+    {
+        $page = $this->page;
+        $this->authorize('update', $page);
+
+        try {
+            $publish->submit($page, $this->actor());
+        } catch (InvalidArgumentException) {
+            return;
+        }
+
+        unset($this->page);
+    }
+
+    public function approve(PublishPage $publish): void
+    {
+        $page = $this->page;
+        $this->authorize('approve', $page);
+        $publish->approve($page, $this->actor());
+        $this->draft = false;
+        unset($this->page);
+    }
+
+    public function reject(PublishPage $publish): void
+    {
+        $page = $this->page;
+        $this->authorize('approve', $page);
+        $this->validate(['rejectionNote' => ['required', 'string', 'max:2000']]);
+        $publish->reject($page, $this->actor(), $this->rejectionNote);
+        $this->reset('rejectionNote');
+        unset($this->page);
+    }
+
+    public function markReviewed(PublishPage $publish): void
+    {
+        $page = $this->page;
+        $this->authorize('update', $page);
+        $publish->markReviewed($page, $this->actor());
+        unset($this->page);
+    }
+
     public function delete(DeletePage $delete): void
     {
         $page = $this->page;
@@ -113,6 +165,8 @@ final class ShowPage extends Component
         $this->authorize('view', $page);
         $viewer = $this->actor();
         $canEdit = $viewer->can('update', $page);
+        // Editors see the draft when asked, or when nothing is published yet.
+        $showDraft = $canEdit && ($this->draft || ! $page->isPublished());
         $links = $page->links()->get();
         $resolved = [];
 
@@ -132,7 +186,14 @@ final class ShowPage extends Component
         return view('documentation::livewire.page', [
             'page' => $page,
             'breadcrumbs' => $breadcrumbs,
-            'children' => $page->children()->get(['id', 'title']),
+            'children' => $page->children()->when(! $canEdit, fn ($query) => $query->whereNotNull('published_version'))->get(['id', 'title', 'published_title', 'published_version']),
+            'showDraft' => $showDraft,
+            'canApprove' => $viewer->can('approve', $page),
+            'canSeeHistory' => $viewer->can('viewHistory', $page),
+            'pending' => $page->pending_version !== null ? PageVersion::query()->with('author')->where('page_id', $page->id)->where('version', $page->pending_version)->first() : null,
+            'publishedRecord' => $page->published_version !== null ? PageVersion::query()->with(['author', 'approver'])->where('page_id', $page->id)->where('version', $page->published_version)->first() : null,
+            'pdfAvailable' => app(PdfDownload::class)->isAvailable(),
+            'today' => CarbonImmutable::today(),
             'links' => $links,
             'resolved' => $resolved,
             'kindLabels' => $records->searchable(),
@@ -140,7 +201,7 @@ final class ShowPage extends Component
             'attachments' => $page->attachments()->with('uploader')->get(),
             'canEdit' => $canEdit,
             'timezone' => config()->string('app.display_timezone'),
-        ])->title($page->title);
+        ])->title($showDraft ? $page->title : $page->displayTitle());
     }
 
     private function actor(): User

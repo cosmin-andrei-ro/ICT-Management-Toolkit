@@ -22,6 +22,14 @@
                 @endforeach
             </div>
         </fieldset>
+        <div class="grid gap-4 sm:grid-cols-2">
+            <label class="flex items-start gap-2 text-sm"><input type="checkbox" wire:model="requiresApproval" class="mt-1"> <span>{{ __('documentation::docs.spaces.requires_approval') }} <span class="block text-xs text-gray-500">{{ __('documentation::docs.spaces.requires_approval_help') }}</span></span></label>
+            <div>
+                <label for="reviewMonths" class="block text-sm font-medium">{{ __('documentation::docs.spaces.review_months') }}</label>
+                <input id="reviewMonths" type="number" min="1" max="60" wire:model="reviewMonths" class="mt-1 block w-28">
+                @error('reviewMonths') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+        </div>
         @if ($visibility === 'teams')
             <div>
                 <label for="readTeamIds" class="block text-sm font-medium">{{ __('documentation::docs.spaces.read_teams') }}</label>

@@ -33,7 +33,7 @@ final class PageHistory extends Component
 
     public function mount(Page $page): void
     {
-        $this->authorize('view', $page);
+        $this->authorize('viewHistory', $page);
         $this->pageId = $page->id;
         $this->version = $this->version > 0 ? $this->version : $page->version;
     }
@@ -56,8 +56,8 @@ final class PageHistory extends Component
     public function render(): View
     {
         $page = Page::query()->findOrFail($this->pageId);
-        $this->authorize('view', $page);
-        $versions = $page->versions()->with('author')->get(['id', 'page_id', 'version', 'title', 'summary', 'author_id', 'created_at']);
+        $this->authorize('viewHistory', $page);
+        $versions = $page->versions()->with(['author', 'approver'])->get(['id', 'page_id', 'version', 'title', 'summary', 'author_id', 'approved_by', 'approved_at', 'created_at']);
         $selected = PageVersion::query()->where('page_id', $page->id)->where('version', $this->version)->first();
         $previous = $selected !== null ? PageVersion::query()->where('page_id', $page->id)->where('version', '<', $selected->version)->orderByDesc('version')->first() : null;
 

@@ -29,7 +29,7 @@ final readonly class SaveSpace
     ) {}
 
     /**
-     * @param  array{name: string, description: ?string, visibility: SpaceVisibility, requires_approval: bool}  $data  Validated.
+     * @param  array{name: string, description: ?string, visibility: SpaceVisibility, requires_approval: bool, review_months: int}  $data  Validated.
      * @param  list<string>  $ownerIds  Members of the organization.
      * @param  list<string>  $readTeamIds
      * @param  list<string>  $editTeamIds
@@ -44,6 +44,7 @@ final readonly class SaveSpace
                 'description' => $description !== '' ? $description : null,
                 'visibility' => $data['visibility'],
                 'requires_approval' => $data['requires_approval'],
+                'review_months' => $data['review_months'],
             ])->save();
 
             $before = $this->members($space);

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Documentation\Http\Livewire;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
@@ -40,12 +41,21 @@ final class ShowSpace extends Component
     {
         $space = Space::query()->with(['owners', 'teams'])->findOrFail($this->spaceId);
         $this->authorize('view', $space);
-        $pages = Page::query()->where('space_id', $space->id)->orderBy('position')->orderBy('title')->get(['id', 'parent_id', 'title', 'updated_at']);
+        $viewer = $this->actor();
+        $canEdit = $viewer->can('edit', $space);
+        // Pages never published stay with the space's editors.
+        $pages = Page::query()->where('space_id', $space->id)->when(! $canEdit, fn ($query) => $query->whereNotNull('published_version'))
+            ->orderBy('position')->orderBy('title')->get(['id', 'parent_id', 'title', 'published_title', 'published_version', 'version', 'pending_version', 'review_on', 'updated_at']);
+        $today = CarbonImmutable::today();
 
         return view('documentation::livewire.space', [
             'space' => $space,
             'tree' => self::tree($pages, null, 0),
-            'results' => trim($this->q) !== '' ? $search->pages($this->q, $this->actor(), $space->id) : null,
+            'results' => trim($this->q) !== '' ? $search->pages($this->q, $viewer, $space->id) : null,
+            'canEdit' => $canEdit,
+            'toApprove' => $viewer->can('approve', $space) ? $pages->whereNotNull('pending_version')->values() : collect(),
+            'toReview' => $canEdit ? $pages->filter(fn (Page $page): bool => $page->isReviewOverdue($today) || ($page->review_on !== null && $page->review_on->lte($today->addDays(30))))->sortBy('review_on')->values() : collect(),
+            'today' => $today,
         ])->title($space->name);
     }
 

@@ -48,7 +48,7 @@ final class DocsIndex extends Component
 
         return view('documentation::livewire.index', [
             'spaces' => Space::query()->tap($readable)->withCount('pages')->orderBy('name')->get(),
-            'recent' => trim($this->q) === '' ? Page::query()->with(['space', 'editor'])->whereIn('space_id', Space::query()->tap($readable)->select('id'))->latest('updated_at')->limit(10)->get() : collect(),
+            'recent' => trim($this->q) === '' ? Page::query()->with(['space', 'editor'])->whereIn('space_id', Space::query()->tap($readable)->select('id'))->whereNotNull('published_version')->latest('published_at')->limit(10)->get() : collect(),
             'results' => trim($this->q) !== '' ? $search->pages($this->q, $user, null, is_int($perPage) ? $perPage : 20) : null,
         ])->title(__('documentation::docs.title'));
     }

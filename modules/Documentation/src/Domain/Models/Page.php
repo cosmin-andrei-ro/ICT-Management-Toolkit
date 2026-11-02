@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Documentation\Domain\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
@@ -28,8 +29,10 @@ use Modules\Documentation\Database\Factories\PageFactory;
 
 /**
  * A page of a space, written in Markdown, under another page or at the top.
- * Its text is versioned in documentation_page_versions; the audit trail
- * records the rest (title, place, deletion) without the text itself.
+ * Editors work on the latest version (title, body); readers see the published
+ * one (published_title, published_body), which in controlled spaces a space
+ * owner approved. Every version is kept in documentation_page_versions; the
+ * audit trail records the rest without the text itself.
  *
  * @property string $id
  * @property string $organization_id
@@ -39,6 +42,15 @@ use Modules\Documentation\Database\Factories\PageFactory;
  * @property string $body
  * @property int $version
  * @property int $position
+ * @property ?string $published_title
+ * @property ?string $published_body
+ * @property ?int $published_version
+ * @property ?Carbon $published_at
+ * @property ?int $pending_version
+ * @property ?string $submitted_by
+ * @property ?Carbon $submitted_at
+ * @property ?string $rejection_note
+ * @property ?CarbonImmutable $review_on
  * @property ?string $updated_by
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
@@ -66,9 +78,43 @@ final class Page extends Model
     /** @var list<string> */
     protected $hidden = ['search_vector'];
 
-    public function html(): string
+    public function isPublished(): bool
+    {
+        return $this->published_version !== null;
+    }
+
+    /**
+     * Whether the latest version is newer than what readers see.
+     */
+    public function hasDraft(): bool
+    {
+        return $this->published_version === null || $this->version > $this->published_version;
+    }
+
+    public function isReviewOverdue(CarbonImmutable $today): bool
+    {
+        return $this->review_on !== null && $this->review_on->lt($today);
+    }
+
+    /**
+     * What readers see.
+     */
+    public function publishedHtml(): string
+    {
+        return Markdown::toSafeHtml($this->published_body ?? '');
+    }
+
+    /**
+     * The latest version, for its editors.
+     */
+    public function draftHtml(): string
     {
         return Markdown::toSafeHtml($this->body);
+    }
+
+    public function displayTitle(): string
+    {
+        return $this->published_title ?? $this->title;
     }
 
     /**
@@ -78,7 +124,7 @@ final class Page extends Model
      */
     public function auditExclude(): array
     {
-        return ['body', 'version', 'search_vector'];
+        return ['body', 'version', 'published_body', 'search_vector'];
     }
 
     /**
@@ -134,6 +180,11 @@ final class Page extends Model
         return [
             'version' => 'integer',
             'position' => 'integer',
+            'published_version' => 'integer',
+            'published_at' => 'datetime',
+            'pending_version' => 'integer',
+            'submitted_at' => 'datetime',
+            'review_on' => 'immutable_date',
         ];
     }
 }

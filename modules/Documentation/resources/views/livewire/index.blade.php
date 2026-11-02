@@ -20,7 +20,7 @@
             <ul class="divide-y divide-gray-100 rounded-lg bg-white px-4 ring-1 ring-gray-200">
                 @forelse ($results as $result)
                     <li wire:key="result-{{ $result->id }}" class="space-y-1 py-3">
-                        <a href="{{ route('documentation.pages.show', $result) }}" class="font-medium text-blue-700 underline">{{ $result->title }}</a>
+                        <a href="{{ route('documentation.pages.show', $result) }}" class="font-medium text-blue-700 underline">{{ $result->displayTitle() }}</a>
                         <span class="text-xs text-gray-500">{{ $result->space->name }}</span>
                         <x-documentation::extract :text="$result->getAttribute('extract')" />
                     </li>
@@ -51,7 +51,7 @@
                 <ul class="divide-y divide-gray-100 rounded-lg bg-white px-4 text-sm ring-1 ring-gray-200">
                     @forelse ($recent as $page)
                         <li wire:key="recent-{{ $page->id }}" class="py-2">
-                            <a href="{{ route('documentation.pages.show', $page) }}" class="text-blue-700 underline">{{ $page->title }}</a>
+                            <a href="{{ route('documentation.pages.show', $page) }}" class="text-blue-700 underline">{{ $page->displayTitle() }}</a>
                             <span class="block text-xs text-gray-500">{{ $page->space->name }} · {{ $page->editor?->name ?? '—' }} · {{ $page->updated_at?->timezone(config()->string('app.display_timezone'))->format('Y-m-d') }}</span>
                         </li>
                     @empty
