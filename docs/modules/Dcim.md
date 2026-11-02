@@ -1,6 +1,6 @@
 # DCIM module
 
-Data centre infrastructure: racks and what is mounted in them; then cabling, power and IP addresses. Code: `modules/Dcim/`. Decisions: [ADR 0047](../adr/0047-dcim-racks-and-itam-assets.md), [ADR 0048](../adr/0048-dcim-ports-cables-and-paths.md).
+Data centre infrastructure: racks and what is mounted in them; then cabling, power and IP addresses. Code: `modules/Dcim/`. Decisions: [ADR 0047](../adr/0047-dcim-racks-and-itam-assets.md), [ADR 0048](../adr/0048-dcim-ports-cables-and-paths.md), [ADR 0049](../adr/0049-dcim-power-chain.md).
 
 ## Concepts
 
@@ -9,6 +9,9 @@ Data centre infrastructure: racks and what is mounted in them; then cabling, pow
 - **Mount** (`dcim_mounts`): an asset of the asset register (`asset_id`, through Core's `PhysicalAssets`), lowest unit (`position_u`, null for 0U), units taken, face (front/rear), full depth, power draw, notes. Generated `front_units` / `rear_units` ranges with exclusion constraints keep units free; triggers keep mounts inside their rack.
 - **Port** (`dcim_ports`): of a mount; name (unique per device), type, side, position, `rear_port_id` (a patch panel's front port → its rear port, one to one). Removed with the mount.
 - **Cable** (`dcim_cables`) and its two **ends** (`dcim_cable_ends`, unique `port_id`: one cable per port): label (unique per organization when set), type, colour, length, status (connected / planned), notes.
+- **Power source** (`dcim_power_sources`): feed, UPS or PDU in a room; side A/B; fed by (`upstream_id`, no loops); asset in the register; a PDU's rack; capacity (W).
+- **Power connection** (`dcim_power_connections`): a mount plugged into a PDU or UPS, with an outlet (unique per source).
+- `PowerGrid` computes normal and worst-case load per source, independent supplies (no shared source above), and what a source's failure takes down.
 - `CablePath::from($port)` follows cables and patch panel pass-throughs to the end of a connection.
 
 ## Screens
@@ -17,6 +20,8 @@ Data centre infrastructure: racks and what is mounted in them; then cabling, pow
 - `/dcim/racks/new[?location=]`, `/dcim/racks/{id}/edit`: the rack form.
 - `/dcim/racks/{id}`: the rack from the front and from the rear; mounted equipment; mount, move, take out.
 - `/dcim/equipment/{mount}`: a device's ports, their cables and far ends, trace, connect / edit / disconnect, add ports (series, patch panel).
+- `/dcim/power` (**Configuration & assets → Power**): the chain by room with load bars; `/dcim/power/new`, `/{id}`, `/{id}/edit`: a source, what it feeds, its load, what fails with it (equipment and CMDB items).
+- The equipment page has a **Power** section: supplies, redundancy, plug in / unplug.
 - `/dcim/cables` (**Configuration & assets → Cables**): every cable, searchable by label.
 - The asset's page in the asset register shows its rack and units.
 
@@ -24,6 +29,14 @@ Data centre infrastructure: racks and what is mounted in them; then cabling, pow
 
 - Implements Core `RackPlacements` (`MountedAssets`).
 - Uses Core `PhysicalAssets` (implemented by ITAM) and dispatches Core `AssetPlaced` (ITAM records the room as the asset's location).
+
+## For the risk register
+
+Signals of source `dcim`: single-fed equipment linked to CMDB items (`dcim.single_fed:<mount>`), sources overloaded if the other side failed (`dcim.overload:<source>`).
+
+## Configuration
+
+- `DCIM_POWER_WARN_PERCENT` (80): load share of capacity from which a source needs attention.
 
 ## Permissions
 
@@ -36,6 +49,6 @@ Data centre infrastructure: racks and what is mounted in them; then cabling, pow
 
 1. Racks, mounting assets of the register, front and rear drawing — **done**.
 2. Ports and cables with path tracing through patch panels — **done**.
-3. Power: UPS, PDUs, A/B feeds, load and what fails with a UPS.
+3. Power: UPS, PDUs, A/B feeds, load and what fails with a UPS — **done**.
 4. IPAM: VLANs, subnets, addresses.
 5. Indicators, exports, suggested risks, rack sheet to print.

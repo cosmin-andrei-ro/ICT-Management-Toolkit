@@ -24,13 +24,14 @@ use Modules\Dcim\Domain\Models\Rack;
 use Modules\Dcim\Http\Livewire\CableIndex;
 use Modules\Dcim\Http\Livewire\ShowEquipment;
 use Modules\Dcim\Http\Livewire\ShowRack;
+use Modules\Dcim\Tests\Support\DcimScenario;
 use Modules\Itam\Domain\Models\Asset;
 
 beforeEach(function (): void {
     app(SyncPermissions::class)->handle();
     $this->organization = Organization::factory()->create();
     app(OrganizationContext::class)->set($this->organization);
-    $this->manager = dcimMember($this->organization, DefaultRole::AssetManager);
+    $this->manager = DcimScenario::member($this->organization, DefaultRole::AssetManager);
     $this->rack = Rack::factory()->create(['location_id' => Location::factory()->create(['kind' => 'room'])->id, 'name' => 'R01']);
 });
 
@@ -142,14 +143,14 @@ it('edits and removes cables, and keeps cabled ports', function (): void {
 it('lets IT staff look but only managers change the cabling', function (): void {
     $server = equipment($this->rack, 'db-01', 10);
     app(AddPorts::class)->handle($server, 'eth0', PortKind::Rj45, MountFace::Rear, false);
-    $agent = dcimMember($this->organization, DefaultRole::Agent);
+    $agent = DcimScenario::member($this->organization, DefaultRole::Agent);
 
     $this->actingAs($agent);
     Livewire::test(ShowEquipment::class, ['mount' => $server])->assertSee('eth0')->assertDontSee(__('dcim::cabling.add_ports'))
         ->call('startConnecting', $server->ports()->sole()->id)->assertForbidden();
     $this->get(route('dcim.cables.index'))->assertOk();
 
-    $this->actingAs(dcimMember($this->organization, DefaultRole::Requester))->get(route('dcim.equipment.show', $server))->assertForbidden();
+    $this->actingAs(DcimScenario::member($this->organization, DefaultRole::Requester))->get(route('dcim.equipment.show', $server))->assertForbidden();
 });
 
 it('never cables to another organization\'s equipment', function (): void {

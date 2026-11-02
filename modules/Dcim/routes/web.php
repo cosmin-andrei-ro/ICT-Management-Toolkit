@@ -7,9 +7,12 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Modules\Dcim\Http\Livewire\CableIndex;
+use Modules\Dcim\Http\Livewire\PowerIndex;
+use Modules\Dcim\Http\Livewire\PowerSourceForm;
 use Modules\Dcim\Http\Livewire\RackForm;
 use Modules\Dcim\Http\Livewire\RackIndex;
 use Modules\Dcim\Http\Livewire\ShowEquipment;
+use Modules\Dcim\Http\Livewire\ShowPowerSource;
 use Modules\Dcim\Http\Livewire\ShowRack;
 
 Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(function (): void {
@@ -19,4 +22,8 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
     Route::livewire('/dcim/racks/{rack}/edit', RackForm::class)->whereUuid('rack')->name('dcim.racks.edit');
     Route::livewire('/dcim/equipment/{mount}', ShowEquipment::class)->whereUuid('mount')->name('dcim.equipment.show');
     Route::livewire('/dcim/cables', CableIndex::class)->name('dcim.cables.index');
+    Route::livewire('/dcim/power', PowerIndex::class)->name('dcim.power.index');
+    Route::livewire('/dcim/power/new', PowerSourceForm::class)->name('dcim.power.create');
+    Route::livewire('/dcim/power/{source}', ShowPowerSource::class)->whereUuid('source')->name('dcim.power.show');
+    Route::livewire('/dcim/power/{source}/edit', PowerSourceForm::class)->whereUuid('source')->name('dcim.power.edit');
 });

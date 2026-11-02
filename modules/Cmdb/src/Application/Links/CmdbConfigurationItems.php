@@ -133,7 +133,16 @@ final readonly class CmdbConfigurationItems implements ConfigurationItems
             }
         }
 
-        return array_values($this->impact->affectedBy($ids)
+        return $this->impactOfItems($ids);
+    }
+
+    public function impactOfItems(array $itemIds): array
+    {
+        if ($itemIds === []) {
+            return [];
+        }
+
+        return array_values($this->impact->affectedBy($itemIds)
             ->map(fn (ImpactedItem $impacted): ConfigurationItemSummary => self::summary($impacted->item, $impacted->depth))
             ->all());
     }

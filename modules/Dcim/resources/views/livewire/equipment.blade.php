@@ -9,6 +9,50 @@
         </p>
     </header>
 
+    <section aria-labelledby="power-heading" class="space-y-3 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 id="power-heading" class="text-sm font-semibold">{{ __('dcim::power.equipment_heading') }}</h2>
+            @if (! $powered)
+                <span class="text-xs text-gray-500">{{ __('dcim::power.not_powered') }}</span>
+            @elseif ($redundant)
+                <span class="rounded bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-800 ring-1 ring-green-200">{{ __('dcim::power.redundant') }}</span>
+            @else
+                <span class="rounded bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-900 ring-1 ring-amber-300">{{ __('dcim::power.single_fed') }}</span>
+            @endif
+        </div>
+        <p class="text-xs text-gray-600">{{ $equipment->power_watts !== null ? __('dcim::power.draws', ['watts' => $equipment->power_watts]) : __('dcim::power.draw_unknown') }}</p>
+        <ul class="divide-y divide-gray-100 text-sm">
+            @foreach ($powerConnections as $connection)
+                <li wire:key="power-{{ $connection->id }}" class="flex items-center justify-between gap-2 py-1">
+                    <span><a href="{{ route('dcim.power.show', $connection->source) }}" class="text-blue-700 underline">{{ $connection->source->name }}</a> <span class="text-xs text-gray-500">{{ $connection->source->kind->label() }}@if ($connection->source->side) · {{ $connection->source->side->label() }}@endif @if ($connection->outlet) · {{ __('dcim::power.outlet_value', ['outlet' => $connection->outlet]) }}@endif</span></span>
+                    @if ($canManage)
+                        <button type="button" wire:click="unplug('{{ $connection->id }}')" wire:confirm="{{ __('dcim::power.unplug_confirm') }}" class="text-xs font-medium text-red-700 underline">{{ __('dcim::power.unplug') }}<span class="sr-only">: {{ $connection->source->name }}</span></button>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+        @if ($canManage)
+            <form wire:submit="plugIn" class="flex flex-wrap items-end gap-3 text-sm" novalidate>
+                <div>
+                    <label for="powerSourceId" class="block font-medium">{{ __('dcim::power.plug_into') }}</label>
+                    <select id="powerSourceId" wire:model="powerSourceId" class="mt-1 block rounded-md border-gray-300 text-sm">
+                        <option value="">{{ __('dcim::power.choose_source') }}</option>
+                        @foreach ($powerSources as $option)
+                            <option wire:key="source-{{ $option->id }}" value="{{ $option->id }}">{{ $option->name }} ({{ $option->kind->label() }}@if ($option->side), {{ $option->side->label() }}@endif)</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="outlet" class="block font-medium">{{ __('dcim::power.fields.outlet') }}</label>
+                    <input id="outlet" type="text" maxlength="32" wire:model="outlet" class="mt-1 block w-28 rounded-md border-gray-300 text-sm">
+                </div>
+                <button type="submit" class="rounded-md bg-gray-900 px-4 py-2 font-semibold text-white">{{ __('dcim::power.plug') }}</button>
+            </form>
+            @error('powerSourceId') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+            @error('outlet') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+        @endif
+    </section>
+
     <section aria-labelledby="ports-heading" class="space-y-3 rounded-lg bg-white p-4 ring-1 ring-gray-200">
         <h2 id="ports-heading" class="text-sm font-semibold">{{ __('dcim::cabling.ports') }}</h2>
         @error('ports') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
