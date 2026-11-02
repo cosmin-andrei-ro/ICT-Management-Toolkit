@@ -60,6 +60,10 @@ On a page, **Link a record** connects it to what it is about - an application, a
 
 Published pages of spaces read by **everyone** are the employees' help: they find them in **Documentation** and, while writing a new ticket, as **suggestions** under its summary. Link a page to a ticket or a known error (**Link a record → Service desk ticket**) and it shows on the ticket's page - to agents always, to the requester when they may read it. Other modules can link pages too, for example a procedure as evidence of a compliance control.
 
+## Application pages
+
+When an application's documentation comes into force, the toolkit writes its page in the **Applications** space: a summary of the documentation - owners, support, components, business processes with their recovery objectives - and a link to the full documentation. At every new version the summary is replaced; the **Notes** below it are yours and stay as they are. To change the summary, change the application's documentation, not the page. The page also shows on the application and on its CMDB item.
+
 ## History
 
 **History** lists every saved version, who saved it and what changed. Choose one to see the lines added (in green) and removed (in red) compared with the version before. **Restore this version** makes an old text current again - as a new version, so nothing is lost.

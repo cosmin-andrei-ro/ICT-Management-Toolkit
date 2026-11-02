@@ -64,6 +64,7 @@ return [
         'history' => 'Change history',
         'no_history' => 'No version in force yet.',
         'minor_logged' => 'Minor change, logged',
+        'documentation_pages' => 'Documentation pages',
         'risks' => 'Open risks',
         'no_risks' => 'No open risk concerns this application.',
         'risk_not_scored' => 'Not assessed',

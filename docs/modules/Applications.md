@@ -58,3 +58,7 @@ Owners and deputies write their applications' sheets without a permission. Nobod
 3. Chapters 4–7: network, firewall rules, hosting, components linked to the CMDB, software, databases, technical accounts; network diagram, ERD upload — **done**.
 4. Chapters 8–16: certificates with expiry reminders, secrets (vault location only), compliance, logging and alerts, continuity from the BIA and BCM, deployment, jobs, runbook, troubleshooting, decommissioning, glossary — **done**.
 5. Full document and PDF through Gotenberg (ADR 0030), the application's CMDB item created on approval, yearly review reminders, weekly digest, Excel export — **done**.
+
+## Documentation page
+
+When a version comes into force, Applications dispatches Core's `ApplicationDocumented` with the summary (owners, support, components, processes with RTO and RPO). The Documentation module writes the application's page in its *Applications* space from it ([ADR 0043](../adr/0043-generated-application-pages.md)); the application page lists its documentation pages.

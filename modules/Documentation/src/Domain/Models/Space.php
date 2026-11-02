@@ -37,6 +37,7 @@ use Modules\Documentation\Domain\Enums\SpaceVisibility;
  * @property SpaceVisibility $visibility
  * @property bool $requires_approval
  * @property int $review_months
+ * @property ?string $purpose What the toolkit fills it with ("applications"); null for the organization's own spaces.
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -46,6 +47,8 @@ use Modules\Documentation\Domain\Enums\SpaceVisibility;
 #[UsePolicy(SpacePolicy::class)]
 final class Space extends Model
 {
+    public const string APPLICATIONS = 'applications';
+
     use Auditable;
     use BelongsToOrganization;
 

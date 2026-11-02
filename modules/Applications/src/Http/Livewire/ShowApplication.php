@@ -17,6 +17,7 @@ use Modules\Applications\Application\Options\OptionCatalog;
 use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\Sheet;
+use Modules\Core\Domain\Links\KnowledgeArticles;
 use Modules\Core\Domain\Links\Risks;
 use Modules\Core\Domain\Models\User;
 
@@ -59,7 +60,7 @@ final class ShowApplication extends Component
         $this->redirectRoute('applications.index');
     }
 
-    public function render(OptionCatalog $options, Risks $risks): View
+    public function render(OptionCatalog $options, Risks $risks, KnowledgeArticles $articles): View
     {
         $application = $this->application;
         $sheets = Sheet::query()->with(['submitter', 'author', 'approvals.user'])->where('application_id', $application->id)->get();
@@ -72,6 +73,8 @@ final class ShowApplication extends Component
             'history' => $sheets->filter(fn (Sheet $sheet): bool => $sheet->major !== null)->sortByDesc(fn (Sheet $sheet): array => [$sheet->major, $sheet->minor])->values(),
             'options' => $options,
             'risks' => $risks->isAvailable() && auth()->user() instanceof User ? $risks->concerning('application', $application->id, auth()->user()) : null,
+            // Its page in the documentation (CLAUDE.md §9) and other pages about it.
+            'articles' => auth()->user() instanceof User ? $articles->about($application->getMorphClass(), $application->id, auth()->user()) : [],
         ])->title($application->name);
     }
 }

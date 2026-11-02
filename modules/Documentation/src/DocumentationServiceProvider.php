@@ -11,14 +11,17 @@ use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Event;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Events\ApplicationDocumented;
 use Modules\Core\Domain\Links\KnowledgeArticles;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Documentation\Application\Links\DocumentationArticles;
+use Modules\Documentation\Application\Listeners\GenerateApplicationPage;
 use Modules\Documentation\Application\SpaceAccess;
 use Modules\Documentation\Domain\Models\Page;
 use Modules\Documentation\Domain\Models\Space;
@@ -48,6 +51,8 @@ final class DocumentationServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        Event::listen(ApplicationDocumented::class, GenerateApplicationPage::class);
 
         Relation::morphMap([
             'documentation.space' => Space::class,
