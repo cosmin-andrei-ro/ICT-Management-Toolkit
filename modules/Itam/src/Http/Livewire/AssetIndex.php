@@ -15,8 +15,14 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Modules\Core\Application\Exports\RequestExport;
+use Modules\Core\Domain\Exports\ExportFormat;
+use Modules\Core\Domain\Exports\ExportStatus;
+use Modules\Core\Domain\Models\Export;
 use Modules\Core\Domain\Models\Location;
+use Modules\Core\Domain\Models\User;
 use Modules\Itam\Application\Actions\ProvisionDefaultCategories;
+use Modules\Itam\Application\Exports\AssetExport;
 use Modules\Itam\Domain\Enums\AssetStatus;
 use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Domain\Models\Category;
@@ -56,6 +62,19 @@ final class AssetIndex extends Component
         }
     }
 
+    public function export(string $format, RequestExport $request): void
+    {
+        $user = auth()->user();
+        $format = ExportFormat::tryFrom($format);
+
+        if (! $user instanceof User || $format === null) {
+            return;
+        }
+
+        // RequestExport checks the permission and records the export in the audit trail.
+        $request->handle($user, AssetExport::TYPE, $format, []);
+    }
+
     public function render(Config $config): View
     {
         $this->authorize('viewAny', Asset::class);
@@ -74,8 +93,13 @@ final class AssetIndex extends Component
             ->orderBy('asset_tag')
             ->paginate(25);
 
+        $exports = Export::query()->where('user_id', auth()->id())->where('type', AssetExport::TYPE)->latest()->limit(3)->get();
+
         return view('itam::livewire.index', [
             'assets' => $assets,
+            'exports' => $exports,
+            'preparing' => $exports->contains(fn (Export $export): bool => $export->status === ExportStatus::Pending),
+            'timezone' => config()->string('app.display_timezone'),
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
             'statuses' => AssetStatus::cases(),
             'locations' => Location::paths(),

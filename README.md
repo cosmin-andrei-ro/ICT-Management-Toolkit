@@ -78,6 +78,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Hardware assets** of extensible categories, with automatic asset tags, purchase and warranty details, and a life cycle from order to disposal (with data wiping recorded).
 - Who has each asset, from when to when; **My equipment** for every employee.
 - Assets linked to CMDB items and to the support contracts that cover them; warranty reminders by email.
+- **Handover protocols** to print or save as PDF, with the employee's confirmation of receipt in the portal; **QR labels**; **import** from CSV or Excel and **export** of the register.
 
 **Planned modules:** software licences (asset management, part 3), datacenter infrastructure, application portfolio, business impact analysis, continuity and recovery, risk assessment, audit and compliance, projects.
 

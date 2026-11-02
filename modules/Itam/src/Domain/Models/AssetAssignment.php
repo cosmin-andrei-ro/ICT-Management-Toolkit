@@ -29,6 +29,8 @@ use Modules\Core\Domain\Models\User;
  * @property ?Carbon $returned_at
  * @property ?string $returned_by
  * @property ?string $return_notes
+ * @property ?Carbon $acknowledged_at When the holder confirmed in the portal that they received it.
+ * @property ?string $acknowledged_ip
  * @property-read Asset $asset
  * @property-read User $user
  * @property-read ?User $assigner
@@ -79,6 +81,7 @@ final class AssetAssignment extends Model
         return [
             'assigned_at' => 'datetime',
             'returned_at' => 'datetime',
+            'acknowledged_at' => 'datetime',
         ];
     }
 }

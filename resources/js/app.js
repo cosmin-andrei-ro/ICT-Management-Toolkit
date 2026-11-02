@@ -3,6 +3,7 @@
 
 import ciGraph from './components/ci-graph';
 import './navigation';
+import './print';
 
 // Alpine runs in its CSP build: components are registered here, by name (ADR 0006).
 document.addEventListener('alpine:init', () => {

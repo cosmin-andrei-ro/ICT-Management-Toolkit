@@ -7,19 +7,18 @@ declare(strict_types=1);
 
 namespace Modules\Cmdb\Http\Livewire;
 
-use finfo;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Modules\Cmdb\Application\Actions\ProvisionDefaultTypes;
-use Modules\Cmdb\Application\Import\ImportHasErrors;
-use Modules\Cmdb\Application\Import\ImportRow;
 use Modules\Cmdb\Application\Import\ItemImport;
 use Modules\Cmdb\Application\Import\RelationshipImport;
 use Modules\Cmdb\Domain\Models\CiType;
 use Modules\Cmdb\Domain\Models\ConfigurationItem;
+use Modules\Core\Application\Imports\ImportHasErrors;
+use Modules\Core\Application\Imports\ImportRow;
 use Modules\Core\Infrastructure\Imports\SpreadsheetReader;
 use Modules\Core\Infrastructure\Imports\SpreadsheetUnreadable;
 use Throwable;
@@ -127,22 +126,8 @@ final class ImportPage extends Component
             return null;
         }
 
-        // By content, not by name or browser-declared type.
-        $mime = (string) (new finfo(FILEINFO_MIME_TYPE))->file($file->getRealPath());
-        $format = match (true) {
-            in_array($mime, ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip', 'application/octet-stream'], true) && strtolower($file->getClientOriginalExtension()) === 'xlsx' => 'xlsx',
-            in_array($mime, ['text/csv', 'text/plain', 'application/csv'], true) => 'csv',
-            default => null,
-        };
-
-        if ($format === null) {
-            $this->addError('file', __('cmdb::import.wrong_format'));
-
-            return null;
-        }
-
         try {
-            return $reader->read($file->getRealPath(), $format, self::MAX_ROWS);
+            return $reader->readUpload($file, self::MAX_ROWS);
         } catch (SpreadsheetUnreadable $exception) {
             $this->addError('file', __('cmdb::import.'.$exception->reason, ['max' => self::MAX_ROWS]));
 

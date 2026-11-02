@@ -5,7 +5,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Cmdb\Application\Import;
+namespace Modules\Core\Application\Imports;
 
 /**
  * One row of an import file and what will happen to it.

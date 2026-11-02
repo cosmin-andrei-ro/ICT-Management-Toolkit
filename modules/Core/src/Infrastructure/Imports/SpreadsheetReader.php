@@ -8,6 +8,8 @@ declare(strict_types=1);
 namespace Modules\Core\Infrastructure\Imports;
 
 use DateTimeInterface;
+use finfo;
+use Illuminate\Http\UploadedFile;
 use OpenSpout\Reader\CSV\Options as CsvOptions;
 use OpenSpout\Reader\CSV\Reader as CsvReader;
 use OpenSpout\Reader\XLSX\Reader as XlsxReader;
@@ -18,6 +20,26 @@ use OpenSpout\Reader\XLSX\Reader as XlsxReader;
  */
 final class SpreadsheetReader
 {
+    /**
+     * An uploaded file, its format recognized by content rather than by name or
+     * the type the browser declared.
+     *
+     * @return list<array{line: int, values: array<string, string>}>
+     *
+     * @throws SpreadsheetUnreadable "wrong_format", or as read()
+     */
+    public function readUpload(UploadedFile $file, int $maxRows): array
+    {
+        $mime = (string) (new finfo(FILEINFO_MIME_TYPE))->file($file->getRealPath());
+        $format = match (true) {
+            in_array($mime, ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip', 'application/octet-stream'], true) && strtolower($file->getClientOriginalExtension()) === 'xlsx' => 'xlsx',
+            in_array($mime, ['text/csv', 'text/plain', 'application/csv'], true) => 'csv',
+            default => throw new SpreadsheetUnreadable('wrong_format'),
+        };
+
+        return $this->read($file->getRealPath(), $format, $maxRows);
+    }
+
     /**
      * @param  'csv'|'xlsx'  $format
      * @return list<array{line: int, values: array<string, string>}>

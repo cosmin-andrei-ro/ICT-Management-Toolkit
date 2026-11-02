@@ -17,6 +17,8 @@ use Modules\Cmdb\Domain\Enums\Criticality;
 use Modules\Cmdb\Domain\Enums\Environment;
 use Modules\Cmdb\Domain\Models\CiType;
 use Modules\Cmdb\Domain\Models\ConfigurationItem;
+use Modules\Core\Application\Imports\ImportHasErrors;
+use Modules\Core\Application\Imports\ImportRow;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;

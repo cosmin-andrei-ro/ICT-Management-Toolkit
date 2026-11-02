@@ -10,6 +10,8 @@ namespace Modules\Itam\Http\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Modules\Core\Domain\Models\User;
+use Modules\Itam\Application\Actions\AcknowledgeHandover;
 use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Domain\Models\AssetAssignment;
 
@@ -20,6 +22,16 @@ use Modules\Itam\Domain\Models\AssetAssignment;
 #[Layout('core::components.layouts.app')]
 final class MyEquipment extends Component
 {
+    public function confirmReceipt(string $assignmentId, AcknowledgeHandover $acknowledge): void
+    {
+        $user = auth()->user();
+        abort_unless($user instanceof User, 401);
+
+        // Only the person's own open assignments are found; the action checks again under lock.
+        $assignment = AssetAssignment::query()->where('user_id', $user->id)->whereNull('returned_at')->findOrFail($assignmentId);
+        $acknowledge->handle($assignment, $user, request()->ip());
+    }
+
     public function render(): View
     {
         $userId = auth()->id();
@@ -30,15 +42,16 @@ final class MyEquipment extends Component
             ->orderBy('asset_tag')
             ->get();
 
-        $since = AssetAssignment::query()
+        $assignments = AssetAssignment::query()
             ->whereIn('asset_id', $assets->modelKeys())
             ->where('user_id', $userId)
             ->whereNull('returned_at')
-            ->pluck('assigned_at', 'asset_id');
+            ->get()
+            ->keyBy('asset_id');
 
         return view('itam::livewire.my-equipment', [
             'assets' => $assets,
-            'since' => $since,
+            'assignments' => $assignments,
         ])->title(__('itam::assets.my.title'));
     }
 }

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\ContractDependents;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
@@ -20,6 +21,7 @@ use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Itam\Application\Exports\AssetExport;
 use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Domain\Models\AssetAssignment;
 use Modules\Itam\Domain\Models\Category;
@@ -37,6 +39,8 @@ final class ItamServiceProvider extends ModuleServiceProvider
         parent::register();
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        // The register holds costs and holders: for the people who keep it.
+        $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(AssetExport::TYPE, AssetExport::class, 'itam.asset.manage'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         // The CMDB shows the assets linked to an item; contracts show the assets they cover.
         $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('itam.asset', self::linkedAssets(...)));

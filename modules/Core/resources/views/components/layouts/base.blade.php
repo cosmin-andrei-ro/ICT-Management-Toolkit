@@ -12,7 +12,7 @@
     {{ $slot }}
 
     {{-- AGPL-3.0 §13: users interacting over a network must be offered the source code. --}}
-    <footer class="py-6 text-center text-xs text-gray-500">
+    <footer class="py-6 text-center text-xs text-gray-500 print:hidden">
         {{ config('app.name') }} ·
         <a href="{{ config('app.source_url') }}" class="underline hover:text-gray-700" rel="noopener">{{ __('core::layout.source_code') }}</a>
         · {{ __('core::layout.license') }}
