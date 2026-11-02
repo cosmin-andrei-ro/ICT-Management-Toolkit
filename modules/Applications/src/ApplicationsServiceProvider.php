@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Applications;
 
 use App\Support\Modules\ModuleServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Applications\Application\Options\OptionCatalog;
@@ -15,6 +16,7 @@ use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\OptionValue;
 use Modules\Applications\Domain\Models\Sheet;
+use Modules\Applications\Infrastructure\Console\SendCertificateRemindersCommand;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Links\LinkedRecord;
@@ -56,6 +58,14 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
             $navigation->add('applications::applications.mine.menu', 'applications.mine', 'applications.mine', fn (User $user): bool => ! $user->can('applications.application.view') && Application::query()->ownedBy($user)->exists(), order: 28);
             $navigation->add('applications::applications.menu', 'applications.index', 'applications.*', fn (User $user): bool => $user->can('applications.application.view'), Navigation::CONFIGURATION);
         });
+
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $schedule->command(SendCertificateRemindersCommand::class)->dailyAt('07:40')->withoutOverlapping()->onOneServer();
+        });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([SendCertificateRemindersCommand::class]);
+        }
     }
 
     /**

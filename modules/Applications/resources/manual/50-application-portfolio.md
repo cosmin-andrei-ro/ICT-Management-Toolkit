@@ -36,6 +36,16 @@ Open the application and click **Write the documentation** (later **Update the d
 - **6 Software & platforms**: architecture, backends, frontends, databases (attach the database diagram in 6.4.1), cache and middleware, third-party libraries with their licences and end of support.
 - **7 Technical users / service accounts**: every non-personal account, with where its credential is kept (vault) - **never the password itself**.
 
+### Security, operations and continuity (chapters 8 to 16)
+
+- **8.1 Certificates**: enter the **expiry date** too - the IT owner and the deputy get an e-mail about a month before a certificate of the version in force expires.
+- **8.2 Secrets**: where each secret is kept and how often it is rotated - never the secret.
+- **10.1 Business impact**: link the business processes the application supports. Their recovery objectives from the business impact analysis are shown next to the fields: the application must be back within the strictest RTO.
+- **10.3 Dependencies** and **10.5 Restore**: what the components linked in 5.2 depend on, and the continuity and recovery plans that cover them, are shown from the CMDB and the plans.
+- **11 to 14**: deployment and rollback, scheduled jobs, the runbook (start / stop order, health checks, administrative tasks) and known issues - the most valuable chapter for newcomers.
+- **15 Decommissioning**: when the application is retired, **Add the template's steps** fills the checklist; record the ticket and status of each step.
+- **16 Glossary**: the standard terms are listed; add the application's own.
+
 At the bottom, describe **what changed in this version** (for the first one, for example *Initial documentation of the existing application*).
 
 ## Major and minor changes

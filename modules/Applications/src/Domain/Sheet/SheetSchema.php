@@ -264,6 +264,184 @@ final class SheetSchema
                     Field::text('ticket', max: 64),
                 ]),
             ]),
+            new Section('8_1', 8, [
+                Field::table('certificates', [
+                    Field::text('name', required: true),
+                    Field::option('type', 'certificate_types', allowOther: true),
+                    Field::text('used_for'),
+                    Field::text('issuer'),
+                    // Not in the template's table: needed for the expiry reminders.
+                    Field::date('expires_on'),
+                    Field::text('tracking'),
+                    Field::text('lead_time', max: 100),
+                    Field::text('owner'),
+                ]),
+            ]),
+            new Section('8_2', 8, [
+                Field::table('secrets', [
+                    Field::text('name', required: true),
+                    Field::option('type', 'secret_types', allowOther: true),
+                    Field::text('used_by'),
+                    Field::text('location', required: true),
+                    Field::option('rotation', 'rotation_periods', allowOther: true),
+                    Field::text('owner'),
+                ]),
+            ]),
+            new Section('8_3', 8, [
+                Field::table('requirements', [
+                    Field::text('regulation', required: true),
+                    Field::text('scope', max: 1000),
+                    Field::text('evidence', max: 1000),
+                    Field::text('last_audit', max: 64),
+                    Field::text('owner'),
+                ]),
+            ]),
+            new Section('9_1', 9, [
+                Field::text('app_location'),
+                Field::text('app_forwarded'),
+                Field::text('app_method'),
+                Field::text('os_location'),
+                Field::text('os_forwarded'),
+                Field::text('os_method'),
+                Field::text('db_location'),
+                Field::text('db_forwarded'),
+                Field::text('db_method'),
+            ]),
+            new Section('9_2', 9, [
+                Field::table('logs', [
+                    Field::text('name', required: true),
+                    Field::option('type', 'log_types', allowOther: true),
+                    Field::text('description', max: 1000),
+                    Field::text('server'),
+                    Field::text('path', max: 1000),
+                    Field::text('retention'),
+                ]),
+            ]),
+            new Section('9_3', 9, [
+                Field::text('tools'),
+                Field::text('dashboards', max: 1000),
+                Field::text('health_urls', max: 1000),
+                Field::table('alerts', [
+                    Field::text('name', required: true),
+                    Field::text('condition', max: 1000),
+                    Field::option('severity', 'alert_severities', allowOther: true),
+                    Field::text('recipients'),
+                    Field::option('channel', 'alert_channels', allowOther: true),
+                    Field::text('action', max: 1000),
+                ]),
+            ]),
+            new Section('10_1', 10, [
+                Field::processes('processes'),
+                Field::insight('bia'),
+                Field::text('departments', max: 1000),
+                Field::textarea('impact'),
+                Field::text('critical_periods', max: 1000),
+                Field::text('key_roles', max: 1000),
+                Field::text('minimum_staffing', max: 1000),
+                Field::text('other_resources', max: 1000),
+                Field::text('mtpd', max: 100),
+                Field::text('rpo', max: 100),
+                Field::text('rto', max: 100),
+                Field::text('dr_site'),
+                Field::option('recovery_priority', 'recovery_priorities', allowOther: true),
+            ]),
+            new Section('10_2', 10, [
+                Field::table('backups', [
+                    Field::text('what', required: true),
+                    Field::option('method', 'backup_methods', allowOther: true),
+                    Field::text('frequency'),
+                    Field::text('retention'),
+                    Field::text('owner'),
+                    Field::text('ticket', max: 64),
+                ]),
+            ]),
+            new Section('10_3', 10, [
+                Field::insight('dependencies'),
+                Field::table('dependencies', [
+                    Field::text('system', required: true),
+                    Field::option('direction', 'dependency_directions'),
+                    Field::option('criticality', 'business_criticality'),
+                    Field::text('order', max: 16),
+                    Field::text('notes', max: 1000),
+                ]),
+            ]),
+            new Section('10_4', 10, [
+                Field::textarea('workarounds'),
+            ]),
+            new Section('10_5', 10, [
+                Field::insight('recovery_plans'),
+                Field::textarea('procedure'),
+            ]),
+            new Section('11', 11, [
+                Field::url('repository'),
+                Field::text('change_management', max: 1000),
+            ]),
+            new Section('11_1', 11, [
+                Field::textarea('procedure'),
+            ]),
+            new Section('11_2', 11, [
+                Field::textarea('procedure'),
+            ]),
+            new Section('12', 12, [
+                Field::table('jobs', [
+                    Field::text('name', required: true),
+                    Field::option('scheduler', 'schedulers', allowOther: true),
+                    Field::text('schedule'),
+                    Field::text('description', max: 1000),
+                    Field::text('dependencies'),
+                    Field::text('if_fails', max: 1000),
+                ]),
+            ]),
+            new Section('13_1', 13, [
+                Field::table('steps', [
+                    Field::text('step', max: 16),
+                    Field::text('component', required: true),
+                    Field::text('server'),
+                    Field::text('command', max: 1000),
+                    Field::text('verification', max: 1000),
+                ]),
+            ]),
+            new Section('13_2', 13, [
+                Field::textarea('checks'),
+            ]),
+            new Section('13_3', 13, [
+                Field::table('tasks', [
+                    Field::text('task', required: true),
+                    Field::option('frequency', 'task_frequencies', allowOther: true),
+                    Field::text('procedure', max: 1000),
+                ]),
+            ]),
+            new Section('14', 14, [
+                Field::table('issues', [
+                    Field::text('symptom', required: true, max: 1000),
+                    Field::text('cause', max: 1000),
+                    Field::text('resolution', max: 2000),
+                    Field::text('ticket', max: 64),
+                ]),
+            ]),
+            new Section('15_1', 15, [
+                Field::option('reason', 'decommission_reasons', allowOther: true),
+                Field::text('replaced_by'),
+                Field::text('approval'),
+                Field::text('retention', max: 1000),
+                Field::text('archive_location', max: 1000),
+            ]),
+            new Section('15_2', 15, [
+                Field::table('checklist', [
+                    Field::text('step', max: 16),
+                    Field::text('activity', required: true, max: 1000),
+                    Field::text('owner'),
+                    Field::text('ticket', max: 64),
+                    Field::option('status', 'checklist_status', allowOther: true),
+                ]),
+            ]),
+            new Section('16', 16, [
+                Field::insight('glossary'),
+                Field::table('terms', [
+                    Field::text('term', required: true, max: 64),
+                    Field::text('meaning', required: true, max: 1000),
+                ]),
+            ]),
         ];
     }
 }

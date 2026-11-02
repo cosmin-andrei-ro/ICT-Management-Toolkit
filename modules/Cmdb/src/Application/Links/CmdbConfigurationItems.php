@@ -147,6 +147,18 @@ final readonly class CmdbConfigurationItems implements ConfigurationItems
         return $linked;
     }
 
+    public function recordIdsLinkedTo(array $itemIds, string $morphType): array
+    {
+        if ($itemIds === []) {
+            return [];
+        }
+
+        return array_values(array_unique(array_filter(
+            CiLink::query()->whereIn('configuration_item_id', $itemIds)->where('linkable_type', $morphType)->pluck('linkable_id')->all(),
+            is_string(...),
+        )));
+    }
+
     public function dependencyIdsOf(array $itemIds): array
     {
         if ($itemIds === []) {

@@ -36,4 +36,8 @@ enum FieldType: string
     case Permissions = 'permissions';
     // CMDB items linked to the version through Core's ConfigurationItems contract (not stored in the content).
     case ConfigurationItems = 'configuration_items';
+    // Business processes of the BIA, stored by id and read through Core's BusinessProcesses contract.
+    case Processes = 'processes';
+    // Information drawn from other modules or the template, shown in the section, never stored (the key says which).
+    case Insight = 'insight';
 }

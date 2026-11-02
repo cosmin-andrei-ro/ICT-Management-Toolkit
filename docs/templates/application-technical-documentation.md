@@ -2,7 +2,7 @@
 
 Source: the owner's official template *Application Technical Documentation (Template)*, "Single point of reference for how the application is built, run and supported" (Word/PDF, 22 pages). This file records its structure so the Applications module matches it exactly (CLAUDE.md §9). Values shown with * are dropdowns (*Choose an option*); their lists were not part of the PDF and are administered in the application (*Administration → Application portfolio → Dropdown values*).
 
-The status of each part says where it lives in the toolkit: **built**, or **planned** with the pull request of the plan in [docs/modules/Applications.md](../modules/Applications.md).
+Every part of the template is built in the toolkit; the notes say where the toolkit draws a part from other modules or adds to it. See [docs/modules/Applications.md](../modules/Applications.md).
 
 > Never store passwords, keys or secrets in this document — reference the vault location only.
 
@@ -87,48 +87,48 @@ The status of each part says where it lives in the toolkit: **built**, or **plan
 
 Username, IAM Category*, User Type, Usage / Purpose, Systems Used On, Owner, Password Rotation*, Credential Location (vault only), Ticket ID.
 
-## 8. Security & Compliance — planned (PR 4)
+## 8. Security & Compliance — built
 
-- **8.1 Certificates** — Name / CN, Type*, Used For, Issuer, Expiry Tracking, Alert Lead Time, Renewal Owner.
+- **8.1 Certificates** — Name / CN, Type*, Used For, Issuer, Expiry Tracking, Alert Lead Time, Renewal Owner. Toolkit adds **Expires on**, not in the template, so the owners are reminded by e-mail before expiry.
 - **8.2 Secrets** — Secret Name, Type*, Used By, Vault / Location, Rotation, Owner (never the secret itself).
 - **8.3 Compliance Requirements** — Regulation / Standard, Scope / Applicability, Evidence / Report, Last Audit, Owner.
 
-## 9. Logging, Monitoring & Audit — planned (PR 4)
+## 9. Logging, Monitoring & Audit — built
 
 - **9.1 Audit Logs** — application, OS and database audit logs: Location, Forwarded To, Collection Method.
 - **9.2 Technical Logs** — Log Name, Type*, Description / When to Check, Server, Path, Rotation / Retention.
 - **9.3 Monitoring & Alerting** — Monitoring Tool(s), Dashboards, Health-check URL(s); alerts: Alert Name, Condition / Threshold, Severity*, Notified Team / Recipients, Channel*, Action / Runbook.
 
-## 10. Business Continuity & Disaster Recovery — planned (PR 4)
+## 10. Business Continuity & Disaster Recovery — built
 
-- **10.1 Business Impact** — Business Processes Supported, Departments / Teams Impacted, Impact if Unavailable, Critical Periods, Key Roles Required to Operate, Minimum Staffing (Degraded Mode), Other Resources Required, MTPD, RPO, RTO, DR Site, Recovery Priority* (from the BIA where the processes are assessed).
+- **10.1 Business Impact** — Business Processes Supported, Departments / Teams Impacted, Impact if Unavailable, Critical Periods, Key Roles Required to Operate, Minimum Staffing (Degraded Mode), Other Resources Required, MTPD, RPO, RTO, DR Site, Recovery Priority* (the BIA processes are linked, and their RTO, RPO and tier are shown next to these fields).
 - **10.2 Backups** — What is Backed Up, Method / Tool*, Frequency, Retention, Owner, Ticket ID.
-- **10.3 Dependencies** — System / Service, Direction*, Criticality*, Recovery Order, Notes (from CMDB relationships).
-- **10.4 Workarounds / Degraded Mode** and **10.5 Restore & Failover Procedure** (text; linked to the BCM recovery plan).
+- **10.3 Dependencies** — System / Service, Direction*, Criticality*, Recovery Order, Notes (what the linked CMDB components depend on is shown above the table).
+- **10.4 Workarounds / Degraded Mode** and **10.5 Restore & Failover Procedure** (text; the continuity and recovery plans covering the linked components are shown).
 
-## 11. Deployment & Release — planned (PR 4)
+## 11. Deployment & Release — built
 
 Source Code Repository, Change Management; **11.1 Deployment Procedure** and **11.2 Rollback Procedure** (text).
 
-## 12. Scheduled Jobs / Batch Processing — planned (PR 4)
+## 12. Scheduled Jobs / Batch Processing — built
 
 Job Name, Scheduler*, Schedule, Description, Dependencies, If It Fails.
 
-## 13. Operational Procedures (Runbook) — planned (PR 4)
+## 13. Operational Procedures (Runbook) — built
 
 - **13.1 Start / Stop Order** — Step, Component, Server, Command, Verification.
 - **13.2 Health Checks After Restart** (text).
 - **13.3 Common Administrative Tasks** — Task, Frequency*, Procedure / Command.
 
-## 14. Troubleshooting & Known Issues — planned (PR 4)
+## 14. Troubleshooting & Known Issues — built
 
 Symptom, Probable Cause, Resolution, Ref. Ticket.
 
-## 15. Decommissioning — planned (PR 4)
+## 15. Decommissioning — built
 
 - **15.1 Decommissioning Overview** — Reason for Decommissioning*, Replaced By (Application), Approval & Change Ticket, Data Retention Period & Legal Basis, Archived Data Location & Access.
-- **15.2 Decommissioning Checklist** — Step, Activity, Owner, Ticket ID, Status*. Default steps: inform users, business owner and support teams; archive or export data; remove user access (3.3); disable technical users (7); revoke certificates and remove secrets (8); remove firewall rules, DNS entries and load-balancer VIPs (4.1, 4.3); disable scheduled jobs (12); remove monitoring, alerting and log forwarding (9); stop backup jobs once archives are verified (10); shut down and release servers (5.2); cancel licences and vendor contracts (1.2.2, 6.6); update the CMDB / application cartography and archive the document.
+- **15.2 Decommissioning Checklist** — Step, Activity, Owner, Ticket ID, Status*. Default steps (added with one click): inform users, business owner and support teams; archive or export data; remove user access (3.3); disable technical users (7); revoke certificates and remove secrets (8); remove firewall rules, DNS entries and load-balancer VIPs (4.1, 4.3); disable scheduled jobs (12); remove monitoring, alerting and log forwarding (9); stop backup jobs once archives are verified (10); shut down and release servers (5.2); cancel licences and vendor contracts (1.2.2, 6.6); update the CMDB / application cartography and archive the document.
 
-## 16. Glossary & Abbreviations — planned (PR 4)
+## 16. Glossary & Abbreviations — built
 
 Term, Meaning: the template's standard glossary (AD, AML, API, CAB, CHG / INC, CI/CD, CMDB, CN, DBA, DBMS, DC, DFD, DMZ, DPIA, DR, ERD, ESB, FK, GDPR, GRC, HIPAA, IAM, KYC, L1 / L2 / L3, LB, LDAP, MFA, MTPD, NIS2, OIDC, OS, OT, PAM, PCI DSS, PK, PKI, REST, RPA, RPO, RTO, SAML, SLA, SOC, SSH, SSO, TLS, UAT, VIP, VLAN, VM, VPN) plus application-specific terms.
