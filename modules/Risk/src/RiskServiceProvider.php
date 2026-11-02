@@ -10,14 +10,19 @@ namespace Modules\Risk;
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Event;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Events\RiskSignalsChanged;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Risk\Application\Listeners\RefreshSuggestionsOnSignal;
 use Modules\Risk\Domain\Models\CatalogEntry;
 use Modules\Risk\Domain\Models\Risk;
 use Modules\Risk\Domain\Models\RiskSettings;
+use Modules\Risk\Domain\Models\Suggestion;
+use Modules\Risk\Infrastructure\Console\RefreshSuggestionsCommand;
 use Modules\Risk\Infrastructure\Console\SendReviewRemindersCommand;
 
 final class RiskServiceProvider extends ModuleServiceProvider
@@ -39,18 +44,22 @@ final class RiskServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
+        Event::listen(RiskSignalsChanged::class, RefreshSuggestionsOnSignal::class);
+
         Relation::morphMap([
             'risk.risk' => Risk::class,
             'risk.catalog_entry' => CatalogEntry::class,
             'risk.settings' => RiskSettings::class,
+            'risk.suggestion' => Suggestion::class,
         ]);
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(SendReviewRemindersCommand::class)->dailyAt('08:00')->withoutOverlapping()->onOneServer();
+            $schedule->command(RefreshSuggestionsCommand::class)->dailyAt('06:30')->withoutOverlapping()->onOneServer();
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SendReviewRemindersCommand::class]);
+            $this->commands([SendReviewRemindersCommand::class, RefreshSuggestionsCommand::class]);
         }
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {

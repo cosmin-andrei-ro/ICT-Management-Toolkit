@@ -1,6 +1,6 @@
 # Risk module
 
-The risk register and the organization's scoring method. Code: `modules/Risk/`. Decisions: [ADR 0031](../adr/0031-risk-register.md), [ADR 0032](../adr/0032-risk-treatment-and-acceptance.md).
+The risk register and the organization's scoring method. Code: `modules/Risk/`. Decisions: [ADR 0031](../adr/0031-risk-register.md), [ADR 0032](../adr/0032-risk-treatment-and-acceptance.md), [ADR 0033](../adr/0033-risk-suggestions-from-modules.md).
 
 ## Concepts
 
@@ -13,16 +13,20 @@ The risk register and the organization's scoring method. Code: `modules/Risk/`. 
 - **Acceptances** (`risk_acceptances`): residual score accepted, justification, pending / approved / rejected / withdrawn / lapsed, requester and decider, valid until; `risk_risks.accepted_until` while valid.
 - **Score history** (`risk_score_history`): inherent and residual scores at each change.
 
+- **Suggestions** (`risk_suggestions`): risks the other modules signal through Core's `RiskSignals` registry — one per situation key; open, registered (with the risk), dismissed (with a reason) or no longer applies.
+
 ## Screens
 
 - `/risks`: the register with the heat map of open risks; filters by cell, level, category, closed.
 - `/risks/new`, `/risks/{id}/edit`: identification (risk managers).
 - `/risks/{id}`: what it concerns, threats and vulnerabilities, controls, inherent score with the meaning of each level; treatment and residual risk; actions; acceptance (ask, approve, reject); score history.
+- `/risks/suggestions`: suggested risks by status and source; register one as a prefilled risk or dismiss it; **Check now** (risk managers).
 - `/risks/mine`: risks the signed-in person owns, for owners without `risk.risk.view`.
 - Administration → Risk → Risk method; Threats and vulnerabilities.
 
 ## Scheduled tasks
 
+- `risk:suggestions:refresh` (daily 06:30): every organization's suggestions brought in line with the modules' signals; also run on Core's `RiskSignalsChanged`.
 - `risk:reviews:remind` (daily 08:00): the owner of each open risk is emailed `RISK_REMINDER_DAYS` (30) before its reassessment, once per date.
 
 ## Permissions
@@ -40,5 +44,5 @@ A risk's owner assesses it without a permission.
 
 1. Register, method, catalog, heat map — **done**.
 2. Treatment: options, actions (optionally service desk tickets), residual risk, acceptance with risk manager approval above the threshold, score history, reassessment reminders — **done**.
-3. Suggestions from the other modules (applications, continuity, operations, suppliers), including initial risks when an application's documentation is approved.
+3. Suggestions from the other modules (applications, continuity, operations, suppliers), including initial risks when an application's documentation is approved — **done**.
 4. Reporting: inherent vs residual heat maps, risks on application pages, Excel register, PDF report, weekly digest.

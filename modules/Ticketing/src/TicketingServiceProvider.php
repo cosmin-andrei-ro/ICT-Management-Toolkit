@@ -21,6 +21,7 @@ use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Links\ServiceDeskTickets;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Ticketing\Application\Email\MailboxReader;
 use Modules\Ticketing\Application\Email\ReplyAddress;
@@ -29,6 +30,7 @@ use Modules\Ticketing\Application\Notifications\SendChangeNotifications;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
 use Modules\Ticketing\Application\Reports\TicketExport;
+use Modules\Ticketing\Application\Risks\IncidentRiskSignals;
 use Modules\Ticketing\Domain\Events\ChangeApproved;
 use Modules\Ticketing\Domain\Events\ChangeRejected;
 use Modules\Ticketing\Domain\Events\ChangeSubmitted;
@@ -72,6 +74,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         $this->app->scoped(ReplyAddress::class);
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('ticketing', fn (): array => app(IncidentRiskSignals::class)()));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(TicketExport::TYPE, TicketExport::class, 'ticketing.report.view'));
         $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('ticketing.ticket', self::linkedTickets(...)));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));

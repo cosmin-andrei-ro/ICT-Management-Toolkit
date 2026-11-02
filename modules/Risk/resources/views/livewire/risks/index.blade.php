@@ -5,7 +5,10 @@
             <p class="text-sm text-gray-600">{{ __('risk::risks.ui.intro') }}</p>
         </div>
         @can('create', \Modules\Risk\Domain\Models\Risk::class)
-            <a href="{{ route('risk.risks.create') }}" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('risk::risks.ui.new') }}</a>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('risk.risks.suggestions') }}" @class(['rounded-md px-4 py-2 text-sm font-semibold ring-1', 'bg-amber-50 text-amber-900 ring-amber-300' => $openSuggestions > 0, 'bg-white ring-gray-300' => ! $openSuggestions])>{{ __('risk::suggestions.ui.link', ['count' => $openSuggestions]) }}</a>
+                <a href="{{ route('risk.risks.create') }}" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('risk::risks.ui.new') }}</a>
+            </div>
         @endcan
     </div>
 

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Gate;
 use Modules\Applications\Application\Exports\PortfolioExport;
 use Modules\Applications\Application\Links\PortfolioApplications;
 use Modules\Applications\Application\Options\OptionCatalog;
+use Modules\Applications\Application\Risks\ApplicationRiskSignals;
 use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\OptionValue;
@@ -29,6 +30,7 @@ use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 
 final class ApplicationsServiceProvider extends ModuleServiceProvider
@@ -46,6 +48,7 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
         $this->app->scoped(OptionCatalog::class);
         $this->app->bind(Applications::class, PortfolioApplications::class);
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('applications', fn (): array => (new ApplicationRiskSignals)()));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PortfolioExport::TYPE, PortfolioExport::class, 'applications.application.view'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         // The CMDB item page lists the applications built on the item (5.2 Components).

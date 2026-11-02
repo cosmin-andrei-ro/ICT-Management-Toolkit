@@ -8,9 +8,11 @@ declare(strict_types=1);
 namespace Modules\Applications\Application\Actions;
 
 use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Contracts\Events\Dispatcher;
 use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\Sheet;
+use Modules\Core\Domain\Events\RiskSignalsChanged;
 use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Models\User;
 
@@ -24,6 +26,7 @@ final readonly class SheetInForce
     public function __construct(
         private Config $config,
         private ConfigurationItems $items,
+        private Dispatcher $events,
     ) {}
 
     public function handle(Sheet $sheet, User $actor): void
@@ -65,6 +68,9 @@ final readonly class SheetInForce
         }
 
         $application->save();
+
+        // Initial risks (CLAUDE.md §9): the risk register refreshes its suggestions once this commits.
+        $this->events->dispatch(new RiskSignalsChanged($application->organization_id));
     }
 
     /**
