@@ -41,10 +41,12 @@ use Modules\Core\Domain\Authorization\Role;
 use Modules\Core\Domain\Directory\Directory;
 use Modules\Core\Domain\Directory\DirectoryGroupMapping;
 use Modules\Core\Domain\Exports\ExportRegistry;
+use Modules\Core\Domain\Links\Applications;
 use Modules\Core\Domain\Links\BusinessProcesses;
 use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Links\ContractDependents;
 use Modules\Core\Domain\Links\LinkedRecords;
+use Modules\Core\Domain\Links\NoApplications;
 use Modules\Core\Domain\Links\NoBusinessProcesses;
 use Modules\Core\Domain\Links\NoConfigurationItems;
 use Modules\Core\Domain\Links\NoServiceDeskTickets;
@@ -109,6 +111,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->bindIf(BusinessProcesses::class, NoBusinessProcesses::class);
         // Replaced by the Ticketing module when it is enabled.
         $this->app->bindIf(ServiceDeskTickets::class, NoServiceDeskTickets::class);
+        // Replaced by the Applications module when it is enabled.
+        $this->app->bindIf(Applications::class, NoApplications::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */
@@ -263,6 +267,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         // Application managers open the panel for the sheet's dropdowns and read suppliers and contracts for vendor support.
         $registry->grantToDefaultRole(DefaultRole::ApplicationManager, [...$directory, 'core.admin.access', 'core.supplier.view', 'core.contract.view']);
         $registry->grantToDefaultRole(DefaultRole::SecurityOfficer, [...$directory, 'core.audit.view']);
+        // Risk managers open the panel for the method and the catalog, and read suppliers to link risks to them.
+        $registry->grantToDefaultRole(DefaultRole::RiskManager, [...$directory, 'core.admin.access', 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
     }

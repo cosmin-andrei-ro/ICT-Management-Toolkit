@@ -21,5 +21,6 @@ enum DefaultRole: string
     case ContinuityCoordinator = 'continuity-coordinator';
     case ApplicationManager = 'application-manager';
     case SecurityOfficer = 'security-officer';
+    case RiskManager = 'risk-manager';
     case Requester = 'requester';
 }

@@ -12,6 +12,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Applications\Application\Exports\PortfolioExport;
+use Modules\Applications\Application\Links\PortfolioApplications;
 use Modules\Applications\Application\Options\OptionCatalog;
 use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
@@ -23,6 +24,7 @@ use Modules\Applications\Infrastructure\Console\SendReviewRemindersCommand;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
+use Modules\Core\Domain\Links\Applications;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
@@ -42,6 +44,7 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
 
         // Scoped: a long-running worker must see values changed later.
         $this->app->scoped(OptionCatalog::class);
+        $this->app->bind(Applications::class, PortfolioApplications::class);
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PortfolioExport::TYPE, PortfolioExport::class, 'applications.application.view'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));

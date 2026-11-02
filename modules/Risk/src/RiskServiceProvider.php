@@ -1,0 +1,67 @@
+<?php
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 ICT Management Toolkit contributors
+
+declare(strict_types=1);
+
+namespace Modules\Risk;
+
+use App\Support\Modules\ModuleServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Modules\Core\Domain\Authorization\DefaultRole;
+use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Manual\Manual;
+use Modules\Core\Domain\Models\User;
+use Modules\Core\Http\Navigation\Navigation;
+use Modules\Risk\Domain\Models\CatalogEntry;
+use Modules\Risk\Domain\Models\Risk;
+use Modules\Risk\Domain\Models\RiskSettings;
+
+final class RiskServiceProvider extends ModuleServiceProvider
+{
+    public function moduleKey(): string
+    {
+        return 'risk';
+    }
+
+    public function register(): void
+    {
+        parent::register();
+
+        $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        Relation::morphMap([
+            'risk.risk' => Risk::class,
+            'risk.catalog_entry' => CatalogEntry::class,
+            'risk.settings' => RiskSettings::class,
+        ]);
+
+        $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
+            $navigation->add('risk::risks.mine.menu', 'risk.mine', 'risk.mine', fn (User $user): bool => ! $user->can('risk.risk.view') && Risk::query()->ownedBy($user)->exists(), order: 29);
+            $navigation->add('risk::risks.menu', 'risk.index', 'risk.risks.*', fn (User $user): bool => $user->can('risk.risk.view'), Navigation::RESILIENCE);
+        });
+    }
+
+    private function registerPermissions(PermissionRegistry $registry): void
+    {
+        $registry->register([
+            'risk.risk.view',
+            'risk.risk.manage',
+            'risk.settings.manage',
+        ]);
+
+        $registry->grantToDefaultRole(DefaultRole::RiskManager, ['risk.risk.view', 'risk.risk.manage', 'risk.settings.manage']);
+        // Governance and IT staff read the register.
+        $registry->grantToDefaultRole(DefaultRole::SecurityOfficer, ['risk.risk.view']);
+        $registry->grantToDefaultRole(DefaultRole::ContinuityCoordinator, ['risk.risk.view']);
+        $registry->grantToDefaultRole(DefaultRole::ApplicationManager, ['risk.risk.view']);
+        $registry->grantToDefaultRole(DefaultRole::TeamLead, ['risk.risk.view']);
+    }
+}
