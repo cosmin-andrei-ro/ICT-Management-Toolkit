@@ -11,6 +11,7 @@ use Modules\Bcm\BcmServiceProvider;
 use Modules\Bia\BiaServiceProvider;
 use Modules\Cmdb\CmdbServiceProvider;
 use Modules\Core\CoreServiceProvider;
+use Modules\Documentation\DocumentationServiceProvider;
 use Modules\Itam\ItamServiceProvider;
 use Modules\Risk\RiskServiceProvider;
 use Modules\Ticketing\TicketingServiceProvider;
@@ -65,6 +66,10 @@ return [
         ],
         'audit' => [
             'provider' => AuditServiceProvider::class,
+            'enabled' => true,
+        ],
+        'documentation' => [
+            'provider' => DocumentationServiceProvider::class,
             'enabled' => true,
         ],
     ],

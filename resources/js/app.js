@@ -2,6 +2,7 @@
 // Copyright (C) 2026 ICT Management Toolkit contributors
 
 import ciGraph from './components/ci-graph';
+import markdownToolbar from './components/markdown-toolbar';
 import webauthn from './components/webauthn';
 import './navigation';
 import './print';
@@ -10,4 +11,5 @@ import './print';
 document.addEventListener('alpine:init', () => {
     window.Alpine.data('ciGraph', ciGraph);
     window.Alpine.data('webauthn', webauthn);
+    window.Alpine.data('markdownToolbar', markdownToolbar);
 });
