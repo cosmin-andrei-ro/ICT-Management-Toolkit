@@ -19,7 +19,7 @@ use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 
 /**
- * An organization in context with a BIA coordinator, a process owner and deputy
+ * An organization in context with a continuity coordinator, a process owner and deputy
  * (plain employees), a team lead, an agent, another employee, the default
  * matrix and one process.
  */
@@ -48,7 +48,7 @@ final class BiaScenario
         $scenario = new self;
         $scenario->organization = Organization::factory()->create();
         app(OrganizationContext::class)->set($scenario->organization);
-        $scenario->coordinator = $scenario->member(DefaultRole::BiaCoordinator);
+        $scenario->coordinator = $scenario->member(DefaultRole::ContinuityCoordinator);
         $scenario->owner = $scenario->member(DefaultRole::Requester);
         $scenario->deputy = $scenario->member(DefaultRole::Requester);
         $scenario->lead = $scenario->member(DefaultRole::TeamLead);

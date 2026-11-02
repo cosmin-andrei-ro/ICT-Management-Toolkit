@@ -3,7 +3,7 @@ title: Access, roles and Active Directory
 audience: administrators
 ---
 
-This chapter is for administrators. Configuration happens in **Administration**, at the top right of the menu. Team leads, asset managers and BIA coordinators open it too, and see only the settings they may change.
+This chapter is for administrators. Configuration happens in **Administration**, at the top right of the menu. Team leads, asset managers and continuity coordinators open it too, and see only the settings they may change.
 
 ## Roles
 
@@ -12,9 +12,9 @@ Each person can have different roles in different organizations. Every role is a
 | Role | Typical person | What they can do |
 |---|---|---|
 | **Requester** | every employee | Raise tickets, request services, follow their own tickets. |
-| **Agent** | service desk staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, raise changes, keep the CMDB up to date, hand out and take back equipment, give software licence seats, and see suppliers and their contacts. |
-| **Team lead** | service desk lead | Everything an agent can, plus see reports, approve changes, configure the service desk (categories, queues, SLA targets, catalog, CAB boards, standard changes), define CMDB item types, keep the asset register and the software licences, read the business impact analysis, and manage suppliers, contracts and locations. These settings are in **Administration**. |
-| **BIA coordinator** | business continuity | Run the business impact analysis: processes, their owners, approvals, settings; keep departments. |
+| **Agent** | service desk staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, raise changes, keep the CMDB up to date, read continuity plans, hand out and take back equipment, give software licence seats, and see suppliers and their contacts. |
+| **Team lead** | service desk lead | Everything an agent can, plus see reports, approve changes, configure the service desk (categories, queues, SLA targets, catalog, CAB boards, standard changes), define CMDB item types, keep the asset register and the software licences, read the business impact analysis, write IT disaster recovery plans, and manage suppliers, contracts and locations. These settings are in **Administration**. |
+| **Continuity coordinator** | business continuity | Run the business impact analysis and the continuity and recovery plans: processes, plans, their owners, approvals, settings; keep departments. |
 | **Asset manager** | IT asset and contract management | Raise tickets; see the CMDB; keep the asset register (assets, categories, disposal) and the software licences, including showing licence keys; manage suppliers, contracts and locations. |
 | **CAB member** | change advisory board | Raise tickets; approve changes on the boards they sit on; see the CMDB. |
 | **Administrator** | IT administrator | Everything, including people, Active Directory mappings, teams and business calendars. |

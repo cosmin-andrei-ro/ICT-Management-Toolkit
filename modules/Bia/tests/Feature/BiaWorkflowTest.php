@@ -186,7 +186,7 @@ it('never lets an owner or the submitter approve, even as coordinator', function
         ->call('submit')->assertHasNoErrors()
         ->call('approve')->assertForbidden();
 
-    $second = $this->bia->member(DefaultRole::BiaCoordinator);
+    $second = $this->bia->member(DefaultRole::ContinuityCoordinator);
     $this->actingAs($second);
     Livewire::test(AssessmentPage::class, ['assessment' => $assessment])->call('approve')->assertHasNoErrors();
     expect($assessment->fresh()->status)->toBe(AssessmentStatus::Approved);

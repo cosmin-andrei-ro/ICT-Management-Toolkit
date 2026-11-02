@@ -33,7 +33,7 @@ it('groups the menu of IT staff, in a fixed order whatever the module order', fu
         'My tickets',
         ['Service desk' => ['Service desk', 'Known errors', 'Change calendar', 'Approvals', 'Reports']],
         ['Configuration & assets' => ['CMDB', 'Assets', 'Licences']],
-        ['Risk & continuity' => ['Business impact analysis', 'Recovery gaps']],
+        ['Risk & continuity' => ['Business impact analysis', 'Recovery gaps', 'Continuity plans']],
         ['Suppliers & contracts' => ['Suppliers', 'Contracts']],
         'Administration',
     ]);

@@ -36,15 +36,16 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 | Framework | Status | What is covered |
 |---|---|---|
-| ITIL 4 | Partial | Incident management, service request management with a service catalog, problem management with a known error database, change enablement with CAB and emergency CAB, service level management (SLA clocks in working time), service configuration management (CMDB with relationships and impact analysis), service desk reporting. IT asset management is planned. |
+| ITIL 4 | Partial | Incident management, service request management with a service catalog, problem management with a known error database, change enablement with CAB and emergency CAB, service level management (SLA clocks in working time), service configuration management (CMDB with relationships and impact analysis), service desk reporting, IT asset management (hardware and software licences), service continuity management (BIA and continuity plans). |
 
 ### Regulations and information security frameworks
 
 | Requirement | Status | How the toolkit helps |
 |---|---|---|
-| **NIS2** (Directive (EU) 2022/2555), Art. 21 risk-management measures | Partial | Incident handling (21(2)(b)): ticketing with priorities, SLAs, problem management. Access control, multi-factor authentication and asset management (21(2)(i)(j)): the CMDB records what you run and what depends on what. Logging through the audit trail. Change management for secure maintenance (21(2)(e)). **Planned:** business continuity (21(2)(c)), supply chain (21(2)(d)), risk analysis (21(2)(a)). **Not planned:** the notifications to authorities of Art. 23, which you send outside the toolkit. |
-| **DORA** (Regulation (EU) 2022/2554), financial entities | Partial | Identification of ICT assets and their dependencies (Art. 8): the CMDB. ICT-related incident management process (Art. 17): detection, logging, follow-up and root cause. ICT change management (Art. 9(4)(e)): approved, planned, reversible changes with post-implementation review of emergency changes. Strong authentication (Art. 9(4)(d)). **Planned:** register of ICT third-party providers (Art. 28), business continuity and testing (Art. 11–12, 24–25). **Not planned:** classification and reporting of major incidents to authorities (Art. 18–19). |
-| **ISO/IEC 27001:2022**, Annex A | Partial | 5.9 inventory of information and other associated assets (CMDB), 5.15–5.18 access control and identities, 5.24–5.27 incident management and learning from incidents, 8.5 secure authentication, 8.15 logging, 8.32 change management. **Planned:** the Audit & Compliance module, to map controls to evidence. |
+| **NIS2** (Directive (EU) 2022/2555), Art. 21 risk-management measures | Partial | Incident handling (21(2)(b)): ticketing with priorities, SLAs, problem management. Access control, multi-factor authentication and asset management (21(2)(i)(j)): the CMDB records what you run and what depends on what. Logging through the audit trail. Change management for secure maintenance (21(2)(e)). Business continuity (21(2)(c)): business impact analysis and approved continuity and recovery plans; exercise records are planned. **Planned:** supply chain (21(2)(d)), risk analysis (21(2)(a)). **Not planned:** the notifications to authorities of Art. 23, which you send outside the toolkit. |
+| **DORA** (Regulation (EU) 2022/2554), financial entities | Partial | Identification of ICT assets and their dependencies (Art. 8): the CMDB. ICT-related incident management process (Art. 17): detection, logging, follow-up and root cause. ICT change management (Art. 9(4)(e)): approved, planned, reversible changes with post-implementation review of emergency changes. Strong authentication (Art. 9(4)(d)). ICT business continuity policy and response and recovery plans (Art. 11): BIA with RTO/RPO and approved plans; supplier and contract register. **Planned:** testing of plans (Art. 11(6), 24–25), register of information on ICT third-party arrangements in the regulatory format (Art. 28). **Not planned:** classification and reporting of major incidents to authorities (Art. 18–19). |
+| **ISO 22301:2019** business continuity | Partial | 8.2.2 business impact analysis (impact over time, MTPD, RTO, RPO, dependencies, approval, review), 8.3 strategies and 8.4 plans (scope, activation, crisis team, communication, runbook), 8.4.4 recovery against requirements. **Planned:** 8.5 exercise programme. |
+| **ISO/IEC 27001:2022**, Annex A | Partial | 5.9 inventory of information and other associated assets (CMDB, asset register), 5.11 return of assets, 5.29–5.30 information security during disruption and ICT readiness for business continuity (BIA, continuity plans), 5.15–5.18 access control and identities, 5.24–5.27 incident management and learning from incidents, 8.5 secure authentication, 8.15 logging, 8.32 change management. **Planned:** the Audit & Compliance module, to map controls to evidence. |
 | **GDPR** (Regulation (EU) 2016/679) | Partial | Data minimization (exports leave requesters out, comment text is never emailed), storage limitation (the incoming email log is kept 90 days, exports 7 days), security of processing (Art. 32: encryption of secrets, access control, audit trail), separation of organizations. **Not planned:** export and anonymization of a person's data on request (Art. 15–17, 20), configurable retention for tickets. |
 
 ## What it does today
@@ -54,7 +55,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - Sign-in with local accounts or **Active Directory** (LDAPS). AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
 - **Two-factor authentication** with an authenticator app, required for IT staff, plus recovery codes.
 - **People management**: invitations to local accounts by email, roles, deactivation. Password reset by email and password change for local accounts.
-- Role-based permissions: requester, agent, team lead, CAB member, asset manager, BIA coordinator, administrator.
+- Role-based permissions: requester, agent, team lead, CAB member, asset manager, continuity coordinator, administrator.
 - **Suppliers** with their support contacts, **contracts** with documents, deadlines and email reminders before each notice deadline, and nested **locations** (sites, buildings, rooms).
 - Teams, business calendars (working hours, Romanian public holidays), API tokens.
 - Append-only **audit trail**: who changed what, when, with old and new values; sign-ins, role changes, exports.
@@ -84,11 +85,15 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 **Business impact analysis**
 - **Business processes** with owners in the business, assessed in an **impact matrix over time** (financial, legal, reputation, operations, customers × 4 hours to 1 month); MTPD derived from the scores, RTO checked against it, RPO, workarounds; recovery tiers.
-- Versioned assessments: owners submit, a BIA coordinator approves or returns them (never their own); yearly review.
+- Versioned assessments: owners submit, a continuity coordinator approves or returns them (never their own); yearly review.
 - **Dependencies** on IT systems (CMDB), suppliers, locations, other processes, key roles and people; **recovery gaps**: the strictest RTO/RPO each system must meet, through CMDB relationships, against the recovery capability IT declared, with suggested criticality.
 - Register export to Excel, printable BIA sheet per process, review reminders to owners and a weekly digest for coordinators.
 
-**Planned modules:** datacenter infrastructure, application portfolio, continuity and recovery, risk assessment, audit and compliance, projects.
+**Continuity and recovery (BCM/DRP)**
+- **Business continuity and IT disaster recovery plans**, versioned and approved: scope (BIA processes, CMDB systems), scenarios, activation, crisis team, communication, and a **runbook** whose recovery time is compared with the RTO.
+- Printable plan for offline use during a crisis.
+
+**Planned modules:** datacenter infrastructure, application portfolio, risk assessment, audit and compliance, projects.
 
 **Not done yet:** security keys and passkeys (WebAuthn) as a second factor; single sign-on with OIDC or SAML.
 
@@ -223,7 +228,7 @@ Two processes must run all the time.
 | `itam:warranties:remind` | daily at 07:15 | Emails asset managers about warranties ending soon |
 | `itam:licenses:remind` | daily at 07:20 | Emails licence managers about licences expiring soon |
 | `bia:reviews:remind` | daily at 07:30 | Emails process owners whose BIA review is due |
-| `bia:digest` | Mondays at 07:45 | Emails BIA coordinators what is overdue or waiting |
+| `bia:digest` | Mondays at 07:45 | Emails continuity coordinators what is overdue or waiting |
 | `ticketing:mail:prune` | daily | Deletes old entries of the incoming email log |
 | `core:directory:sync` | every 15 minutes, when AD is enabled | Blocks disabled AD accounts, refreshes roles |
 

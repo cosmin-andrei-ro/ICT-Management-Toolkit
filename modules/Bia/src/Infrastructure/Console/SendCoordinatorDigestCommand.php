@@ -13,7 +13,7 @@ use Illuminate\Console\Command;
 use Modules\Bia\Application\Reviews\SendCoordinatorDigest;
 
 #[Signature('bia:digest')]
-#[Description('Email BIA coordinators what is overdue, never assessed or waiting for approval')]
+#[Description('Email continuity coordinators what is overdue, never assessed or waiting for approval')]
 final class SendCoordinatorDigestCommand extends Command
 {
     public function handle(SendCoordinatorDigest $digest): int

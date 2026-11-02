@@ -12,6 +12,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Bia\Application\Exports\BiaExport;
+use Modules\Bia\Application\Links\BiaBusinessProcesses;
 use Modules\Bia\Domain\Enums\AssessmentStatus;
 use Modules\Bia\Domain\Models\Assessment;
 use Modules\Bia\Domain\Models\BiaSettings;
@@ -23,6 +24,7 @@ use Modules\Bia\Infrastructure\Console\SendReviewRemindersCommand;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
+use Modules\Core\Domain\Links\BusinessProcesses;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
@@ -40,6 +42,8 @@ final class BiaServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+
+        $this->app->bind(BusinessProcesses::class, BiaBusinessProcesses::class);
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
@@ -108,7 +112,7 @@ final class BiaServiceProvider extends ModuleServiceProvider
         ]);
 
         // Owner's decision: the coordinator runs the BIA; process owners take part through ownership, not a role.
-        $registry->grantToDefaultRole(DefaultRole::BiaCoordinator, ['bia.process.view', 'bia.process.manage', 'bia.assessment.approve', 'bia.settings.manage']);
+        $registry->grantToDefaultRole(DefaultRole::ContinuityCoordinator, ['bia.process.view', 'bia.process.manage', 'bia.assessment.approve', 'bia.settings.manage']);
         // IT reads the business's recovery objectives to plan for them.
         $registry->grantToDefaultRole(DefaultRole::TeamLead, ['bia.process.view']);
     }

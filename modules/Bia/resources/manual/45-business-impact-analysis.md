@@ -5,7 +5,7 @@ audience: everyone
 
 A **business impact analysis** (BIA) answers, for each thing the business does, two questions: *how bad would it be if it stopped, and how fast must it be back?* IT then plans its recovery for those answers.
 
-Each **business process** (payroll, invoicing, customer support…) has an **owner** in the business and, optionally, a **deputy**. They fill in its assessment; the **BIA coordinator** approves it.
+Each **business process** (payroll, invoicing, customer support…) has an **owner** in the business and, optionally, a **deputy**. They fill in its assessment; the **continuity coordinator** approves it.
 
 ## For process owners
 
@@ -23,7 +23,7 @@ Open the process and click **Start the assessment** (or **Start a review** once 
 
 **Save draft** keeps your work and updates the MTPD; **Submit for approval** sends it to the coordinator. If it comes back, the coordinator's comment says what to change. Once approved, the objectives are in force until the next review, usually a year later. A month before, you receive an email reminding you to start the review.
 
-## For the BIA coordinator
+## For the continuity coordinator
 
 **Risk & continuity → Business impact analysis** lists every process with its tier, RTO, RPO and next review. **New process** adds one: name it, choose its department, its owner and, optionally, a deputy. A process no longer done is set to **Retired**, which keeps its history.
 

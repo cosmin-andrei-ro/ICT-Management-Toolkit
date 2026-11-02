@@ -30,9 +30,9 @@ Business processes, the impact of their interruption over time, and their recove
 
 | Permission | Default roles | Purpose |
 |---|---|---|
-| `bia.process.view` | bia-coordinator, team-lead | See every process and assessment |
-| `bia.process.manage` | bia-coordinator | Create, edit, retire and delete processes; fill in any assessment |
-| `bia.assessment.approve` | bia-coordinator | Approve or return submitted assessments (never one's own) |
-| `bia.settings.manage` | bia-coordinator | Impact categories, time horizons, settings |
+| `bia.process.view` | continuity-coordinator, team-lead | See every process and assessment |
+| `bia.process.manage` | continuity-coordinator | Create, edit, retire and delete processes; fill in any assessment |
+| `bia.assessment.approve` | continuity-coordinator | Approve or return submitted assessments (never one's own) |
+| `bia.settings.manage` | continuity-coordinator | Impact categories, time horizons, settings |
 
 Owners and deputies see their processes and fill in their assessments without a permission. Administrators have every permission.

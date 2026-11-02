@@ -43,7 +43,8 @@ The menu at the top shows only what you are allowed to use. Entries marked **▾
 | **My processes** | owners of business processes | The processes you own and their impact analysis. |
 | **Service desk ▾** | IT staff | Work on tickets (**Service desk**), find documented workarounds (**Known errors**), plan changes (**Change calendar**), approve them (**Approvals**, CAB members) and see **Reports** (team leads). |
 | **Configuration & assets ▾** | IT staff | What IT runs and how it depends on each other (**CMDB**), the equipment register (**Assets**) and software **Licences**. |
-| **Risk & continuity ▾** | team leads, BIA coordinators | The **business impact analysis** of business processes. |
+| **My plans** | owners of continuity plans | The continuity and recovery plans you keep up to date. |
+| **Risk & continuity ▾** | IT staff, continuity coordinators | The **business impact analysis**, **recovery gaps** and **continuity plans**. |
 | **Suppliers & contracts ▾** | IT staff | Whom to call at a supplier (**Suppliers**) and, for asset managers and team leads, the **Contracts** with them. |
 | **Administration** | administrators, team leads, asset managers | Configure the application. Each person sees only the settings they may change. |
 
