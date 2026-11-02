@@ -54,6 +54,14 @@ Risks are reassessed periodically (yearly by default). About a month before, the
 
 The register shows open risks on a 5 × 5 grid: likelihood from bottom to top, impact from left to right, coloured by level. Click a cell to list its risks; click it again to show them all.
 
+## Reports
+
+- The heat map shows the **current** risk (after treatment where the residual risk is assessed) or the risk **before treatment**.
+- **Risk report** lays out, for management or auditors, the method, both heat maps, the number of risks per level, and every open risk with what it concerns, its treatment and actions. Print it, or **Download PDF** when the PDF service is set up.
+- **Export to Excel** gives the register, the treatment actions and the acceptances.
+- Each application's page lists the open risks that concern it.
+- Every Monday, risk managers get an e-mail with what needs attention: suggestions to review, acceptances waiting or expiring, overdue actions and reassessments.
+
 ## The method and the catalog
 
 Risk managers adjust, in **Administration → Risk**:

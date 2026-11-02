@@ -9,7 +9,6 @@ namespace Modules\Applications\Http\Controllers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Vite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Modules\Applications\Application\Sheets\SheetDocument;
@@ -21,7 +20,6 @@ use Modules\Core\Domain\Audit\AuditTrail;
 use Modules\Core\Domain\Models\User;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
 
 /**
  * The full documentation of a version, laid out as the template: a page to
@@ -34,7 +32,6 @@ final readonly class SheetDocumentController
         private SheetDocument $document,
         private PdfRenderer $pdf,
         private AuditTrail $trail,
-        private Vite $vite,
     ) {}
 
     public function show(Sheet $sheet, Request $request): View
@@ -49,7 +46,7 @@ final readonly class SheetDocumentController
         $this->gate->authorize('view', $sheet);
         $viewer = $this->viewer($request);
 
-        $html = view('applications::document', [...$this->document->data($sheet, $viewer, true), 'pdfAvailable' => true, 'styles' => $this->styles()])->render();
+        $html = view('applications::document', [...$this->document->data($sheet, $viewer, true), 'pdfAvailable' => true, 'styles' => $this->pdf->stylesheet()])->render();
 
         try {
             $content = $this->pdf->render($html);
@@ -66,18 +63,6 @@ final readonly class SheetDocumentController
             'X-Content-Type-Options' => 'nosniff',
             'Cache-Control' => 'private, no-store',
         ]);
-    }
-
-    /**
-     * The application's compiled stylesheet, inlined: the PDF service fetches nothing.
-     */
-    private function styles(): string
-    {
-        try {
-            return str_replace('</', '<\/', $this->vite->content('resources/css/app.css'));
-        } catch (Throwable) {
-            return '';
-        }
     }
 
     private function viewer(Request $request): User

@@ -8,8 +8,10 @@ declare(strict_types=1);
 namespace Modules\Core\Application\Pdf;
 
 use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Foundation\Vite;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Factory as Http;
+use Throwable;
 
 /**
  * Turns a self-contained HTML document into a PDF through Gotenberg (ADR 0030).
@@ -22,7 +24,22 @@ final readonly class PdfRenderer
     public function __construct(
         private Config $config,
         private Http $http,
+        private Vite $vite,
     ) {}
+
+    /**
+     * The application's compiled stylesheet, to inline in a document (the PDF
+     * service fetches nothing). A build artefact, never user content; "</" is
+     * escaped so it cannot close the style element.
+     */
+    public function stylesheet(): string
+    {
+        try {
+            return str_replace('</', '<\/', $this->vite->content('resources/css/app.css'));
+        } catch (Throwable) {
+            return '';
+        }
+    }
 
     public function isAvailable(): bool
     {

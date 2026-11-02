@@ -50,7 +50,9 @@ use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Links\NoApplications;
 use Modules\Core\Domain\Links\NoBusinessProcesses;
 use Modules\Core\Domain\Links\NoConfigurationItems;
+use Modules\Core\Domain\Links\NoRisks;
 use Modules\Core\Domain\Links\NoServiceDeskTickets;
+use Modules\Core\Domain\Links\Risks;
 use Modules\Core\Domain\Links\ServiceDeskTickets;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\Attachment;
@@ -117,6 +119,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->bindIf(ServiceDeskTickets::class, NoServiceDeskTickets::class);
         // Replaced by the Applications module when it is enabled.
         $this->app->bindIf(Applications::class, NoApplications::class);
+        // Replaced by the Risk module when it is enabled.
+        $this->app->bindIf(Risks::class, NoRisks::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */
