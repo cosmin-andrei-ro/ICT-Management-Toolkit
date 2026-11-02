@@ -12,9 +12,9 @@ Each person can have different roles in different organizations. Every role is a
 | Role | Typical person | What they can do |
 |---|---|---|
 | **Requester** | every employee | Raise tickets, request services, follow their own tickets. |
-| **Agent** | service desk staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, raise changes, keep the CMDB up to date, and see suppliers and their contacts. |
-| **Team lead** | service desk lead | Everything an agent can, plus see reports, approve changes, configure the service desk (categories, queues, SLA targets, catalog, CAB boards, standard changes), define CMDB item types, and manage suppliers, contracts and locations. These settings are in **Administration**. |
-| **Asset manager** | IT asset and contract management | Raise tickets; see the CMDB; manage suppliers, contracts and locations. |
+| **Agent** | service desk staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, raise changes, keep the CMDB up to date, hand out and take back equipment, and see suppliers and their contacts. |
+| **Team lead** | service desk lead | Everything an agent can, plus see reports, approve changes, configure the service desk (categories, queues, SLA targets, catalog, CAB boards, standard changes), define CMDB item types, keep the asset register, and manage suppliers, contracts and locations. These settings are in **Administration**. |
+| **Asset manager** | IT asset and contract management | Raise tickets; see the CMDB; keep the asset register (assets, categories, disposal); manage suppliers, contracts and locations. |
 | **CAB member** | change advisory board | Raise tickets; approve changes on the boards they sit on; see the CMDB. |
 | **Administrator** | IT administrator | Everything, including people, Active Directory mappings, teams and business calendars. |
 

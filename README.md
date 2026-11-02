@@ -74,7 +74,12 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - Items linked to tickets, so incidents show the services they take down and the CAB sees what a change touches.
 - **Import** from CSV or Excel, with preview.
 
-**Planned modules:** IT asset management, datacenter infrastructure, application portfolio, business impact analysis, continuity and recovery, risk assessment, audit and compliance, projects.
+**IT asset management**
+- **Hardware assets** of extensible categories, with automatic asset tags, purchase and warranty details, and a life cycle from order to disposal (with data wiping recorded).
+- Who has each asset, from when to when; **My equipment** for every employee.
+- Assets linked to CMDB items and to the support contracts that cover them; warranty reminders by email.
+
+**Planned modules:** software licences (asset management, part 3), datacenter infrastructure, application portfolio, business impact analysis, continuity and recovery, risk assessment, audit and compliance, projects.
 
 **Not done yet:** security keys and passkeys (WebAuthn) as a second factor; single sign-on with OIDC or SAML.
 
@@ -206,6 +211,7 @@ Two processes must run all the time.
 | `ticketing:tickets:auto-close` | hourly | Closes tickets left resolved for 5 days |
 | `core:exports:prune` | hourly | Deletes expired exports |
 | `core:contracts:remind` | daily at 07:00 | Contract deadline reminders; renews contracts that renew automatically |
+| `itam:warranties:remind` | daily at 07:15 | Emails asset managers about warranties ending soon |
 | `ticketing:mail:prune` | daily | Deletes old entries of the incoming email log |
 | `core:directory:sync` | every 15 minutes, when AD is enabled | Blocks disabled AD accounts, refreshes roles |
 
@@ -289,7 +295,9 @@ Settings, for special cases:
 | `TICKETING_AUTO_CLOSE_AFTER_DAYS` | `5` | Days a resolved ticket waits before closing; `0` disables |
 | `EXPORTS_RETENTION_DAYS` | `7` | Days an export can be downloaded |
 | `CONTRACT_REMINDER_DAYS` | `90,30` | Days before a contract's deadline when reminders are emailed |
-| `DEFAULT_CURRENCY` | `EUR` | Currency proposed for new contracts (ISO 4217) |
+| `DEFAULT_CURRENCY` | `EUR` | Currency proposed for new contracts and assets (ISO 4217) |
+| `ITAM_TAG_PREFIX` | `AST` | Prefix of automatic asset tags (`AST-000001`) |
+| `ITAM_WARRANTY_REMINDER_DAYS` | `30` | Days before a warranty ends when asset managers are emailed |
 | `ATTACHMENTS_DISK` | `attachments` | Storage for attachments (e.g. an S3-compatible disk) |
 | `SANCTUM_EXPIRATION` | `129600` | Lifetime of API tokens, in minutes |
 

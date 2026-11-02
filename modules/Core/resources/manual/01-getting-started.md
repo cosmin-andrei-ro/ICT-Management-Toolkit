@@ -39,8 +39,9 @@ The menu at the top shows only what you are allowed to use. Entries marked **▾
 |---|---|---|
 | **Request a service** | everyone | Order something from the IT service catalog (a laptop, VPN access…). |
 | **My tickets** | everyone | Report a problem and follow your requests. |
+| **My equipment** | people who have IT equipment | The devices IT handed to you. |
 | **Service desk ▾** | IT staff | Work on tickets (**Service desk**), find documented workarounds (**Known errors**), plan changes (**Change calendar**), approve them (**Approvals**, CAB members) and see **Reports** (team leads). |
-| **CMDB** | IT staff | What IT runs and how it depends on each other. |
+| **Configuration & assets ▾** | IT staff | What IT runs and how it depends on each other (**CMDB**), and the equipment register (**Assets**). |
 | **Suppliers & contracts ▾** | IT staff | Whom to call at a supplier (**Suppliers**) and, for asset managers and team leads, the **Contracts** with them. |
 | **Administration** | administrators, team leads, asset managers | Configure the application. Each person sees only the settings they may change. |
 

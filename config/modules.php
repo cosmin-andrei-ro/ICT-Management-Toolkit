@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 use Modules\Cmdb\CmdbServiceProvider;
 use Modules\Core\CoreServiceProvider;
+use Modules\Itam\ItamServiceProvider;
 use Modules\Ticketing\TicketingServiceProvider;
 
 return [
@@ -35,6 +36,10 @@ return [
         ],
         'cmdb' => [
             'provider' => CmdbServiceProvider::class,
+            'enabled' => true,
+        ],
+        'itam' => [
+            'provider' => ItamServiceProvider::class,
             'enabled' => true,
         ],
     ],

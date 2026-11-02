@@ -17,6 +17,7 @@ use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Modules\Core\Application\Collaboration\StoreAttachment;
+use Modules\Core\Domain\Links\ContractDependents;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\User;
@@ -91,15 +92,17 @@ final class ShowContract extends Component
         $this->redirectRoute('core.contracts.index');
     }
 
-    public function render(): View
+    public function render(ContractDependents $dependents): View
     {
         $contract = $this->contract;
+        $viewer = auth()->user();
 
         return view('core::livewire.contracts.show', [
             'contract' => $contract,
             'status' => $contract->statusOn(CarbonImmutable::today(), Contract::expiringDays()),
             'deadline' => $contract->deadline(),
             'documents' => $contract->attachments()->with('uploader')->get(),
+            'dependents' => $viewer instanceof User ? $dependents->of($contract, $viewer) : [],
         ])->title($contract->title);
     }
 }
