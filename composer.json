@@ -59,7 +59,9 @@
             "Modules\\Bia\\": "modules/Bia/src/",
             "Modules\\Bia\\Database\\Factories\\": "modules/Bia/database/factories/",
             "Modules\\Bcm\\": "modules/Bcm/src/",
-            "Modules\\Bcm\\Database\\Factories\\": "modules/Bcm/database/factories/"
+            "Modules\\Bcm\\Database\\Factories\\": "modules/Bcm/database/factories/",
+            "Modules\\Applications\\": "modules/Applications/src/",
+            "Modules\\Applications\\Database\\Factories\\": "modules/Applications/database/factories/"
         }
     },
     "autoload-dev": {
@@ -71,7 +73,8 @@
             "Modules\\Cmdb\\Tests\\": "modules/Cmdb/tests/",
             "Modules\\Itam\\Tests\\": "modules/Itam/tests/",
             "Modules\\Bia\\Tests\\": "modules/Bia/tests/",
-            "Modules\\Bcm\\Tests\\": "modules/Bcm/tests/"
+            "Modules\\Bcm\\Tests\\": "modules/Bcm/tests/",
+            "Modules\\Applications\\Tests\\": "modules/Applications/tests/"
         }
     },
     "scripts": {

@@ -260,6 +260,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::AssetManager, [...$directory, 'core.admin.access', ...$contracts]);
         // The continuity coordinator keeps the organization chart processes hang from, and reads suppliers and locations for dependencies.
         $registry->grantToDefaultRole(DefaultRole::ContinuityCoordinator, [...$directory, 'core.admin.access', 'core.department.create', 'core.department.update', 'core.supplier.view', 'core.location.manage']);
+        // Application managers open the panel for the sheet's dropdowns and read suppliers and contracts for vendor support.
+        $registry->grantToDefaultRole(DefaultRole::ApplicationManager, [...$directory, 'core.admin.access', 'core.supplier.view', 'core.contract.view']);
+        $registry->grantToDefaultRole(DefaultRole::SecurityOfficer, [...$directory, 'core.audit.view']);
         $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
     }

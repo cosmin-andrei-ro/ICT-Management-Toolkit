@@ -96,7 +96,12 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Coverage report**: assessed processes without a plan in force or not brought back within their RTO, plans not approved or overdue for review or exercise; Excel export of the continuity register; reminders to owners and a weekly digest for coordinators.
 - **Activation log** for real disruptions: the crisis team is emailed a link to the plan, time to recover is compared with the RTO, lessons are kept.
 
-**Planned modules:** datacenter infrastructure, application portfolio, risk assessment, audit and compliance, projects.
+**Application portfolio** (in progress)
+- Register of applications with business owner, IT / application owner and deputy.
+- **Technical documentation sheet** following the company's template chapter by chapter (general information, support contacts, classification, environments, related documentation, service levels so far), with editable dropdowns.
+- Versioned: the first version and major changes are approved by the business owner, the IT owner and a security officer; minor changes are published and logged in the change history; yearly review date.
+
+**Planned modules:** datacenter infrastructure, risk assessment, audit and compliance, projects.
 
 **Not done yet:** security keys and passkeys (WebAuthn) as a second factor; single sign-on with OIDC or SAML.
 
@@ -325,6 +330,7 @@ Settings, for special cases:
 | `BCM_REVIEW_MONTHS` | `12` | Months from a plan's approval to its review |
 | `BCM_EXERCISE_MONTHS` | `12` | Months from a plan's last exercise (or approval) to the next one |
 | `BCM_REMINDER_DAYS` | `30` | Days before a plan's review or exercise when its owner is emailed |
+| `APPLICATIONS_REVIEW_MONTHS` | `12` | Months from an application's documentation coming into force to its review |
 | `ATTACHMENTS_DISK` | `attachments` | Storage for attachments (e.g. an S3-compatible disk) |
 | `SANCTUM_EXPIRATION` | `129600` | Lifetime of API tokens, in minutes |
 
