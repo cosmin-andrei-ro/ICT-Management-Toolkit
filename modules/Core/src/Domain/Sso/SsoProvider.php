@@ -21,16 +21,22 @@ use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 
 /**
- * An OpenID Connect identity provider of an organization (Entra ID, Google
- * Workspace, Keycloak, Okta…). The client secret is encrypted at rest, hidden
- * from serialization and from the audit trail, and never shown again.
+ * An identity provider of an organization (Entra ID, Google Workspace,
+ * Keycloak, Okta, ADFS…), through OpenID Connect or SAML 2.0. For SAML the
+ * issuer is the IdP's entity ID. The OIDC client secret is encrypted at rest,
+ * hidden from serialization and from the audit trail, and never shown again.
  *
  * @property string $id
  * @property string $organization_id
  * @property string $name
  * @property string $issuer
- * @property string $client_id
- * @property string $client_secret
+ * @property SsoProtocol $protocol
+ * @property ?string $client_id
+ * @property ?string $client_secret
+ * @property ?string $sso_url
+ * @property ?string $certificate
+ * @property ?string $email_attribute
+ * @property ?string $name_attribute
  * @property string $scopes
  * @property string $groups_claim
  * @property list<string> $allowed_domains
@@ -42,7 +48,7 @@ use Modules\Core\Domain\Concerns\TracksAuthors;
 #[Table('core_sso_providers')]
 #[UsePolicy(SsoPolicy::class)]
 #[Hidden(['client_secret'])]
-#[Fillable(['name', 'issuer', 'client_id', 'client_secret', 'scopes', 'groups_claim', 'allowed_domains', 'trust_mfa', 'is_enabled'])]
+#[Fillable(['protocol', 'name', 'issuer', 'client_id', 'client_secret', 'sso_url', 'certificate', 'email_attribute', 'name_attribute', 'scopes', 'groups_claim', 'allowed_domains', 'trust_mfa', 'is_enabled'])]
 final class SsoProvider extends Model
 {
     use Auditable;
@@ -52,6 +58,7 @@ final class SsoProvider extends Model
 
     /** @var array<string, mixed> */
     protected $attributes = [
+        'protocol' => 'oidc',
         'scopes' => 'openid email profile',
         'groups_claim' => 'groups',
         'trust_mfa' => true,
@@ -76,6 +83,7 @@ final class SsoProvider extends Model
     protected function casts(): array
     {
         return [
+            'protocol' => SsoProtocol::class,
             'client_secret' => 'encrypted',
             'allowed_domains' => 'array',
             'trust_mfa' => 'boolean',

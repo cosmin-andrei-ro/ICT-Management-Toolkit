@@ -17,7 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // SAML identity providers post their signed answer from their own site (ADR 0039).
+        $middleware->validateCsrfTokens(except: ['login/saml/*/acs']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

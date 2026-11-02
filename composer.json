@@ -24,6 +24,7 @@
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.4",
+        "onelogin/php-saml": "^4.3",
         "openspout/openspout": "^4.23",
         "spatie/laravel-permission": "^8.3",
         "web-auth/webauthn-lib": "^5.3",
