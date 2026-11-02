@@ -32,6 +32,14 @@ interface ConfigurationItems
     public function linkedTo(Model $record): array;
 
     /**
+     * Items of the organization by id; unknown ids are left out.
+     *
+     * @param  list<string>  $ids
+     * @return array<string, ConfigurationItemSummary>
+     */
+    public function find(array $ids): array;
+
+    /**
      * @throws InvalidArgumentException when the item is not one of the organization
      */
     public function link(Model $record, string $itemId, User $actor): void;

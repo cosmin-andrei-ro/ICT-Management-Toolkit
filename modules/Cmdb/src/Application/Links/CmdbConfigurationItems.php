@@ -64,6 +64,21 @@ final readonly class CmdbConfigurationItems implements ConfigurationItems
             ->all());
     }
 
+    public function find(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        $found = [];
+
+        foreach (ConfigurationItem::query()->with('type')->whereKey($ids)->get() as $item) {
+            $found[$item->id] = self::summary($item);
+        }
+
+        return $found;
+    }
+
     public function linkedTo(Model $record): array
     {
         $ids = CiLink::query()->where('linkable_type', $record->getMorphClass())->where('linkable_id', $record->getKey())->pluck('configuration_item_id');

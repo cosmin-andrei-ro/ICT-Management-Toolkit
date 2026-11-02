@@ -136,8 +136,9 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Cabling**: ports on each device (added in series, patch panels with their rear ports), labelled cables between them, one per port; every connection traced end to end through the patch panels.
 
 - **Power**: feeds, UPSs and PDUs in a chain with their capacity; load from each device's draw, in normal operation and if the other side fails; equipment without two independent supplies; what a UPS or PDU failure takes down, up to the services in the CMDB; single-fed equipment suggested as risks.
+- **IP addresses**: VLANs, IPv4 and IPv6 subnets nested by containment with gateway and purpose, addresses given to equipment or CMDB items; utilisation, the next free address, and no duplicates (checked by PostgreSQL's own network types).
 
-**Planned modules:** projects; for the data centre, IP addresses.
+**Planned modules:** projects.
 
 **Not done yet:** single logout (SAML SLO).
 

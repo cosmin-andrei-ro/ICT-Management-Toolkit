@@ -19,11 +19,14 @@ use Modules\Core\Http\Navigation\Navigation;
 use Modules\Dcim\Application\Links\MountedAssets;
 use Modules\Dcim\Application\Risks\PowerRiskSignals;
 use Modules\Dcim\Domain\Models\Cable;
+use Modules\Dcim\Domain\Models\IpAddress;
 use Modules\Dcim\Domain\Models\Mount;
 use Modules\Dcim\Domain\Models\Port;
 use Modules\Dcim\Domain\Models\PowerConnection;
 use Modules\Dcim\Domain\Models\PowerSource;
 use Modules\Dcim\Domain\Models\Rack;
+use Modules\Dcim\Domain\Models\Subnet;
+use Modules\Dcim\Domain\Models\Vlan;
 
 final class DcimServiceProvider extends ModuleServiceProvider
 {
@@ -53,11 +56,15 @@ final class DcimServiceProvider extends ModuleServiceProvider
             'dcim.cable' => Cable::class,
             'dcim.power_source' => PowerSource::class,
             'dcim.power_connection' => PowerConnection::class,
+            'dcim.vlan' => Vlan::class,
+            'dcim.subnet' => Subnet::class,
+            'dcim.ip_address' => IpAddress::class,
         ]);
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('dcim::racks.menu', 'dcim.racks.index', 'dcim.racks.*', fn (User $user): bool => $user->can('dcim.infrastructure.view'), Navigation::CONFIGURATION);
             $navigation->add('dcim::power.menu', 'dcim.power.index', 'dcim.power.*', fn (User $user): bool => $user->can('dcim.infrastructure.view'), Navigation::CONFIGURATION);
+            $navigation->add('dcim::ipam.menu', 'dcim.ipam.index', 'dcim.ipam.*', fn (User $user): bool => $user->can('dcim.infrastructure.view'), Navigation::CONFIGURATION);
             $navigation->add('dcim::cabling.menu', 'dcim.cables.index', 'dcim.cables.*', fn (User $user): bool => $user->can('dcim.infrastructure.view'), Navigation::CONFIGURATION);
         });
     }
