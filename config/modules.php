@@ -11,6 +11,7 @@ use Modules\Bcm\BcmServiceProvider;
 use Modules\Bia\BiaServiceProvider;
 use Modules\Cmdb\CmdbServiceProvider;
 use Modules\Core\CoreServiceProvider;
+use Modules\Dcim\DcimServiceProvider;
 use Modules\Documentation\DocumentationServiceProvider;
 use Modules\Itam\ItamServiceProvider;
 use Modules\Reporting\ReportingServiceProvider;
@@ -71,6 +72,10 @@ return [
         ],
         'documentation' => [
             'provider' => DocumentationServiceProvider::class,
+            'enabled' => true,
+        ],
+        'dcim' => [
+            'provider' => DcimServiceProvider::class,
             'enabled' => true,
         ],
         'reporting' => [

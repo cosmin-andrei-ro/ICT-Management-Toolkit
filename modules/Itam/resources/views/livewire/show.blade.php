@@ -31,6 +31,9 @@
                 @endif
             </p>
             <p class="text-sm text-gray-600">{{ __('itam::assets.fields.location') }}: {{ $asset->location_id ? ($locations[$asset->location_id] ?? $asset->location?->name) : '—' }}</p>
+            @if ($placement !== null)
+                <p class="text-sm text-gray-600">{{ __('itam::assets.fields.rack') }}: <a href="{{ $placement->url }}" class="text-blue-700 underline">{{ $placement->title }}</a></p>
+            @endif
 
             @can('assign', $asset)
                 @if (in_array($asset->status, [\Modules\Itam\Domain\Enums\AssetStatus::Ordered, \Modules\Itam\Domain\Enums\AssetStatus::InStock, \Modules\Itam\Domain\Enums\AssetStatus::Deployed], true))
