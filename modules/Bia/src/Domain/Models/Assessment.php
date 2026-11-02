@@ -119,6 +119,9 @@ final class Assessment extends Model
             $map[$score->category_id.'|'.$score->horizon_id] = $score->score;
         }
 
+        // Rows come back in no set order; a stable order lets versions be compared.
+        ksort($map);
+
         return $map;
     }
 
