@@ -14,6 +14,7 @@ use Modules\Core\Domain\Models\User;
 use Modules\Itam\Application\Actions\AcknowledgeHandover;
 use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Domain\Models\AssetAssignment;
+use Modules\Itam\Domain\Models\LicenseAssignment;
 
 /**
  * What the signed-in person has from IT, for everyone. No costs, invoices or
@@ -50,6 +51,9 @@ final class MyEquipment extends Component
             ->keyBy('asset_id');
 
         return view('itam::livewire.my-equipment', [
+            // Product and licence name only: no keys, no costs.
+            'software' => LicenseAssignment::query()->with('license.product')->where('user_id', $userId)->get()
+                ->map(fn (LicenseAssignment $seat): string => $seat->license->product->name)->unique()->sort()->values(),
             'assets' => $assets,
             'assignments' => $assignments,
         ])->title(__('itam::assets.my.title'));

@@ -14,7 +14,7 @@ use Illuminate\Database\Query\Expression;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Domain\Tenancy\OrganizationScope;
-use Modules\Itam\Application\Notifications\WarrantiesEnding;
+use Modules\Itam\Application\Notifications\EndingSoon;
 use Modules\Itam\Domain\Enums\AssetStatus;
 use Modules\Itam\Domain\Models\Asset;
 
@@ -73,7 +73,7 @@ final readonly class SendWarrantyReminders
             ->map(fn (Asset $asset): string => "{$asset->asset_tag} · {$asset->displayName()} · {$asset->warranty_ends_on?->toDateString()}")
             ->all());
 
-        $notification = new WarrantiesEnding($lines, max(0, $assets->count() - self::LISTED), route('itam.assets.index', ['warranty' => 1]));
+        $notification = new EndingSoon('warranty', $lines, max(0, $assets->count() - self::LISTED), route('itam.assets.index', ['warranty' => 1]));
 
         User::query()
             ->where('is_active', true)

@@ -32,4 +32,15 @@
             <li class="px-4 py-6 text-center text-sm text-gray-500">{{ __('itam::assets.my.empty') }}</li>
         @endforelse
     </ul>
+
+    @if ($software->isNotEmpty())
+        <section aria-labelledby="software-heading" class="space-y-2">
+            <h2 id="software-heading" class="font-semibold">{{ __('itam::licenses.ui.my_software') }}</h2>
+            <ul class="divide-y divide-gray-100 rounded-lg bg-white text-sm ring-1 ring-gray-200">
+                @foreach ($software as $product)
+                    <li wire:key="software-{{ $loop->index }}" class="px-4 py-2">{{ $product }}</li>
+                @endforeach
+            </ul>
+        </section>
+    @endif
 </div>

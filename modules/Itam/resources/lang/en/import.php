@@ -33,6 +33,23 @@ return [
     'no_header' => 'The first row must contain the column names.',
     'too_many_rows' => 'At most :max rows can be imported at once. Split the file.',
     'assigned_by_import' => 'Imported',
+    'kind' => 'What does the file contain?',
+    'kinds' => [
+        'assets' => 'Assets: one row per device.',
+        'licenses' => 'Software licences: one row per licence. Keys are not imported; enter them on each licence.',
+    ],
+    'licenses' => [
+        'title' => 'Import licences',
+        'columns' => 'First row: the column names. A row whose product and licence name already exist updates that licence; the others are created, with their product if it is new.',
+        'column_notes' => 'Model: per_user, per_device or site. Quantity: the seats bought (not for site licences). Supplier: its name. Dates: YYYY-MM-DD; an empty expiry means perpetual.',
+        'errors' => [
+            'product' => 'A product name (up to 255 characters) is needed.',
+            'name' => 'A licence name (up to 255 characters) is needed.',
+            'duplicate' => 'The same product and licence name are already on line :line.',
+            'model' => 'Unknown model ":value": use per_user, per_device or site.',
+            'quantity' => 'A number of seats (1 or more) is needed.',
+        ],
+    ],
     'errors' => [
         'duplicate' => 'The same :column is already on line :line.',
         'serial_taken' => 'Another asset (:tag) already has this serial number.',

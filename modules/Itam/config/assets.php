@@ -17,4 +17,7 @@ return [
     // Days before a warranty ends when asset managers get an email.
     'warranty_reminder_days' => (int) env('ITAM_WARRANTY_REMINDER_DAYS', 30),
 
+    // Days before a licence expires when licence managers get an email.
+    'license_reminder_days' => (int) env('ITAM_LICENSE_REMINDER_DAYS', 60),
+
 ];

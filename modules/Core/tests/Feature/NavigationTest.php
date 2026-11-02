@@ -32,7 +32,7 @@ it('groups the menu of IT staff, in a fixed order whatever the module order', fu
         'Request a service',
         'My tickets',
         ['Service desk' => ['Service desk', 'Known errors', 'Change calendar', 'Approvals', 'Reports']],
-        ['Configuration & assets' => ['CMDB', 'Assets']],
+        ['Configuration & assets' => ['CMDB', 'Assets', 'Licences']],
         ['Suppliers & contracts' => ['Suppliers', 'Contracts']],
         'Administration',
     ]);

@@ -14,17 +14,19 @@ use Illuminate\Notifications\Notification;
 use Symfony\Component\Mime\Email;
 
 /**
- * Warranties ending soon, one line per asset (tag, name, end date). Plain values
- * only: queued notifications run without an organization context.
+ * Warranties or licences ending soon, one line each. Plain values only: queued
+ * notifications run without an organization context.
  */
-final class WarrantiesEnding extends Notification implements ShouldQueue
+final class EndingSoon extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
+     * @param  'warranty'|'license'  $kind
      * @param  list<string>  $lines
      */
     public function __construct(
+        public readonly string $kind,
         public readonly array $lines,
         public readonly int $more,
         public readonly string $url,
@@ -41,12 +43,12 @@ final class WarrantiesEnding extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $message = (new MailMessage)
-            ->subject(trans_choice('itam::assets.mail.warranty_subject', count($this->lines) + $this->more, ['count' => count($this->lines) + $this->more]))
+            ->subject(trans_choice("itam::assets.mail.{$this->kind}_subject", count($this->lines) + $this->more, ['count' => count($this->lines) + $this->more]))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');
                 $email->getHeaders()->addTextHeader('X-Auto-Response-Suppress', 'All');
             })
-            ->line(__('itam::assets.mail.warranty_intro'));
+            ->line(__("itam::assets.mail.{$this->kind}_intro"));
 
         foreach ($this->lines as $line) {
             $message->line($line);
@@ -56,6 +58,6 @@ final class WarrantiesEnding extends Notification implements ShouldQueue
             $message->line(__('itam::assets.mail.and_more', ['count' => $this->more]));
         }
 
-        return $message->action(__('itam::assets.mail.open'), $this->url);
+        return $message->action(__("itam::assets.mail.{$this->kind}_open"), $this->url);
     }
 }

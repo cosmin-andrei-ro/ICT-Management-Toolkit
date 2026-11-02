@@ -249,4 +249,15 @@
             @endcan
         </section>
     </div>
+
+    @if ($licenses->isNotEmpty())
+        <section aria-labelledby="licenses-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+            <h2 id="licenses-heading" class="text-sm font-semibold">{{ __('itam::licenses.ui.on_device') }}</h2>
+            <ul class="divide-y divide-gray-100 text-sm">
+                @foreach ($licenses as $seat)
+                    <li wire:key="license-seat-{{ $seat->id }}" class="py-1.5"><a href="{{ route('itam.licenses.show', $seat->license_id) }}" class="text-blue-700 underline">{{ $seat->license->product->name }} · {{ $seat->license->name }}</a></li>
+                @endforeach
+            </ul>
+        </section>
+    @endif
 </div>

@@ -1,12 +1,15 @@
 # IT asset management (ITAM) module
 
-Hardware assets: who has them, where they are, their warranty and how they left the organization. Code: `modules/Itam/`. Decisions: [ADR 0020](../adr/0020-it-asset-management.md), [ADR 0021](../adr/0021-asset-import-handover-labels.md).
+Hardware assets (who has them, where they are, their warranty and how they left the organization) and software licences (seats bought and used, keys, renewals). Code: `modules/Itam/`. Decisions: [ADR 0020](../adr/0020-it-asset-management.md), [ADR 0021](../adr/0021-asset-import-handover-labels.md), [ADR 0022](../adr/0022-software-licenses.md).
 
 ## Concepts
 
 - **Category** (`itam_categories`): a kind of asset with its attributes (Core form schema). Ten defaults per organization, created on first use: laptop, desktop, monitor, phone, tablet, printer, server, network device, storage, peripheral.
 - **Asset** (`itam_assets`): asset tag (automatic `AST-000001` or entered), name, manufacturer, model, serial number, status, location, holder, supplier, contract, purchase date and cost, order and invoice numbers, warranty end, planned replacement, attribute values (`properties`), notes, disposal details, documents (Core attachments).
 - **Assignment** (`itam_asset_assignments`): who had an asset, from when to when, and when the holder confirmed receipt; one open assignment per asset.
+
+- **Software product** (`itam_software_products`) and **licence** (`itam_licenses`): per user, per device or site; quantity, key (encrypted, hidden), supplier, contract, cost, validity, documents.
+- **Seat** (`itam_license_assignments`): a person or a device using a licence.
 
 ## Life cycle
 
@@ -22,12 +25,14 @@ Hardware assets: who has them, where they are, their warranty and how they left 
 - `/assets/handovers/{assignment}`: printable handover (and return) protocol, for the holder and IT staff.
 - `/my-equipment`: the signed-in person's equipment, with **I received it** to confirm a hand-out (menu entry shown only to people who have some).
 - The asset list exports the register to Excel or CSV, with the import's columns.
+- `/licenses`: licences grouped by product with seats bought and used, over-used products flagged; `/licenses/new`, `/licenses/{id}` (seats, key on request, documents), `/licenses/{id}/edit`. Import and export as for assets.
+- Administration → Asset management → Software products.
 - Administration → Asset management → Asset categories.
 - The CMDB item page lists linked assets; the contract page lists the assets it covers.
 
 ## Background
 
-`itam:warranties:remind`, daily at 07:15: one email per organization to people with `itam.asset.manage` about warranties ending within `ITAM_WARRANTY_REMINDER_DAYS` (default 30), once per end date.
+`itam:warranties:remind`, daily at 07:15: one email per organization to people with `itam.asset.manage` about warranties ending within `ITAM_WARRANTY_REMINDER_DAYS` (default 30), once per end date. `itam:licenses:remind`, daily at 07:20: the same for licences expiring within `ITAM_LICENSE_REMINDER_DAYS` (default 60), to people with `itam.license.manage`.
 
 ## Permissions
 
@@ -37,5 +42,9 @@ Hardware assets: who has them, where they are, their warranty and how they left 
 | `itam.asset.assign` | agent, team-lead, asset-manager | Hand out, take back, send for repair |
 | `itam.asset.manage` | team-lead, asset-manager | Create and edit, retire, report lost, dispose, delete, link to the CMDB, documents, import, export, labels |
 | `itam.category.manage` | team-lead, asset-manager | Asset categories and their attributes |
+| `itam.license.view` | agent, team-lead, asset-manager | See licences, seats and compliance |
+| `itam.license.assign` | agent, team-lead, asset-manager | Give and release seats |
+| `itam.license.manage` | team-lead, asset-manager | Create and edit licences and products, documents, import, export |
+| `itam.license.reveal_key` | team-lead, asset-manager | Show a licence key, after an authenticator code (audited) |
 
 Administrators have every permission.

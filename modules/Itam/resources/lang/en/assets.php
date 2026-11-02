@@ -137,7 +137,10 @@ return [
     'mail' => [
         'warranty_subject' => 'The warranty of :count asset ends soon|The warranties of :count assets end soon',
         'warranty_intro' => 'These warranties end soon. Renew them, plan a replacement, or let them end:',
+        'warranty_open' => 'Open the assets',
+        'license_subject' => ':count licence expires soon|:count licences expire soon',
+        'license_intro' => 'These licences expire soon. Renew them, or release their seats:',
+        'license_open' => 'Open the licences',
         'and_more' => '… and :count more.',
-        'open' => 'Open the assets',
     ],
 ];
