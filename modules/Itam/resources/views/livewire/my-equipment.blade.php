@@ -14,10 +14,17 @@
                         @if ($asset->serial_number) · <span class="font-mono">{{ $asset->serial_number }}</span> @endif
                     </p>
                 </div>
-                <div class="text-right text-xs text-gray-500">
+                <div class="space-y-1 text-right text-xs text-gray-500">
                     <x-itam::status :status="$asset->status" />
-                    @if (isset($since[$asset->id]))
-                        <p class="mt-1">{{ __('itam::assets.my.since') }} {{ \Illuminate\Support\Carbon::parse($since[$asset->id])->toDateString() }}</p>
+                    @php($assignment = $assignments->get($asset->id))
+                    @if ($assignment)
+                        <p>{{ __('itam::assets.my.since') }} {{ $assignment->assigned_at->toDateString() }} · <a href="{{ route('itam.handover', $assignment->id) }}" class="text-blue-700 underline">{{ __('itam::handover.protocol') }}</a></p>
+                        @if ($assignment->acknowledged_at)
+                            <p class="text-green-700">{{ __('itam::handover.confirmed') }}</p>
+                        @else
+                            <p class="text-amber-700">{{ __('itam::handover.to_confirm') }}</p>
+                            <button type="button" wire:click="confirmReceipt('{{ $assignment->id }}')" class="rounded-md bg-gray-900 px-3 py-1 text-xs font-semibold text-white">{{ __('itam::handover.confirm') }}</button>
+                        @endif
                     @endif
                 </div>
             </li>

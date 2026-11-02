@@ -12,6 +12,8 @@ use Modules\Cmdb\Application\Actions\ManageRelationships;
 use Modules\Cmdb\Domain\Enums\RelationshipType;
 use Modules\Cmdb\Domain\Models\ConfigurationItem;
 use Modules\Cmdb\Domain\Models\Relationship;
+use Modules\Core\Application\Imports\ImportHasErrors;
+use Modules\Core\Application\Imports\ImportRow;
 
 /**
  * Relationships from a spreadsheet: columns source, relationship, target, where

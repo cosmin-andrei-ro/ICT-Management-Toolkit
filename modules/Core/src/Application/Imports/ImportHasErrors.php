@@ -5,7 +5,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Cmdb\Application\Import;
+namespace Modules\Core\Application\Imports;
 
 use RuntimeException;
 

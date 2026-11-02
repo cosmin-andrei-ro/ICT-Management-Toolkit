@@ -211,6 +211,10 @@
                             @if ($assignment->notes) · {{ $assignment->notes }} @endif
                             @if ($assignment->return_notes) · {{ $assignment->return_notes }} @endif
                         </p>
+                        <p class="text-xs">
+                            <a href="{{ route('itam.handover', $assignment->id) }}" class="text-blue-700 underline">{{ __('itam::handover.protocol') }}</a>
+                            @if ($assignment->acknowledged_at) · <span class="text-green-700">{{ __('itam::handover.confirmed') }}</span> @endif
+                        </p>
                     </li>
                 @empty
                     <li class="py-2 text-gray-500">{{ __('itam::assets.ui.no_history') }}</li>

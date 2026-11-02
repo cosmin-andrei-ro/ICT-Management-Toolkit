@@ -15,6 +15,7 @@
     "license": "AGPL-3.0-or-later",
     "require": {
         "php": "^8.3",
+        "chillerlan/php-qrcode": "^5.0",
         "dedoc/scramble": "^0.13.52",
         "directorytree/imapengine": "^1.25",
         "directorytree/ldaprecord": "^4.1",

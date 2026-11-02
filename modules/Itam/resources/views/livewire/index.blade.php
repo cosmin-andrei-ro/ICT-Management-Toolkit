@@ -1,13 +1,36 @@
-<div class="space-y-6">
+<div class="space-y-6" @if ($preparing) wire:poll.3s @endif>
     <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
             <h1 class="text-xl font-semibold">{{ __('itam::assets.title') }}</h1>
             <p class="text-sm text-gray-600">{{ __('itam::assets.ui.intro') }}</p>
         </div>
         @can('create', \Modules\Itam\Domain\Models\Asset::class)
-            <a href="{{ route('itam.assets.create') }}" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('itam::assets.ui.new') }}</a>
+            <div class="flex flex-wrap gap-2">
+                <button type="button" wire:click="export('xlsx')" wire:loading.attr="disabled" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('itam::assets.ui.export') }}</button>
+                <a href="{{ route('itam.assets.labels', ['search' => $search, 'category' => $category, 'status' => $status, 'location' => $location]) }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('itam::labels.button') }}</a>
+                <a href="{{ route('itam.assets.import') }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('itam::import.title') }}</a>
+                <a href="{{ route('itam.assets.create') }}" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('itam::assets.ui.new') }}</a>
+            </div>
         @endcan
     </div>
+
+    @if ($exports->isNotEmpty())
+        <ul class="divide-y divide-gray-100 rounded-lg bg-white px-4 text-sm ring-1 ring-gray-200" aria-label="{{ __('itam::assets.ui.exports') }}">
+            @foreach ($exports as $export)
+                <li wire:key="export-{{ $export->id }}" class="flex flex-wrap items-center justify-between gap-2 py-2">
+                    <span>{{ __('itam::assets.ui.export_of', ['date' => $export->created_at?->timezone($timezone)->format('Y-m-d H:i')]) }}</span>
+                    @if ($export->isDownloadable())
+                        <span class="text-gray-500">
+                            <a href="{{ route('core.exports.download', $export) }}" class="font-medium text-blue-700 underline">{{ __('core::exports.download') }}</a>
+                            · {{ __('core::exports.expires', ['date' => $export->expires_at?->timezone($timezone)->format('Y-m-d H:i')]) }}
+                        </span>
+                    @else
+                        <span class="text-gray-500">{{ $export->status->label() }}</span>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+    @endif
 
     <div class="flex flex-wrap items-center gap-2">
         <input type="search" wire:model.live.debounce.400ms="search" maxlength="200" placeholder="{{ __('itam::assets.ui.search') }}" aria-label="{{ __('itam::assets.ui.search') }}" class="w-72 rounded-md text-sm">

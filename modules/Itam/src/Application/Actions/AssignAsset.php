@@ -12,6 +12,7 @@ use InvalidArgumentException;
 use Modules\Core\Domain\Models\Location;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Itam\Application\Notifications\AssetHandedOver;
 use Modules\Itam\Domain\Enums\AssetStatus;
 use Modules\Itam\Domain\Exceptions\AssetTransitionNotAllowed;
 use Modules\Itam\Domain\Models\Asset;
@@ -29,10 +30,12 @@ final readonly class AssignAsset
     ) {}
 
     /**
+     * @param  bool  $notify  Email the holder to confirm receipt; off for imports of equipment people already have.
+     *
      * @throws InvalidArgumentException for a person or location outside the organization
      * @throws AssetTransitionNotAllowed when the asset cannot be handed out now
      */
-    public function handle(Asset $asset, User $holder, User $actor, ?string $locationId = null, ?string $notes = null): Asset
+    public function handle(Asset $asset, User $holder, User $actor, ?string $locationId = null, ?string $notes = null, bool $notify = true): Asset
     {
         $organizationId = $this->context->requireId();
 
@@ -44,7 +47,7 @@ final readonly class AssignAsset
             throw new InvalidArgumentException('The location must belong to the organization.');
         }
 
-        return $this->db->transaction(function () use ($asset, $holder, $actor, $locationId, $notes): Asset {
+        $asset = $this->db->transaction(function () use ($asset, $holder, $actor, $locationId, $notes): Asset {
             // Locked: two people handing out the same laptop at once must not both succeed.
             $asset = Asset::query()->lockForUpdate()->findOrFail($asset->id);
 
@@ -88,6 +91,12 @@ final readonly class AssignAsset
 
             return $asset;
         });
+
+        if ($notify) {
+            $holder->notify(new AssetHandedOver($asset->asset_tag, $asset->displayName(), route('itam.my-equipment')));
+        }
+
+        return $asset;
     }
 
     private static function blankToNull(?string $value): ?string
