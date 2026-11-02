@@ -12,9 +12,11 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Modules\Core\Application\Authentication\CompleteLogin;
+use Modules\Core\Application\Authentication\SecurityKeys;
 
 /**
- * Second step of signing in: a code from the authenticator app, or a recovery code.
+ * Second step of signing in: a security key, a code from the authenticator
+ * app, or a recovery code.
  */
 #[Layout('core::components.layouts.guest')]
 final class TwoFactorChallenge extends Component
@@ -43,8 +45,26 @@ final class TwoFactorChallenge extends Component
         $this->redirectIntended(route('home'));
     }
 
-    public function render(): View
+    /**
+     * @return ?array<string, mixed> Null when the person has no security key.
+     */
+    public function keyOptions(CompleteLogin $completeLogin, SecurityKeys $keys): ?array
     {
-        return view('core::livewire.auth.two-factor-challenge')->title(__('core::security.challenge.title'));
+        $user = $completeLogin->pendingUser();
+
+        return $user !== null && $keys->has($user) ? $keys->requestOptions($user) : null;
+    }
+
+    public function useKey(string $credential, CompleteLogin $completeLogin): void
+    {
+        $completeLogin->withSecurityKey($credential);
+        $this->redirectIntended(route('home'));
+    }
+
+    public function render(CompleteLogin $completeLogin, SecurityKeys $keys): View
+    {
+        $user = $completeLogin->pendingUser();
+
+        return view('core::livewire.auth.two-factor-challenge', ['hasKeys' => $user !== null && $keys->has($user)])->title(__('core::security.challenge.title'));
     }
 }

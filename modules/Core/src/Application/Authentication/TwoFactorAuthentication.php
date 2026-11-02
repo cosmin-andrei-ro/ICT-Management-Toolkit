@@ -33,6 +33,7 @@ final readonly class TwoFactorAuthentication
         private ConnectionInterface $db,
         private AuditTrail $trail,
         private Config $config,
+        private SecurityKeys $keys,
     ) {}
 
     public function isEnabled(User $user): bool
@@ -157,11 +158,15 @@ final readonly class TwoFactorAuthentication
     }
 
     /**
-     * Turns it off: by the user themselves, or reset by an administrator for
-     * someone who lost their phone (they set it up again at next sign-in).
+     * Turns it off, security keys included: by the user themselves, or reset
+     * by an administrator for someone who lost their phone (they set it up
+     * again at next sign-in).
      */
     public function disable(User $user, ?User $actor = null): void
     {
+        // Security keys are a second factor too: they go with the authenticator app.
+        $this->keys->removeAll($user, $actor ?? $user);
+
         $user->forceFill([
             'two_factor_secret' => null,
             'two_factor_confirmed_at' => null,

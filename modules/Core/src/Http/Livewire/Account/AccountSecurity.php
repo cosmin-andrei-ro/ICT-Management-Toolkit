@@ -10,22 +10,28 @@ namespace Modules\Core\Http\Livewire\Account;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Modules\Core\Application\Authentication\SecurityKeys;
 use Modules\Core\Application\Authentication\SetPassword;
 use Modules\Core\Application\Authentication\TwoFactorAuthentication;
+use Modules\Core\Domain\Models\SecurityKey;
 use Modules\Core\Domain\Models\User;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * The signed-in person's own security settings: two-factor authentication and,
- * for local accounts, their password.
+ * The signed-in person's own security settings: two-factor authentication,
+ * security keys and passkeys, and, for local accounts, their password.
  */
 #[Layout('core::components.layouts.app')]
 final class AccountSecurity extends Component
 {
     /** The secret being set up is kept in the session, never in the page state. */
     private const string SETUP_SECRET = 'account.mfa_setup_secret';
+
+    /** Until when a key may be added, once the person proved their second factor. */
+    private const string KEY_ALLOWED_UNTIL = 'account.key_allowed_until';
 
     public string $code = '';
 
@@ -39,6 +45,13 @@ final class AccountSecurity extends Component
     public array $recoveryCodes = [];
 
     public bool $settingUp = false;
+
+    public string $keyName = '';
+
+    /** The second factor proving it is them, to add or remove a key. */
+    public string $keyCode = '';
+
+    public bool $keyAdded = false;
 
     public function startSetup(TwoFactorAuthentication $twoFactor): void
     {
@@ -111,6 +124,52 @@ final class AccountSecurity extends Component
         $this->recoveryCodes = [];
     }
 
+    /**
+     * @return ?array<string, mixed> The options for the browser, once the person proved their second factor.
+     */
+    public function keyOptions(TwoFactorAuthentication $twoFactor, SecurityKeys $keys): ?array
+    {
+        $this->keyAdded = false;
+        $this->validate(['keyName' => ['required', 'string', 'max:100'], 'keyCode' => ['required', 'string', 'max:32']]);
+
+        if (! $twoFactor->isEnabled($this->user())) {
+            return null;
+        }
+
+        $this->confirmKeyCode($twoFactor);
+        session()->put(self::KEY_ALLOWED_UNTIL, now()->addMinutes(5)->getTimestamp());
+
+        return $keys->creationOptions($this->user());
+    }
+
+    public function addKey(string $credential, SecurityKeys $keys): void
+    {
+        $allowedUntil = session()->pull(self::KEY_ALLOWED_UNTIL);
+
+        if (! is_int($allowedUntil) || $allowedUntil < now()->getTimestamp()) {
+            $this->addError('keyCode', __('core::security.challenge.expired'));
+
+            return;
+        }
+
+        try {
+            $keys->register($this->user(), $credential, $this->keyName);
+        } catch (InvalidArgumentException) {
+            $this->addError('keyName', __('core::security.keys.failed'));
+
+            return;
+        }
+
+        $this->reset('keyName');
+        $this->keyAdded = true;
+    }
+
+    public function removeKey(string $keyId, TwoFactorAuthentication $twoFactor, SecurityKeys $keys): void
+    {
+        $this->confirmKeyCode($twoFactor);
+        $keys->remove(SecurityKey::query()->with('user')->where('user_id', $this->user()->id)->findOrFail($keyId), $this->user());
+    }
+
     public function changePassword(SetPassword $setPassword): void
     {
         try {
@@ -143,6 +202,7 @@ final class AccountSecurity extends Component
             'remaining' => $twoFactor->remainingRecoveryCodes($user),
             'secret' => is_string($secret) ? $secret : null,
             'qrCode' => is_string($secret) ? $twoFactor->qrCode($user, $secret) : null,
+            'securityKeys' => SecurityKey::query()->where('user_id', $user->id)->orderBy('created_at')->get(),
         ])->title(__('core::security.title'));
     }
 
@@ -154,6 +214,17 @@ final class AccountSecurity extends Component
 
         if (! $valid) {
             throw ValidationException::withMessages(['code' => __('core::security.challenge.invalid')]);
+        }
+    }
+
+    private function confirmKeyCode(TwoFactorAuthentication $twoFactor): void
+    {
+        $this->validate(['keyCode' => ['required', 'string', 'max:32']]);
+        $valid = $twoFactor->verify($this->user(), $this->keyCode);
+        $this->reset('keyCode');
+
+        if (! $valid) {
+            throw ValidationException::withMessages(['keyCode' => __('core::security.challenge.invalid')]);
         }
     }
 

@@ -1,4 +1,11 @@
 <form wire:submit="verify" class="space-y-5" novalidate>
+    @if ($hasKeys)
+    <div x-data="webauthn" data-mode="get" data-start="keyOptions" data-finish="useKey" data-unsupported="{{ __('core::security.keys.unsupported') }}" data-failed="{{ __('core::security.keys.cancelled') }}" class="space-y-2">
+        <button type="button" x-on:click="run" x-bind:disabled="busy" class="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 disabled:opacity-60">{{ __('core::security.keys.use') }}</button>
+        <p x-show="message" x-text="message" class="text-sm text-red-600" role="alert"></p>
+    </div>
+    <p class="text-center text-xs text-gray-500">{{ __('core::security.keys.or_code') }}</p>
+    @endif
     <p class="text-sm text-gray-600">{{ __('core::security.challenge.intro') }}</p>
     <div>
         <label for="code" class="block text-sm font-medium">{{ __('core::security.challenge.code') }}</label>

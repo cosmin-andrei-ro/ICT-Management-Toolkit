@@ -54,6 +54,48 @@
         @endif
     </section>
 
+    @if ($enabled)
+        <section aria-labelledby="keys-heading" class="space-y-4 rounded-lg bg-white p-5 ring-1 ring-gray-200">
+            <h2 id="keys-heading" class="font-semibold">{{ __('core::security.keys.title') }}</h2>
+            <p class="text-sm text-gray-600">{{ __('core::security.keys.intro') }}</p>
+
+            <ul class="divide-y divide-gray-100 text-sm">
+                @forelse ($securityKeys as $securityKey)
+                    <li wire:key="key-{{ $securityKey->id }}" class="flex flex-wrap items-center justify-between gap-2 py-2">
+                        <span>
+                            <span class="font-medium">{{ $securityKey->name }}</span>
+                            @if ($securityKey->is_passkey) <span class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-semibold text-green-900">{{ __('core::security.keys.passkey') }}</span> @endif
+                            <span class="block text-xs text-gray-500">{{ __('core::security.keys.added', ['date' => $securityKey->created_at?->toDateString()]) }} · {{ $securityKey->last_used_at ? __('core::security.keys.last_used', ['date' => $securityKey->last_used_at->toDateString()]) : __('core::security.keys.never_used') }}</span>
+                        </span>
+                        <button type="button" wire:click="removeKey('{{ $securityKey->id }}')" wire:confirm="{{ __('core::security.keys.remove_confirm') }}" class="text-xs text-red-700 underline">{{ __('core::security.keys.remove') }}</button>
+                    </li>
+                @empty
+                    <li class="py-2 text-gray-500">{{ __('core::security.keys.none') }}</li>
+                @endforelse
+            </ul>
+
+            @if ($keyAdded) <p class="rounded-md bg-green-50 p-2 text-sm text-green-800" role="status">{{ __('core::security.keys.added_now') }}</p> @endif
+
+            <div x-data="webauthn" data-mode="create" data-start="keyOptions" data-finish="addKey" data-unsupported="{{ __('core::security.keys.unsupported') }}" data-failed="{{ __('core::security.keys.cancelled') }}" class="space-y-3 border-t border-gray-100 pt-4">
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <label class="block text-sm">
+                        <span class="font-medium">{{ __('core::security.keys.name') }}</span>
+                        <input wire:model="keyName" type="text" maxlength="100" placeholder="{{ __('core::security.keys.name_example') }}" class="mt-1 block w-full rounded-md border-gray-300 text-sm">
+                        @error('keyName') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                    </label>
+                    <label class="block text-sm">
+                        <span class="font-medium">{{ __('core::security.mfa.confirm_code') }}</span>
+                        <input wire:model="keyCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="32" class="mt-1 block w-full rounded-md border-gray-300 text-sm">
+                        @error('keyCode') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                    </label>
+                </div>
+                <p class="text-xs text-gray-500">{{ __('core::security.keys.code_help') }}</p>
+                <button type="button" x-on:click="run" x-bind:disabled="busy" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-60">{{ __('core::security.keys.add') }}</button>
+                <p x-show="message" x-text="message" class="text-sm text-red-600" role="alert"></p>
+            </div>
+        </section>
+    @endif
+
     <section aria-labelledby="password-heading" class="space-y-4 rounded-lg bg-white p-5 ring-1 ring-gray-200">
         <h2 id="password-heading" class="font-semibold">{{ __('core::security.password.title') }}</h2>
         @if ($user->isDirectoryAccount())
