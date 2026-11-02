@@ -1,9 +1,3 @@
-@php($format = fn (\Modules\Core\Domain\Metrics\Metric $metric, int|float|null $value): string => match (true) {
-    $value === null => '—',
-    $metric->unit === \Modules\Core\Domain\Metrics\MetricUnit::Percent => \Illuminate\Support\Number::format($value, maxPrecision: 1).' %',
-    $metric->unit === \Modules\Core\Domain\Metrics\MetricUnit::Minutes => \Modules\Core\Domain\Time\Duration::format((int) $value),
-    default => \Illuminate\Support\Number::format($value),
-})
 <section aria-labelledby="dashboard-heading" class="space-y-4">
     @if ($available)
         <div class="flex flex-wrap items-center justify-between gap-2">
@@ -48,15 +42,18 @@
                             <dt class="text-xs text-gray-600">{{ __($metric->label) }}</dt>
                             <dd class="flex items-baseline justify-between gap-2">
                                 @if ($metric->url() !== null && ! $customising)
-                                    <a href="{{ $metric->url() }}" class="text-2xl font-semibold text-gray-900 underline decoration-gray-300 hover:decoration-gray-900">{{ $format($metric, $row['value']) }}</a>
+                                    <a href="{{ $metric->url() }}" class="text-2xl font-semibold text-gray-900 underline decoration-gray-300 hover:decoration-gray-900">{{ $metric->format($row['value']) }}</a>
                                 @else
-                                    <span class="text-2xl font-semibold">{{ $format($metric, $row['value']) }}</span>
+                                    <span class="text-2xl font-semibold">{{ $metric->format($row['value']) }}</span>
                                 @endif
                                 @if ($row['status'] !== \Modules\Core\Domain\Metrics\MetricStatus::Neutral)
                                     <span class="text-xs font-medium">{{ __('reporting::dashboard.status.'.$row['status']->value) }}</span>
                                 @endif
                             </dd>
-                            @if ($customising)
+                            @if (! $customising)
+                                <x-reporting::sparkline :series="$trends[$metric->key] ?? []" :label="__('reporting::trends.trend_of', ['metric' => __($metric->label)])" />
+                                <a href="{{ route('reporting.metrics.show', $metric->key) }}" class="mt-1 inline-block text-xs font-medium text-blue-700 underline">{{ __('reporting::trends.trend') }}<span class="sr-only">: {{ __($metric->label) }}</span></a>
+                            @else
                                 <button type="button" wire:click="{{ $isHidden ? 'show' : 'hide' }}('{{ $metric->key }}')" class="mt-2 text-xs font-medium text-blue-700 underline">
                                     {{ $isHidden ? __('reporting::dashboard.show') : __('reporting::dashboard.hide') }}<span class="sr-only">: {{ __($metric->label) }}</span>
                                 </button>

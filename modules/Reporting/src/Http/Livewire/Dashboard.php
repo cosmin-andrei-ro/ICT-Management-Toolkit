@@ -12,6 +12,7 @@ use Livewire\Component;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Reporting\Application\Actions\CustomiseDashboard;
+use Modules\Reporting\Application\Trends;
 use Modules\Reporting\Domain\Models\DashboardPreference;
 
 /**
@@ -52,7 +53,7 @@ final class Dashboard extends Component
         $customise->reset($this->actor());
     }
 
-    public function render(Metrics $metrics, CustomiseDashboard $customise): View
+    public function render(Metrics $metrics, CustomiseDashboard $customise, Trends $trends): View
     {
         $user = $this->actor();
         $preference = DashboardPreference::of($user);
@@ -68,7 +69,16 @@ final class Dashboard extends Component
             ], $groups), fn (array $group): bool => $group['metrics'] !== []));
         }
 
+        $keys = [];
+
+        foreach ($groups as $group) {
+            foreach ($group['metrics'] as $row) {
+                $keys[] = $row['metric']->key;
+            }
+        }
+
         return view('reporting::livewire.dashboard', [
+            'trends' => $trends->series($keys, 30),
             'available' => $sources !== [],
             'groups' => $groups,
             'hidden' => $preference->hidden_metrics,
