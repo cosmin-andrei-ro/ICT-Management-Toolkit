@@ -129,6 +129,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 **Reporting**
 - **Dashboard** on the home page with the figures of every module you have access to, coloured by status and linked to the filtered lists behind them; hide figures and reorder groups to suit you.
 - **Trends**: every figure is recorded once a day; each one shows its last 30 days on the dashboard and has its own page with a chart over 30, 90 or 365 days (drawn on the server, so it also prints).
+- **Management overview** of every module's figures, and a **monthly management report** to print or as PDF, emailed on the first of the month to the people an administrator chose.
 
 **Planned modules:** datacenter infrastructure, projects.
 
