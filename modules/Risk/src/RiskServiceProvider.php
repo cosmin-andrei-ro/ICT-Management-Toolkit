@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Risk;
 
 use App\Support\Modules\ModuleServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
@@ -17,6 +18,7 @@ use Modules\Core\Http\Navigation\Navigation;
 use Modules\Risk\Domain\Models\CatalogEntry;
 use Modules\Risk\Domain\Models\Risk;
 use Modules\Risk\Domain\Models\RiskSettings;
+use Modules\Risk\Infrastructure\Console\SendReviewRemindersCommand;
 
 final class RiskServiceProvider extends ModuleServiceProvider
 {
@@ -43,6 +45,14 @@ final class RiskServiceProvider extends ModuleServiceProvider
             'risk.settings' => RiskSettings::class,
         ]);
 
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $schedule->command(SendReviewRemindersCommand::class)->dailyAt('08:00')->withoutOverlapping()->onOneServer();
+        });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([SendReviewRemindersCommand::class]);
+        }
+
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('risk::risks.mine.menu', 'risk.mine', 'risk.mine', fn (User $user): bool => ! $user->can('risk.risk.view') && Risk::query()->ownedBy($user)->exists(), order: 29);
             $navigation->add('risk::risks.menu', 'risk.index', 'risk.risks.*', fn (User $user): bool => $user->can('risk.risk.view'), Navigation::RESILIENCE);
@@ -55,9 +65,11 @@ final class RiskServiceProvider extends ModuleServiceProvider
             'risk.risk.view',
             'risk.risk.manage',
             'risk.settings.manage',
+            // Accepting a residual risk from the organization's threshold.
+            'risk.acceptance.approve',
         ]);
 
-        $registry->grantToDefaultRole(DefaultRole::RiskManager, ['risk.risk.view', 'risk.risk.manage', 'risk.settings.manage']);
+        $registry->grantToDefaultRole(DefaultRole::RiskManager, ['risk.risk.view', 'risk.risk.manage', 'risk.settings.manage', 'risk.acceptance.approve']);
         // Governance and IT staff read the register.
         $registry->grantToDefaultRole(DefaultRole::SecurityOfficer, ['risk.risk.view']);
         $registry->grantToDefaultRole(DefaultRole::ContinuityCoordinator, ['risk.risk.view']);
