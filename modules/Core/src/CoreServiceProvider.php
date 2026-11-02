@@ -308,5 +308,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::Auditor, [...$directory, 'core.supplier.view', 'core.contract.view']);
         $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
+        // Project managers pick sponsors and teams from the directory.
+        $registry->grantToDefaultRole(DefaultRole::ProjectManager, $directory);
     }
 }
