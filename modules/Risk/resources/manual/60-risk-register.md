@@ -16,7 +16,8 @@ The toolkit points risk managers to situations that call for a risk, under **Sug
 - **applications**: personal or payment card data processed, reachable from the internet without multifactor authentication, certificates expiring, components past their end of support - as soon as an application's documentation comes into force;
 - **continuity**: systems that cannot be recovered as fast as the business needs, critical processes depending on a supplier, processes without a plan in force, plans that would be too slow;
 - **operations**: systems with three incidents or more in 90 days, licences expiring, equipment out of warranty running important systems;
-- **suppliers**: contracts ending soon that do not renew.
+- **suppliers**: contracts ending soon that do not renew;
+- **compliance**: major nonconformities not yet closed, frameworks with applicable requirements no control meets.
 
 For each, choose the owner and **Register the risk**: it is created with the scenario, what it concerns, the threats and vulnerabilities and, where known, the scores - then assessed and treated as any other. Or **Dismiss** it, saying why; it will not be suggested again while the situation lasts. Suggestions whose situation is gone move to *No longer applies*. The list is checked every morning; **Check now** checks at once.
 

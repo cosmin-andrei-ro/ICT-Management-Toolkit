@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Audit\Http\Controllers\ComplianceReportController;
 use Modules\Audit\Http\Livewire\AuditForm;
 use Modules\Audit\Http\Livewire\AuditIndex;
 use Modules\Audit\Http\Livewire\ComplianceIndex;
@@ -21,7 +22,11 @@ use Modules\Audit\Http\Livewire\ShowFramework;
 
 Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(function (): void {
     Route::livewire('/compliance', ComplianceIndex::class)->name('audit.index');
+    Route::get('/compliance/report', [ComplianceReportController::class, 'show'])->name('audit.report');
+    Route::get('/compliance/report/pdf', [ComplianceReportController::class, 'pdf'])->middleware('throttle:10,1')->name('audit.report.pdf');
     Route::livewire('/compliance/frameworks/{framework}', ShowFramework::class)->whereUuid('framework')->name('audit.frameworks.show');
+    Route::get('/compliance/frameworks/{framework}/soa', [ComplianceReportController::class, 'soa'])->whereUuid('framework')->name('audit.frameworks.soa');
+    Route::get('/compliance/frameworks/{framework}/soa/pdf', [ComplianceReportController::class, 'soaPdf'])->whereUuid('framework')->middleware('throttle:10,1')->name('audit.frameworks.soa.pdf');
     Route::livewire('/compliance/controls', ControlIndex::class)->name('audit.controls.index');
     Route::livewire('/compliance/controls/mine', MyControls::class)->name('audit.controls.mine');
     Route::livewire('/compliance/controls/new', ControlForm::class)->name('audit.controls.create');

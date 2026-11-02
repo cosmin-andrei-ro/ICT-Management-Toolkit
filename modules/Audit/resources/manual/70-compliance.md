@@ -82,4 +82,14 @@ A nonconformity cannot be submitted without a root cause and at least one correc
 
 A compliance manager - not the owner, and not whoever submitted it - then checks that the correction works and clicks **Effective: close**, or **Not effective: reopen** saying why; the owner is emailed either way.
 
+## Reports
+
+- **Compliance report** on the Compliance page: how far each framework is met, controls by status, overdue tests, controls meeting no requirement, expired evidence, the audits of the last 12 months and the findings not closed. Print it, or **Download PDF** where the PDF service is installed.
+- **Statement of Applicability** on the page of ISO/IEC 27001 (and of your own frameworks that keep one): every requirement, whether it applies and why, the controls meeting it and its state - the document certification auditors ask for. Print it or download it as PDF.
+- **Export to Excel**: applicability of every requirement with its controls, the controls, their tests and evidence, the findings and their corrective actions. The file is prepared in the background and kept 7 days.
+
+Every Monday, compliance managers receive an email with what needs attention: findings to verify, major nonconformities not closed, overdue findings and tests, evidence that expired, applicable requirements without a control. Nothing is sent when there is nothing to chase.
+
+Major nonconformities not closed and applicable requirements without a control are also **suggested as risks** to risk managers in the risk register.
+
 Every change - to frameworks, applicability, controls, evidence, tests, audits and findings - is kept in the history.

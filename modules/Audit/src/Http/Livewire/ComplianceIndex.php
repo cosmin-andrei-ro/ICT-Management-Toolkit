@@ -13,10 +13,16 @@ use InvalidArgumentException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Modules\Audit\Application\Actions\AddFramework;
+use Modules\Audit\Application\Exports\ComplianceExport;
 use Modules\Audit\Application\Frameworks\Coverage;
 use Modules\Audit\Application\Frameworks\FrameworkCatalog;
 use Modules\Audit\Domain\Models\Control;
 use Modules\Audit\Domain\Models\Framework;
+use Modules\Core\Application\Exports\RequestExport;
+use Modules\Core\Domain\Exports\ExportFormat;
+use Modules\Core\Domain\Exports\ExportStatus;
+use Modules\Core\Domain\Models\Export;
+use Modules\Core\Domain\Models\User;
 
 /**
  * The frameworks the organization complies with and how far each is met.
@@ -39,6 +45,20 @@ final class ComplianceIndex extends Component
     public function mount(): void
     {
         $this->authorize('viewAny', Framework::class);
+    }
+
+    public function export(string $format, RequestExport $request): void
+    {
+        $this->authorize('viewAny', Framework::class);
+        $user = auth()->user();
+        $format = ExportFormat::tryFrom($format);
+
+        if (! $user instanceof User || $format === null) {
+            return;
+        }
+
+        // RequestExport checks the permission and records the export in the audit trail.
+        $request->handle($user, ComplianceExport::TYPE, $format, []);
     }
 
     public function addFromCatalog(AddFramework $add): void
@@ -88,6 +108,9 @@ final class ComplianceIndex extends Component
             'coverage' => $frameworks->mapWithKeys(fn (Framework $framework): array => [$framework->id => $coverage->of($framework)]),
             'catalog' => array_diff_key(FrameworkCatalog::available(), array_flip($added)),
             'controls' => Control::query()->count(),
+            'exports' => $exports = Export::query()->where('user_id', auth()->id())->where('type', ComplianceExport::TYPE)->latest()->limit(3)->get(),
+            'preparing' => $exports->contains(fn (Export $export): bool => $export->status === ExportStatus::Pending),
+            'timezone' => config()->string('app.display_timezone'),
         ])->title(__('audit::compliance.title'));
     }
 }
