@@ -8,7 +8,7 @@ The **CMDB** (configuration management database) records everything IT runs, the
 - **If this fails, what else stops working?**
 - **What does this need to work?**
 
-Open **CMDB** in the menu. IT staff can see it; agents and team leads keep it up to date.
+Open **Configuration & assets → CMDB** in the menu. IT staff can see it; agents and team leads keep it up to date.
 
 ## Items
 

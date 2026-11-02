@@ -52,7 +52,9 @@
             "Modules\\Ticketing\\Database\\Factories\\": "modules/Ticketing/database/factories/",
             "Modules\\Ticketing\\Database\\Seeders\\": "modules/Ticketing/database/seeders/",
             "Modules\\Cmdb\\": "modules/Cmdb/src/",
-            "Modules\\Cmdb\\Database\\Factories\\": "modules/Cmdb/database/factories/"
+            "Modules\\Cmdb\\Database\\Factories\\": "modules/Cmdb/database/factories/",
+            "Modules\\Itam\\": "modules/Itam/src/",
+            "Modules\\Itam\\Database\\Factories\\": "modules/Itam/database/factories/"
         }
     },
     "autoload-dev": {
@@ -61,7 +63,8 @@
             "Tests\\Fixtures\\DummyModule\\": "tests/Fixtures/modules/Dummy/src/",
             "Modules\\Core\\Tests\\": "modules/Core/tests/",
             "Modules\\Ticketing\\Tests\\": "modules/Ticketing/tests/",
-            "Modules\\Cmdb\\Tests\\": "modules/Cmdb/tests/"
+            "Modules\\Cmdb\\Tests\\": "modules/Cmdb/tests/",
+            "Modules\\Itam\\Tests\\": "modules/Itam/tests/"
         }
     },
     "scripts": {

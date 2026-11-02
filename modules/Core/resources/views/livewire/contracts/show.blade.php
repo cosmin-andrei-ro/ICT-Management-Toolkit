@@ -91,4 +91,18 @@
             @endcan
         </section>
     </div>
+
+    @foreach ($dependents as $section)
+        <section aria-labelledby="dependents-{{ $loop->index }}" wire:key="dependents-{{ $loop->index }}" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+            <h2 id="dependents-{{ $loop->index }}" class="text-sm font-semibold">{{ $section['label'] }}</h2>
+            <ul class="divide-y divide-gray-100 text-sm">
+                @foreach ($section['records'] as $record)
+                    <li wire:key="dependent-{{ $record->id }}" class="flex items-center justify-between gap-2 py-1.5">
+                        <a href="{{ $record->url }}" class="text-blue-700 underline">{{ $record->title }}</a>
+                        @if ($record->status) <span class="text-xs text-gray-500">{{ $record->status }}</span> @endif
+                    </li>
+                @endforeach
+            </ul>
+        </section>
+    @endforeach
 </div>
