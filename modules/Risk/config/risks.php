@@ -15,4 +15,7 @@ return [
     // Rows per page in the register.
     'per_page' => 25,
 
+    // Days before a risk's reassessment date when its owner is emailed.
+    'reminder_days' => (int) env('RISK_REMINDER_DAYS', 30),
+
 ];

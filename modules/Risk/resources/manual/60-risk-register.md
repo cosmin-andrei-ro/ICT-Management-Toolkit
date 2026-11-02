@@ -20,6 +20,25 @@ On the risk page, the owner (or a risk manager):
 
 The risk's level - low, medium, high or critical - follows from likelihood × impact and the organization's bands. This is the risk **before treatment**; treatment and the residual risk come next.
 
+## Treat it
+
+Under **Treatment**, the owner chooses how the risk is handled - **mitigate** (add or improve controls), **transfer** (insurance, contract), **avoid** (stop the activity) or **accept** - describes the plan, and scores the **residual risk**: the level expected once the treatment is in place. The register shows both levels.
+
+**Treatment actions** carry the plan out: each has an owner and a due date, and overdue ones are shown in red. Mark them started, done or cancelled; **Track in the service desk** opens a problem for IT with the risk's CMDB items.
+
+## Accept the residual risk
+
+Once the residual risk is scored, the owner explains why it is acceptable:
+
+- below the organization's threshold, the owner accepts it at once;
+- from the threshold, the request goes to the risk managers. A risk manager other than the owner and the person who asked approves it or rejects it with a reason.
+
+An acceptance lasts until the next reassessment. If the residual risk changes, the acceptance no longer applies and must be asked again.
+
+## Reassess it
+
+Risks are reassessed periodically (yearly by default). About a month before, the owner gets an e-mail. Reviewing the scores and controls and clicking **Save the assessment** counts as the reassessment and sets the next one. **Score history** shows how the inherent and residual levels evolved.
+
 ## The heat map
 
 The register shows open risks on a 5 × 5 grid: likelihood from bottom to top, impact from left to right, coloured by level. Click a cell to list its risks; click it again to show them all.

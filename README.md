@@ -42,7 +42,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 | Requirement | Status | How the toolkit helps |
 |---|---|---|
-| **NIS2** (Directive (EU) 2022/2555), Art. 21 risk-management measures | Partial | Incident handling (21(2)(b)): ticketing with priorities, SLAs, problem management. Access control, multi-factor authentication and asset management (21(2)(i)(j)): the CMDB records what you run and what depends on what. Logging through the audit trail. Change management for secure maintenance (21(2)(e)). Business continuity (21(2)(c)): business impact analysis, approved continuity and recovery plans, and their exercises and recovery tests. Risk analysis (21(2)(a)): risk register with a defined method. **Planned:** risk treatment, supply chain (21(2)(d)). **Not planned:** the notifications to authorities of Art. 23, which you send outside the toolkit. |
+| **NIS2** (Directive (EU) 2022/2555), Art. 21 risk-management measures | Partial | Incident handling (21(2)(b)): ticketing with priorities, SLAs, problem management. Access control, multi-factor authentication and asset management (21(2)(i)(j)): the CMDB records what you run and what depends on what. Logging through the audit trail. Change management for secure maintenance (21(2)(e)). Business continuity (21(2)(c)): business impact analysis, approved continuity and recovery plans, and their exercises and recovery tests. Risk analysis (21(2)(a)): risk register with a defined method, treatment and approved acceptance of residual risks. **Planned:** supply chain (21(2)(d)). **Not planned:** the notifications to authorities of Art. 23, which you send outside the toolkit. |
 | **DORA** (Regulation (EU) 2022/2554), financial entities | Partial | Identification of ICT assets and their dependencies (Art. 8): the CMDB. ICT-related incident management process (Art. 17): detection, logging, follow-up and root cause. ICT change management (Art. 9(4)(e)): approved, planned, reversible changes with post-implementation review of emergency changes. Strong authentication (Art. 9(4)(d)). ICT business continuity policy and response and recovery plans (Art. 11): BIA with RTO/RPO and approved plans; testing of plans and backup restores with measured recovery time (Art. 11(6), 12(2)); supplier and contract register. **Planned:** digital operational resilience testing programme (Art. 24–25), register of information on ICT third-party arrangements in the regulatory format (Art. 28). **Not planned:** classification and reporting of major incidents to authorities (Art. 18–19). |
 | **ISO 22301:2019** business continuity | Partial | 8.2.2 business impact analysis (impact over time, MTPD, RTO, RPO, dependencies, approval, review), 8.3 strategies and 8.4 plans (scope, activation, crisis team, communication, runbook), 8.4.4 recovery against requirements, 8.5 exercises with results per step, measured recovery time and lessons learned, 10.1 findings tracked as problems, 8.5 exercise programme with due dates and reminders, 9.1 coverage monitoring, post-incident review of real activations. |
 | **ISO/IEC 27001:2022**, Annex A | Partial | 5.9 inventory of information and other associated assets (CMDB, asset register), 5.11 return of assets, 5.29–5.30 information security during disruption and ICT readiness for business continuity (BIA, continuity plans), 5.15–5.18 access control and identities, 5.24–5.27 incident management and learning from incidents, 8.5 secure authentication, 8.15 logging, 8.32 change management. **Planned:** the Audit & Compliance module, to map controls to evidence. |
@@ -105,6 +105,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 **Risk assessment** (in progress)
 - **Risk register** of risk scenarios linked to the applications, CMDB items, business processes and suppliers they concern, with the threats and vulnerabilities involved from an editable catalog and the controls in place.
 - Configurable **5 × 5 method** (level meanings, risk bands, approval threshold, reassessment interval) and a **heat map**; owners assess their risks.
+- **Treatment**: option, plan, **residual risk**, actions with owners and due dates (optionally tracked in the service desk); **acceptance** of the residual risk, approved by a risk manager other than the owner from the threshold; score history and reassessment reminders.
 
 **Planned modules:** datacenter infrastructure, audit and compliance, projects.
 
@@ -242,6 +243,7 @@ Two processes must run all the time.
 | `itam:licenses:remind` | daily at 07:20 | Emails licence managers about licences expiring soon |
 | `bia:reviews:remind` | daily at 07:30 | Emails process owners whose BIA review is due |
 | `bia:digest` | Mondays at 07:45 | Emails continuity coordinators what is overdue or waiting |
+| `risk:reviews:remind` | daily at 08:00 | Emails risk owners whose risks are due for reassessment |
 | `applications:reviews:remind` | daily at 07:45 | Emails application owners whose documentation is due for review |
 | `applications:digest` | Mondays at 07:55 | Emails application managers what the portfolio needs |
 | `applications:certificates:remind` | daily at 07:40 | Emails application owners about certificates expiring soon |
@@ -355,6 +357,7 @@ Settings, for special cases:
 | `BCM_REMINDER_DAYS` | `30` | Days before a plan's review or exercise when its owner is emailed |
 | `APPLICATIONS_REVIEW_MONTHS` | `12` | Months from an application's documentation coming into force to its review |
 | `APPLICATIONS_REVIEW_REMINDER_DAYS` | `30` | Days before an application's documentation review when its owners are emailed |
+| `RISK_REMINDER_DAYS` | `30` | Days before a risk's reassessment when its owner is emailed |
 | `GOTENBERG_URL` | empty | Address of the optional PDF service (see *PDF documents*); empty = print from the browser |
 | `APPLICATIONS_CERTIFICATE_REMINDER_DAYS` | `30` | Days before a certificate of an application expires when its owners are emailed |
 | `ATTACHMENTS_DISK` | `attachments` | Storage for attachments (e.g. an S3-compatible disk) |

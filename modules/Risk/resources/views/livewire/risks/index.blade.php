@@ -74,6 +74,7 @@
                             <th scope="col" class="px-4 py-2 font-medium">{{ __('risk::risks.fields.category') }}</th>
                             <th scope="col" class="px-4 py-2 font-medium">{{ __('risk::risks.fields.owner') }}</th>
                             <th scope="col" class="px-4 py-2 font-medium">{{ __('risk::risks.fields.inherent') }}</th>
+                            <th scope="col" class="px-4 py-2 font-medium">{{ __('risk::treatment.fields.residual') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -84,9 +85,14 @@
                                 <td class="px-4 py-2">{{ $risk->category->label() }}</td>
                                 <td class="px-4 py-2">{{ $risk->owner?->name ?? '—' }}</td>
                                 <td class="px-4 py-2"><x-risk::level :level="$score !== null ? $settings->level($score) : null" :score="$score" /></td>
+                                @php($residual = $risk->residualScore())
+                                <td class="px-4 py-2">
+                                    <x-risk::level :level="$residual !== null ? $settings->level($residual) : null" :score="$residual" />
+                                    @if ($risk->isAccepted()) <span class="block text-xs text-gray-500">{{ __('risk::treatment.acceptance_statuses.approved') }}</span> @endif
+                                </td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="px-4 py-3 text-gray-500">{{ __('risk::risks.ui.none') }}</td></tr>
+                            <tr><td colspan="5" class="px-4 py-3 text-gray-500">{{ __('risk::risks.ui.none') }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>

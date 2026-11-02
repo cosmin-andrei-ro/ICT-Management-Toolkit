@@ -11,8 +11,11 @@ use Illuminate\Database\ConnectionInterface;
 use InvalidArgumentException;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
+use Modules\Core\Domain\Models\User;
 use Modules\Risk\Domain\Models\CatalogEntry;
 use Modules\Risk\Domain\Models\Risk;
+use Modules\Risk\Domain\Models\RiskSettings;
+use Modules\Risk\Domain\Models\ScoreRecord;
 
 /**
  * The owner's assessment of a risk before treatment: likelihood and impact on
@@ -31,7 +34,7 @@ final readonly class AssessRisk
      *
      * @throws InvalidArgumentException for a score outside 1–5 or an unknown catalog entry
      */
-    public function handle(Risk $risk, ?int $likelihood, ?int $impact, array $entryIds, ?string $controls): void
+    public function handle(Risk $risk, ?int $likelihood, ?int $impact, array $entryIds, ?string $controls, User $actor): void
     {
         if (($likelihood === null) !== ($impact === null) || ($likelihood !== null && ($likelihood < 1 || $likelihood > 5 || $impact < 1 || $impact > 5))) {
             throw new InvalidArgumentException('Likelihood and impact go together, from 1 to 5.');
@@ -44,21 +47,25 @@ final readonly class AssessRisk
             throw new InvalidArgumentException('Unknown catalog entry.');
         }
 
-        $this->db->transaction(function () use ($risk, $likelihood, $impact, $entryIds, $controls): void {
+        $this->db->transaction(function () use ($risk, $likelihood, $impact, $entryIds, $controls, $actor): void {
             $controls = $controls !== null ? trim($controls) : '';
             $before = $risk->catalogEntries()->pluck('name')->sort()->values()->all();
 
+            // Saving the assessment is the periodic reassessment: the next one is due a full interval later.
             $risk->forceFill([
                 'inherent_likelihood' => $likelihood,
                 'inherent_impact' => $impact,
                 'existing_controls' => $controls !== '' ? $controls : null,
+                'assessed_at' => now(),
+                'next_review_on' => now()->addMonthsNoOverflow(RiskSettings::current()->review_months)->toDateString(),
             ])->save();
+            ScoreRecord::capture($risk, $actor->id);
 
             $risk->catalogEntries()->syncWithPivotValues($entryIds, ['organization_id' => $risk->organization_id]);
             $after = $risk->catalogEntries()->pluck('name')->sort()->values()->all();
 
             if ($before !== $after) {
-                $this->trail->record(AuditEvent::Updated, $risk, ['catalog' => $before], ['catalog' => $after]);
+                $this->trail->record(AuditEvent::Updated, $risk, ['catalog' => $before], ['catalog' => $after], $actor->id);
             }
         });
     }
