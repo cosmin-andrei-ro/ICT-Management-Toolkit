@@ -15,4 +15,6 @@ enum AuthSource: string
 {
     case Local = 'local';
     case Ldap = 'ldap';
+    // Created by single sign-on (OIDC): signs in only through its identity provider.
+    case Sso = 'sso';
 }

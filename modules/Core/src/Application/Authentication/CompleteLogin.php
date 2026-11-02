@@ -30,6 +30,9 @@ final readonly class CompleteLogin
 {
     private const string PENDING = 'login.pending';
 
+    /** Set for a session whose second factor was asked by a trusted identity provider. */
+    public const string MFA_BY_PROVIDER = 'login.mfa_by_provider';
+
     private const int PENDING_SECONDS = 300;
 
     /** Codes per account per minute: a 6-digit code must not be guessable. */
@@ -64,6 +67,26 @@ final readonly class CompleteLogin
         $this->session->put(self::PENDING, ['user_id' => $user->id, 'remember' => $remember, 'expires_at' => now()->getTimestamp() + self::PENDING_SECONDS]);
 
         return true;
+    }
+
+    /**
+     * After single sign-on: signed in at once when the identity provider is
+     * trusted to have asked for a second factor and says it did; otherwise as
+     * after a password.
+     *
+     * @return bool Whether a second factor is still needed.
+     */
+    public function afterSso(User $user, bool $mfaByProvider): bool
+    {
+        if (! $mfaByProvider) {
+            return $this->afterPassword($user, false);
+        }
+
+        $this->session->regenerate();
+        $this->signIn($user, false);
+        $this->session->put(self::MFA_BY_PROVIDER, true);
+
+        return false;
     }
 
     public function pendingUser(): ?User

@@ -35,6 +35,8 @@ use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
 use Modules\Core\Application\Links\ContractRecords;
 use Modules\Core\Application\Risks\ContractRiskSignals;
+use Modules\Core\Application\Sso\DnsHostResolver;
+use Modules\Core\Application\Sso\HostResolver;
 use Modules\Core\Domain\Audit\RequestContext;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\Permission;
@@ -69,6 +71,8 @@ use Modules\Core\Domain\Models\SupplierContact;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Risks\RiskSignals;
+use Modules\Core\Domain\Sso\SsoGroupMapping;
+use Modules\Core\Domain\Sso\SsoProvider;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Middleware\CaptureRequestContext;
 use Modules\Core\Http\Middleware\RequireTwoFactor;
@@ -111,6 +115,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->singleton(LinkedRecords::class);
         $this->app->singleton(ContractDependents::class);
         $this->app->singleton(RiskSignals::class);
+        $this->app->bindIf(HostResolver::class, DnsHostResolver::class);
         $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('core', fn (): array => (new ContractRiskSignals)()));
         // Replaced by the CMDB module when it is enabled.
         $this->app->bindIf(ConfigurationItems::class, NoConfigurationItems::class);
@@ -194,6 +199,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.role' => Role::class,
             'core.permission' => Permission::class,
             'core.directory_group_mapping' => DirectoryGroupMapping::class,
+            'core.sso_provider' => SsoProvider::class,
+            'core.sso_group_mapping' => SsoGroupMapping::class,
             'core.team' => Team::class,
             'core.comment' => Comment::class,
             'core.attachment' => Attachment::class,

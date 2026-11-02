@@ -64,6 +64,26 @@ Things to know:
 - **Changes in AD reach the application within 15 minutes.** Accounts disabled or deleted in AD are blocked, and group changes are applied. When AD re-enables an account, access returns on its own.
 - An AD account whose email already belongs to a local account is refused, to protect the local account. Rename or remove one of the two.
 
+## Single sign-on
+
+People can sign in with their company account at your identity provider - Microsoft Entra ID, Google Workspace, Okta, Keycloak or any OpenID Connect provider. Each organization connects its own providers in **Administration → Access → Single sign-on**.
+
+### Connecting a provider
+
+1. At the provider, register the toolkit as a **web application** (OpenID Connect, authorization code flow). Your identity administrator gives you its **issuer URL**, a **client ID** and a **client secret**. For Microsoft Entra ID the issuer is `https://login.microsoftonline.com/<tenant id>/v2.0`; for Keycloak `https://<server>/realms/<realm>`.
+2. In **Single sign-on**, click **New**, give the name shown on the sign-in button (for example *Microsoft*), the issuer, client ID and secret, and the **email domains** of your people (for example `company.com`). Only these domains sign in through this provider.
+3. Edit the provider: copy the **Redirect URI** shown and register it at the provider as the application's redirect (reply) URI.
+4. To give roles by group, have the provider send the groups in the ID token (Entra ID: *groups claim*; Keycloak: a *group membership* mapper) and set the claim's name if it is not `groups`.
+
+The client secret is stored encrypted and never shown again; leave it empty when editing to keep it.
+
+### Who gets in, with which role
+
+- **The first time** someone signs in, their account is created in your organization. If an account with their email already exists and belongs to your organization only, it is linked instead. An account shared with another organization is refused - its owner keeps signing in as before.
+- **Roles** of accounts created this way come from **Single sign-on group mappings**: *members of this group of the provider get this role*. Enter the group as the provider sends it (an Entra ID group object id, a Keycloak group name…). They are refreshed at every sign-in; without a matching group the person is a *Requester*.
+- **Two-factor authentication:** with **Trust the provider's two-factor authentication** on, people the provider asked for a second factor (it says so in the `amr` claim) are not asked again by the toolkit. Otherwise those who use the toolkit's two-factor authentication give their code as usual.
+- Refused sign-ins - another domain, an account of another organization - are recorded in the audit trail with the reason.
+
 ## Business calendars
 
 **Administration → Organization → Business calendars.** A calendar sets your working hours and days off. The default calendar is used to compute SLA deadlines.

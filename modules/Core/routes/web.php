@@ -10,6 +10,7 @@ use Modules\Core\Http\Controllers\AttachmentController;
 use Modules\Core\Http\Controllers\ExportController;
 use Modules\Core\Http\Controllers\LogoutController;
 use Modules\Core\Http\Controllers\ManualController;
+use Modules\Core\Http\Controllers\SsoController;
 use Modules\Core\Http\Livewire\Account\AccountSecurity;
 use Modules\Core\Http\Livewire\Auth\ForgotPassword;
 use Modules\Core\Http\Livewire\Auth\Login;
@@ -29,6 +30,8 @@ Route::get('/manual/{page}', [ManualController::class, 'show'])->where('page', '
 Route::middleware('guest')->group(function (): void {
     Route::livewire('/login', Login::class)->name('login');
     Route::livewire('/login/code', TwoFactorChallenge::class)->name('login.challenge');
+    Route::get('/login/sso/{provider}', [SsoController::class, 'redirect'])->whereUuid('provider')->middleware('throttle:20,1')->name('login.sso');
+    Route::get('/login/sso/{provider}/callback', [SsoController::class, 'callback'])->whereUuid('provider')->middleware('throttle:20,1')->name('login.sso.callback');
     Route::livewire('/forgot-password', ForgotPassword::class)->name('password.request');
     Route::livewire('/reset-password/{token}', ResetPassword::class)->name('password.reset');
     Route::livewire('/welcome/{token}', ResetPassword::class)->name('invitation.accept');
