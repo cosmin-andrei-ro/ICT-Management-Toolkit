@@ -44,6 +44,8 @@ use Modules\Core\Domain\Models\User;
  * @property ?Carbon $approved_at
  * @property ?CarbonImmutable $next_review_on
  * @property ?CarbonImmutable $last_exercised_on Last completed exercise.
+ * @property ?CarbonImmutable $review_reminded_for
+ * @property ?CarbonImmutable $exercise_reminded_for
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -112,6 +114,25 @@ final class Plan extends Model
     }
 
     /**
+     * @return HasMany<Activation, $this>
+     */
+    public function activations(): HasMany
+    {
+        return $this->hasMany(Activation::class)->orderByDesc('activated_at');
+    }
+
+    /**
+     * When the plan in force is due for an exercise: some months after the last
+     * one, or after its approval when never exercised. Null while not in force.
+     */
+    public function exerciseDueOn(int $months): ?CarbonImmutable
+    {
+        $from = $this->last_exercised_on ?? $this->approved_at?->toImmutable()->startOfDay();
+
+        return $this->approved_version !== null && $from !== null ? $from->addMonthsNoOverflow($months) : null;
+    }
+
+    /**
      * @param  Builder<self>  $query
      */
     public function scopeOwnedBy(Builder $query, User $user): void
@@ -127,6 +148,8 @@ final class Plan extends Model
             'approved_at' => 'datetime',
             'next_review_on' => 'immutable_date',
             'last_exercised_on' => 'immutable_date',
+            'review_reminded_for' => 'immutable_date',
+            'exercise_reminded_for' => 'immutable_date',
         ];
     }
 }

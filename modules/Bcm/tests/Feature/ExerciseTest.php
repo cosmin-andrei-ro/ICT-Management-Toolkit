@@ -13,10 +13,8 @@ use Modules\Bcm\Domain\Models\ExerciseItem;
 use Modules\Bcm\Domain\Models\ExerciseStep;
 use Modules\Bcm\Domain\Models\Finding;
 use Modules\Bcm\Domain\Models\Plan;
-use Modules\Bcm\Domain\Models\PlanVersion;
 use Modules\Bcm\Http\Livewire\ExerciseForm;
 use Modules\Bcm\Http\Livewire\ExercisePage;
-use Modules\Bcm\Http\Livewire\PlanVersionPage;
 use Modules\Bcm\Http\Livewire\ShowPlan;
 use Modules\Bcm\Tests\Support\BcmScenario;
 use Modules\Cmdb\Domain\Models\CiLink;
@@ -31,33 +29,6 @@ beforeEach(function (): void {
     Notification::fake();
     $this->bcm = BcmScenario::create();
 });
-
-/**
- * A payroll DRP in force: 1 hour to activate, 2 to restore the payroll application.
- */
-function approvedPayrollDrp(BcmScenario $bcm): Plan
-{
-    $plan = Plan::factory()->create(['name' => 'Payroll DRP', 'owner_id' => $bcm->owner->id]);
-    test()->actingAs($bcm->owner);
-    Livewire::test(ShowPlan::class, ['plan' => $plan])->call('startVersion');
-    $version = PlanVersion::query()->where('plan_id', $plan->id)->sole();
-
-    Livewire::test(PlanVersionPage::class, ['version' => $version])
-        ->call('addProcess', $bcm->payroll->id)
-        ->call('linkItem', $bcm->payrollApp->id)
-        ->set('scenarios', ['it_outage'])
-        ->set('activationCriteria', 'Payroll application down for more than 1 hour')
-        ->set('memberRole', 'Incident manager')->set('memberUserId', $bcm->coordinator->id)->call('addMember')
-        ->call('editStep')->set('stepPhase', 'activation')->set('stepAction', 'Declare the incident')->set('stepDurationValue', '1')->set('stepDurationUnit', 'hours')->call('saveStep')
-        ->call('editStep')->set('stepPhase', 'recovery')->set('stepAction', 'Restore the database from backup')->set('stepDurationValue', '2')->set('stepDurationUnit', 'hours')->set('stepItemId', $bcm->payrollApp->id)->call('saveStep')
-        ->call('submit')
-        ->assertHasNoErrors();
-
-    test()->actingAs($bcm->coordinator);
-    Livewire::test(PlanVersionPage::class, ['version' => $version])->call('approve')->assertHasNoErrors();
-
-    return $plan->fresh();
-}
 
 function plannedExercise(Plan $plan): Exercise
 {
@@ -76,7 +47,7 @@ it('exercises only plans in force, by those who keep them up to date', function 
     $this->actingAs($this->bcm->owner);
     Livewire::test(ExerciseForm::class, ['plan' => $plan])->assertForbidden();
 
-    $plan = approvedPayrollDrp($this->bcm);
+    $plan = $this->bcm->approvedPayrollDrp();
 
     $this->actingAs($this->bcm->agent);
     Livewire::test(ShowPlan::class, ['plan' => $plan])->assertDontSee('Plan an exercise');
@@ -97,7 +68,7 @@ it('exercises only plans in force, by those who keep them up to date', function 
 });
 
 it('copies the runbook in force, records results and confirms the recovery in the CMDB', function (): void {
-    $plan = approvedPayrollDrp($this->bcm);
+    $plan = $this->bcm->approvedPayrollDrp();
     $this->actingAs($this->bcm->lead);
     $exercise = plannedExercise($plan);
 
@@ -143,7 +114,7 @@ it('copies the runbook in force, records results and confirms the recovery in th
 });
 
 it('raises findings as problems in the service desk, once, with the item of the step', function (): void {
-    $plan = approvedPayrollDrp($this->bcm);
+    $plan = $this->bcm->approvedPayrollDrp();
     $this->actingAs($this->bcm->owner);
     $exercise = plannedExercise($plan);
     $page = Livewire::test(ExercisePage::class, ['exercise' => $exercise])->call('start');
@@ -164,7 +135,7 @@ it('raises findings as problems in the service desk, once, with the item of the 
 });
 
 it('cancels an exercise and hides exercises of other organizations', function (): void {
-    $plan = approvedPayrollDrp($this->bcm);
+    $plan = $this->bcm->approvedPayrollDrp();
     $this->actingAs($this->bcm->owner);
     $exercise = plannedExercise($plan);
     Livewire::test(ExercisePage::class, ['exercise' => $exercise])->call('cancelExercise')->assertHasNoErrors();

@@ -13,6 +13,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Modules\Bcm\Application\Actions\StartPlanVersion;
+use Modules\Bcm\Application\Coverage\ContinuityCoverage;
 use Modules\Bcm\Domain\Models\Plan;
 use Modules\Core\Domain\Models\User;
 
@@ -54,7 +55,7 @@ final class ShowPlan extends Component
         $this->redirectRoute('bcm.plans.index');
     }
 
-    public function render(): View
+    public function render(ContinuityCoverage $coverage): View
     {
         $plan = $this->plan;
 
@@ -62,6 +63,8 @@ final class ShowPlan extends Component
             'plan' => $plan,
             'versions' => $plan->versions()->with(['submitter', 'decider'])->get(),
             'exercises' => $plan->exercises()->limit(50)->get(),
+            'activations' => $plan->activations()->limit(50)->get(),
+            'exerciseDueOn' => $plan->exerciseDueOn($coverage->exerciseMonths()),
         ])->title($plan->name);
     }
 }

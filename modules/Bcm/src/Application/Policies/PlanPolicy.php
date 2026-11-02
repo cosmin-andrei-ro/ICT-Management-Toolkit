@@ -68,6 +68,14 @@ final readonly class PlanPolicy
         return $plan->approved_version !== null && $this->edit($user, $plan);
     }
 
+    /**
+     * Record a real activation: only a plan in force is activated.
+     */
+    public function activate(User $user, Plan $plan): bool
+    {
+        return $this->exercise($user, $plan);
+    }
+
     public function manages(User $user, PlanType $type): bool
     {
         return $user->can('bcm.plan.manage') || ($type === PlanType::Drp && $user->can('bcm.drp.manage'));

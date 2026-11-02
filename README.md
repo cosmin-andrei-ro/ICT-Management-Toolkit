@@ -44,7 +44,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 |---|---|---|
 | **NIS2** (Directive (EU) 2022/2555), Art. 21 risk-management measures | Partial | Incident handling (21(2)(b)): ticketing with priorities, SLAs, problem management. Access control, multi-factor authentication and asset management (21(2)(i)(j)): the CMDB records what you run and what depends on what. Logging through the audit trail. Change management for secure maintenance (21(2)(e)). Business continuity (21(2)(c)): business impact analysis, approved continuity and recovery plans, and their exercises and recovery tests. **Planned:** supply chain (21(2)(d)), risk analysis (21(2)(a)). **Not planned:** the notifications to authorities of Art. 23, which you send outside the toolkit. |
 | **DORA** (Regulation (EU) 2022/2554), financial entities | Partial | Identification of ICT assets and their dependencies (Art. 8): the CMDB. ICT-related incident management process (Art. 17): detection, logging, follow-up and root cause. ICT change management (Art. 9(4)(e)): approved, planned, reversible changes with post-implementation review of emergency changes. Strong authentication (Art. 9(4)(d)). ICT business continuity policy and response and recovery plans (Art. 11): BIA with RTO/RPO and approved plans; testing of plans and backup restores with measured recovery time (Art. 11(6), 12(2)); supplier and contract register. **Planned:** digital operational resilience testing programme (Art. 24–25), register of information on ICT third-party arrangements in the regulatory format (Art. 28). **Not planned:** classification and reporting of major incidents to authorities (Art. 18–19). |
-| **ISO 22301:2019** business continuity | Partial | 8.2.2 business impact analysis (impact over time, MTPD, RTO, RPO, dependencies, approval, review), 8.3 strategies and 8.4 plans (scope, activation, crisis team, communication, runbook), 8.4.4 recovery against requirements, 8.5 exercises with results per step, measured recovery time and lessons learned, 10.1 findings tracked as problems. **Planned:** 8.5 exercise programme reminders. |
+| **ISO 22301:2019** business continuity | Partial | 8.2.2 business impact analysis (impact over time, MTPD, RTO, RPO, dependencies, approval, review), 8.3 strategies and 8.4 plans (scope, activation, crisis team, communication, runbook), 8.4.4 recovery against requirements, 8.5 exercises with results per step, measured recovery time and lessons learned, 10.1 findings tracked as problems, 8.5 exercise programme with due dates and reminders, 9.1 coverage monitoring, post-incident review of real activations. |
 | **ISO/IEC 27001:2022**, Annex A | Partial | 5.9 inventory of information and other associated assets (CMDB, asset register), 5.11 return of assets, 5.29–5.30 information security during disruption and ICT readiness for business continuity (BIA, continuity plans), 5.15–5.18 access control and identities, 5.24–5.27 incident management and learning from incidents, 8.5 secure authentication, 8.15 logging, 8.32 change management. **Planned:** the Audit & Compliance module, to map controls to evidence. |
 | **GDPR** (Regulation (EU) 2016/679) | Partial | Data minimization (exports leave requesters out, comment text is never emailed), storage limitation (the incoming email log is kept 90 days, exports 7 days), security of processing (Art. 32: encryption of secrets, access control, audit trail), separation of organizations. **Not planned:** export and anonymization of a person's data on request (Art. 15–17, 20), configurable retention for tickets. |
 
@@ -93,6 +93,8 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Business continuity and IT disaster recovery plans**, versioned and approved: scope (BIA processes, CMDB systems), scenarios, activation, crisis team, communication, and a **runbook** whose recovery time is compared with the RTO.
 - Printable plan for offline use during a crisis.
 - **Exercises and recovery tests**: the runbook in force step by step with results and times, measured recovery against the RTO, systems confirmed as recovered in the CMDB, findings raised as problems in the service desk, printable report.
+- **Coverage report**: assessed processes without a plan in force or not brought back within their RTO, plans not approved or overdue for review or exercise; Excel export of the continuity register; reminders to owners and a weekly digest for coordinators.
+- **Activation log** for real disruptions: the crisis team is emailed a link to the plan, time to recover is compared with the RTO, lessons are kept.
 
 **Planned modules:** datacenter infrastructure, application portfolio, risk assessment, audit and compliance, projects.
 
@@ -230,6 +232,8 @@ Two processes must run all the time.
 | `itam:licenses:remind` | daily at 07:20 | Emails licence managers about licences expiring soon |
 | `bia:reviews:remind` | daily at 07:30 | Emails process owners whose BIA review is due |
 | `bia:digest` | Mondays at 07:45 | Emails continuity coordinators what is overdue or waiting |
+| `bcm:plans:remind` | daily at 07:35 | Emails plan owners whose plan is due for review or for an exercise |
+| `bcm:digest` | Mondays at 07:50 | Emails continuity coordinators what their plans need |
 | `ticketing:mail:prune` | daily | Deletes old entries of the incoming email log |
 | `core:directory:sync` | every 15 minutes, when AD is enabled | Blocks disabled AD accounts, refreshes roles |
 
@@ -318,6 +322,9 @@ Settings, for special cases:
 | `ITAM_WARRANTY_REMINDER_DAYS` | `30` | Days before a warranty ends when asset managers are emailed |
 | `ITAM_LICENSE_REMINDER_DAYS` | `60` | Days before a licence expires when licence managers are emailed |
 | `BIA_REVIEW_REMINDER_DAYS` | `30` | Days before a process's BIA review when its owner is emailed |
+| `BCM_REVIEW_MONTHS` | `12` | Months from a plan's approval to its review |
+| `BCM_EXERCISE_MONTHS` | `12` | Months from a plan's last exercise (or approval) to the next one |
+| `BCM_REMINDER_DAYS` | `30` | Days before a plan's review or exercise when its owner is emailed |
 | `ATTACHMENTS_DISK` | `attachments` | Storage for attachments (e.g. an S3-compatible disk) |
 | `SANCTUM_EXPIRATION` | `129600` | Lifetime of API tokens, in minutes |
 
