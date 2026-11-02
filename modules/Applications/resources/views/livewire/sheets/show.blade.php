@@ -7,6 +7,7 @@
             · {{ $sheet->versionLabel() ? __('applications::sheet.ui.version', ['version' => $sheet->versionLabel()]) : __($sheet->is_major ? 'applications::sheet.ui.new_major' : 'applications::sheet.ui.new_minor') }}
             <x-applications::sheet-status :status="$sheet->status" />
         </h1>
+        <p class="text-sm"><a href="{{ route('applications.sheets.document', $sheet) }}" class="text-blue-700 underline">{{ __('applications::document.open') }}</a></p>
         @if ($sheet->submitter && $sheet->submitted_at && $sheet->status === \Modules\Applications\Domain\Enums\SheetStatus::Submitted)
             <p class="text-xs text-gray-500">{{ __('applications::sheet.ui.submitted_by', ['name' => $sheet->submitter->name, 'date' => $sheet->submitted_at->toDateString()]) }}</p>
         @endif

@@ -16,6 +16,7 @@ The register of the company's applications and their technical documentation, fo
 - **Certificates** (8.1): an *Expires on* date, not in the template, drives the reminders.
 - **Decommissioning** (15.2): the template's twelve steps added with one click; **glossary** (16): the template's standard terms shown, application terms added.
 - **Permissions matrix** (3.4): rows are the functionalities of 2.3, columns the roles of 3.3; stored by name.
+- **Excel export** (`applications.portfolio`): applications, data processed, integrations, components and certificates of the versions in force; never secrets or technical accounts.
 - **Dropdown values** (`applications_option_values`): per organization and list; defaults on first use; deactivated, never deleted.
 
 ## Screens
@@ -24,10 +25,18 @@ The register of the company's applications and their technical documentation, fo
 - `/applications/new`, `/applications/{id}/edit`: identity and owners (application managers).
 - `/applications/{id}`: identity, document control (version, last and next review), change history with approvals; write, continue or update the documentation.
 - `/applications/sheets/{id}`: the sheet chapter by chapter (document control and the 16 chapters of the template); kind of change and description; submit or publish; approve as business owner, IT owner or security officer, or return.
+- `/applications/sheets/{id}/document`: the full documentation as the template lays it out (cover, change history, document control, approvals, contents, every chapter), to print; `/applications/sheets/{id}/pdf` the same as PDF through Gotenberg when `GOTENBERG_URL` is set (throttled, audited as an export).
 - `/applications/mine`: applications the signed-in person owns, for owners without `applications.application.view`.
 - Administration → Application portfolio → Dropdown values.
 
+## Links created on approval
+
+When a version comes into force, the application gets (or keeps) its own CMDB item of type *application* — identifier = the application code, criticality from 1.3 for a new item — related *runs on* to the components linked in 5.2, through `ConfigurationItems::ensureItem`; its CMDB page lists the application. Business processes (10.1) are linked to the BIA by the owners. Risk entries and Documentation pages will follow when those modules exist.
+
 ## Scheduled tasks
+
+- `applications:reviews:remind` (daily 07:45): business owner, IT owner and deputy are emailed `APPLICATIONS_REVIEW_REMINDER_DAYS` (30) before the yearly review, once per review date; a version being written silences it.
+- `applications:digest` (Mondays 07:55): application managers get the applications not documented, overdue for review and versions waiting for approval, if any.
 
 - `applications:certificates:remind` (daily 07:40): the technical owner and the deputy are emailed `APPLICATIONS_CERTIFICATE_REMINDER_DAYS` (30) before a certificate of the documentation in force expires (or once it has expired), once per certificate and expiry date (`applications_certificate_reminders`).
 
@@ -48,4 +57,4 @@ Owners and deputies write their applications' sheets without a permission. Nobod
 2. Chapters 2–3: data categories, functionalities, integrations, authentication, roles and permission matrix; data-flow diagram drawn from the integrations, plus upload — **done**.
 3. Chapters 4–7: network, firewall rules, hosting, components linked to the CMDB, software, databases, technical accounts; network diagram, ERD upload — **done**.
 4. Chapters 8–16: certificates with expiry reminders, secrets (vault location only), compliance, logging and alerts, continuity from the BIA and BCM, deployment, jobs, runbook, troubleshooting, decommissioning, glossary — **done**.
-5. Full PDF through Gotenberg (ADR), links created on approval, yearly review reminders, Excel export.
+5. Full document and PDF through Gotenberg (ADR 0030), the application's CMDB item created on approval, yearly review reminders, weekly digest, Excel export — **done**.

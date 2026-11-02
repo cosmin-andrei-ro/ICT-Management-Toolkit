@@ -62,7 +62,7 @@ final readonly class SubmitSheet
             $locked->forceFill(['submitted_at' => now(), 'submitted_by' => $actor->id, 'returned_at' => null, 'returned_by' => null, 'return_comment' => null]);
 
             if (! $locked->is_major) {
-                $this->inForce->handle($locked);
+                $this->inForce->handle($locked, $actor);
 
                 return true;
             }

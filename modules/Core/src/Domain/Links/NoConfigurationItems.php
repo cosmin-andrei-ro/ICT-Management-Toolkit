@@ -66,6 +66,11 @@ final class NoConfigurationItems implements ConfigurationItems
         throw new InvalidArgumentException('The CMDB is not enabled.');
     }
 
+    public function ensureItem(?string $itemId, string $typeKey, string $identifier, string $name, string $criticality, array $runsOn, User $actor): ?string
+    {
+        return null;
+    }
+
     public function canChangeCriticality(User $actor): bool
     {
         return false;

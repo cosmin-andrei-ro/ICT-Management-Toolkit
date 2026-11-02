@@ -66,7 +66,7 @@ final readonly class DecideSheet
                 return false;
             }
 
-            $this->inForce->handle($locked);
+            $this->inForce->handle($locked, $actor);
 
             return true;
         });

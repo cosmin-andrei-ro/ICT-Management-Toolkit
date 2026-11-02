@@ -14,6 +14,7 @@
         </div>
         <div class="flex flex-wrap gap-2">
             @if ($current)
+                <a href="{{ route('applications.sheets.document', $current) }}" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('applications::document.open') }}</a>
                 <a href="{{ route('applications.sheets.show', $current) }}" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('applications::applications.ui.read', ['version' => $current->versionLabel()]) }}</a>
             @endif
             @can('edit', $application)

@@ -12,10 +12,14 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Modules\Cmdb\Application\Actions\ManageRelationships;
+use Modules\Cmdb\Application\Actions\ProvisionDefaultTypes;
 use Modules\Cmdb\Application\Impact\ImpactAnalysis;
 use Modules\Cmdb\Application\Impact\ImpactedItem;
 use Modules\Cmdb\Domain\Enums\Criticality;
+use Modules\Cmdb\Domain\Enums\RelationshipType;
 use Modules\Cmdb\Domain\Models\CiLink;
+use Modules\Cmdb\Domain\Models\CiType;
 use Modules\Cmdb\Domain\Models\ConfigurationItem;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
@@ -34,6 +38,8 @@ final readonly class CmdbConfigurationItems implements ConfigurationItems
         private ImpactAnalysis $impact,
         private AuditTrail $trail,
         private Gate $gate,
+        private ProvisionDefaultTypes $defaultTypes,
+        private ManageRelationships $relationships,
     ) {}
 
     public function isAvailable(): bool
@@ -204,6 +210,43 @@ final readonly class CmdbConfigurationItems implements ConfigurationItems
             'recovery_verified_by' => mb_substr($evidence, 0, 255),
             'updated_by' => $actor->id,
         ])->save();
+    }
+
+    public function ensureItem(?string $itemId, string $typeKey, string $identifier, string $name, string $criticality, array $runsOn, User $actor): ?string
+    {
+        // Scoped lookups: items of another organization are not found.
+        $item = ($itemId !== null ? ConfigurationItem::query()->find($itemId) : null)
+            ?? ConfigurationItem::query()->whereRaw('lower(identifier) = ?', [mb_strtolower($identifier)])->first();
+
+        if ($item === null) {
+            $this->defaultTypes->handle();
+            $type = CiType::query()->where('key', $typeKey)->first();
+
+            if ($type === null) {
+                return null;
+            }
+
+            // Audited by the item's own trail.
+            $item = new ConfigurationItem;
+            $item->forceFill([
+                'organization_id' => $type->organization_id,
+                'type_id' => $type->id,
+                'name' => mb_substr($name, 0, 255),
+                'identifier' => mb_substr($identifier, 0, 255),
+                'criticality' => Criticality::tryFrom($criticality) ?? Criticality::Medium,
+                'created_by' => $actor->id,
+            ])->save();
+        }
+
+        foreach (ConfigurationItem::query()->whereKey($runsOn)->get() as $target) {
+            try {
+                $this->relationships->add($item, RelationshipType::RunsOn, $target);
+            } catch (InvalidArgumentException) {
+                // The item itself, or a cycle the CMDB refuses: nothing to relate.
+            }
+        }
+
+        return $item->id;
     }
 
     public function canChangeCriticality(User $actor): bool

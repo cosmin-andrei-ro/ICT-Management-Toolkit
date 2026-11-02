@@ -12,9 +12,15 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Modules\Applications\Application\Exports\PortfolioExport;
 use Modules\Applications\Application\Options\OptionCatalog;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\Sheet;
+use Modules\Core\Application\Exports\RequestExport;
+use Modules\Core\Domain\Exports\ExportFormat;
+use Modules\Core\Domain\Exports\ExportStatus;
+use Modules\Core\Domain\Models\Export;
+use Modules\Core\Domain\Models\User;
 
 #[Layout('core::components.layouts.app')]
 final class ApplicationIndex extends Component
@@ -45,6 +51,20 @@ final class ApplicationIndex extends Component
         }
     }
 
+    public function export(string $format, RequestExport $request): void
+    {
+        $this->authorize('viewAny', Application::class);
+        $user = auth()->user();
+        $format = ExportFormat::tryFrom($format);
+
+        if (! $user instanceof User || $format === null) {
+            return;
+        }
+
+        // RequestExport checks the permission and records the export in the audit trail.
+        $request->handle($user, PortfolioExport::TYPE, $format, []);
+    }
+
     public function render(OptionCatalog $options): View
     {
         $this->authorize('viewAny', Application::class);
@@ -65,6 +85,9 @@ final class ApplicationIndex extends Component
             'statuses' => $options->choices('application_status'),
             'criticalities' => $options->choices('business_criticality'),
             'options' => $options,
+            'exports' => $exports = Export::query()->where('user_id', auth()->id())->where('type', PortfolioExport::TYPE)->latest()->limit(3)->get(),
+            'preparing' => $exports->contains(fn (Export $export): bool => $export->status === ExportStatus::Pending),
+            'timezone' => config()->string('app.display_timezone'),
         ])->title(__('applications::applications.title'));
     }
 }

@@ -11,7 +11,8 @@ Every part of the template is built in the toolkit; the notes say where the tool
 | Template | Fields | Toolkit |
 |---|---|---|
 | Cover | Application Name, Application Code, Department Owner, Department Email | Application register — built |
-| How to use this template | Instructions; review whenever the application changes, after major incidents, DR tests or audits, at least once a year | Manual; yearly review date — built |
+| How to use this template | Instructions; review whenever the application changes, after major incidents, DR tests or audits, at least once a year | Manual; yearly review date with e-mail reminders — built |
+| The document itself | The Word / PDF file | Full document page and PDF export (Gotenberg, ADR 0030) — built |
 | Change History | Version, Date, Author, Description of Change (one row per published version; production applications start at 1.0 "Initial documentation…") | Versions in force, numbered 1.0 / 1.1 / 2.0 — built |
 | Document Control | Document Owner, Last Review Date, Next Review Date, Document Location | Built (review dates follow the approvals) |
 | Approvals (first version only) | Role (Business Owner, IT / Application Owner, Security Officer), Name, Approval Date, Comments | Built — owner's decision: v1.0 **and major versions** are approved; minor versions are logged |
