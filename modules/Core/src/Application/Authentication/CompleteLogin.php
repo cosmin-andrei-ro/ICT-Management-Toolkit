@@ -12,6 +12,7 @@ use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use LogicException;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
@@ -20,8 +21,10 @@ use SensitiveParameter;
 
 /**
  * Signs a user in, or, when they use two-factor authentication, holds the
- * sign-in until they give a code. The pending sign-in lives in the session for
- * five minutes and is tied to it: nothing is sent to the browser.
+ * sign-in until they give a code or use a security key. The pending sign-in
+ * lives in the session for five minutes and is tied to it: nothing is sent to
+ * the browser. A passkey signs in on its own: it is something the person
+ * holds, unlocked by their PIN or fingerprint.
  */
 final readonly class CompleteLogin
 {
@@ -32,10 +35,14 @@ final readonly class CompleteLogin
     /** Codes per account per minute: a 6-digit code must not be guessable. */
     private const int MAX_CODES_PER_MINUTE = 5;
 
+    /** Passkey attempts per address per minute. */
+    private const int MAX_PASSKEYS_PER_MINUTE = 10;
+
     public function __construct(
         private AuthFactory $auth,
         private Session $session,
         private TwoFactorAuthentication $twoFactor,
+        private SecurityKeys $keys,
         private RateLimiter $limiter,
         private AuditTrail $trail,
     ) {}
@@ -95,6 +102,65 @@ final readonly class CompleteLogin
         $pending = $this->session->pull(self::PENDING);
         $this->session->regenerate();
         $this->signIn($user, is_array($pending) && ($pending['remember'] ?? false) === true);
+
+        return $user;
+    }
+
+    /**
+     * The second factor given with one of the person's security keys.
+     *
+     * @throws ValidationException keyed to "code".
+     */
+    public function withSecurityKey(string $credentialJson): User
+    {
+        $user = $this->pendingUser() ?? throw ValidationException::withMessages(['code' => __('core::security.challenge.expired')]);
+        $key = 'login:mfa:'.$user->id;
+
+        if ($this->limiter->tooManyAttempts($key, self::MAX_CODES_PER_MINUTE)) {
+            throw ValidationException::withMessages(['code' => __('auth.throttle', ['seconds' => $this->limiter->availableIn($key)])]);
+        }
+
+        try {
+            $this->keys->authenticate($user, $credentialJson);
+        } catch (InvalidArgumentException) {
+            $this->limiter->hit($key, 60);
+            $this->trail->record(AuditEvent::MfaFailed, $user, null, ['method' => 'security_key'], $user->id);
+
+            throw ValidationException::withMessages(['code' => __('core::security.keys.failed')]);
+        }
+
+        $this->limiter->clear($key);
+        $pending = $this->session->pull(self::PENDING);
+        $this->session->regenerate();
+        $this->signIn($user, is_array($pending) && ($pending['remember'] ?? false) === true);
+
+        return $user;
+    }
+
+    /**
+     * Signs in with a passkey alone, without a password.
+     *
+     * @throws ValidationException keyed to "login".
+     */
+    public function withPasskey(string $credentialJson, string $ip): User
+    {
+        $key = 'login:passkey:'.sha1($ip);
+
+        if ($this->limiter->tooManyAttempts($key, self::MAX_PASSKEYS_PER_MINUTE)) {
+            throw ValidationException::withMessages(['login' => __('auth.throttle', ['seconds' => $this->limiter->availableIn($key)])]);
+        }
+
+        try {
+            $user = $this->keys->authenticate(null, $credentialJson);
+        } catch (InvalidArgumentException) {
+            $this->limiter->hit($key, 60);
+            $this->trail->record(AuditEvent::LoginFailed, null, null, ['method' => 'passkey']);
+
+            throw ValidationException::withMessages(['login' => __('core::security.keys.passkey_failed')]);
+        }
+
+        $this->session->regenerate();
+        $this->signIn($user, false);
 
         return $user;
     }

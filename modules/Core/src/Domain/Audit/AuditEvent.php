@@ -38,4 +38,6 @@ enum AuditEvent: string
     case PasswordReset = 'password_reset';
     case Invited = 'invited';
     case SecretRevealed = 'secret_revealed';
+    case SecurityKeyAdded = 'security_key_added';
+    case SecurityKeyRemoved = 'security_key_removed';
 }

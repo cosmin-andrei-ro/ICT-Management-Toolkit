@@ -13,6 +13,8 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Modules\Core\Application\Authentication\AttemptLogin;
+use Modules\Core\Application\Authentication\CompleteLogin;
+use Modules\Core\Application\Authentication\SecurityKeys;
 use Modules\Core\Domain\Directory\Directory;
 
 #[Layout('core::components.layouts.guest')]
@@ -51,6 +53,22 @@ final class Login extends Component
             return;
         }
 
+        $this->redirectIntended(route('home'));
+    }
+
+    /**
+     * Options to sign in with any passkey of this site, without a password.
+     *
+     * @return array<string, mixed>
+     */
+    public function passkeyOptions(SecurityKeys $keys): array
+    {
+        return $keys->requestOptions(null);
+    }
+
+    public function signInWithPasskey(string $credential, CompleteLogin $completeLogin, Request $request): void
+    {
+        $completeLogin->withPasskey($credential, (string) $request->ip());
         $this->redirectIntended(route('home'));
     }
 

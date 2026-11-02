@@ -30,7 +30,8 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 | HTTP security headers | Yes | HSTS, CSP with nonces, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Secure/HttpOnly/SameSite cookies |
 | Secrets at rest | Yes | Mailbox passwords and two-factor secrets are encrypted with the application key, never shown again, never logged or audited |
 | Audit trail | Yes | Append-only (enforced by a database trigger): every change to business data with old and new values, sign-ins, failed sign-ins, role changes, two-factor events, exports and downloads |
-| Single sign-on (OIDC, SAML2) and WebAuthn | Planned | Active Directory (LDAPS) sign-in is available today |
+| W3C WebAuthn Level 2 (FIDO2) | Yes | Security keys and passkeys as a second factor, and passkeys to sign in without a password; phishing resistant (bound to the site's domain); attestation not requested |
+| Single sign-on (OIDC, SAML2) | Planned | Active Directory (LDAPS) sign-in is available today |
 
 ### Service management
 
@@ -53,7 +54,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 **Core**
 - Several organizations (legal entities) in one installation, with their data kept apart.
 - Sign-in with local accounts or **Active Directory** (LDAPS). AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
-- **Two-factor authentication** with an authenticator app, required for IT staff, plus recovery codes.
+- **Two-factor authentication** with an authenticator app, required for IT staff, plus recovery codes; **security keys and passkeys** (WebAuthn), also to sign in without a password.
 - **People management**: invitations to local accounts by email, roles, deactivation. Password reset by email and password change for local accounts.
 - Role-based permissions: requester, agent, team lead, CAB member, asset manager, continuity coordinator, application manager, security officer, risk manager, compliance manager, auditor, administrator.
 - **Suppliers** with their support contacts, **contracts** with documents, deadlines and email reminders before each notice deadline, and nested **locations** (sites, buildings, rooms).
@@ -119,7 +120,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 **Planned modules:** datacenter infrastructure, projects.
 
-**Not done yet:** security keys and passkeys (WebAuthn) as a second factor; single sign-on with OIDC or SAML.
+**Not done yet:** single sign-on with OIDC or SAML.
 
 ## Requirements
 

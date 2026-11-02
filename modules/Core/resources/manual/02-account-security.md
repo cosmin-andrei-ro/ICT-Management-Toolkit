@@ -29,6 +29,16 @@ Without your phone and without recovery codes, ask an administrator to **reset**
 
 **Make new recovery codes** replaces all of them, for example when you have used several.
 
+## Security keys and passkeys
+
+Once the authenticator app is set up, you can add a **security key** (a YubiKey or similar, plugged in or held against the phone) or a **passkey** (Windows Hello, Touch ID, Face ID, or your phone). At sign-in, after your password, click **Use your security key or passkey** and touch the key or unlock your device: no code to type.
+
+A key only works on this site: a fake page imitating it cannot use it, so keys also protect you from phishing. **Passkeys** let you sign in without your password: on the sign-in page, click **Sign in with a passkey** and unlock your device.
+
+To add one, on **Account security** give it a name (for example *YubiKey on my keyring*), enter a code from your authenticator app and click **Add a key**, then follow your browser. Adding two keys - one you carry and one kept safely - means losing one is not a problem. **Remove** takes a key off your account: enter an app code first.
+
+Your authenticator app and recovery codes stay as a fallback. Turning two-factor authentication off, or a reset by an administrator, removes your keys too.
+
 ## Password
 
 Local accounts change their password here: enter the current one and the new one twice. Passwords have at least 12 characters; a sentence of several words is easy to remember and hard to guess. Changing it signs you out everywhere else, for example on a computer where you forgot to sign out.

@@ -29,7 +29,8 @@ The foundation every other module builds on. Code: `modules/Core/`.
 - AD accounts are created at first sign-in. Their organizations and roles come only from **AD group mappings** (admin panel → Access), and are re-synced on every sign-in.
 - Throttling: 5 attempts per minute per identifier and IP address, and 20 attempts per 15 minutes per identifier.
 - Inactive and unknown accounts get the same error. Accounts deactivated while signed in lose access on their next request.
-- MFA, password reset and OIDC/SAML SSO are not implemented yet.
+- Two-factor authentication with an authenticator app and recovery codes ([ADR 0017](../adr/0017-account-security.md)); **security keys and passkeys** (WebAuthn, [ADR 0037](../adr/0037-security-keys-and-passkeys.md)) as the second factor, and passkeys to sign in from `/login` without a password. Keys live in `core_security_keys` (`SecurityKeys` service, `resources/js/components/webauthn.js`).
+- OIDC/SAML SSO is not implemented yet.
 
 ### Configuring Active Directory
 
