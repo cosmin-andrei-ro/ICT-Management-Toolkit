@@ -41,6 +41,11 @@ final class NoConfigurationItems implements ConfigurationItems
         return [];
     }
 
+    public function find(array $ids): array
+    {
+        return [];
+    }
+
     public function impactOfItems(array $itemIds): array
     {
         return [];

@@ -26,10 +26,12 @@ use Modules\Dcim\Domain\Enums\CableType;
 use Modules\Dcim\Domain\Enums\MountFace;
 use Modules\Dcim\Domain\Enums\PortKind;
 use Modules\Dcim\Domain\Models\Cable;
+use Modules\Dcim\Domain\Models\IpAddress;
 use Modules\Dcim\Domain\Models\Mount;
 use Modules\Dcim\Domain\Models\Port;
 use Modules\Dcim\Domain\Models\PowerConnection;
 use Modules\Dcim\Domain\Models\PowerSource;
+use Modules\Dcim\Domain\Models\Subnet;
 
 /**
  * Mounted equipment: its ports, the cables on them, and where each
@@ -267,6 +269,8 @@ final class ShowEquipment extends Component
             'candidates' => $candidates,
             'otherMount' => $otherMount,
             'canManage' => $this->actor()->can('update', $equipment->rack),
+            'ipAddresses' => IpAddress::query()->where('mount_id', $equipment->id)->orderBy('address')->get()
+                ->map(fn (IpAddress $address): array => ['address' => $address, 'subnet' => Subnet::holding($address->host())]),
             'powerConnections' => PowerConnection::query()->with('source')->where('mount_id', $equipment->id)->get(),
             'powerSources' => PowerSource::query()->where('kind', '!=', 'feed')->orderBy('name')->get(),
             'redundant' => ($grid = PowerGrid::read())->isRedundant($equipment->id),

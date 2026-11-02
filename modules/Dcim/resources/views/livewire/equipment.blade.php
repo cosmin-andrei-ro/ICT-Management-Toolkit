@@ -53,6 +53,21 @@
         @endif
     </section>
 
+    @if ($ipAddresses->isNotEmpty())
+        <section aria-labelledby="ip-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+            <h2 id="ip-heading" class="text-sm font-semibold">{{ __('dcim::ipam.addresses') }}</h2>
+            <ul class="text-sm">
+                @foreach ($ipAddresses as $row)
+                    <li wire:key="ip-{{ $row['address']->id }}">
+                        <span class="font-mono">{{ $row['address']->host() }}</span>
+                        <span class="text-xs text-gray-500">{{ $row['address']->status->label() }}@if ($row['address']->dns_name) · {{ $row['address']->dns_name }}@endif</span>
+                        @if ($row['subnet']) · <a href="{{ route('dcim.ipam.subnets.show', $row['subnet']) }}" class="font-mono text-xs text-blue-700 underline">{{ $row['subnet']->network }}</a> @endif
+                    </li>
+                @endforeach
+            </ul>
+        </section>
+    @endif
+
     <section aria-labelledby="ports-heading" class="space-y-3 rounded-lg bg-white p-4 ring-1 ring-gray-200">
         <h2 id="ports-heading" class="text-sm font-semibold">{{ __('dcim::cabling.ports') }}</h2>
         @error('ports') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
