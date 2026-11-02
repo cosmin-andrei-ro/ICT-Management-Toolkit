@@ -9,6 +9,7 @@ namespace Modules\Applications\Application\Actions;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Events\Dispatcher;
+use Modules\Applications\Application\Sheets\DocumentationSummary;
 use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\Sheet;
@@ -27,6 +28,7 @@ final readonly class SheetInForce
         private Config $config,
         private ConfigurationItems $items,
         private Dispatcher $events,
+        private DocumentationSummary $summary,
     ) {}
 
     public function handle(Sheet $sheet, User $actor): void
@@ -71,6 +73,8 @@ final readonly class SheetInForce
 
         // Initial risks (CLAUDE.md §9): the risk register refreshes its suggestions once this commits.
         $this->events->dispatch(new RiskSignalsChanged($application->organization_id));
+        // The application's documentation page (CLAUDE.md §9), in the same transaction.
+        $this->events->dispatch($this->summary->event($sheet, $application, $actor));
     }
 
     /**

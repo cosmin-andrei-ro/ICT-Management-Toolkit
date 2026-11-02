@@ -1,10 +1,10 @@
 # Documentation module
 
-Procedures, how-tos and reference pages, organised in spaces. Code: `modules/Documentation/`. Decisions: [ADR 0040](../adr/0040-documentation-spaces-and-pages.md), [ADR 0041](../adr/0041-documentation-publishing-and-review.md), [ADR 0042](../adr/0042-knowledge-articles-for-the-service-desk.md).
+Procedures, how-tos and reference pages, organised in spaces. Code: `modules/Documentation/`. Decisions: [ADR 0040](../adr/0040-documentation-spaces-and-pages.md), [ADR 0041](../adr/0041-documentation-publishing-and-review.md), [ADR 0042](../adr/0042-knowledge-articles-for-the-service-desk.md), [ADR 0043](../adr/0043-generated-application-pages.md).
 
 ## Concepts
 
-- **Space** (`documentation_spaces`): name, description, visibility (`staff`, `everyone`, `teams`), `requires_approval` (controlled space), `review_months`, owners (`documentation_space_owners`), teams that read or edit (`documentation_space_teams`, `read` / `edit`). Soft deleted.
+- **Space** (`documentation_spaces`): `purpose` (`applications` for the space the toolkit fills, null otherwise), name, description, visibility (`staff`, `everyone`, `teams`), `requires_approval` (controlled space), `review_months`, owners (`documentation_space_owners`), teams that read or edit (`documentation_space_teams`, `read` / `edit`). Soft deleted.
 - **Page** (`documentation_pages`): space, parent page, position; the latest version (title, Markdown text, version) for editors; the published one (`published_title`, `published_body`, `published_version`, `published_at`) for readers, search (`search_vector`, generated from the published text, GIN) and print; a submission (`pending_version`, `submitted_by`, `submitted_at`, `rejection_note`); `review_on`. Soft deleted; sub-pages move up.
 - **Version** (`documentation_page_versions`): every saved state: title, text, what changed, author, time; who approved it and when.
 - **Link** (`documentation_page_links`): a record of another module (`linked_type`, `linked_id`), title kept.
@@ -30,6 +30,10 @@ Procedures, how-tos and reference pages, organised in spaces. Code: `modules/Doc
 - `LinkedRecords` type `documentation.page` (resolve and search): other modules link published pages.
 - The service desk shows them on the portal request form, the requester's ticket page and the agent's ticket page.
 
+## Application pages
+
+`GenerateApplicationPage` listens to Core's `ApplicationDocumented`: it creates or adopts the *Applications* space, and writes the application's page - its summary between `<!-- application-summary:start -->` and `<!-- application-summary:end -->`, replaced at every version; the team's notes below, kept. The page is linked to the application and to its CMDB item.
+
 ## Scheduled tasks
 
 - `documentation:digest` (Mondays 08:20): each space owner gets the pages waiting for their approval and those overdue or due for review within 30 days, if any.
@@ -48,4 +52,4 @@ Owners change their space's settings and write in it; members of a space's editi
 1. Spaces, pages, versions, search, links and files — **done**.
 2. Drafts and approval in controlled spaces, review dates with reminders, page PDF — **done**.
 3. Articles for employees in the portal, suggested when raising a ticket; links with tickets and known errors — **done**.
-4. Pages generated for applications when their documentation comes into force (CLAUDE.md §9), with free notes.
+4. Pages generated for applications when their documentation comes into force (CLAUDE.md §9), with free notes — **done**.

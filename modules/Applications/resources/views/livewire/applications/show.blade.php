@@ -89,6 +89,17 @@
         </section>
     </div>
 
+    @if ($articles !== [])
+        <section aria-labelledby="articles-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+            <h2 id="articles-heading" class="text-sm font-semibold">{{ __('applications::applications.ui.documentation_pages') }}</h2>
+            <ul class="divide-y divide-gray-100 text-sm">
+                @foreach ($articles as $article)
+                    <li wire:key="article-{{ $article->id }}" class="py-1.5"><a href="{{ $article->url }}" class="text-blue-700 underline">{{ $article->title }}</a> <span class="text-xs text-gray-500">{{ $article->status }}</span></li>
+                @endforeach
+            </ul>
+        </section>
+    @endif
+
     @if ($risks !== null)
         <section aria-labelledby="risks-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
             <h2 id="risks-heading" class="text-sm font-semibold">{{ __('applications::applications.ui.risks') }}</h2>

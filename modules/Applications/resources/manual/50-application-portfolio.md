@@ -53,7 +53,7 @@ At the bottom, describe **what changed in this version** (for the first one, for
 - The **first version**, and any version marked **Major change** (architecture, data, security, users or integrations), is **submitted for approval**. The business owner, the IT / application owner and a security officer each approve it; an application manager may approve in place of an owner. Nobody approves a version they submitted, and one person gives one approval. Any approver may **return** it with a reason; the approvals given are then cleared and the owners correct it.
 - A **Minor change** (corrections, small updates) is **published** at once and logged in the change history.
 
-When a version comes into force it gets its number — 1.0 for the first, then 1.1, 1.2… for minor changes and 2.0, 3.0… for major ones — and the next review is due a year later. The application page shows the **change history**: version, date, author, description and approvals.
+When a version comes into force it gets its number — 1.0 for the first, then 1.1, 1.2… for minor changes and 2.0, 3.0… for major ones — and the next review is due a year later. The application page shows the **change history**: version, date, author, description and approvals. Its **documentation page** in the *Applications* space of **Documentation** is written or updated at the same time - a summary for colleagues, with room for the team's notes - and listed on the application page.
 
 ## The full document and PDF
 

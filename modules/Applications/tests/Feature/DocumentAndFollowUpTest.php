@@ -68,6 +68,20 @@ function ticketingInForce(ApplicationsScenario $apps, ?ConfigurationItem $server
     return $sheet->fresh();
 }
 
+it('gives the application its documentation page when its documentation comes into force', function (): void {
+    ticketingInForce($this->apps);
+
+    $page = Modules\Documentation\Domain\Models\Page::query()->sole();
+    expect($page->title)->toBe('APP-TKT · Ticketing Platform')->and($page->published_body)->toContain('Internal IT support application.');
+    // The application's CMDB item lists its page too.
+    $itemId = $this->apps->ticketing->fresh()?->configuration_item_id;
+    expect($itemId)->not->toBeNull()
+        ->and(app(Modules\Core\Domain\Links\ConfigurationItems::class)->recordIdsLinkedTo([(string) $itemId], 'documentation.page'))->toBe([$page->id]);
+
+    $this->actingAs($this->apps->agent);
+    Livewire::test(ShowApplication::class, ['application' => $this->apps->ticketing])->assertSee('Documentation pages')->assertSee('APP-TKT · Ticketing Platform');
+});
+
 it('lays out the full documentation to print, for those who may read it', function (): void {
     $sheet = ticketingInForce($this->apps);
 
