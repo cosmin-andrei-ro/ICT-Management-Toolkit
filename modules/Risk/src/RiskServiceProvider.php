@@ -15,12 +15,14 @@ use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Events\RiskSignalsChanged;
 use Modules\Core\Domain\Exports\ExportRegistry;
+use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Links\Risks;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Risk\Application\Exports\RiskRegisterExport;
 use Modules\Risk\Application\Links\RegisterRisks;
+use Modules\Risk\Application\Links\RiskRecords;
 use Modules\Risk\Application\Listeners\RefreshSuggestionsOnSignal;
 use Modules\Risk\Domain\Models\CatalogEntry;
 use Modules\Risk\Domain\Models\Risk;
@@ -46,6 +48,10 @@ final class RiskServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(RiskRegisterExport::TYPE, RiskRegisterExport::class, 'risk.risk.view'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->register('risk.risk', RiskRecords::resolve(...));
+            $records->registerSearch('risk.risk', 'risk::risks.linked_kind', RiskRecords::search(...));
+        });
     }
 
     public function boot(): void
@@ -93,5 +99,8 @@ final class RiskServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::ContinuityCoordinator, ['risk.risk.view']);
         $registry->grantToDefaultRole(DefaultRole::ApplicationManager, ['risk.risk.view']);
         $registry->grantToDefaultRole(DefaultRole::TeamLead, ['risk.risk.view']);
+        // Compliance staff open the risks linked as evidence of controls.
+        $registry->grantToDefaultRole(DefaultRole::ComplianceManager, ['risk.risk.view']);
+        $registry->grantToDefaultRole(DefaultRole::Auditor, ['risk.risk.view']);
     }
 }

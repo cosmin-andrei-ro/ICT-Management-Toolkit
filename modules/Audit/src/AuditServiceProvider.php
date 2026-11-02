@@ -8,10 +8,14 @@ declare(strict_types=1);
 namespace Modules\Audit;
 
 use App\Support\Modules\ModuleServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Audit\Domain\Models\Control;
+use Modules\Audit\Domain\Models\ControlTest;
+use Modules\Audit\Domain\Models\Evidence;
 use Modules\Audit\Domain\Models\Framework;
 use Modules\Audit\Domain\Models\Requirement;
+use Modules\Audit\Infrastructure\Console\SendTestRemindersCommand;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Manual\Manual;
@@ -41,7 +45,17 @@ final class AuditServiceProvider extends ModuleServiceProvider
             'audit.framework' => Framework::class,
             'audit.requirement' => Requirement::class,
             'audit.control' => Control::class,
+            'audit.control_test' => ControlTest::class,
+            'audit.evidence' => Evidence::class,
         ]);
+
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $schedule->command(SendTestRemindersCommand::class)->dailyAt('08:05')->withoutOverlapping()->onOneServer();
+        });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([SendTestRemindersCommand::class]);
+        }
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('audit::compliance.mine.menu', 'audit.controls.mine', 'audit.controls.mine', fn (User $user): bool => ! $user->can('audit.compliance.view') && Control::query()->ownedBy($user)->exists(), order: 29);

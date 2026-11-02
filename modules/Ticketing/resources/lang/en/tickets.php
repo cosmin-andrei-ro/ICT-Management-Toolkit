@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Service desk ticket',
     'types' => [
         'incident' => 'Incident',
         'service_request' => 'Service request',

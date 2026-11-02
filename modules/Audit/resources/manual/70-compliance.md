@@ -37,4 +37,21 @@ The owner of a control - or a compliance manager - sets its **status** and descr
 | Partly met | Some of its controls are implemented or partly implemented. |
 | Met | All its controls are implemented. |
 
-Retired controls no longer count. Every change - to frameworks, applicability, controls and their mapping - is kept in the history.
+Retired controls no longer count.
+
+## Evidence
+
+Under **Evidence** on the control's page, the owner or a compliance manager shows that the control works:
+
+- **Link a record of the toolkit**: choose the kind - risk, application, continuity plan, exercise or recovery test, business process, contract, service desk ticket - search it by name or number and **Link** it, saying what it shows. Only records you may open are offered. People who may not open a record still see its title.
+- **Upload a document**: a report, a configuration export, a signed policy. Give it a title and, if it expires (a certificate, a yearly report), the date it is **valid until**; expired documents are shown in red.
+
+Auditors and everyone who reads compliance see the evidence and download the documents. **Remove** takes evidence off the control; it stays in the history.
+
+## Tests
+
+A compliance manager sets how often a control is tested, in months, when editing it. Its owner is emailed two weeks before each test is due; the controls list shows the **next test**, overdue ones in red, and **Test overdue** lists them.
+
+To **Record a test**, give the date, the result - effective, partly effective, not effective - **how it was tested** (for example *a sample of 25 remote sign-ins checked for a second factor*), what was found and, optionally, the document the test produced. The next test is planned from the date of the test.
+
+Every change - to frameworks, applicability, controls and their mapping - is kept in the history.

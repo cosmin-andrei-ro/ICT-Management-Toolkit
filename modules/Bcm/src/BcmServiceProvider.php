@@ -12,6 +12,8 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Bcm\Application\Exports\BcmExport;
+use Modules\Bcm\Application\Links\ExerciseRecords;
+use Modules\Bcm\Application\Links\PlanRecords;
 use Modules\Bcm\Application\Risks\ContinuityRiskSignals;
 use Modules\Bcm\Domain\Enums\VersionStatus;
 use Modules\Bcm\Domain\Models\Activation;
@@ -46,7 +48,13 @@ final class BcmServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         // The CMDB item page lists the plans that recover the item.
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(BcmExport::TYPE, BcmExport::class, 'bcm.plan.view'));
-        $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('bcm.plan_version', self::linkedPlans(...)));
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->register('bcm.plan_version', self::linkedPlans(...));
+            $records->register('bcm.plan', PlanRecords::resolve(...));
+            $records->registerSearch('bcm.plan', 'bcm::plans.linked_kind', PlanRecords::search(...));
+            $records->register('bcm.exercise', ExerciseRecords::resolve(...));
+            $records->registerSearch('bcm.exercise', 'bcm::exercises.linked_kind', ExerciseRecords::search(...));
+        });
     }
 
     public function boot(): void
@@ -109,6 +117,9 @@ final class BcmServiceProvider extends ModuleServiceProvider
 
         $registry->grantToDefaultRole(DefaultRole::ContinuityCoordinator, ['bcm.plan.view', 'bcm.plan.manage', 'bcm.drp.manage', 'bcm.plan.approve']);
         $registry->grantToDefaultRole(DefaultRole::TeamLead, ['bcm.plan.view', 'bcm.drp.manage']);
+        // Compliance staff open the plans and exercises linked as evidence of controls.
+        $registry->grantToDefaultRole(DefaultRole::ComplianceManager, ['bcm.plan.view']);
+        $registry->grantToDefaultRole(DefaultRole::Auditor, ['bcm.plan.view']);
         // Agents follow the plans during incidents.
         $registry->grantToDefaultRole(DefaultRole::Agent, ['bcm.plan.view']);
     }

@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Contract',
     'menu' => 'Contracts',
     'title' => 'Contracts',
     'types' => [

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Audit\Http\Livewire;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -26,6 +27,7 @@ final class MyControls extends Component
 
         return view('audit::livewire.controls.mine', [
             'controls' => Control::query()->ownedBy($user)->orderBy('number')->limit(200)->get(),
+            'today' => CarbonImmutable::today(),
         ])->title(__('audit::compliance.mine.title'));
     }
 }

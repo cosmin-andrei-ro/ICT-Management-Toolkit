@@ -1,6 +1,6 @@
 # Audit module
 
-Compliance with regulations and standards: frameworks and their requirements, the organization's controls and the requirements they meet. Code: `modules/Audit/`. Decisions: [ADR 0034](../adr/0034-compliance-frameworks-and-controls.md).
+Compliance with regulations and standards: frameworks and their requirements, the organization's controls and the requirements they meet. Code: `modules/Audit/`. Decisions: [ADR 0034](../adr/0034-compliance-frameworks-and-controls.md), [ADR 0035](../adr/0035-compliance-evidence-and-control-tests.md).
 
 ## Concepts
 
@@ -8,6 +8,8 @@ Compliance with regulations and standards: frameworks and their requirements, th
 - **Requirement** (`audit_requirements`): reference (unique in the framework), title, wording or guidance, section, position; applicability (null until decided, true, false) with its justification (required when not applicable) and who decided.
 - **Control** (`audit_controls`): C-001 per organization, name (unique, case-insensitive, among controls not deleted), description, owner, status (planned, partial, implemented, retired), implementation notes; soft deleted.
 - **Mapping** (`audit_control_requirement`): which requirements a control meets, in any framework.
+- **Evidence** (`audit_evidence`): a record of another module (`linked_type`, `linked_id`, title kept) or a document (Core attachment on the evidence), with what it shows, optionally valid until a date and the test that produced it; soft deleted.
+- **Control test** (`audit_control_tests`): tested on, tester, result (effective, partially effective, ineffective), method, findings. The control's `test_interval_months`, `last_tested_on`, `next_test_on` (and `test_reminded_for`, reminder bookkeeping).
 - **Requirement state** (computed, `RequirementState`): undecided, not applicable, no control, controls planned, partly met, met. **Coverage** (`Coverage`): requirements by state, and met / applicable.
 
 ## Screens
@@ -16,8 +18,17 @@ Compliance with regulations and standards: frameworks and their requirements, th
 - `/compliance/frameworks/{id}`: requirements by section with their controls and state; search and filter by state; decide applicability with a justification and the requirement's wording; add requirements; archive or restore.
 - `/compliance/controls`: controls with owner, status and number of requirements; filters by status and *not mapped*.
 - `/compliance/controls/new`, `/compliance/controls/{id}/edit`: a control (compliance managers).
-- `/compliance/controls/{id}`: implementation (status and notes, by the owner or a compliance manager); requirements it meets, mapped by framework and search; delete.
+- `/compliance/controls/{id}`: implementation (status and notes, by the owner or a compliance manager); requirements it meets, mapped by framework and search; evidence: link a record (searched through Core's `LinkedRecords`) or upload a document; tests: history and recording; delete.
+- Control register: next test, overdue in red, filter *Test overdue*.
 - `/compliance/controls/mine`: controls the signed-in person owns, for owners without `audit.compliance.view`.
+
+## Records evidence can link to
+
+Registered with `LinkedRecords::registerSearch` by their modules: `risk.risk`, `applications.application`, `bcm.plan`, `bcm.exercise`, `bia.process`, `core.contract`, `ticketing.ticket` (search only for `ticketing.ticket.view_all`).
+
+## Scheduled tasks
+
+- `audit:tests:remind` (daily 08:05): the owner of each control is emailed `AUDIT_TEST_REMINDER_DAYS` (14) before its next test, once per date.
 
 ## Permissions
 
@@ -26,11 +37,11 @@ Compliance with regulations and standards: frameworks and their requirements, th
 | `audit.compliance.view` | compliance-manager, auditor, security-officer, risk-manager | Read frameworks, applicability and controls |
 | `audit.compliance.manage` | compliance-manager | Add frameworks and requirements, decide applicability, keep controls and their mapping |
 
-A control's owner updates its status and implementation notes without a permission.
+A control's owner updates its status and implementation notes, adds evidence and records tests without a permission. Compliance managers and auditors also read risks, applications, continuity plans, business processes, suppliers and contracts, to open what evidence points to.
 
 ## Plan
 
 1. Frameworks (ISO/IEC 27001 Annex A, NIS2, GDPR, DORA, your own), applicability, controls mapped across frameworks, coverage — **done**.
-2. Evidence: links to toolkit records, uploaded documents, periodic control tests with reminders to owners.
+2. Evidence: links to toolkit records, uploaded documents, periodic control tests with reminders to owners — **done**.
 3. Audits (internal and external), findings, corrective action plans (optionally service desk tickets), closure verified by someone other than the owner.
 4. Reporting: Statement of Applicability in Excel and PDF, compliance report, weekly digest, compliance gaps as risk signals.
