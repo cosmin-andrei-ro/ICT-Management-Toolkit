@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Documentation\Http\Controllers\PagePrintController;
 use Modules\Documentation\Http\Livewire\DocsIndex;
 use Modules\Documentation\Http\Livewire\PageEditor;
 use Modules\Documentation\Http\Livewire\PageHistory;
@@ -22,4 +23,6 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
     Route::livewire('/docs/pages/{page}', ShowPage::class)->whereUuid('page')->name('documentation.pages.show');
     Route::livewire('/docs/pages/{page}/edit', PageEditor::class)->whereUuid('page')->name('documentation.pages.edit');
     Route::livewire('/docs/pages/{page}/history', PageHistory::class)->whereUuid('page')->name('documentation.pages.history');
+    Route::get('/docs/pages/{page}/print', [PagePrintController::class, 'show'])->whereUuid('page')->name('documentation.pages.print');
+    Route::get('/docs/pages/{page}/pdf', [PagePrintController::class, 'pdf'])->whereUuid('page')->middleware('throttle:10,1')->name('documentation.pages.pdf');
 });

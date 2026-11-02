@@ -21,11 +21,32 @@
         <input id="q" type="search" wire:model.live.debounce.400ms="q" maxlength="200" placeholder="{{ __('documentation::docs.search_space', ['space' => $space->name]) }}" class="block w-full max-w-xl">
     </div>
 
+    @if ($toApprove->isNotEmpty() || $toReview->isNotEmpty())
+        <div class="grid gap-4 md:grid-cols-2">
+            @if ($toApprove->isNotEmpty())
+                <section aria-labelledby="approve-heading" class="rounded-lg bg-amber-50 p-4 text-sm ring-1 ring-amber-200">
+                    <h2 id="approve-heading" class="font-semibold">{{ __('documentation::docs.publishing.waiting_list') }}</h2>
+                    <ul class="mt-2 list-disc pl-5">
+                        @foreach ($toApprove as $item) <li wire:key="approve-{{ $item->id }}"><a href="{{ route('documentation.pages.show', ['page' => $item, 'draft' => 1]) }}" class="underline">{{ $item->title }}</a></li> @endforeach
+                    </ul>
+                </section>
+            @endif
+            @if ($toReview->isNotEmpty())
+                <section aria-labelledby="review-heading" class="rounded-lg bg-white p-4 text-sm ring-1 ring-gray-200">
+                    <h2 id="review-heading" class="font-semibold">{{ __('documentation::docs.publishing.review_list') }}</h2>
+                    <ul class="mt-2 list-disc pl-5">
+                        @foreach ($toReview as $item) <li wire:key="review-{{ $item->id }}"><a href="{{ route('documentation.pages.show', $item) }}" class="underline">{{ $item->displayTitle() }}</a> <span @class(['text-xs', 'font-semibold text-red-700' => $item->isReviewOverdue($today), 'text-gray-500' => ! $item->isReviewOverdue($today)])>{{ $item->review_on?->toDateString() }}</span></li> @endforeach
+                    </ul>
+                </section>
+            @endif
+        </div>
+    @endif
+
     @if ($results !== null)
         <ul class="divide-y divide-gray-100 rounded-lg bg-white px-4 ring-1 ring-gray-200">
             @forelse ($results as $result)
                 <li wire:key="result-{{ $result->id }}" class="space-y-1 py-3">
-                    <a href="{{ route('documentation.pages.show', $result) }}" class="font-medium text-blue-700 underline">{{ $result->title }}</a>
+                    <a href="{{ route('documentation.pages.show', $result) }}" class="font-medium text-blue-700 underline">{{ $result->displayTitle() }}</a>
                     <x-documentation::extract :text="$result->getAttribute('extract')" />
                 </li>
             @empty
@@ -37,7 +58,10 @@
             <ul class="space-y-1 text-sm">
                 @forelse ($tree as $row)
                     <li wire:key="tree-{{ $row['page']->id }}" style="padding-left: {{ $row['depth'] * 1.25 }}rem">
-                        <a href="{{ route('documentation.pages.show', $row['page']) }}" class="text-blue-700 underline">{{ $row['page']->title }}</a>
+                        <a href="{{ route('documentation.pages.show', $row['page']) }}" class="text-blue-700 underline">{{ $canEdit ? $row['page']->title : $row['page']->displayTitle() }}</a>
+                        @if ($canEdit && ! $row['page']->isPublished()) <span class="text-xs text-amber-700">{{ __('documentation::docs.publishing.unpublished') }}</span>
+                        @elseif ($canEdit && $row['page']->hasDraft()) <span class="text-xs text-amber-700">{{ __('documentation::docs.publishing.draft') }}</span> @endif
+                        @if ($row['page']->pending_version && $canEdit) <span class="text-xs text-amber-700">{{ __('documentation::docs.publishing.waiting') }}</span> @endif
                     </li>
                 @empty
                     <li class="text-gray-500">{{ __('documentation::docs.pages.none') }}</li>

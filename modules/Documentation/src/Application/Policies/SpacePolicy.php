@@ -58,6 +58,14 @@ final readonly class SpacePolicy
         return $this->inCurrentOrganization($space) && $this->access->canEdit($user, $space);
     }
 
+    /**
+     * Publishing pages of a controlled space: its owners and documentation managers.
+     */
+    public function approve(User $user, Space $space): bool
+    {
+        return $this->inCurrentOrganization($space) && ($user->can('documentation.space.manage') || $space->owners()->whereKey($user->id)->exists());
+    }
+
     private function inCurrentOrganization(Space $space): bool
     {
         return $this->context->has() && $space->organization_id === $this->context->id();

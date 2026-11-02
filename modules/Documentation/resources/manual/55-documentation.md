@@ -32,6 +32,26 @@ The buttons above the text do it for you, and the **preview** next to it shows t
 
 If someone else saved the page while you were writing, your save is refused rather than overwriting their work: copy your text, open the page again and add your changes.
 
+## Approval in controlled spaces
+
+Spaces for procedures and policies can require **approval**: their owners tick **Pages need approval** and set how often pages are **reviewed**.
+
+In such a space, saving does not change what readers see. A page never published is visible only to the space's editors; a newer version of a published page is a **draft** until approved, and readers keep seeing the published one. Editors switch between the two with **See the latest version** / **See the published version**.
+
+1. When the text is ready, click **Submit for approval**. The space's owners are emailed.
+2. An owner - not the one who wrote the version, nor the one who submitted it - opens the page, checks **See the changes**, and clicks **Approve and publish**, or **Reject** saying why. The submitter is emailed either way.
+3. Saving again after submitting withdraws the submission: submit the new version.
+
+The page then shows which version is published and who approved it. In controlled spaces the history is shown to editors only.
+
+## Review
+
+Every published page has a **review** date, from the space's interval. On the space's page, editors see the pages **to review** (overdue in red) and owners the pages **waiting for approval**. When a page is still right, **Mark as reviewed** moves its next review on; otherwise edit it. Every Monday, space owners receive an email with what waits for them.
+
+## Print and PDF
+
+**Print or PDF** shows the published version with its version number, author, approver and review date, to print or - where the PDF service is installed - to download as PDF.
+
 ## About and files
 
 On a page, **Link a record** connects it to what it is about - an application, a CMDB item, a continuity plan, a risk, a contract, a ticket: choose the kind, search, **Link**. People who may not open the record still see its name. **Files** keeps diagrams, exports or manuals with the page; whoever reads the page can download them.
