@@ -65,6 +65,14 @@ return [
         'name_taken' => 'Another process already has this name.',
         'glossary' => 'MTPD: the longest the process can be interrupted before the impact becomes unacceptable. RTO: how fast it must be back, never later than the MTPD. RPO: how much recent data may be lost.',
     ],
+    'summary' => [
+        'attention' => 'Needs attention',
+        'never_assessed' => 'Never assessed: :count',
+        'overdue' => 'Review overdue: :count',
+        'assessments' => 'Assessments',
+        'in_progress' => 'Being filled in: :count',
+        'awaiting' => 'Waiting for approval: :count',
+    ],
     'linked' => 'Business process: :process',
     'linked_status' => 'RTO :rto · :status',
     'mine' => [

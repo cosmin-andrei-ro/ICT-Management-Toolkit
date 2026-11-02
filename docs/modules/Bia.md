@@ -1,6 +1,6 @@
 # Business impact analysis (BIA) module
 
-Business processes, the impact of their interruption over time, and their recovery objectives. Code: `modules/Bia/`. Decisions: [ADR 0023](../adr/0023-business-impact-analysis.md), [ADR 0024](../adr/0024-bia-dependencies-and-recovery-gaps.md).
+Business processes, the impact of their interruption over time, and their recovery objectives. Code: `modules/Bia/`. Decisions: [ADR 0023](../adr/0023-business-impact-analysis.md), [ADR 0024](../adr/0024-bia-dependencies-and-recovery-gaps.md), [ADR 0025](../adr/0025-bia-reports-and-reviews.md).
 
 ## Concepts
 
@@ -12,13 +12,19 @@ Business processes, the impact of their interruption over time, and their recove
 
 ## Screens
 
-- `/bia`: processes with filters (department, tier, due for review, retired).
+- `/bia`: overview (processes per tier, never assessed, reviews overdue, assessments in progress and waiting), processes with filters (department, tier, due for review, retired), export of the register to Excel (processes, dependencies, gaps).
+- `/bia/processes/{id}/sheet`: the process's BIA on one page, to print or save as PDF.
 - `/bia/processes/new`, `/bia/processes/{id}/edit`: for the coordinator.
 - `/bia/processes/{id}`: objectives in force, details, versions; start or continue an assessment.
 - `/bia/assessments/{id}`: the matrix and the objectives; save, submit; approve or return.
 - `/bia/gaps`: recovery gaps — each CMDB item used by approved processes (directly or through dependencies) with the strictest RTO/RPO required against the capability declared in the CMDB; criticality suggested from the tier, applied by people who may change CMDB items.
 - `/bia/mine`: the processes the signed-in person owns or deputizes for, with what is expected of them.
 - Administration → Business impact analysis: impact categories, time horizons, settings. Administration → Organization → Departments.
+
+## Background
+
+- `bia:reviews:remind`, daily at 07:30: owner and deputy of each active process whose review is due within `BIA_REVIEW_REMINDER_DAYS` (30) or overdue, once per review date, unless a review is open.
+- `bia:digest`, Mondays at 07:45: counts of overdue reviews, processes never assessed and assessments waiting, to the people who approve; nothing when all are zero.
 
 ## Permissions
 

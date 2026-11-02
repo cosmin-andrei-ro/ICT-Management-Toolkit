@@ -86,6 +86,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Business processes** with owners in the business, assessed in an **impact matrix over time** (financial, legal, reputation, operations, customers × 4 hours to 1 month); MTPD derived from the scores, RTO checked against it, RPO, workarounds; recovery tiers.
 - Versioned assessments: owners submit, a BIA coordinator approves or returns them (never their own); yearly review.
 - **Dependencies** on IT systems (CMDB), suppliers, locations, other processes, key roles and people; **recovery gaps**: the strictest RTO/RPO each system must meet, through CMDB relationships, against the recovery capability IT declared, with suggested criticality.
+- Register export to Excel, printable BIA sheet per process, review reminders to owners and a weekly digest for coordinators.
 
 **Planned modules:** datacenter infrastructure, application portfolio, continuity and recovery, risk assessment, audit and compliance, projects.
 
@@ -221,6 +222,8 @@ Two processes must run all the time.
 | `core:contracts:remind` | daily at 07:00 | Contract deadline reminders; renews contracts that renew automatically |
 | `itam:warranties:remind` | daily at 07:15 | Emails asset managers about warranties ending soon |
 | `itam:licenses:remind` | daily at 07:20 | Emails licence managers about licences expiring soon |
+| `bia:reviews:remind` | daily at 07:30 | Emails process owners whose BIA review is due |
+| `bia:digest` | Mondays at 07:45 | Emails BIA coordinators what is overdue or waiting |
 | `ticketing:mail:prune` | daily | Deletes old entries of the incoming email log |
 | `core:directory:sync` | every 15 minutes, when AD is enabled | Blocks disabled AD accounts, refreshes roles |
 
@@ -308,6 +311,7 @@ Settings, for special cases:
 | `ITAM_TAG_PREFIX` | `AST` | Prefix of automatic asset tags (`AST-000001`) |
 | `ITAM_WARRANTY_REMINDER_DAYS` | `30` | Days before a warranty ends when asset managers are emailed |
 | `ITAM_LICENSE_REMINDER_DAYS` | `60` | Days before a licence expires when licence managers are emailed |
+| `BIA_REVIEW_REMINDER_DAYS` | `30` | Days before a process's BIA review when its owner is emailed |
 | `ATTACHMENTS_DISK` | `attachments` | Storage for attachments (e.g. an S3-compatible disk) |
 | `SANCTUM_EXPIRATION` | `129600` | Lifetime of API tokens, in minutes |
 

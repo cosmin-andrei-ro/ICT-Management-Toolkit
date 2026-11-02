@@ -8,16 +8,21 @@ declare(strict_types=1);
 namespace Modules\Bia;
 
 use App\Support\Modules\ModuleServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
+use Modules\Bia\Application\Exports\BiaExport;
 use Modules\Bia\Domain\Enums\AssessmentStatus;
 use Modules\Bia\Domain\Models\Assessment;
 use Modules\Bia\Domain\Models\BiaSettings;
 use Modules\Bia\Domain\Models\BusinessProcess;
 use Modules\Bia\Domain\Models\ImpactCategory;
 use Modules\Bia\Domain\Models\TimeHorizon;
+use Modules\Bia\Infrastructure\Console\SendCoordinatorDigestCommand;
+use Modules\Bia\Infrastructure\Console\SendReviewRemindersCommand;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
@@ -38,6 +43,7 @@ final class BiaServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+        $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(BiaExport::TYPE, BiaExport::class, 'bia.process.view'));
         // The CMDB item page lists the processes that need the item.
         $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('bia.assessment', self::linkedProcesses(...)));
     }
@@ -59,6 +65,15 @@ final class BiaServiceProvider extends ModuleServiceProvider
             $navigation->add('bia::processes.menu', 'bia.processes.index', 'bia.processes.*', fn (User $user): bool => $user->can('bia.process.view'), Navigation::RESILIENCE);
             $navigation->add('bia::gaps.menu', 'bia.gaps', 'bia.gaps', fn (User $user): bool => $user->can('bia.process.view'), Navigation::RESILIENCE);
         });
+
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $schedule->command(SendReviewRemindersCommand::class)->dailyAt('07:30')->withoutOverlapping()->onOneServer();
+            $schedule->command(SendCoordinatorDigestCommand::class)->weeklyOn(1, '07:45')->withoutOverlapping()->onOneServer();
+        });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([SendReviewRemindersCommand::class, SendCoordinatorDigestCommand::class]);
+        }
     }
 
     /**

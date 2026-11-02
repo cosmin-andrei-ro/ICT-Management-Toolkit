@@ -14,6 +14,9 @@
             </div>
         </div>
         <div class="flex flex-wrap gap-2">
+            @if ($assessments->isNotEmpty())
+                <a href="{{ route('bia.processes.sheet', $process) }}" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('bia::sheet.button') }}</a>
+            @endif
             @can('assess', $process)
                 @php($open = $assessments->first(fn ($assessment) => $assessment->status->isOpen()))
                 <button type="button" wire:click="startAssessment" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white">{{ __($open ? 'bia::processes.ui.continue' : ($assessments->isEmpty() ? 'bia::processes.ui.start' : 'bia::processes.ui.review')) }}</button>
