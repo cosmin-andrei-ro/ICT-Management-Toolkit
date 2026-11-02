@@ -51,8 +51,8 @@
                         <td class="px-3 py-2">{{ $process->department?->name ?? '—' }}</td>
                         <td class="px-3 py-2">{{ $process->owner?->name ?? '—' }}</td>
                         <td class="px-3 py-2">{{ $process->tier?->value ?? '—' }}</td>
-                        <td class="px-3 py-2">{{ \Modules\Bia\Domain\Duration::format($process->rto_minutes) }}</td>
-                        <td class="px-3 py-2">{{ \Modules\Bia\Domain\Duration::format($process->rpo_minutes) }}</td>
+                        <td class="px-3 py-2">{{ \Modules\Core\Domain\Time\Duration::format($process->rto_minutes) }}</td>
+                        <td class="px-3 py-2">{{ \Modules\Core\Domain\Time\Duration::format($process->rpo_minutes) }}</td>
                         <td @class(['px-3 py-2', 'font-medium text-amber-700' => $process->next_review_on !== null && $process->next_review_on->isPast()])>{{ $process->next_review_on?->toDateString() ?? '—' }}</td>
                     </tr>
                 @empty

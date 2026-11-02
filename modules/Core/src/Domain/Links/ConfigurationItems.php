@@ -43,4 +43,36 @@ interface ConfigurationItems
      * @return list<ConfigurationItemSummary>
      */
     public function impactOf(Model $record): array;
+
+    /**
+     * Items linked to records of one kind, by record id, in one query.
+     *
+     * @param  list<string>  $recordIds
+     * @return array<string, list<string>>
+     */
+    public function linkedIds(string $morphType, array $recordIds): array;
+
+    /**
+     * Items these items need to work, directly or not (not the items themselves).
+     *
+     * @param  list<string>  $itemIds
+     * @return list<string>
+     */
+    public function dependencyIdsOf(array $itemIds): array;
+
+    /**
+     * @param  list<string>  $itemIds
+     * @return array<string, RecoveryProfile> By item id; unknown ids are left out.
+     */
+    public function recoveryProfiles(array $itemIds): array;
+
+    public function canChangeCriticality(User $actor): bool;
+
+    /**
+     * @param  string  $criticality  low, medium, high or critical
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException when the actor may not change the item
+     * @throws InvalidArgumentException for an unknown item or criticality
+     */
+    public function changeCriticality(string $itemId, string $criticality, User $actor): void;
 }

@@ -85,6 +85,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 **Business impact analysis**
 - **Business processes** with owners in the business, assessed in an **impact matrix over time** (financial, legal, reputation, operations, customers × 4 hours to 1 month); MTPD derived from the scores, RTO checked against it, RPO, workarounds; recovery tiers.
 - Versioned assessments: owners submit, a BIA coordinator approves or returns them (never their own); yearly review.
+- **Dependencies** on IT systems (CMDB), suppliers, locations, other processes, key roles and people; **recovery gaps**: the strictest RTO/RPO each system must meet, through CMDB relationships, against the recovery capability IT declared, with suggested criticality.
 
 **Planned modules:** datacenter infrastructure, application portfolio, continuity and recovery, risk assessment, audit and compliance, projects.
 

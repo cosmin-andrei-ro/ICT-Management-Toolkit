@@ -25,6 +25,7 @@ use Modules\Cmdb\Domain\Models\ConfigurationItem;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Core\Domain\Time\Duration;
 
 /**
  * New item, or editing one. The attribute fields follow the chosen type.
@@ -53,6 +54,14 @@ final class ItemForm extends Component
 
     public string $description = '';
 
+    public string $recoveryTimeValue = '';
+
+    public string $recoveryTimeUnit = 'hours';
+
+    public string $recoveryPointValue = '';
+
+    public string $recoveryPointUnit = 'hours';
+
     /** @var array<string, mixed> Attribute values of the type, keyed by attribute key. */
     public array $properties = [];
 
@@ -71,6 +80,8 @@ final class ItemForm extends Component
             $this->teamId = $item->team_id ?? '';
             $this->description = $item->description ?? '';
             $this->properties = $item->properties;
+            ['value' => $this->recoveryTimeValue, 'unit' => $this->recoveryTimeUnit] = Duration::split($item->recovery_time_minutes);
+            ['value' => $this->recoveryPointValue, 'unit' => $this->recoveryPointUnit] = Duration::split($item->recovery_point_minutes);
 
             return;
         }
@@ -103,6 +114,10 @@ final class ItemForm extends Component
             'ownerId' => ['nullable', 'uuid'],
             'teamId' => ['nullable', 'uuid'],
             'description' => ['nullable', 'string', 'max:5000'],
+            'recoveryTimeValue' => ['nullable', 'integer', 'min:0', 'max:100000'],
+            'recoveryPointValue' => ['nullable', 'integer', 'min:0', 'max:100000'],
+            'recoveryTimeUnit' => ['required', Rule::in(array_keys(Duration::UNITS))],
+            'recoveryPointUnit' => ['required', Rule::in(array_keys(Duration::UNITS))],
         ]);
 
         // Scoped lookup: a type of another organization is not found.
@@ -118,6 +133,8 @@ final class ItemForm extends Component
                 'owner_id' => $this->ownerId,
                 'team_id' => $this->teamId,
                 'description' => $this->description,
+                'recovery_time_minutes' => Duration::toMinutes($this->recoveryTimeValue, $this->recoveryTimeUnit),
+                'recovery_point_minutes' => Duration::toMinutes($this->recoveryPointValue, $this->recoveryPointUnit),
             ], $this->properties);
         } catch (ValidationException $exception) {
             $errors = [];
@@ -164,6 +181,7 @@ final class ItemForm extends Component
             'criticalities' => Criticality::cases(),
             'people' => User::query()->where('is_active', true)->whereHas('organizations', fn ($query) => $query->whereKey($organizationId))->orderBy('name')->get(['id', 'name']),
             'teams' => Team::query()->orderBy('name')->get(['id', 'name']),
+            'units' => array_keys(Duration::UNITS),
         ])->title(__($this->itemId !== null ? 'cmdb::items.ui.edit' : 'cmdb::items.ui.new'));
     }
 }

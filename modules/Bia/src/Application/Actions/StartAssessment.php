@@ -12,19 +12,27 @@ use Modules\Bia\Domain\Enums\AssessmentStatus;
 use Modules\Bia\Domain\Models\Assessment;
 use Modules\Bia\Domain\Models\BusinessProcess;
 use Modules\Bia\Domain\Models\ImpactScore;
+use Modules\Core\Domain\Models\User;
 
 /**
  * Opens the next version of a process's assessment, or returns the one already
- * open. A new version starts from the approved one, so a review changes only
- * what changed.
+ * open. A new version starts from the approved one (scores, objectives and
+ * dependencies), so a review changes only what changed.
  */
 final readonly class StartAssessment
 {
-    public function __construct(private ConnectionInterface $db) {}
+    public function __construct(
+        private ConnectionInterface $db,
+        private ManageDependencies $dependencies,
+        private ProvisionDefaultMatrix $provision,
+    ) {}
 
-    public function handle(BusinessProcess $process): Assessment
+    public function handle(BusinessProcess $process, User $actor): Assessment
     {
-        return $this->db->transaction(function () use ($process): Assessment {
+        // An organization that never opened the BIA list still gets a matrix to score.
+        $this->provision->handle();
+
+        return $this->db->transaction(function () use ($process, $actor): Assessment {
             // Locked: two people opening the next version at once get the same one.
             $process = BusinessProcess::query()->lockForUpdate()->findOrFail($process->id);
 
@@ -64,6 +72,7 @@ final readonly class StartAssessment
                         'score' => $score->score,
                     ])->all();
                 ImpactScore::query()->insert($rows);
+                $this->dependencies->copy($approved, $assessment, $actor);
             }
 
             return $assessment;

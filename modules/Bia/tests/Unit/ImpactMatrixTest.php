@@ -5,9 +5,9 @@
 
 declare(strict_types=1);
 
-use Modules\Bia\Domain\Duration;
 use Modules\Bia\Domain\Enums\Tier;
 use Modules\Bia\Domain\ImpactMatrix;
+use Modules\Core\Domain\Time\Duration;
 
 $horizons = [['id' => 'week', 'minutes' => 10080], ['id' => 'h4', 'minutes' => 240], ['id' => 'day', 'minutes' => 1440]];
 

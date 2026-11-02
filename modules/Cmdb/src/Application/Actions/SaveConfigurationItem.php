@@ -32,7 +32,7 @@ final readonly class SaveConfigurationItem
     ) {}
 
     /**
-     * @param  array{name: string, identifier?: ?string, status?: ?string, environment?: ?string, criticality?: ?string, owner_id?: ?string, team_id?: ?string, description?: ?string}  $fields
+     * @param  array{name: string, identifier?: ?string, status?: ?string, environment?: ?string, criticality?: ?string, owner_id?: ?string, team_id?: ?string, description?: ?string, recovery_time_minutes?: ?int, recovery_point_minutes?: ?int}  $fields
      * @param  array<string, mixed>  $properties  Attribute values, keyed by attribute key.
      *
      * @throws \Illuminate\Validation\ValidationException keyed by attribute key
@@ -78,6 +78,9 @@ final readonly class SaveConfigurationItem
                 'owner_id' => $ownerId,
                 'team_id' => $teamId,
                 'description' => $this->blankToNull($fields['description'] ?? null),
+                // Kept when the caller (an import) does not say.
+                'recovery_time_minutes' => array_key_exists('recovery_time_minutes', $fields) ? $fields['recovery_time_minutes'] : $item->recovery_time_minutes,
+                'recovery_point_minutes' => array_key_exists('recovery_point_minutes', $fields) ? $fields['recovery_point_minutes'] : $item->recovery_point_minutes,
                 // An empty PHP array would be stored as a JSON list; the column holds an object.
                 'properties' => $values === [] ? (object) [] : $values,
             ])->save();
