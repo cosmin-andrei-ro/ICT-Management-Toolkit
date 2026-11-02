@@ -53,6 +53,22 @@ final class Metrics
     }
 
     /**
+     * The current value of one indicator, computing only its source.
+     */
+    public function current(string $key): int|float|null
+    {
+        foreach ($this->sources as $source) {
+            foreach ($source->metrics as $metric) {
+                if ($metric->key === $key) {
+                    return ($source->values)()[$key] ?? null;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * The groups and values the person may see, in registration order.
      *
      * @return list<array{source: MetricSource, metrics: list<array{metric: Metric, value: int|float|null, status: MetricStatus}>}>

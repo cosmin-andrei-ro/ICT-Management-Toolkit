@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace Modules\Core\Domain\Metrics;
 
+use Illuminate\Support\Number;
+use Modules\Core\Domain\Time\Duration;
+
 /**
  * A key performance indicator a module offers the dashboards (ADR 0044): what
  * it is, who may see it, and when it needs attention.
@@ -46,6 +49,19 @@ final readonly class Metric
             $reached($this->alertAt) => MetricStatus::Alert,
             $reached($this->warnAt) => MetricStatus::Warning,
             default => MetricStatus::Good,
+        };
+    }
+
+    /**
+     * The value as people read it: "12", "97.5 %", "2 h 30 min".
+     */
+    public function format(int|float|null $value): string
+    {
+        return match (true) {
+            $value === null => '—',
+            $this->unit === MetricUnit::Percent => Number::format($value, maxPrecision: 1).' %',
+            $this->unit === MetricUnit::Minutes => Duration::format((int) round($value)),
+            default => (string) Number::format($value, maxPrecision: 1),
         };
     }
 

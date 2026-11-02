@@ -14,6 +14,16 @@ Each figure has a colour:
 
 Click a number to open the list behind it, already filtered — for example, the open tickets without an assignee.
 
+## How a figure changes over time
+
+Every figure is recorded once a day, late in the evening. Under each number, a small line shows its last 30 days. Click **Trend** to open the figure's page:
+
+- the value now, at the start of the period, the lowest, the highest and the average;
+- a chart over **30 days**, **90 days** or **365 days** — point at the line to see a day's value;
+- **Show the values as a table** lists them day by day.
+
+The history starts on the day the toolkit began recording; a day without a value leaves a gap in the line.
+
 ## Arrange it your way
 
 Click **Customise**:
