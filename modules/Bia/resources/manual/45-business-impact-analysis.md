@@ -19,7 +19,9 @@ Open the process and click **Start the assessment** (or **Start a review** once 
 4. **RPO**: how much recent data may be lost. 0 if none; 1 day if yesterday's backup is enough.
 5. Describe the **minimum level of service** while recovering, the **manual workarounds** (paper forms, phone, another site) and the **minimum staff**.
 
-**Save draft** keeps your work; **Submit for approval** sends it to the coordinator. If it comes back, the coordinator's comment says what to change. Once approved, the objectives are in force until the next review, usually a year later.
+6. Under **What the process needs**, add the IT systems it uses (search the CMDB), the suppliers, places and other processes it depends on, and the key roles (with how many people at least) and key people without whom it stops.
+
+**Save draft** keeps your work and updates the MTPD; **Submit for approval** sends it to the coordinator. If it comes back, the coordinator's comment says what to change. Once approved, the objectives are in force until the next review, usually a year later.
 
 ## For the BIA coordinator
 
@@ -30,3 +32,13 @@ When an assessment is submitted you receive an email. Open it, check it, and **A
 The **tier** follows from the RTO: tier 1 within 4 hours, tier 2 within a day, tier 3 within 3 days, tier 4 later. Team leads see the BIA too, to plan IT recovery.
 
 Every version stays in the history. Approved versions never change: a review starts a new version, copied from the one in force.
+
+## Recovery gaps
+
+**Risk & continuity → Recovery gaps** compares, for each IT system that approved processes use, the recovery the business requires with what IT declared it can deliver (on the system's CMDB page, under **Recovery capability**). A system needed by a process is also needed by the processes that use systems depending on it: the CMDB relationships carry the requirement along, and each system gets the strictest one.
+
+- **Gap**: IT cannot bring the system back as fast, or would lose more data, than required.
+- **Not declared**: IT has not said what it can deliver.
+- **Met**: the capability is enough.
+
+The BIA also suggests a criticality for each system from the tier of the processes behind it (tier 1 critical, tier 2 high, tier 3 medium, tier 4 low). People who may change CMDB items can **Apply** it.

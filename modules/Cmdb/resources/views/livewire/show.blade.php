@@ -25,6 +25,8 @@
             <dl class="space-y-2 text-sm">
                 <div><dt class="text-xs text-gray-500">{{ __('cmdb::items.fields.owner') }}</dt><dd>{{ $item->owner?->name ?? '—' }}</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('cmdb::items.fields.team') }}</dt><dd>{{ $item->team?->name ?? '—' }}</dd></div>
+                <div><dt class="text-xs text-gray-500">{{ __('cmdb::items.fields.recovery_time') }}</dt><dd>{{ \Modules\Core\Domain\Time\Duration::format($item->recovery_time_minutes) }}</dd></div>
+                <div><dt class="text-xs text-gray-500">{{ __('cmdb::items.fields.recovery_point') }}</dt><dd>{{ \Modules\Core\Domain\Time\Duration::format($item->recovery_point_minutes) }}</dd></div>
                 @foreach ($fields as $field)
                     @if (array_key_exists($field->key, $item->properties))
                         <div wire:key="property-{{ $field->key }}">

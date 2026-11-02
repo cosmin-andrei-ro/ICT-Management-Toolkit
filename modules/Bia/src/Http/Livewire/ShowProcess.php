@@ -14,6 +14,7 @@ use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Modules\Bia\Application\Actions\StartAssessment;
 use Modules\Bia\Domain\Models\BusinessProcess;
+use Modules\Core\Domain\Models\User;
 
 /**
  * One process: who owns it, its recovery objectives in force, and every
@@ -42,7 +43,9 @@ final class ShowProcess extends Component
     public function startAssessment(StartAssessment $start): void
     {
         $this->authorize('assess', $this->process);
-        $this->redirectRoute('bia.assessments.show', $start->handle($this->process));
+        $actor = auth()->user();
+        abort_unless($actor instanceof User, 401);
+        $this->redirectRoute('bia.assessments.show', $start->handle($this->process, $actor));
     }
 
     public function delete(): void

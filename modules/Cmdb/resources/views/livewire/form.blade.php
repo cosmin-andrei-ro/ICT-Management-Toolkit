@@ -81,6 +81,25 @@
             </fieldset>
         @endif
 
+        <fieldset class="space-y-3 border-t border-gray-100 pt-4">
+            <legend class="text-sm font-semibold">{{ __('cmdb::items.ui.recovery') }}</legend>
+            <p class="text-xs text-gray-500">{{ __('cmdb::items.ui.recovery_help') }}</p>
+            <div class="grid gap-4 sm:grid-cols-2">
+                @foreach (['recoveryTime' => 'recovery_time', 'recoveryPoint' => 'recovery_point'] as $property => $field)
+                    <div wire:key="recovery-{{ $field }}">
+                        <label for="{{ $property }}Value" class="block text-sm font-medium">{{ __('cmdb::items.fields.'.$field) }}</label>
+                        <div class="mt-1 flex gap-2">
+                            <input id="{{ $property }}Value" type="number" min="0" wire:model="{{ $property }}Value" class="block w-24">
+                            <select wire:model="{{ $property }}Unit" aria-label="{{ __('cmdb::items.fields.'.$field) }}">
+                                @foreach ($units as $unit) <option value="{{ $unit }}">{{ __('core::durations.unit_names.'.$unit) }}</option> @endforeach
+                            </select>
+                        </div>
+                        @error($property.'Value') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                @endforeach
+            </div>
+        </fieldset>
+
         <div>
             <label for="description" class="block text-sm font-medium">{{ __('cmdb::items.fields.description') }}</label>
             <textarea id="description" wire:model="description" rows="3" maxlength="5000" class="mt-1 block w-full rounded-md border-gray-300"></textarea>

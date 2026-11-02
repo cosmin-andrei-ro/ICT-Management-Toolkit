@@ -9,6 +9,8 @@ namespace Modules\Bia;
 
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Gate;
+use Modules\Bia\Domain\Enums\AssessmentStatus;
 use Modules\Bia\Domain\Models\Assessment;
 use Modules\Bia\Domain\Models\BiaSettings;
 use Modules\Bia\Domain\Models\BusinessProcess;
@@ -16,8 +18,11 @@ use Modules\Bia\Domain\Models\ImpactCategory;
 use Modules\Bia\Domain\Models\TimeHorizon;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Links\LinkedRecord;
+use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Time\Duration;
 use Modules\Core\Http\Navigation\Navigation;
 
 final class BiaServiceProvider extends ModuleServiceProvider
@@ -33,6 +38,8 @@ final class BiaServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+        // The CMDB item page lists the processes that need the item.
+        $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('bia.assessment', self::linkedProcesses(...)));
     }
 
     public function boot(): void
@@ -50,7 +57,29 @@ final class BiaServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('bia::processes.mine.menu', 'bia.mine', 'bia.mine', fn (User $user): bool => BusinessProcess::query()->ownedBy($user)->exists(), order: 26);
             $navigation->add('bia::processes.menu', 'bia.processes.index', 'bia.processes.*', fn (User $user): bool => $user->can('bia.process.view'), Navigation::RESILIENCE);
+            $navigation->add('bia::gaps.menu', 'bia.gaps', 'bia.gaps', fn (User $user): bool => $user->can('bia.process.view'), Navigation::RESILIENCE);
         });
+    }
+
+    /**
+     * Assessments in force or in progress (not superseded ones), as their process.
+     *
+     * @param  list<string>  $ids
+     * @return list<LinkedRecord>
+     */
+    private static function linkedProcesses(array $ids, User $viewer): array
+    {
+        $gate = Gate::forUser($viewer);
+
+        return array_values(Assessment::query()->with('process')->whereKey($ids)->where('status', '!=', AssessmentStatus::Superseded->value)->orderBy('process_id')->limit(100)->get()
+            ->filter(fn (Assessment $assessment): bool => $gate->allows('view', $assessment))
+            ->map(fn (Assessment $assessment): LinkedRecord => new LinkedRecord(
+                $assessment->id,
+                __('bia::processes.linked', ['process' => $assessment->process->name]),
+                route('bia.processes.show', $assessment->process_id),
+                __('bia::processes.linked_status', ['rto' => Duration::format($assessment->rto_minutes), 'status' => $assessment->status->label()]),
+            ))
+            ->all());
     }
 
     private function registerPermissions(PermissionRegistry $registry): void

@@ -5,11 +5,11 @@
 
 declare(strict_types=1);
 
-namespace Modules\Bia\Domain;
+namespace Modules\Core\Domain\Time;
 
 /**
- * Recovery objectives are stored in minutes and entered and shown in the
- * largest whole unit: 240 minutes is "4 hours", 4320 is "3 days".
+ * Durations (recovery objectives and capabilities) are stored in minutes and
+ * entered and shown in the largest whole unit: 240 minutes is "4 hours", 4320 is "3 days".
  */
 final class Duration
 {
@@ -50,6 +50,6 @@ final class Duration
 
         $split = self::split($minutes);
 
-        return trans_choice('bia::processes.units.'.$split['unit'], (int) $split['value'], ['count' => $split['value']]);
+        return trans_choice('core::durations.units.'.$split['unit'], (int) $split['value'], ['count' => $split['value']]);
     }
 }

@@ -7,25 +7,36 @@ declare(strict_types=1);
 
 namespace Modules\Bia\Http\Livewire;
 
+use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Modules\Bia\Application\Actions\DecideAssessment;
+use Modules\Bia\Application\Actions\ManageDependencies;
+use Modules\Bia\Application\Actions\ProvisionDefaultMatrix;
 use Modules\Bia\Application\Actions\SaveAssessment;
 use Modules\Bia\Application\Actions\SubmitAssessment;
 use Modules\Bia\Application\CurrentMatrix;
-use Modules\Bia\Domain\Duration;
+use Modules\Bia\Domain\Enums\DependencyKind;
 use Modules\Bia\Domain\Exceptions\AssessmentLocked;
 use Modules\Bia\Domain\Models\Assessment;
 use Modules\Bia\Domain\Models\BiaSettings;
+use Modules\Bia\Domain\Models\BusinessProcess;
+use Modules\Bia\Domain\Models\Dependency;
 use Modules\Bia\Domain\Models\ImpactCategory;
 use Modules\Bia\Domain\Models\TimeHorizon;
+use Modules\Core\Domain\Links\ConfigurationItems;
+use Modules\Core\Domain\Models\Location;
+use Modules\Core\Domain\Models\Supplier;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Core\Domain\Time\Duration;
 
 /**
  * One version of a process's assessment: filled in by the owner while open,
@@ -69,9 +80,24 @@ final class AssessmentPage extends Component
 
     public string $comment = '';
 
-    public function mount(Assessment $assessment): void
+    public string $itemSearch = '';
+
+    public string $supplierId = '';
+
+    public string $locationId = '';
+
+    public string $upstreamId = '';
+
+    public string $personId = '';
+
+    public string $roleName = '';
+
+    public string $roleMinimum = '';
+
+    public function mount(Assessment $assessment, ProvisionDefaultMatrix $provision): void
     {
         $this->authorize('view', $assessment);
+        $provision->handle();
         $this->assessmentId = $assessment->id;
         $this->fillFrom($assessment);
     }
@@ -113,6 +139,55 @@ final class AssessmentPage extends Component
         $this->decide($decide, false);
     }
 
+    public function linkItem(string $itemId, ManageDependencies $dependencies): void
+    {
+        $this->authorize('update', $this->assessment);
+        $this->dependencyChange(fn () => $dependencies->linkItem($this->assessment, $itemId, $this->actor()), 'itemSearch');
+        $this->reset('itemSearch');
+    }
+
+    public function unlinkItem(string $itemId, ManageDependencies $dependencies): void
+    {
+        $this->authorize('update', $this->assessment);
+        $this->dependencyChange(fn () => $dependencies->unlinkItem($this->assessment, $itemId, $this->actor()), 'itemSearch');
+    }
+
+    public function addDependency(string $kind, ManageDependencies $dependencies): void
+    {
+        $this->authorize('update', $this->assessment);
+        $kind = DependencyKind::tryFrom($kind);
+
+        if ($kind === null) {
+            return;
+        }
+
+        $this->validate([
+            'roleName' => ['nullable', 'string', 'max:255'],
+            'roleMinimum' => ['nullable', 'integer', 'min:0', 'max:100000'],
+        ]);
+
+        $field = 'dependency_'.$kind->value;
+        $added = $this->dependencyChange(fn () => $dependencies->add($this->assessment, $kind, [
+            'supplier_id' => $this->supplierId,
+            'location_id' => $this->locationId,
+            'upstream_process_id' => $this->upstreamId,
+            'user_id' => $this->personId,
+            'role_name' => $this->roleName,
+            'minimum_people' => $this->roleMinimum !== '' ? (int) $this->roleMinimum : null,
+        ], $this->actor()), $field);
+
+        if ($added) {
+            $this->reset('supplierId', 'locationId', 'upstreamId', 'personId', 'roleName', 'roleMinimum');
+        }
+    }
+
+    public function removeDependency(string $dependencyId, ManageDependencies $dependencies): void
+    {
+        $this->authorize('update', $this->assessment);
+        $dependency = Dependency::query()->where('assessment_id', $this->assessmentId)->findOrFail($dependencyId);
+        $this->dependencyChange(fn () => $dependencies->remove($dependency, $this->actor()), 'dependency_'.$dependency->kind->value);
+    }
+
     public function render(): View
     {
         $assessment = $this->assessment;
@@ -136,6 +211,7 @@ final class AssessmentPage extends Component
             'level' => $assessment->unacceptable_level ?? $settings->unacceptable_level,
             'computedMtpd' => $computed,
             'units' => array_keys(Duration::UNITS),
+            ...$this->dependencyData($assessment, $editable),
         ])->title($assessment->process->name.' · v'.$assessment->version);
     }
 
@@ -202,6 +278,46 @@ final class AssessmentPage extends Component
         }
 
         $this->reset('comment');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function dependencyData(Assessment $assessment, bool $editable): array
+    {
+        $items = app(ConfigurationItems::class);
+        $search = trim($this->itemSearch);
+        $dependencies = Dependency::query()->with(['supplier', 'location', 'upstream', 'person'])->where('assessment_id', $assessment->id)->orderBy('created_at')->get();
+        $organizationId = app(OrganizationContext::class)->requireId();
+
+        return [
+            'cmdbAvailable' => $items->isAvailable(),
+            'linkedItems' => $items->linkedTo($assessment),
+            'itemCandidates' => $editable && mb_strlen($search) >= 2 ? $items->search($search) : [],
+            'dependencies' => $dependencies->groupBy(fn (Dependency $dependency): string => $dependency->kind->value),
+            'kinds' => DependencyKind::cases(),
+            'suppliers' => $editable ? Supplier::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']) : collect(),
+            'locations' => $editable ? Location::paths() : [],
+            'upstreams' => $editable ? BusinessProcess::query()->where('status', 'active')->whereKeyNot($assessment->process_id)->orderBy('name')->get(['id', 'name']) : collect(),
+            'people' => $editable ? User::query()->where('is_active', true)->whereHas('organizations', fn ($query) => $query->whereKey($organizationId))->orderBy('name')->get(['id', 'name']) : collect(),
+        ];
+    }
+
+    private function dependencyChange(Closure $change, string $errorKey): bool
+    {
+        try {
+            $change();
+
+            return true;
+        } catch (AssessmentLocked) {
+            $this->addError($errorKey, __('bia::assessments.errors.locked'));
+        } catch (InvalidArgumentException) {
+            $this->addError($errorKey, __('bia::dependencies.invalid'));
+        } finally {
+            unset($this->assessment);
+        }
+
+        return false;
     }
 
     private function fillFrom(Assessment $assessment): void

@@ -7,8 +7,10 @@ declare(strict_types=1);
 
 use Filament\Facades\Filament;
 use Livewire\Livewire;
+use Modules\Bia\Application\Actions\StartAssessment;
 use Modules\Bia\Domain\Models\Assessment;
 use Modules\Bia\Domain\Models\BiaSettings;
+use Modules\Bia\Domain\Models\BusinessProcess;
 use Modules\Bia\Domain\Models\ImpactCategory;
 use Modules\Bia\Domain\Models\ImpactScore;
 use Modules\Bia\Domain\Models\TimeHorizon;
@@ -17,6 +19,8 @@ use Modules\Bia\Http\Filament\Resources\ImpactCategories\Pages\ManageImpactCateg
 use Modules\Bia\Http\Filament\Resources\TimeHorizons\Pages\ManageTimeHorizons;
 use Modules\Bia\Tests\Support\BiaScenario;
 use Modules\Core\Domain\Models\Department;
+use Modules\Core\Domain\Models\Organization;
+use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Filament\Resources\Departments\Pages\ManageDepartments;
 
 beforeEach(function (): void {
@@ -73,4 +77,14 @@ it('lets the coordinator keep departments, and keeps agents and team leads out o
     $this->actingAs($this->bia->lead)->get('/admin/bia/settings')->assertForbidden();
     $this->actingAs($this->bia->lead)->get('/admin/bia/impact-categories')->assertForbidden();
     $this->actingAs($this->bia->agent)->get('/admin')->assertForbidden();
+});
+
+it('gives an organization its matrix when its first assessment starts, even without opening the list', function (): void {
+    $fresh = Organization::factory()->create();
+    app(OrganizationContext::class)->set($fresh);
+    $process = BusinessProcess::factory()->create(['owner_id' => $this->bia->coordinator->id]);
+
+    app(StartAssessment::class)->handle($process, $this->bia->coordinator);
+
+    expect(ImpactCategory::query()->count())->toBe(5)->and(TimeHorizon::query()->count())->toBe(6);
 });

@@ -86,13 +86,13 @@
             <div class="space-y-2">
                 <p class="text-sm font-medium">{{ __('bia::assessments.ui.mtpd') }}</p>
                 @if ($editable)
-                    <p class="text-sm text-gray-600">{{ $computedMtpd !== null ? __('bia::assessments.ui.mtpd_computed', ['value' => \Modules\Bia\Domain\Duration::format($computedMtpd)]) : __('bia::assessments.ui.mtpd_none') }} <span class="text-xs text-gray-500">{{ __('bia::assessments.ui.mtpd_refresh') }}</span></p>
+                    <p class="text-sm text-gray-600">{{ $computedMtpd !== null ? __('bia::assessments.ui.mtpd_computed', ['value' => \Modules\Core\Domain\Time\Duration::format($computedMtpd)]) : __('bia::assessments.ui.mtpd_none') }} <span class="text-xs text-gray-500">{{ __('bia::assessments.ui.mtpd_refresh') }}</span></p>
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" wire:model.live="overrideMtpd" class="rounded border-gray-300"> {{ __('bia::assessments.ui.override') }}</label>
                     @if ($overrideMtpd)
                         <div class="flex flex-wrap gap-2">
                             <input type="number" min="1" wire:model="mtpdValue" aria-label="{{ __('bia::assessments.ui.mtpd') }}" class="w-24 text-sm">
                             <select wire:model="mtpdUnit" aria-label="{{ __('bia::assessments.ui.mtpd') }}" class="text-sm">
-                                @foreach ($units as $unit) <option value="{{ $unit }}">{{ __('bia::processes.unit_names.'.$unit) }}</option> @endforeach
+                                @foreach ($units as $unit) <option value="{{ $unit }}">{{ __('core::durations.unit_names.'.$unit) }}</option> @endforeach
                             </select>
                         </div>
                         @error('mtpdValue') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
@@ -100,7 +100,7 @@
                         @error('mtpdReason') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     @endif
                 @else
-                    <p class="text-sm">{{ \Modules\Bia\Domain\Duration::format($assessment->mtpd_minutes) }}</p>
+                    <p class="text-sm">{{ \Modules\Core\Domain\Time\Duration::format($assessment->mtpd_minutes) }}</p>
                     @if ($assessment->mtpd_reason) <p class="whitespace-pre-line text-xs text-gray-500">{{ $assessment->mtpd_reason }}</p> @endif
                 @endif
             </div>
@@ -114,13 +114,13 @@
                             <div class="mt-1 flex gap-2">
                                 <input type="number" min="0" wire:model="{{ $property }}" aria-label="{{ __('bia::assessments.ui.'.$objective) }}" class="w-24 text-sm">
                                 <select wire:model="{{ $objective }}Unit" aria-label="{{ __('bia::assessments.ui.'.$objective) }}" class="text-sm">
-                                    @foreach ($units as $unit) <option value="{{ $unit }}">{{ __('bia::processes.unit_names.'.$unit) }}</option> @endforeach
+                                    @foreach ($units as $unit) <option value="{{ $unit }}">{{ __('core::durations.unit_names.'.$unit) }}</option> @endforeach
                                 </select>
                             </div>
                             @error($property) <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             @error($objective.'_minutes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         @else
-                            <p class="mt-1 text-sm">{{ \Modules\Bia\Domain\Duration::format($assessment->{$objective.'_minutes'}) }}</p>
+                            <p class="mt-1 text-sm">{{ \Modules\Core\Domain\Time\Duration::format($assessment->{$objective.'_minutes'}) }}</p>
                         @endif
                     </div>
                 @endforeach
@@ -159,6 +159,106 @@
             <p class="text-sm text-gray-500">{{ __('bia::assessments.ui.read_only') }}</p>
         @endif
     </form>
+
+    <section aria-labelledby="dependencies-heading" class="space-y-4 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+        <div>
+            <h2 id="dependencies-heading" class="text-sm font-semibold">{{ __('bia::dependencies.title') }}</h2>
+            <p class="text-xs text-gray-500">{{ __('bia::dependencies.help') }}</p>
+        </div>
+
+        <div class="space-y-2">
+            <h3 class="text-sm font-medium">{{ __('bia::dependencies.systems') }}</h3>
+            @if (! $cmdbAvailable)
+                <p class="text-sm text-gray-500">{{ __('bia::dependencies.cmdb_off') }}</p>
+            @else
+                <ul class="space-y-1 text-sm">
+                    @forelse ($linkedItems as $item)
+                        <li wire:key="item-{{ $item->id }}" class="flex items-center justify-between gap-2">
+                            <span><a href="{{ $item->url }}" class="text-blue-700 underline">{{ $item->name }}</a> <span class="text-xs text-gray-500">{{ $item->typeName }}</span></span>
+                            @if ($editable)
+                                <button type="button" wire:click="unlinkItem('{{ $item->id }}')" class="text-xs text-red-700 underline">{{ __('bia::dependencies.remove') }}</button>
+                            @endif
+                        </li>
+                    @empty
+                        <li class="text-gray-500">{{ __('bia::dependencies.none') }}</li>
+                    @endforelse
+                </ul>
+                @if ($editable)
+                    <input type="search" wire:model.live.debounce.300ms="itemSearch" maxlength="100" placeholder="{{ __('bia::dependencies.find_item') }}" aria-label="{{ __('bia::dependencies.find_item') }}" class="block w-full text-sm">
+                    @error('itemSearch') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @if ($itemCandidates !== [])
+                        <ul class="divide-y divide-gray-100 rounded-md text-sm ring-1 ring-gray-200">
+                            @foreach ($itemCandidates as $candidate)
+                                <li wire:key="candidate-{{ $candidate->id }}" class="flex items-center justify-between gap-2 px-2 py-1.5">
+                                    <span>{{ $candidate->name }} <span class="text-xs text-gray-500">{{ $candidate->typeName }}</span></span>
+                                    <button type="button" wire:click="linkItem('{{ $candidate->id }}')" class="text-xs text-blue-700 underline">{{ __('bia::dependencies.add') }}</button>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                @endif
+            @endif
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+            @foreach ($kinds as $kind)
+                <div wire:key="kind-{{ $kind->value }}" class="space-y-2">
+                    <h3 class="text-sm font-medium">{{ $kind->label() }}</h3>
+                    <ul class="space-y-1 text-sm">
+                        @forelse ($dependencies->get($kind->value, collect()) as $dependency)
+                            <li wire:key="dependency-{{ $dependency->id }}" class="flex items-center justify-between gap-2">
+                                <span>
+                                    {{ $dependency->label() }}
+                                    @if ($dependency->minimum_people !== null) <span class="text-xs text-gray-500">· {{ trans_choice('bia::dependencies.minimum', $dependency->minimum_people, ['count' => $dependency->minimum_people]) }}</span> @endif
+                                </span>
+                                @if ($editable)
+                                    <button type="button" wire:click="removeDependency('{{ $dependency->id }}')" class="text-xs text-red-700 underline">{{ __('bia::dependencies.remove') }}</button>
+                                @endif
+                            </li>
+                        @empty
+                            <li class="text-gray-500">{{ __('bia::dependencies.none') }}</li>
+                        @endforelse
+                    </ul>
+                    @if ($editable)
+                        <div class="flex flex-wrap gap-2">
+                            @switch($kind->value)
+                                @case('supplier')
+                                    <select wire:model="supplierId" aria-label="{{ $kind->label() }}" class="min-w-0 flex-1 text-sm">
+                                        <option value="">—</option>
+                                        @foreach ($suppliers as $option) <option value="{{ $option->id }}" wire:key="supplier-{{ $option->id }}">{{ $option->name }}</option> @endforeach
+                                    </select>
+                                    @break
+                                @case('location')
+                                    <select wire:model="locationId" aria-label="{{ $kind->label() }}" class="min-w-0 flex-1 text-sm">
+                                        <option value="">—</option>
+                                        @foreach ($locations as $id => $path) <option value="{{ $id }}" wire:key="location-{{ $id }}">{{ $path }}</option> @endforeach
+                                    </select>
+                                    @break
+                                @case('process')
+                                    <select wire:model="upstreamId" aria-label="{{ $kind->label() }}" class="min-w-0 flex-1 text-sm">
+                                        <option value="">—</option>
+                                        @foreach ($upstreams as $option) <option value="{{ $option->id }}" wire:key="upstream-{{ $option->id }}">{{ $option->name }}</option> @endforeach
+                                    </select>
+                                    @break
+                                @case('person')
+                                    <select wire:model="personId" aria-label="{{ $kind->label() }}" class="min-w-0 flex-1 text-sm">
+                                        <option value="">—</option>
+                                        @foreach ($people as $option) <option value="{{ $option->id }}" wire:key="person-{{ $option->id }}">{{ $option->name }}</option> @endforeach
+                                    </select>
+                                    @break
+                                @case('role')
+                                    <input type="text" wire:model="roleName" maxlength="255" placeholder="{{ __('bia::dependencies.role_name') }}" aria-label="{{ __('bia::dependencies.role_name') }}" class="min-w-0 flex-1 text-sm">
+                                    <input type="number" min="0" wire:model="roleMinimum" placeholder="{{ __('bia::dependencies.role_minimum') }}" aria-label="{{ __('bia::dependencies.role_minimum') }}" class="w-24 text-sm">
+                                    @break
+                            @endswitch
+                            <button type="button" wire:click="addDependency('{{ $kind->value }}')" class="rounded-md bg-white px-3 py-1 text-sm font-semibold ring-1 ring-gray-300">{{ __('bia::dependencies.add') }}</button>
+                        </div>
+                        @error('dependency_'.$kind->value) <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </section>
 
     @if ($canDecide)
         <section aria-labelledby="decision-heading" class="space-y-3 rounded-lg bg-white p-4 ring-1 ring-gray-200">

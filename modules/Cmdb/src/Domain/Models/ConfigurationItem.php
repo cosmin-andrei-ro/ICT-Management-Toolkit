@@ -47,6 +47,8 @@ use Modules\Core\Domain\Models\User;
  * @property ?string $team_id
  * @property ?string $description
  * @property array<string, string|int|float|bool|null> $properties Values of the type's attributes
+ * @property ?int $recovery_time_minutes How fast IT can bring it back after a failure.
+ * @property ?int $recovery_point_minutes How much recent data a failure could lose.
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -57,7 +59,7 @@ use Modules\Core\Domain\Models\User;
 #[Table('cmdb_configuration_items')]
 #[UseFactory(ConfigurationItemFactory::class)]
 #[UsePolicy(CmdbPolicy::class)]
-#[Fillable(['type_id', 'name', 'identifier', 'status', 'environment', 'criticality', 'owner_id', 'team_id', 'description'])]
+#[Fillable(['type_id', 'name', 'identifier', 'status', 'environment', 'criticality', 'owner_id', 'team_id', 'description', 'recovery_time_minutes', 'recovery_point_minutes'])]
 final class ConfigurationItem extends Model
 {
     use Auditable;
@@ -149,6 +151,8 @@ final class ConfigurationItem extends Model
             'environment' => Environment::class,
             'criticality' => Criticality::class,
             'properties' => 'array',
+            'recovery_time_minutes' => 'integer',
+            'recovery_point_minutes' => 'integer',
         ];
     }
 }

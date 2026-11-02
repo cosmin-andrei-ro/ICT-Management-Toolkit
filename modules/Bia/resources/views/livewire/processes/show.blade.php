@@ -30,9 +30,9 @@
             <h2 id="objectives-heading" class="text-sm font-semibold">{{ __('bia::processes.ui.objectives') }}</h2>
             @if ($process->approved_at)
                 <dl class="grid grid-cols-3 gap-2 text-sm">
-                    <div><dt class="text-xs text-gray-500">{{ __('bia::processes.fields.mtpd') }}</dt><dd class="font-semibold">{{ \Modules\Bia\Domain\Duration::format($process->mtpd_minutes) }}</dd></div>
-                    <div><dt class="text-xs text-gray-500">{{ __('bia::processes.fields.rto') }}</dt><dd class="font-semibold">{{ \Modules\Bia\Domain\Duration::format($process->rto_minutes) }}</dd></div>
-                    <div><dt class="text-xs text-gray-500">{{ __('bia::processes.fields.rpo') }}</dt><dd class="font-semibold">{{ \Modules\Bia\Domain\Duration::format($process->rpo_minutes) }}</dd></div>
+                    <div><dt class="text-xs text-gray-500">{{ __('bia::processes.fields.mtpd') }}</dt><dd class="font-semibold">{{ \Modules\Core\Domain\Time\Duration::format($process->mtpd_minutes) }}</dd></div>
+                    <div><dt class="text-xs text-gray-500">{{ __('bia::processes.fields.rto') }}</dt><dd class="font-semibold">{{ \Modules\Core\Domain\Time\Duration::format($process->rto_minutes) }}</dd></div>
+                    <div><dt class="text-xs text-gray-500">{{ __('bia::processes.fields.rpo') }}</dt><dd class="font-semibold">{{ \Modules\Core\Domain\Time\Duration::format($process->rpo_minutes) }}</dd></div>
                 </dl>
                 <p class="text-xs text-gray-500">{{ __('bia::processes.fields.approved_at') }}: {{ $process->approved_at->toDateString() }} · {{ __('bia::processes.fields.next_review') }}: <span @class(['font-medium text-amber-700' => $process->next_review_on?->isPast()])>{{ $process->next_review_on?->toDateString() }}</span></p>
             @else

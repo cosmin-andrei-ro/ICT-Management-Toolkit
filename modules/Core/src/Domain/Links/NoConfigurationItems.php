@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Core\Domain\Links;
 
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 use Modules\Core\Domain\Models\User;
 
 /**
@@ -37,5 +38,30 @@ final class NoConfigurationItems implements ConfigurationItems
     public function impactOf(Model $record): array
     {
         return [];
+    }
+
+    public function linkedIds(string $morphType, array $recordIds): array
+    {
+        return [];
+    }
+
+    public function dependencyIdsOf(array $itemIds): array
+    {
+        return [];
+    }
+
+    public function recoveryProfiles(array $itemIds): array
+    {
+        return [];
+    }
+
+    public function canChangeCriticality(User $actor): bool
+    {
+        return false;
+    }
+
+    public function changeCriticality(string $itemId, string $criticality, User $actor): void
+    {
+        throw new InvalidArgumentException('The CMDB is not enabled.');
     }
 }

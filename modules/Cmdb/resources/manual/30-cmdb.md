@@ -22,6 +22,8 @@ Every item also has:
 
 **New item** creates one: choose the type first, and its attributes appear. Search finds items by name, identifier or attribute values (for example an IP address). Every change is recorded in the audit trail.
 
+Under **Recovery capability**, record what IT can deliver if the item fails: how fast it can be back, and how much recent data could be lost. The business impact analysis compares them with what the business requires, and its **Recovery gaps** page shows where they fall short.
+
 Prefer the status **Retired** to **Delete**: a retired item keeps its history and its links to past tickets.
 
 ## Relationships

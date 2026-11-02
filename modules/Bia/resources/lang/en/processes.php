@@ -14,16 +14,6 @@ return [
         3 => 'Tier 3 (within 3 days)',
         4 => 'Tier 4 (later)',
     ],
-    'units' => [
-        'minutes' => '{1} :count minute|[2,*] :count minutes',
-        'hours' => '{1} :count hour|[2,*] :count hours',
-        'days' => '{1} :count day|[2,*] :count days',
-    ],
-    'unit_names' => [
-        'minutes' => 'minutes',
-        'hours' => 'hours',
-        'days' => 'days',
-    ],
     'statuses' => [
         'active' => 'Active',
         'retired' => 'Retired',
@@ -75,6 +65,8 @@ return [
         'name_taken' => 'Another process already has this name.',
         'glossary' => 'MTPD: the longest the process can be interrupted before the impact becomes unacceptable. RTO: how fast it must be back, never later than the MTPD. RPO: how much recent data may be lost.',
     ],
+    'linked' => 'Business process: :process',
+    'linked_status' => 'RTO :rto · :status',
     'mine' => [
         'menu' => 'My processes',
         'title' => 'My processes',
