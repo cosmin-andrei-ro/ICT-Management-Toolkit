@@ -54,7 +54,8 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - Sign-in with local accounts or **Active Directory** (LDAPS). AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
 - **Two-factor authentication** with an authenticator app, required for IT staff, plus recovery codes.
 - **People management**: invitations to local accounts by email, roles, deactivation. Password reset by email and password change for local accounts.
-- Role-based permissions: requester, agent, team lead, CAB member, administrator.
+- Role-based permissions: requester, agent, team lead, CAB member, asset manager, administrator.
+- **Suppliers** with their support contacts, **contracts** with documents, deadlines and email reminders before each notice deadline, and nested **locations** (sites, buildings, rooms).
 - Teams, business calendars (working hours, Romanian public holidays), API tokens.
 - Append-only **audit trail**: who changed what, when, with old and new values; sign-ins, role changes, exports.
 - Administration panel at `/admin`, a REST API at `/api/v1` (OpenAPI in [docs/api/openapi.json](docs/api/openapi.json)), and the **user manual** at `/manual`.
@@ -204,6 +205,7 @@ Two processes must run all the time.
 | `ticketing:mail:fetch` | every minute | Reads the support mailboxes (through the queue) |
 | `ticketing:tickets:auto-close` | hourly | Closes tickets left resolved for 5 days |
 | `core:exports:prune` | hourly | Deletes expired exports |
+| `core:contracts:remind` | daily at 07:00 | Contract deadline reminders; renews contracts that renew automatically |
 | `ticketing:mail:prune` | daily | Deletes old entries of the incoming email log |
 | `core:directory:sync` | every 15 minutes, when AD is enabled | Blocks disabled AD accounts, refreshes roles |
 
@@ -286,6 +288,8 @@ Settings, for special cases:
 | `APP_SOURCE_URL` | this repository | Link to the source code shown in the interface (AGPL §13); point it to your fork if you modify the code |
 | `TICKETING_AUTO_CLOSE_AFTER_DAYS` | `5` | Days a resolved ticket waits before closing; `0` disables |
 | `EXPORTS_RETENTION_DAYS` | `7` | Days an export can be downloaded |
+| `CONTRACT_REMINDER_DAYS` | `90,30` | Days before a contract's deadline when reminders are emailed |
+| `DEFAULT_CURRENCY` | `EUR` | Currency proposed for new contracts (ISO 4217) |
 | `ATTACHMENTS_DISK` | `attachments` | Storage for attachments (e.g. an S3-compatible disk) |
 | `SANCTUM_EXPIRATION` | `129600` | Lifetime of API tokens, in minutes |
 

@@ -50,9 +50,16 @@ For development, an optional Samba AD container provides a test domain: see [doc
 
 Working hours per weekday in a time zone, extra days off, and optionally Romanian public holidays (computed each year, including Orthodox Easter and Pentecost). An organization's default calendar drives working-time calculations such as SLA deadlines. Without one, Monday–Friday 09:00–17:00, Europe/Bucharest, with Romanian holidays applies. Managed in Administration → Organization → Business calendars (`core.calendar.manage`).
 
+## Locations, suppliers and contracts (ADR 0019)
+
+- **Locations** (`core_locations`): nested sites, buildings, floors and rooms; `Location::paths()` gives "Site › Building › Room" labels for forms. Managed in Administration → Organization → Locations (`core.location.manage`).
+- **Suppliers** (`core_suppliers`) and their **contacts** (`core_supplier_contacts`, business details only): `/suppliers`.
+- **Contracts** (`core_contracts`): `/contracts`. The deadline is the end date minus the notice period; the status is derived from the dates (`Contract::statusOn()`, and `withStatus()` in SQL). Documents are Core attachments.
+- **Reminders:** `core:contracts:remind`, daily at 07:00, emails the owner and the people with `core.contract.manage` at `CONTRACT_REMINDER_DAYS` (default 90,30) before each deadline, once each (`core_contract_reminders`), and renews contracts that renew automatically.
+
 ## Administration panel
 
-Filament at `/admin`, for users with `core.admin.access`. It uses the application login. See ADR 0006 for its CSP exception.
+Filament at `/admin`, for users with `core.admin.access`: administrators, team leads and asset managers. Every resource and page checks its own permission, so each sees only what they may manage. It uses the application login. See ADR 0006 for its CSP exception.
 
 ## Security headers (ADR 0006)
 
@@ -71,3 +78,6 @@ A strict CSP with a per-request nonce, plus the standard hardening headers on ev
 | `core.directory.manage` | Manage AD group mappings |
 | `core.team.view` / `.manage` | Teams |
 | `core.calendar.manage` | Business calendars |
+| `core.location.manage` | Locations |
+| `core.supplier.view` / `.manage` | Suppliers and their contacts |
+| `core.contract.view` / `.manage` | Contracts, their values and documents |

@@ -3,7 +3,7 @@ title: Access, roles and Active Directory
 audience: administrators
 ---
 
-This chapter is for administrators. Configuration happens in **Administration**, at the top right of the menu.
+This chapter is for administrators. Configuration happens in **Administration**, at the top right of the menu. Team leads and asset managers open it too, and see only the settings they may change.
 
 ## Roles
 
@@ -12,10 +12,11 @@ Each person can have different roles in different organizations. Every role is a
 | Role | Typical person | What they can do |
 |---|---|---|
 | **Requester** | every employee | Raise tickets, request services, follow their own tickets. |
-| **Agent** | service desk staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, raise changes, and keep the CMDB up to date. |
-| **Team lead** | service desk lead | Everything an agent can, plus see reports, approve changes, configure the service desk (categories, queues, SLA targets, catalog, CAB boards, standard changes) and define CMDB item types. |
+| **Agent** | service desk staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, raise changes, keep the CMDB up to date, and see suppliers and their contacts. |
+| **Team lead** | service desk lead | Everything an agent can, plus see reports, approve changes, configure the service desk (categories, queues, SLA targets, catalog, CAB boards, standard changes), define CMDB item types, and manage suppliers, contracts and locations. These settings are in **Administration**. |
+| **Asset manager** | IT asset and contract management | Raise tickets; see the CMDB; manage suppliers, contracts and locations. |
 | **CAB member** | change advisory board | Raise tickets; approve changes on the boards they sit on; see the CMDB. |
-| **Administrator** | IT administrator | Everything, including the administration panel, Active Directory mappings, teams and business calendars. |
+| **Administrator** | IT administrator | Everything, including people, Active Directory mappings, teams and business calendars. |
 
 The default roles are defined by the application and restored on every update. If you need a different combination of permissions, create an organization-specific role.
 

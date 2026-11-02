@@ -15,6 +15,12 @@ use Modules\Core\Http\Livewire\Auth\ForgotPassword;
 use Modules\Core\Http\Livewire\Auth\Login;
 use Modules\Core\Http\Livewire\Auth\ResetPassword;
 use Modules\Core\Http\Livewire\Auth\TwoFactorChallenge;
+use Modules\Core\Http\Livewire\Contracts\ContractForm;
+use Modules\Core\Http\Livewire\Contracts\ContractIndex;
+use Modules\Core\Http\Livewire\Contracts\ShowContract;
+use Modules\Core\Http\Livewire\Suppliers\ShowSupplier;
+use Modules\Core\Http\Livewire\Suppliers\SupplierForm;
+use Modules\Core\Http\Livewire\Suppliers\SupplierIndex;
 
 // Public: needed most by people who cannot sign in.
 Route::get('/manual', [ManualController::class, 'index'])->name('manual.index');
@@ -42,4 +48,14 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
     Route::view('/', 'core::home')->name('home');
     Route::get('/attachments/{attachment}', AttachmentController::class)->name('core.attachments.download');
     Route::get('/exports/{export}', ExportController::class)->whereUuid('export')->name('core.exports.download');
+
+    Route::livewire('/suppliers', SupplierIndex::class)->name('core.suppliers.index');
+    Route::livewire('/suppliers/new', SupplierForm::class)->name('core.suppliers.create');
+    Route::livewire('/suppliers/{supplier}', ShowSupplier::class)->whereUuid('supplier')->name('core.suppliers.show');
+    Route::livewire('/suppliers/{supplier}/edit', SupplierForm::class)->whereUuid('supplier')->name('core.suppliers.edit');
+
+    Route::livewire('/contracts', ContractIndex::class)->name('core.contracts.index');
+    Route::livewire('/contracts/new', ContractForm::class)->name('core.contracts.create');
+    Route::livewire('/contracts/{contract}', ShowContract::class)->whereUuid('contract')->name('core.contracts.show');
+    Route::livewire('/contracts/{contract}/edit', ContractForm::class)->whereUuid('contract')->name('core.contracts.edit');
 });
