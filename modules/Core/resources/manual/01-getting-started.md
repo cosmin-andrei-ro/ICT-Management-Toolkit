@@ -44,8 +44,9 @@ The menu at the top shows only what you are allowed to use. Entries marked **▾
 | **Service desk ▾** | IT staff | Work on tickets (**Service desk**), find documented workarounds (**Known errors**), plan changes (**Change calendar**), approve them (**Approvals**, CAB members) and see **Reports** (team leads). |
 | **Configuration & assets ▾** | IT staff | What IT runs and how it depends on each other (**CMDB**), the equipment register (**Assets**), software **Licences** and the **Application portfolio** with each application's technical documentation. |
 | **My applications** | owners of applications | The applications whose documentation you keep up to date. |
+| **My risks** | owners of risks | The risks you assess. |
 | **My plans** | owners of continuity plans | The continuity and recovery plans you keep up to date and exercise. |
-| **Risk & continuity ▾** | IT staff, continuity coordinators | The **business impact analysis**, **recovery gaps**, **continuity plans** with their exercises and activations, and **continuity coverage**. |
+| **Risk & continuity ▾** | IT staff, continuity coordinators | The **business impact analysis**, **recovery gaps**, **continuity plans** with their exercises and activations, **continuity coverage** and the **risk register**. |
 | **Suppliers & contracts ▾** | IT staff | Whom to call at a supplier (**Suppliers**) and, for asset managers and team leads, the **Contracts** with them. |
 | **Administration** | administrators, team leads, asset managers | Configure the application. Each person sees only the settings they may change. |
 

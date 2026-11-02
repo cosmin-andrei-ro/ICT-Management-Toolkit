@@ -11,6 +11,7 @@ use Modules\Bia\BiaServiceProvider;
 use Modules\Cmdb\CmdbServiceProvider;
 use Modules\Core\CoreServiceProvider;
 use Modules\Itam\ItamServiceProvider;
+use Modules\Risk\RiskServiceProvider;
 use Modules\Ticketing\TicketingServiceProvider;
 
 return [
@@ -55,6 +56,10 @@ return [
         ],
         'applications' => [
             'provider' => ApplicationsServiceProvider::class,
+            'enabled' => true,
+        ],
+        'risk' => [
+            'provider' => RiskServiceProvider::class,
             'enabled' => true,
         ],
     ],
