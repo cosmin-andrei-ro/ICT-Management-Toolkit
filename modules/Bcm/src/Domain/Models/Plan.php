@@ -43,6 +43,7 @@ use Modules\Core\Domain\Models\User;
  * @property ?int $approved_version
  * @property ?Carbon $approved_at
  * @property ?CarbonImmutable $next_review_on
+ * @property ?CarbonImmutable $last_exercised_on Last completed exercise.
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -103,6 +104,14 @@ final class Plan extends Model
     }
 
     /**
+     * @return HasMany<Exercise, $this>
+     */
+    public function exercises(): HasMany
+    {
+        return $this->hasMany(Exercise::class)->orderByDesc('scheduled_on');
+    }
+
+    /**
      * @param  Builder<self>  $query
      */
     public function scopeOwnedBy(Builder $query, User $user): void
@@ -117,6 +126,7 @@ final class Plan extends Model
             'approved_version' => 'integer',
             'approved_at' => 'datetime',
             'next_review_on' => 'immutable_date',
+            'last_exercised_on' => 'immutable_date',
         ];
     }
 }

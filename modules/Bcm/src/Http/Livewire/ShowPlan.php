@@ -61,6 +61,7 @@ final class ShowPlan extends Component
         return view('bcm::livewire.plans.show', [
             'plan' => $plan,
             'versions' => $plan->versions()->with(['submitter', 'decider'])->get(),
+            'exercises' => $plan->exercises()->limit(50)->get(),
         ])->title($plan->name);
     }
 }

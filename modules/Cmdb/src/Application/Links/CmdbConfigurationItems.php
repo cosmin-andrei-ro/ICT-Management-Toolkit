@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Cmdb\Application\Links;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Database\Eloquent\Model;
@@ -171,10 +172,26 @@ final readonly class CmdbConfigurationItems implements ConfigurationItems
                 $item->criticality->value,
                 $item->recovery_time_minutes,
                 $item->recovery_point_minutes,
+                $item->recovery_verified_on?->toDateString(),
+                $item->recovery_verified_minutes,
             );
         }
 
         return $profiles;
+    }
+
+    public function confirmRecovery(string $itemId, ?int $measuredMinutes, CarbonImmutable $on, string $evidence, User $actor): void
+    {
+        // Scoped lookup: an item of another organization is not found.
+        $item = ConfigurationItem::query()->find($itemId) ?? throw new InvalidArgumentException('Unknown configuration item.');
+
+        // Audited by the item's own trail, as any other change.
+        $item->forceFill([
+            'recovery_verified_on' => $on,
+            'recovery_verified_minutes' => $measuredMinutes,
+            'recovery_verified_by' => mb_substr($evidence, 0, 255),
+            'updated_by' => $actor->id,
+        ])->save();
     }
 
     public function canChangeCriticality(User $actor): bool

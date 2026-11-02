@@ -60,6 +60,14 @@ final readonly class PlanPolicy
             && ($plan->isOwnedBy($user) || $this->manages($user, $plan->type));
     }
 
+    /**
+     * Plan an exercise: only a plan in force can be tested.
+     */
+    public function exercise(User $user, Plan $plan): bool
+    {
+        return $plan->approved_version !== null && $this->edit($user, $plan);
+    }
+
     public function manages(User $user, PlanType $type): bool
     {
         return $user->can('bcm.plan.manage') || ($type === PlanType::Drp && $user->can('bcm.drp.manage'));

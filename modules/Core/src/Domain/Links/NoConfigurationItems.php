@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Core\Domain\Links;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use Modules\Core\Domain\Models\User;
@@ -53,6 +54,11 @@ final class NoConfigurationItems implements ConfigurationItems
     public function recoveryProfiles(array $itemIds): array
     {
         return [];
+    }
+
+    public function confirmRecovery(string $itemId, ?int $measuredMinutes, CarbonImmutable $on, string $evidence, User $actor): void
+    {
+        throw new InvalidArgumentException('The CMDB is not enabled.');
     }
 
     public function canChangeCriticality(User $actor): bool

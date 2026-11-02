@@ -18,11 +18,13 @@ use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
+use Modules\Core\Domain\Links\ServiceDeskTickets;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Ticketing\Application\Email\MailboxReader;
 use Modules\Ticketing\Application\Email\ReplyAddress;
+use Modules\Ticketing\Application\Links\TicketingServiceDeskTickets;
 use Modules\Ticketing\Application\Notifications\SendChangeNotifications;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
@@ -65,6 +67,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         parent::register();
 
         $this->app->bind(MailboxReader::class, ImapMailboxReader::class);
+        $this->app->bind(ServiceDeskTickets::class, TicketingServiceDeskTickets::class);
         // Scoped: a long-running worker must see mailboxes added later.
         $this->app->scoped(ReplyAddress::class);
 

@@ -38,9 +38,12 @@ return [
         'description' => 'Description',
         'recovery_time' => 'Can be back within',
         'recovery_point' => 'Data loss at most',
+        'recovery_verified' => 'Recovery last tested',
     ],
     'ui' => [
         'intro' => 'Everything IT runs: services, applications, servers, databases, network devices… and how they depend on each other.',
+        'never_verified' => 'Never tested',
+        'verified_slower' => 'The test took longer than the recovery time declared above.',
         'new' => 'New item',
         'edit' => 'Edit',
         'back' => '← Configuration items',
