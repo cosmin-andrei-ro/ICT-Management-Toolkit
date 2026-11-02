@@ -32,7 +32,12 @@ use Modules\Applications\Domain\Sheet\FieldType;
 use Modules\Applications\Domain\Sheet\SheetSchema;
 use Modules\Applications\Http\Controllers\DiagramImageController;
 use Modules\Core\Application\Collaboration\StoreAttachment;
+use Modules\Core\Domain\Links\BusinessProcesses;
 use Modules\Core\Domain\Links\ConfigurationItems;
+use Modules\Core\Domain\Links\LinkedRecord;
+use Modules\Core\Domain\Links\LinkedRecords;
+use Modules\Core\Domain\Links\ProcessSummary;
+use Modules\Core\Domain\Links\RecoveryProfile;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\Supplier;
@@ -69,6 +74,8 @@ final class SheetPage extends Component
     public string $comment = '';
 
     public string $itemSearch = '';
+
+    public string $processSearch = '';
 
     /** Diagram image being attached (PNG, JPEG, WebP or GIF). */
     public ?TemporaryUploadedFile $diagramImage = null;
@@ -211,6 +218,58 @@ final class SheetPage extends Component
         unset($this->sheet);
     }
 
+    /**
+     * Adds a BIA process to 10.1 (saved with the chapter).
+     */
+    public function addProcess(string $section, string $field, string $processId, BusinessProcesses $processes): void
+    {
+        $this->authorize('update', $this->sheet);
+        $values = is_array($this->form[$section] ?? null) ? $this->form[$section] : [];
+        $ids = is_array($values[$field] ?? null) ? $values[$field] : null;
+
+        if ($ids !== null && $processes->find([$processId]) !== [] && ! in_array($processId, $ids, true)) {
+            $ids[] = $processId;
+            $values[$field] = $ids;
+            $this->form[$section] = $values;
+            $this->reset('processSearch');
+        }
+    }
+
+    public function removeProcess(string $section, string $field, string $processId): void
+    {
+        $this->authorize('update', $this->sheet);
+        $values = is_array($this->form[$section] ?? null) ? $this->form[$section] : [];
+
+        if (is_array($values[$field] ?? null)) {
+            $values[$field] = array_values(array_filter($values[$field], fn (mixed $id): bool => $id !== $processId));
+            $this->form[$section] = $values;
+        }
+    }
+
+    /**
+     * Fills the decommissioning checklist (15.2) with the template's steps.
+     */
+    public function addTemplateSteps(string $section, string $field, SheetForm $sheetForm): void
+    {
+        $this->authorize('update', $this->sheet);
+        $table = collect(SheetSchema::section($section)->fields ?? [])->first(fn ($candidate): bool => $candidate->key === $field && $candidate->type === FieldType::Table);
+        $steps = trans('applications::sheet.checklist_steps');
+
+        if ($table === null || ! is_array($steps)) {
+            return;
+        }
+
+        $values = is_array($this->form[$section] ?? null) ? $this->form[$section] : [];
+        $rows = is_array($values[$field] ?? null) ? $values[$field] : [];
+
+        foreach (array_values($steps) as $index => $activity) {
+            $rows[] = [...$sheetForm->emptyRow($table), 'step' => (string) ($index + 1), 'activity' => is_string($activity) ? $activity : '', 'status' => 'not_started'];
+        }
+
+        $values[$field] = array_slice($rows, 0, SheetForm::MAX_ROWS);
+        $this->form[$section] = $values;
+    }
+
     public function removeDiagramFile(string $section, string $field, string $kind): void
     {
         $this->authorize('update', $this->sheet);
@@ -283,7 +342,7 @@ final class SheetPage extends Component
         $this->reset('approvalRole', 'comment');
     }
 
-    public function render(OptionCatalog $options, SheetForm $sheetForm, SheetApprovers $approvers, OrganizationContext $context, ConfigurationItems $items): View
+    public function render(OptionCatalog $options, SheetForm $sheetForm, SheetApprovers $approvers, OrganizationContext $context, ConfigurationItems $items, BusinessProcesses $processes, LinkedRecords $linkedRecords): View
     {
         $sheet = $this->sheet;
         $editable = $this->canWrite();
@@ -310,6 +369,9 @@ final class SheetPage extends Component
             'cmdbAvailable' => $items->isAvailable(),
             'linkedItems' => $items->linkedTo($sheet),
             'itemCandidates' => $editable && mb_strlen(trim($this->itemSearch)) >= 2 ? $items->search(trim($this->itemSearch)) : [],
+            'processesAvailable' => $processes->isAvailable(),
+            'processCandidates' => $editable && mb_strlen(trim($this->processSearch)) >= 2 ? $processes->search(trim($this->processSearch)) : [],
+            'insights' => $this->insights($sheet, $editable, $items, $processes, $linkedRecords),
             'files' => Attachment::query()->where('attachable_type', 'applications.application')->where('attachable_id', $sheet->application_id)->get()->keyBy('id'),
         ])->title($sheet->application->name.' · '.__('applications::sheet.title'));
     }
@@ -388,6 +450,32 @@ final class SheetPage extends Component
         $rows = $values[$field] ?? [];
 
         return is_array($rows) ? array_values(array_filter($rows, is_array(...))) : [];
+    }
+
+    /**
+     * What other modules know, for the open chapter only: the BIA objectives of
+     * the processes in 10.1, what the linked CMDB items depend on (10.3) and
+     * the recovery plans covering them (10.5).
+     *
+     * @return array{processes: array<string, ProcessSummary>, dependencies: array<string, RecoveryProfile>, plans: list<LinkedRecord>}
+     */
+    private function insights(Sheet $sheet, bool $editable, ConfigurationItems $items, BusinessProcesses $processes, LinkedRecords $linkedRecords): array
+    {
+        $insights = ['processes' => [], 'dependencies' => [], 'plans' => []];
+
+        if ($this->chapter !== 10) {
+            return $insights;
+        }
+
+        $values = $editable && is_array($this->form['10_1'] ?? null) ? $this->form['10_1'] : $sheet->section('10_1');
+        $processIds = array_values(array_filter(is_array($values['processes'] ?? null) ? $values['processes'] : [], is_string(...)));
+        $insights['processes'] = $processIds !== [] ? $processes->find($processIds) : [];
+
+        $itemIds = array_map(fn ($item): string => $item->id, $items->linkedTo($sheet));
+        $insights['dependencies'] = $items->recoveryProfiles($items->dependencyIdsOf($itemIds));
+        $insights['plans'] = $linkedRecords->resolve('bcm.plan_version', $items->recordIdsLinkedTo($itemIds, 'bcm.plan_version'), $this->actor());
+
+        return $insights;
     }
 
     private function canWrite(): bool

@@ -54,6 +54,15 @@ interface ConfigurationItems
     public function linkedIds(string $morphType, array $recordIds): array;
 
     /**
+     * Records of one kind linked to any of these items (the recovery plans
+     * covering an application's components), in one query.
+     *
+     * @param  list<string>  $itemIds
+     * @return list<string> Record ids.
+     */
+    public function recordIdsLinkedTo(array $itemIds, string $morphType): array;
+
+    /**
      * Items these items need to work, directly or not (not the items themselves).
      *
      * @param  list<string>  $itemIds

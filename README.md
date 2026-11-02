@@ -96,9 +96,9 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Coverage report**: assessed processes without a plan in force or not brought back within their RTO, plans not approved or overdue for review or exercise; Excel export of the continuity register; reminders to owners and a weekly digest for coordinators.
 - **Activation log** for real disruptions: the crisis team is emailed a link to the plan, time to recover is compared with the RTO, lessons are kept.
 
-**Application portfolio** (in progress)
+**Application portfolio**
 - Register of applications with business owner, IT / application owner and deputy.
-- **Technical documentation sheet** following the company's template chapter by chapter, with editable dropdowns: general information, support and classification; data categories (GDPR, PCI DSS…), functionalities and integrations with a **data flow diagram drawn from them** (plus the team's own diagram and .drawio file); authentication, access procedures, roles and the **role permissions matrix**; network with firewall rules and a **network diagram drawn from them**, hosting and components **linked to the CMDB**, software, databases, middleware, libraries and licences, technical accounts (vault location only).
+- **Technical documentation sheet** following the company's template chapter by chapter, with editable dropdowns: general information, support and classification; data categories (GDPR, PCI DSS…), functionalities and integrations with a **data flow diagram drawn from them** (plus the team's own diagram and .drawio file); authentication, access procedures, roles and the **role permissions matrix**; network with firewall rules and a **network diagram drawn from them**, hosting and components **linked to the CMDB**, software, databases, middleware, libraries and licences, technical accounts (vault location only); certificates with **expiry reminders**, secrets (vault location only), compliance, logs and alerts; continuity **linked to the BIA processes**, CMDB dependencies and recovery plans; deployment, scheduled jobs, runbook, known issues, decommissioning checklist and glossary.
 - Versioned: the first version and major changes are approved by the business owner, the IT owner and a security officer; minor changes are published and logged in the change history; yearly review date.
 
 **Planned modules:** datacenter infrastructure, risk assessment, audit and compliance, projects.
@@ -237,6 +237,7 @@ Two processes must run all the time.
 | `itam:licenses:remind` | daily at 07:20 | Emails licence managers about licences expiring soon |
 | `bia:reviews:remind` | daily at 07:30 | Emails process owners whose BIA review is due |
 | `bia:digest` | Mondays at 07:45 | Emails continuity coordinators what is overdue or waiting |
+| `applications:certificates:remind` | daily at 07:40 | Emails application owners about certificates expiring soon |
 | `bcm:plans:remind` | daily at 07:35 | Emails plan owners whose plan is due for review or for an exercise |
 | `bcm:digest` | Mondays at 07:50 | Emails continuity coordinators what their plans need |
 | `ticketing:mail:prune` | daily | Deletes old entries of the incoming email log |
@@ -331,6 +332,7 @@ Settings, for special cases:
 | `BCM_EXERCISE_MONTHS` | `12` | Months from a plan's last exercise (or approval) to the next one |
 | `BCM_REMINDER_DAYS` | `30` | Days before a plan's review or exercise when its owner is emailed |
 | `APPLICATIONS_REVIEW_MONTHS` | `12` | Months from an application's documentation coming into force to its review |
+| `APPLICATIONS_CERTIFICATE_REMINDER_DAYS` | `30` | Days before a certificate of an application expires when its owners are emailed |
 | `ATTACHMENTS_DISK` | `attachments` | Storage for attachments (e.g. an S3-compatible disk) |
 | `SANCTUM_EXPIRATION` | `129600` | Lifetime of API tokens, in minutes |
 

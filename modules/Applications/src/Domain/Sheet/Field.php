@@ -109,6 +109,16 @@ final readonly class Field
         return new self($key, FieldType::ConfigurationItems);
     }
 
+    public static function processes(string $key): self
+    {
+        return new self($key, FieldType::Processes);
+    }
+
+    public static function insight(string $key): self
+    {
+        return new self($key, FieldType::Insight);
+    }
+
     public static function contacts(string $key, string $list): self
     {
         return new self($key, FieldType::Contacts, list: $list);

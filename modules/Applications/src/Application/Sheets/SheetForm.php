@@ -16,6 +16,7 @@ use Modules\Applications\Domain\Sheet\Field;
 use Modules\Applications\Domain\Sheet\FieldType;
 use Modules\Applications\Domain\Sheet\Section;
 use Modules\Applications\Domain\Sheet\SheetSchema;
+use Modules\Core\Domain\Links\BusinessProcesses;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\Supplier;
@@ -37,6 +38,7 @@ final readonly class SheetForm
     public function __construct(
         private OptionCatalog $options,
         private OrganizationContext $context,
+        private BusinessProcesses $processes,
     ) {}
 
     /**
@@ -50,7 +52,13 @@ final readonly class SheetForm
         foreach ($section->fields as $field) {
             $value = $stored[$field->key] ?? null;
 
-            if ($field->type === FieldType::ConfigurationItems) {
+            if ($field->type === FieldType::ConfigurationItems || $field->type === FieldType::Insight) {
+                continue;
+            }
+
+            if ($field->type === FieldType::Processes) {
+                $form[$field->key] = is_array($value) ? array_values(array_filter($value, is_string(...))) : [];
+
                 continue;
             }
 
@@ -131,7 +139,13 @@ final readonly class SheetForm
         $stored = [];
 
         foreach ($section->fields as $field) {
-            if ($field->type === FieldType::ConfigurationItems) {
+            if ($field->type === FieldType::ConfigurationItems || $field->type === FieldType::Insight) {
+                continue;
+            }
+
+            if ($field->type === FieldType::Processes) {
+                $stored[$field->key] = $this->processesFromForm(is_array($input[$field->key] ?? null) ? $input[$field->key] : [], "{$prefix}.{$field->key}");
+
                 continue;
             }
 
@@ -288,7 +302,8 @@ final readonly class SheetForm
             FieldType::DataCategories => [$path => ['array'], $path.'.*' => ['array'], $path.'.*.*' => ['string', 'max:64'], $path.'_other' => ['nullable', 'string', 'max:'.$field->max]],
             FieldType::Diagram => [$path => ['array'], $path.'.image' => ['nullable', 'uuid'], $path.'.source' => ['nullable', 'uuid']],
             FieldType::Permissions => [$path => ['array'], $path.'.*' => ['array'], $path.'.*.*' => ['boolean']],
-            FieldType::Table, FieldType::ConfigurationItems => [],
+            FieldType::Processes => [$path => ['array', 'max:100'], $path.'.*' => ['uuid']],
+            FieldType::Table, FieldType::ConfigurationItems, FieldType::Insight => [],
         };
     }
 
@@ -473,6 +488,25 @@ final readonly class SheetForm
         }
 
         return ['image' => $files['image'], 'source' => $files['source']];
+    }
+
+    /**
+     * Business processes of the organization's BIA, in the order chosen.
+     *
+     * @param  array<mixed>  $input
+     * @return list<string>
+     *
+     * @throws ValidationException for a process the BIA does not know
+     */
+    private function processesFromForm(array $input, string $path): array
+    {
+        $ids = array_values(array_unique(array_filter($input, fn (mixed $id): bool => is_string($id) && $id !== '')));
+
+        if ($ids !== [] && count($this->processes->find($ids)) !== count($ids)) {
+            throw ValidationException::withMessages([$path => __('applications::sheet.errors.unknown_reference')]);
+        }
+
+        return $ids;
     }
 
     /**

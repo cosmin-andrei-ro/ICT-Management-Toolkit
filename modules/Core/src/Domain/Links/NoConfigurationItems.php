@@ -46,6 +46,11 @@ final class NoConfigurationItems implements ConfigurationItems
         return [];
     }
 
+    public function recordIdsLinkedTo(array $itemIds, string $morphType): array
+    {
+        return [];
+    }
+
     public function dependencyIdsOf(array $itemIds): array
     {
         return [];

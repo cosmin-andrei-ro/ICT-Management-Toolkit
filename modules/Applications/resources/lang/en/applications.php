@@ -89,6 +89,10 @@ return [
             'subject' => 'Documentation in force: :application :version',
             'line' => 'Version :version of the documentation of :application is now in force.',
         ],
+        'certificate' => [
+            'subject' => 'Certificate expiring: :certificate (:application)',
+            'line' => 'The certificate :certificate used by :application expires on :date. Renew it and update the documentation.',
+        ],
         'comment' => 'Comment: :comment',
         'open' => 'Open the documentation',
     ],
