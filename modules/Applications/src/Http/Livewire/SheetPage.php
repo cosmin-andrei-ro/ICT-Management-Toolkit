@@ -15,6 +15,8 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Livewire\WithFileUploads;
 use Modules\Applications\Application\Actions\DecideSheet;
 use Modules\Applications\Application\Actions\SaveSheet;
 use Modules\Applications\Application\Actions\SubmitSheet;
@@ -23,9 +25,13 @@ use Modules\Applications\Application\Sheets\SheetApprovers;
 use Modules\Applications\Application\Sheets\SheetForm;
 use Modules\Applications\Domain\Enums\ApprovalRole;
 use Modules\Applications\Domain\Exceptions\SheetLocked;
+use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\Sheet;
 use Modules\Applications\Domain\Sheet\FieldType;
 use Modules\Applications\Domain\Sheet\SheetSchema;
+use Modules\Applications\Http\Controllers\DiagramImageController;
+use Modules\Core\Application\Collaboration\StoreAttachment;
+use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\Supplier;
 use Modules\Core\Domain\Models\User;
@@ -41,6 +47,8 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 #[Layout('core::components.layouts.app')]
 final class SheetPage extends Component
 {
+    use WithFileUploads;
+
     #[Locked]
     public string $sheetId = '';
 
@@ -57,6 +65,12 @@ final class SheetPage extends Component
     public string $approvalRole = '';
 
     public string $comment = '';
+
+    /** Diagram image being attached (PNG, JPEG, WebP or GIF). */
+    public ?TemporaryUploadedFile $diagramImage = null;
+
+    /** Its source file (.drawio). */
+    public ?TemporaryUploadedFile $diagramSource = null;
 
     public function mount(Sheet $sheet, SheetForm $sheetForm): void
     {
@@ -128,6 +142,55 @@ final class SheetPage extends Component
         if (is_array($rows) && array_key_exists($index, $rows)) {
             unset($rows[$index]);
             $values[$field] = array_values($rows);
+            $this->form[$section] = $values;
+        }
+    }
+
+    /**
+     * Stores the chosen image and source file with the application (so later
+     * versions keep them) and puts them in the diagram field, then saves.
+     */
+    public function attachDiagram(string $section, string $field, StoreAttachment $store, SheetForm $sheetForm, SaveSheet $save): void
+    {
+        $this->authorize('update', $this->sheet);
+        $target = collect(SheetSchema::chapters()[$this->chapter] ?? [])->first(fn ($candidate): bool => $candidate->key === $section);
+        $diagram = collect($target->fields ?? [])->first(fn ($candidate): bool => $candidate->key === $field && $candidate->type === FieldType::Diagram);
+
+        if ($diagram === null) {
+            return;
+        }
+
+        $this->validate([
+            'diagramImage' => ['nullable', 'file', 'required_without:diagramSource'],
+            'diagramSource' => ['nullable', 'file'],
+        ]);
+
+        $application = $this->sheet->application;
+        $values = is_array($this->form[$section] ?? null) ? $this->form[$section] : [];
+        $files = is_array($values[$field] ?? null) ? $values[$field] : ['image' => '', 'source' => ''];
+
+        if ($this->diagramImage !== null) {
+            $files['image'] = $this->storeFile($store, $application, $this->diagramImage, 'diagramImage', true);
+        }
+
+        if ($this->diagramSource !== null) {
+            $files['source'] = $this->storeFile($store, $application, $this->diagramSource, 'diagramSource', false);
+        }
+
+        $values[$field] = $files;
+        $this->form[$section] = $values;
+        $this->reset('diagramImage', 'diagramSource');
+        $this->store($sheetForm, $save);
+    }
+
+    public function removeDiagramFile(string $section, string $field, string $kind): void
+    {
+        $this->authorize('update', $this->sheet);
+        $values = is_array($this->form[$section] ?? null) ? $this->form[$section] : [];
+
+        if (in_array($kind, ['image', 'source'], true) && is_array($values[$field] ?? null)) {
+            // The file stays with the application: versions in force may show it.
+            $values[$field][$kind] = '';
             $this->form[$section] = $values;
         }
     }
@@ -213,6 +276,9 @@ final class SheetPage extends Component
             'people' => User::query()->where('is_active', true)->whereHas('organizations', fn ($query) => $query->whereKey($context->requireId()))->orderBy('name')->get(['id', 'name']),
             'suppliers' => Supplier::query()->orderBy('name')->get(['id', 'name']),
             'contracts' => Contract::query()->orderBy('title')->limit(500)->get(),
+            'matrix' => $sheetForm->matrixAxes($sheet),
+            'integrations' => $this->integrations($editable, $sheet),
+            'files' => Attachment::query()->where('attachable_type', 'applications.application')->where('attachable_id', $sheet->application_id)->get()->keyBy('id'),
         ])->title($sheet->application->name.' · '.__('applications::sheet.title'));
     }
 
@@ -232,7 +298,7 @@ final class SheetPage extends Component
 
         foreach (SheetSchema::chapters()[$this->chapter] ?? [] as $section) {
             $input = $this->form[$section->key] ?? [];
-            $sections[$section->key] = $sheetForm->fromForm($section, is_array($input) ? $input : [], 'form.'.$section->key);
+            $sections[$section->key] = $sheetForm->fromForm($section, is_array($input) ? $input : [], 'form.'.$section->key, $this->sheet, $sections);
         }
 
         try {
@@ -255,8 +321,40 @@ final class SheetPage extends Component
         $this->form = [];
 
         foreach (SheetSchema::chapters()[$this->chapter] ?? [] as $section) {
-            $this->form[$section->key] = $sheetForm->toForm($section, $this->sheet->section($section->key));
+            $this->form[$section->key] = $sheetForm->toForm($section, $this->sheet->section($section->key), $this->sheet);
         }
+    }
+
+    /**
+     * @throws ValidationException keyed to $property
+     */
+    private function storeFile(StoreAttachment $store, Application $application, TemporaryUploadedFile $file, string $property, bool $image): string
+    {
+        try {
+            // Shown in the page: raster images only, never SVG or HTML.
+            if ($image && ! in_array($store->assertAcceptable($file), DiagramImageController::IMAGE_TYPES, true)) {
+                throw ValidationException::withMessages(['file' => __('applications::sheet.errors.image_type')]);
+            }
+
+            return $store->handle($application, $this->actor(), $file, false)->id;
+        } catch (ValidationException $exception) {
+            throw ValidationException::withMessages([$property => $exception->errors()['file'] ?? [__('applications::sheet.errors.image_type')]]);
+        }
+    }
+
+    /**
+     * The integrations the data-flow diagram is drawn from: as typed while
+     * writing chapter 2, as saved otherwise.
+     *
+     * @return list<array<mixed>>
+     */
+    private function integrations(bool $editable, Sheet $sheet): array
+    {
+        $rows = $editable && $this->chapter === 2 && is_array($this->form['2_4'] ?? null)
+            ? ($this->form['2_4']['integrations'] ?? [])
+            : ($sheet->section('2_4')['integrations'] ?? []);
+
+        return is_array($rows) ? array_values(array_filter($rows, is_array(...))) : [];
     }
 
     private function canWrite(): bool

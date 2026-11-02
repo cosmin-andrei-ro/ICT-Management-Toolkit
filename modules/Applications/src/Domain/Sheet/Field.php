@@ -89,6 +89,21 @@ final readonly class Field
         return new self($key, FieldType::Table, $required, columns: $columns);
     }
 
+    public static function dataCategories(string $key): self
+    {
+        return new self($key, FieldType::DataCategories, max: 2000);
+    }
+
+    public static function diagram(string $key): self
+    {
+        return new self($key, FieldType::Diagram);
+    }
+
+    public static function permissions(string $key): self
+    {
+        return new self($key, FieldType::Permissions);
+    }
+
     public static function contacts(string $key, string $list): self
     {
         return new self($key, FieldType::Contacts, list: $list);

@@ -31,6 +31,9 @@ return [
         'application/vnd.oasis.opendocument.text',
         'application/vnd.oasis.opendocument.spreadsheet',
         'message/rfc822',
+        // Diagram sources (.drawio) are XML; always downloaded, never rendered.
+        'text/xml',
+        'application/xml',
     ],
 
 ];

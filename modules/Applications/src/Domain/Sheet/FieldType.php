@@ -28,4 +28,10 @@ enum FieldType: string
     case Table = 'table';
     // One contact per entry of an editable list (e.g. support teams).
     case Contacts = 'contacts';
+    // The template's data categories with the elements processed (2.1).
+    case DataCategories = 'data_categories';
+    // An uploaded image of a diagram and its source (.drawio) file.
+    case Diagram = 'diagram';
+    // Which roles (3.3) may use which functionality (2.3): the permissions matrix (3.4).
+    case Permissions = 'permissions';
 }

@@ -15,6 +15,8 @@ return [
     'chapters' => [
         0 => 'Document control',
         1 => 'General Information',
+        2 => 'Data Flows & Functionalities',
+        3 => 'User Management & Roles',
     ],
     'sections' => [
         'doc' => [
@@ -45,6 +47,41 @@ return [
         '1_6' => [
             'title' => 'Service Levels & Maintenance',
             'guidance' => 'Records the service level agreed with the business and when planned maintenance may take place.',
+        ],
+        '2_1' => [
+            'title' => 'Data Categories',
+            'guidance' => 'For every data category the application stores, processes or transmits, tick the data elements that apply. Then set the overall Data Classification to reflect the most sensitive category. Use Other for anything not listed.',
+        ],
+        '2_2' => [
+            'title' => 'Data Flow Diagram',
+            'guidance' => 'Shows where data comes from, where it goes and what is exchanged. The diagram below is drawn from 2.4 System Integrations; describe each network connection (ports, protocol) in 4.3 Firewall Rules & Ports. You can also attach your own diagram (Yourdon / DeMarco notation, level 0 and level 1; level 2 for critical applications) with its .drawio file.',
+        ],
+        '2_3' => [
+            'title' => 'Application Functionalities',
+            'guidance' => 'List the main functionalities grouped by module (functional area), one row per functionality, with the same module and menu names as in the application: they are reused in the role permissions matrix (3.4). Note the main data the user enters or the system receives (Input) and what it produces (Output).',
+        ],
+        '2_4' => [
+            'title' => 'System Integrations',
+            'guidance' => 'One row per automated data exchange with another system (API call, file transfer, message queue, database link) - not user interfaces or screens. Describe what is exchanged; the network side of each integration (ports, protocol) goes in 4.3 Firewall Rules & Ports.',
+        ],
+        '3_1' => [
+            'title' => 'Authentication & Identity',
+            'guidance' => 'Explains how users authenticate, how access is requested and what each role can do.',
+        ],
+        '3_2_1' => [
+            'title' => 'Access Request Procedure - Application Users',
+            'guidance' => 'Describe step by step how access is obtained (which form or tool, which role, who approves, typical lead time) for the business users of the application.',
+        ],
+        '3_2_2' => [
+            'title' => 'Access Request Procedure - Administrative & Technical Users',
+            'guidance' => 'The same for application administrators, privileged OS / database access and technical accounts (listed in 7 Technical Users / Service Accounts).',
+        ],
+        '3_3' => [
+            'title' => 'Application Roles',
+        ],
+        '3_4' => [
+            'title' => 'Role Permissions Matrix',
+            'guidance' => 'Shows which role can access which module, menu and functionality: the rows are the functionalities of 2.3, the columns the roles of 3.3. Tick the box wherever the role has access.',
         ],
     ],
     'fields' => [
@@ -93,6 +130,60 @@ return [
             'change_freeze' => 'Change freeze periods',
             'maintenance_notification' => 'Maintenance notification',
         ],
+        '2_1' => [
+            'classification' => 'Data classification',
+            'categories' => 'Data categories',
+        ],
+        '2_2' => [
+            'diagram' => 'Data flow diagram',
+        ],
+        '2_3' => [
+            'functionalities' => [
+                'module' => 'Module',
+                'menu' => 'Menu / Screen',
+                'functionality' => 'Functionality',
+                'description' => 'Description',
+                'input' => 'Input',
+                'output' => 'Output',
+            ],
+        ],
+        '2_4' => [
+            'integrations' => [
+                'name' => 'Integration',
+                'system' => 'System',
+                'direction' => 'Direction',
+                'type' => 'Type',
+                'data' => 'Data / Format',
+                'frequency' => 'Frequency',
+                'owner' => 'Owner',
+            ],
+        ],
+        '3_1' => [
+            'ad_integrated' => 'AD integrated',
+            'protocol' => 'Authentication protocol',
+            'ad_domain' => 'AD domain / LDAP server',
+            'iam_integrated' => 'IAM integrated',
+            'iam_resource' => 'IAM resource / entitlement',
+            'mfa' => 'Multifactor authentication',
+            'mfa_method' => 'MFA method',
+            'sso' => 'Single sign-on (SSO)',
+        ],
+        '3_2_1' => [
+            'procedure' => 'Procedure',
+        ],
+        '3_2_2' => [
+            'procedure' => 'Procedure',
+        ],
+        '3_3' => [
+            'roles' => [
+                'name' => 'Role name',
+                'description' => 'Description',
+                'group' => 'AD group / IAM entitlement',
+            ],
+        ],
+        '3_4' => [
+            'matrix' => 'Permissions',
+        ],
     ],
     'examples' => [
         'doc' => [
@@ -125,6 +216,42 @@ return [
             'change_freeze' => 'e.g. Year-end closing, major IT migration weekends',
             'maintenance_notification' => 'e.g. 5 working days in advance, banner in the portal and e-mail to all users',
         ],
+        '2_3' => [
+            'functionalities' => [
+                'module' => 'e.g. Tickets',
+                'menu' => 'e.g. New Ticket',
+                'functionality' => 'e.g. Create ticket',
+                'description' => 'e.g. Employee or agent logs an incident or service request',
+                'input' => 'e.g. Requester, category, priority, description',
+                'output' => 'e.g. Ticket number, confirmation e-mail',
+            ],
+        ],
+        '2_4' => [
+            'integrations' => [
+                'name' => 'e.g. Import users and groups',
+                'system' => 'e.g. Active Directory',
+                'data' => 'e.g. User accounts and AD groups, LDAPS',
+                'owner' => 'e.g. IAM Team',
+            ],
+        ],
+        '3_1' => [
+            'ad_domain' => 'e.g. corp.company.example / ldaps://dc01.corp.company.example',
+            'iam_resource' => 'e.g. TKT01_APP',
+            'mfa_method' => 'e.g. Microsoft Authenticator, token',
+        ],
+        '3_2_1' => [
+            'procedure' => 'e.g. Create a request in the Ticketing Platform, Identity & Access Management (IAM) Platform or Access Request Portal',
+        ],
+        '3_2_2' => [
+            'procedure' => 'e.g. Request privileged access through the Privileged Access Management (PAM) platform, the IAM platform or the Access Request Portal, approved by the application owner and the Security Team.',
+        ],
+        '3_3' => [
+            'roles' => [
+                'name' => 'e.g. Agent',
+                'description' => 'e.g. Support agent who works on assigned tickets',
+                'group' => 'e.g. SD_Agents',
+            ],
+        ],
     ],
     'choices' => [
         'exposure' => [
@@ -135,7 +262,23 @@ return [
     ],
     'ui' => [
         'chapters' => 'Chapters',
-        'more_chapters' => 'The other chapters of the template (data flows, users and roles, network, infrastructure, software, security, continuity, operations) are added in the next releases.',
+        'more_chapters' => 'The other chapters of the template (network, infrastructure, software, security, continuity, operations) are added in the next releases.',
+        'dfd_title' => 'Data flow diagram of :application',
+        'dfd_caption' => 'Drawn from 2.4 System Integrations: systems sending data on the left, systems receiving it on the right, exchanges both ways below.',
+        'dfd_empty' => 'Add the system integrations in 2.4 and the data flow diagram is drawn here.',
+        'own_diagram' => 'Your own diagram',
+        'own_diagram_alt' => 'Diagram attached to :section',
+        'download_source' => 'Download the source file (:name)',
+        'remove_image' => 'Remove the image',
+        'remove_source' => 'Remove the source file',
+        'image_file' => 'Image (PNG, JPEG, WebP or GIF)',
+        'source_file' => 'Source file (.drawio)',
+        'attach' => 'Attach',
+        'uploading' => 'Uploading…',
+        'matrix_empty' => 'List the functionalities in 2.3 and the roles in 3.3 (then save) to fill in the matrix.',
+        'matrix_help' => 'Added or renamed roles appear in the matrix once saved.',
+        'matrix_cell' => ':role may use :functionality',
+        'granted' => 'Allowed',
         'to_complete' => 'to complete',
         'version' => 'version :version',
         'new_major' => 'new major version',
@@ -183,5 +326,6 @@ return [
         'role' => 'Choose which approval you give.',
         'cannot_approve' => 'You cannot give this approval: nobody approves a version they submitted, and one person gives one approval.',
         'unknown_reference' => 'This entry is not available in your organization.',
+        'image_type' => 'Choose a PNG, JPEG, WebP or GIF image.',
     ],
 ];
