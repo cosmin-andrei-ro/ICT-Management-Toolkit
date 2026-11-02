@@ -24,6 +24,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Modules\Core\Http\Filament\Support\InitialsAvatarProvider;
 use Modules\Core\Http\Middleware\AllowUnsafeEval;
 use Modules\Core\Http\Middleware\RequireTwoFactor;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
@@ -40,6 +41,7 @@ final class AdminPanelProvider extends PanelProvider
         $panel
             ->default()
             ->id('admin')
+            ->defaultAvatarProvider(InitialsAvatarProvider::class)
             ->path('admin')
             ->colors([
                 'primary' => Color::Slate,
