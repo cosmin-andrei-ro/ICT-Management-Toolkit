@@ -21,7 +21,7 @@ Open the process and click **Start the assessment** (or **Start a review** once 
 
 6. Under **What the process needs**, add the IT systems it uses (search the CMDB), the suppliers, places and other processes it depends on, and the key roles (with how many people at least) and key people without whom it stops.
 
-**Save draft** keeps your work and updates the MTPD; **Submit for approval** sends it to the coordinator. If it comes back, the coordinator's comment says what to change. Once approved, the objectives are in force until the next review, usually a year later.
+**Save draft** keeps your work and updates the MTPD; **Submit for approval** sends it to the coordinator. If it comes back, the coordinator's comment says what to change. Once approved, the objectives are in force until the next review, usually a year later. A month before, you receive an email reminding you to start the review.
 
 ## For the BIA coordinator
 
@@ -30,6 +30,10 @@ Open the process and click **Start the assessment** (or **Start a review** once 
 When an assessment is submitted you receive an email. Open it, check it, and **Approve** it or **Return to the owner** with a comment. You cannot approve a process you own or an assessment you submitted: another coordinator does.
 
 The **tier** follows from the RTO: tier 1 within 4 hours, tier 2 within a day, tier 3 within 3 days, tier 4 later. Team leads see the BIA too, to plan IT recovery.
+
+At the top of the list, the overview counts processes per tier, those never assessed or overdue for review, and the assessments being filled in or waiting for you. **Export to Excel** gives the whole register: processes, what they need, and the recovery gaps. Every Monday you receive an email when something needs attention.
+
+On a process, **BIA sheet** shows its analysis on one page: print it, or save it as PDF from the print dialog, for an audit.
 
 Every version stays in the history. Approved versions never change: a review starts a new version, copied from the one in force.
 

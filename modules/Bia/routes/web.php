@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Bia\Http\Controllers\ProcessSheetController;
 use Modules\Bia\Http\Livewire\AssessmentPage;
 use Modules\Bia\Http\Livewire\GapReport;
 use Modules\Bia\Http\Livewire\MyProcesses;
@@ -20,5 +21,6 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
     Route::livewire('/bia/processes/new', ProcessForm::class)->name('bia.processes.create');
     Route::livewire('/bia/processes/{process}', ShowProcess::class)->whereUuid('process')->name('bia.processes.show');
     Route::livewire('/bia/processes/{process}/edit', ProcessForm::class)->whereUuid('process')->name('bia.processes.edit');
+    Route::get('/bia/processes/{process}/sheet', ProcessSheetController::class)->whereUuid('process')->name('bia.processes.sheet');
     Route::livewire('/bia/assessments/{assessment}', AssessmentPage::class)->whereUuid('assessment')->name('bia.assessments.show');
 });

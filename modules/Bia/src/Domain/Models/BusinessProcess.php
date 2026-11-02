@@ -49,6 +49,7 @@ use Modules\Core\Domain\Models\User;
  * @property ?Tier $tier
  * @property ?Carbon $approved_at
  * @property ?CarbonImmutable $next_review_on
+ * @property ?CarbonImmutable $review_reminded_for The review date the owner was reminded of.
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -134,6 +135,7 @@ final class BusinessProcess extends Model
             'tier' => Tier::class,
             'approved_at' => 'datetime',
             'next_review_on' => 'immutable_date',
+            'review_reminded_for' => 'immutable_date',
         ];
     }
 }
