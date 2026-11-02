@@ -31,7 +31,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 | Secrets at rest | Yes | Mailbox passwords and two-factor secrets are encrypted with the application key, never shown again, never logged or audited |
 | Audit trail | Yes | Append-only (enforced by a database trigger): every change to business data with old and new values, sign-ins, failed sign-ins, role changes, two-factor events, exports and downloads |
 | W3C WebAuthn Level 2 (FIDO2) | Yes | Security keys and passkeys as a second factor, and passkeys to sign in without a password; phishing resistant (bound to the site's domain); attestation not requested |
-| Single sign-on (OIDC, SAML2) | Planned | Active Directory (LDAPS) sign-in is available today |
+| OpenID Connect 1.0 (single sign-on) | Yes | Per-organization identity providers (Entra ID, Google, Okta, Keycloak…): authorization code with PKCE, ID tokens verified against the provider's keys (asymmetric algorithms only), accounts created with roles from group mappings, the provider's second factor trusted when asserted. **Planned:** SAML2 |
 
 ### Service management
 
@@ -53,7 +53,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 **Core**
 - Several organizations (legal entities) in one installation, with their data kept apart.
-- Sign-in with local accounts or **Active Directory** (LDAPS). AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
+- Sign-in with local accounts, **Active Directory** (LDAPS) or **single sign-on** through each organization's OpenID Connect provider (Entra ID, Google, Okta, Keycloak), with roles from its groups. AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
 - **Two-factor authentication** with an authenticator app, required for IT staff, plus recovery codes; **security keys and passkeys** (WebAuthn), also to sign in without a password.
 - **People management**: invitations to local accounts by email, roles, deactivation. Password reset by email and password change for local accounts.
 - Role-based permissions: requester, agent, team lead, CAB member, asset manager, continuity coordinator, application manager, security officer, risk manager, compliance manager, auditor, administrator.
@@ -120,7 +120,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 **Planned modules:** datacenter infrastructure, projects.
 
-**Not done yet:** single sign-on with OIDC or SAML.
+**Not done yet:** single sign-on with SAML2.
 
 ## Requirements
 

@@ -30,7 +30,7 @@ The foundation every other module builds on. Code: `modules/Core/`.
 - Throttling: 5 attempts per minute per identifier and IP address, and 20 attempts per 15 minutes per identifier.
 - Inactive and unknown accounts get the same error. Accounts deactivated while signed in lose access on their next request.
 - Two-factor authentication with an authenticator app and recovery codes ([ADR 0017](../adr/0017-account-security.md)); **security keys and passkeys** (WebAuthn, [ADR 0037](../adr/0037-security-keys-and-passkeys.md)) as the second factor, and passkeys to sign in from `/login` without a password. Keys live in `core_security_keys` (`SecurityKeys` service, `resources/js/components/webauthn.js`).
-- OIDC/SAML SSO is not implemented yet.
+- **Single sign-on with OpenID Connect** ([ADR 0038](../adr/0038-single-sign-on-with-openid-connect.md)): providers per organization (`core_sso_providers`, Administration → Access → Single sign-on), group → role mappings (`core_sso_group_mappings`), linked identities (`core_sso_identities`), `/login/sso/{provider}` and its callback. `OpenIdConnect` runs the flow (PKCE, state, nonce, ID token verification), `SignInWithSso` links or creates the account, `OutboundUrlGuard` keeps provider URLs off internal addresses. SAML2 is not implemented yet.
 
 ### Configuring Active Directory
 

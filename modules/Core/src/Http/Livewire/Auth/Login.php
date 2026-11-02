@@ -16,6 +16,8 @@ use Modules\Core\Application\Authentication\AttemptLogin;
 use Modules\Core\Application\Authentication\CompleteLogin;
 use Modules\Core\Application\Authentication\SecurityKeys;
 use Modules\Core\Domain\Directory\Directory;
+use Modules\Core\Domain\Sso\SsoProvider;
+use Modules\Core\Domain\Tenancy\OrganizationScope;
 
 #[Layout('core::components.layouts.guest')]
 final class Login extends Component
@@ -76,6 +78,8 @@ final class Login extends Component
     {
         return view('core::livewire.auth.login', [
             'directoryEnabled' => app(Directory::class)->isEnabled(),
+            // Before sign-in there is no organization: every enabled provider is offered.
+            'ssoProviders' => SsoProvider::query()->withoutGlobalScope(OrganizationScope::class)->where('is_enabled', true)->orderBy('name')->get(['id', 'name']),
         ])->title(__('core::auth.login.title'));
     }
 
