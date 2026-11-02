@@ -11,6 +11,14 @@
         @endif
     @endif
 
+    @if ($section->key === '4_2')
+        @if ($firewallRules === [])
+            <p class="text-sm text-gray-500">{{ __('applications::sheet.ui.network_empty') }}</p>
+        @else
+            @include('applications::sheets.network', ['rules' => $firewallRules, 'application' => $application, 'options' => $options])
+        @endif
+    @endif
+
     <div class="space-y-2">
         <p class="text-xs font-medium text-gray-600">{{ __('applications::sheet.ui.own_diagram') }}</p>
         @if ($image)

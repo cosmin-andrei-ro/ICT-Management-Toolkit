@@ -29,6 +29,13 @@ Open the application and click **Write the documentation** (later **Update the d
 - **Your own diagram**: in 2.2 you can also attach an image of your own diagram (PNG, JPEG, WebP or GIF) and its .drawio file. Files stay with the application, so later versions keep them; remove them from a version if they no longer apply.
 - **3.4 Role permissions matrix**: list the functionalities in 2.3 and the roles in 3.3, save, then tick which role may use which functionality.
 
+### Network, infrastructure and software (chapters 4 to 7)
+
+- **4.3 Firewall rules & ports**: one row per rule or network flow, with the change ticket that opened it. The **network diagram** in 4.2 is drawn from these rows - one box per source or destination, one arrow per rule with its port and protocol - so use the same names everywhere. You can attach your own diagram too.
+- **5.2 Components**: list the servers and other components; also **link the CMDB items** the application runs on (search by name). Their CMDB page then shows the application, and the next version keeps the links.
+- **6 Software & platforms**: architecture, backends, frontends, databases (attach the database diagram in 6.4.1), cache and middleware, third-party libraries with their licences and end of support.
+- **7 Technical users / service accounts**: every non-personal account, with where its credential is kept (vault) - **never the password itself**.
+
 At the bottom, describe **what changed in this version** (for the first one, for example *Initial documentation of the existing application*).
 
 ## Major and minor changes

@@ -1,4 +1,4 @@
-@php($shared = ['options' => $options, 'people' => $people, 'suppliers' => $suppliers, 'contracts' => $contracts, 'form' => $form, 'sheet' => $sheet, 'editable' => $editable, 'matrix' => $matrix, 'integrations' => $integrations, 'files' => $files, 'application' => $application])
+@php($shared = ['options' => $options, 'people' => $people, 'suppliers' => $suppliers, 'contracts' => $contracts, 'form' => $form, 'sheet' => $sheet, 'editable' => $editable, 'matrix' => $matrix, 'integrations' => $integrations, 'firewallRules' => $firewallRules, 'files' => $files, 'application' => $application, 'cmdbAvailable' => $cmdbAvailable, 'linkedItems' => $linkedItems, 'itemCandidates' => $itemCandidates])
 <div class="space-y-6">
     <header class="space-y-1">
         <a href="{{ route('applications.show', $application) }}" class="text-sm text-gray-500 underline">← {{ $application->name }}</a>
@@ -40,8 +40,8 @@
                     @if ($section->guidance()) <p class="text-xs text-gray-500">{{ $section->guidance() }}</p> @endif
                     @foreach ($section->fields as $field)
                         <div wire:key="field-{{ $section->key }}-{{ $field->key }}">
-                            @if (in_array($field->type, [\Modules\Applications\Domain\Sheet\FieldType::DataCategories, \Modules\Applications\Domain\Sheet\FieldType::Diagram, \Modules\Applications\Domain\Sheet\FieldType::Permissions], true))
-                                @if ($field->type !== \Modules\Applications\Domain\Sheet\FieldType::Diagram) <p class="text-sm font-medium">{{ $section->label($field) }}</p> @endif
+                            @if (in_array($field->type, [\Modules\Applications\Domain\Sheet\FieldType::DataCategories, \Modules\Applications\Domain\Sheet\FieldType::Diagram, \Modules\Applications\Domain\Sheet\FieldType::Permissions, \Modules\Applications\Domain\Sheet\FieldType::ConfigurationItems], true))
+                                @if (! in_array($field->type, [\Modules\Applications\Domain\Sheet\FieldType::Diagram, \Modules\Applications\Domain\Sheet\FieldType::ConfigurationItems], true)) <p class="text-sm font-medium">{{ $section->label($field) }}</p> @endif
                                 @include('applications::sheets.'.$field->type->value, [...$shared, 'section' => $section, 'field' => $field])
                                 @error('form.'.$section->key.'.'.$field->key) <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             @elseif ($field->type === \Modules\Applications\Domain\Sheet\FieldType::Table)

@@ -9,12 +9,16 @@ namespace Modules\Applications;
 
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Gate;
 use Modules\Applications\Application\Options\OptionCatalog;
+use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\OptionValue;
 use Modules\Applications\Domain\Models\Sheet;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Links\LinkedRecord;
+use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
@@ -34,6 +38,8 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
         $this->app->scoped(OptionCatalog::class);
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+        // The CMDB item page lists the applications built on the item (5.2 Components).
+        $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('applications.sheet', self::linkedApplications(...)));
     }
 
     public function boot(): void
@@ -50,6 +56,27 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
             $navigation->add('applications::applications.mine.menu', 'applications.mine', 'applications.mine', fn (User $user): bool => ! $user->can('applications.application.view') && Application::query()->ownedBy($user)->exists(), order: 28);
             $navigation->add('applications::applications.menu', 'applications.index', 'applications.*', fn (User $user): bool => $user->can('applications.application.view'), Navigation::CONFIGURATION);
         });
+    }
+
+    /**
+     * Versions in force or being written (not superseded ones), as their application.
+     *
+     * @param  list<string>  $ids
+     * @return list<LinkedRecord>
+     */
+    private static function linkedApplications(array $ids, User $viewer): array
+    {
+        $gate = Gate::forUser($viewer);
+
+        return array_values(Sheet::query()->with('application')->whereKey($ids)->where('status', '!=', SheetStatus::Superseded->value)->limit(100)->get()
+            ->filter(fn (Sheet $sheet): bool => $gate->allows('view', $sheet))
+            ->map(fn (Sheet $sheet): LinkedRecord => new LinkedRecord(
+                $sheet->id,
+                __('applications::applications.linked', ['application' => $sheet->application->name, 'code' => $sheet->application->code]),
+                route('applications.show', $sheet->application_id),
+                $sheet->status->label(),
+            ))
+            ->all());
     }
 
     private function registerPermissions(PermissionRegistry $registry): void

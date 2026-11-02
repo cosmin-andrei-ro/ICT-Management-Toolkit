@@ -63,18 +63,18 @@ The status of each part says where it lives in the toolkit: **built**, or **plan
 - **3.3 Application Roles** — table: Role Name, Description, AD Group / IAM Entitlement.
 - **3.4 Role Permissions Matrix** — Module, Menu / Screen, Functionality × the roles of 3.3 (tick boxes).
 
-## 4. Network — planned (PR 3)
+## 4. Network — built
 
 - **4.1 Network Description** — DNS Names / Aliases, Load Balancer / VIP, Load Balancing Method*, TLS Termination*.
-- **4.2 Network Architecture** — security zones (Internet, DMZ, application, data, management), firewalls, servers and permitted connections; image and .drawio file. Toolkit: drawn from 4.3 and 5.2, plus upload.
+- **4.2 Network Architecture** — security zones (Internet, DMZ, application, data, management), firewalls, servers and permitted connections; image and .drawio file. Toolkit: drawn from 4.3 (one box per source or destination, one arrow per rule), plus the team's own image and .drawio file.
 - **4.3 Firewall Rules & Ports** — table: Source, Destination, Port, Direction*, Protocol*, Encryption Method*, Purpose, Ticket ID.
 
-## 5. Infrastructure — planned (PR 3)
+## 5. Infrastructure — built
 
 - **5.1 Hosting** — Hosting Model*, Data Center / Cloud Provider, Platform*.
-- **5.2 Components** — table: Component*, Server Name, IP Address, Operating System*, Type, Description, Env.*, Ticket ID (linked to CMDB items).
+- **5.2 Components** — table: Component*, Server Name, IP Address, Operating System*, Type, Description, Env.*, Ticket ID; plus links to the CMDB items, which then list the application.
 
-## 6. Software & Platforms — planned (PR 3)
+## 6. Software & Platforms — built
 
 - **6.1 Application Architecture** — Application Type*, User Access Method*, Main Tiers / Layers, Architecture Notes.
 - **6.2 Backends** — Framework, Framework Version, Server(s), Role, App Server*, App Server Version, Language & Version*, Config / Logs Path.
@@ -83,7 +83,7 @@ The status of each part says where it lives in the toolkit: **built**, or **plan
 - **6.5 Cache & Middleware** — Product, Version, Server / Endpoint, Purpose.
 - **6.6 Third-party Libraries & Licenses** — Name, Version, License*, Vendor, Support Until (date).
 
-## 7. Technical Users / Service Accounts — planned (PR 3)
+## 7. Technical Users / Service Accounts — built
 
 Username, IAM Category*, User Type, Usage / Purpose, Systems Used On, Owner, Password Rotation*, Credential Location (vault only), Ticket ID.
 

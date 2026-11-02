@@ -104,6 +104,11 @@ final readonly class Field
         return new self($key, FieldType::Permissions);
     }
 
+    public static function configurationItems(string $key): self
+    {
+        return new self($key, FieldType::ConfigurationItems);
+    }
+
     public static function contacts(string $key, string $list): self
     {
         return new self($key, FieldType::Contacts, list: $list);

@@ -9,6 +9,9 @@ The register of the company's applications and their technical documentation, fo
 - **Approvals** (`applications_sheet_approvals`): business, technical and security, one each per submitted version.
 - **Diagrams**: images (PNG, JPEG, WebP, GIF — never SVG) and .drawio sources are Core attachments of the application, so later versions keep them; the sheet stores their ids. Images are shown inline by `/applications/diagrams/{attachment}` (authorized, `nosniff`, sandbox CSP); sources are downloaded through Core's attachment controller. The data-flow diagram (2.2) is also drawn as SVG from the integrations (2.4).
 - **Data categories** (2.1): the template's 21 categories and their elements, fixed in code (`DataCategories`), plus free "Other".
+- **Network diagram** (4.2): drawn as SVG from the firewall rules (4.3) by `NetworkDiagram` — one box per source or destination, placed in columns by traffic order, one arrow per rule with port and protocol.
+- **CMDB items** (5.2): linked to the version through Core's `ConfigurationItems` contract (`applications.sheet` links, audited on the version); a new version starts with the links of the version in force; the CMDB item page lists the application.
+- **Technical accounts** (7) and later secrets record only where a credential is kept (vault), never the credential.
 - **Permissions matrix** (3.4): rows are the functionalities of 2.3, columns the roles of 3.3; stored by name.
 - **Dropdown values** (`applications_option_values`): per organization and list; defaults on first use; deactivated, never deleted.
 
@@ -17,7 +20,7 @@ The register of the company's applications and their technical documentation, fo
 - `/applications`: the portfolio with search and filters (status, criticality, not documented or review overdue).
 - `/applications/new`, `/applications/{id}/edit`: identity and owners (application managers).
 - `/applications/{id}`: identity, document control (version, last and next review), change history with approvals; write, continue or update the documentation.
-- `/applications/sheets/{id}`: the sheet chapter by chapter (document control and chapters 1–3 so far); kind of change and description; submit or publish; approve as business owner, IT owner or security officer, or return.
+- `/applications/sheets/{id}`: the sheet chapter by chapter (document control and chapters 1–7 so far); kind of change and description; submit or publish; approve as business owner, IT owner or security officer, or return.
 - `/applications/mine`: applications the signed-in person owns, for owners without `applications.application.view`.
 - Administration → Application portfolio → Dropdown values.
 
@@ -36,6 +39,6 @@ Owners and deputies write their applications' sheets without a permission. Nobod
 
 1. Register, versioned sheet with approvals, chapter 1, dropdowns, roles — **done**.
 2. Chapters 2–3: data categories, functionalities, integrations, authentication, roles and permission matrix; data-flow diagram drawn from the integrations, plus upload — **done**.
-3. Chapters 4–7: network, firewall rules, hosting, components linked to the CMDB, software, databases, technical accounts; network diagram, ERD upload.
+3. Chapters 4–7: network, firewall rules, hosting, components linked to the CMDB, software, databases, technical accounts; network diagram, ERD upload — **done**.
 4. Chapters 8–16: certificates with expiry reminders, secrets (vault location only), compliance, logging and alerts, continuity from the BIA and BCM, deployment, jobs, runbook, troubleshooting, decommissioning, glossary.
 5. Full PDF through Gotenberg (ADR), links created on approval, yearly review reminders, Excel export.

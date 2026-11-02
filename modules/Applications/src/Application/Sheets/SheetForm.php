@@ -50,6 +50,10 @@ final readonly class SheetForm
         foreach ($section->fields as $field) {
             $value = $stored[$field->key] ?? null;
 
+            if ($field->type === FieldType::ConfigurationItems) {
+                continue;
+            }
+
             if ($field->type === FieldType::Permissions) {
                 $form[$field->key] = $this->permissionsToForm(is_array($value) ? $value : [], $sheet);
 
@@ -127,6 +131,10 @@ final readonly class SheetForm
         $stored = [];
 
         foreach ($section->fields as $field) {
+            if ($field->type === FieldType::ConfigurationItems) {
+                continue;
+            }
+
             if ($field->type === FieldType::Permissions) {
                 $stored[$field->key] = $this->permissionsFromForm(is_array($input[$field->key] ?? null) ? $input[$field->key] : [], $sheet, $chapter);
 
@@ -280,7 +288,7 @@ final readonly class SheetForm
             FieldType::DataCategories => [$path => ['array'], $path.'.*' => ['array'], $path.'.*.*' => ['string', 'max:64'], $path.'_other' => ['nullable', 'string', 'max:'.$field->max]],
             FieldType::Diagram => [$path => ['array'], $path.'.image' => ['nullable', 'uuid'], $path.'.source' => ['nullable', 'uuid']],
             FieldType::Permissions => [$path => ['array'], $path.'.*' => ['array'], $path.'.*.*' => ['boolean']],
-            FieldType::Table => [],
+            FieldType::Table, FieldType::ConfigurationItems => [],
         };
     }
 
