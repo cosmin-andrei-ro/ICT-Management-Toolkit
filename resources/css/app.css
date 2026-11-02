@@ -83,3 +83,19 @@
     background: var(--color-gray-50);
     font-weight: 600;
 }
+
+/*
+ * Text fields without a utility border were invisible on white cards (Tailwind's
+ * preflight strips borders and padding), and the caret sat under the focus ring.
+ * Utilities on an element still win over this base layer.
+ */
+@layer base {
+    input:where(:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden'], [type='range'], [type='color'], [type='submit'], [type='button'], [type='reset'], [type='image'])),
+    select,
+    textarea {
+        border: 1px solid var(--color-gray-300);
+        border-radius: var(--radius-md);
+        background-color: var(--color-white);
+        padding: 0.375rem 0.75rem;
+    }
+}

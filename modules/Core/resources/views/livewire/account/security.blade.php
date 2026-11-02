@@ -17,6 +17,7 @@
                         <li wire:key="recovery-{{ $loop->index }}">{{ $recoveryCode }}</li>
                     @endforeach
                 </ul>
+                <button type="button" wire:click="downloadRecoveryCodes" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('core::security.mfa.download_recovery_codes') }}</button>
             </div>
         @endif
 
