@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Continuity plan',
     'menu' => 'Continuity plans',
     'title' => 'Continuity and recovery plans',
     'linked' => ':type: :plan',

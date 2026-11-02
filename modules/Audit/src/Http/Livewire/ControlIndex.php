@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Audit\Http\Livewire;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Layout;
@@ -33,6 +34,9 @@ final class ControlIndex extends Component
     #[Url]
     public bool $unmapped = false;
 
+    #[Url]
+    public bool $testOverdue = false;
+
     public function mount(): void
     {
         $this->authorize('viewAny', Control::class);
@@ -40,7 +44,7 @@ final class ControlIndex extends Component
 
     public function updated(string $property): void
     {
-        if (in_array($property, ['search', 'status', 'unmapped'], true)) {
+        if (in_array($property, ['search', 'status', 'unmapped', 'testOverdue'], true)) {
             $this->resetPage();
         }
     }
@@ -50,6 +54,7 @@ final class ControlIndex extends Component
         $this->authorize('viewAny', Control::class);
         $like = '%'.str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], trim(mb_substr($this->search, 0, 200))).'%';
         $perPage = config('audit.compliance.per_page');
+        $today = CarbonImmutable::today();
 
         return view('audit::livewire.controls.index', [
             'controls' => Control::query()
@@ -57,10 +62,12 @@ final class ControlIndex extends Component
                 ->withCount('requirements')
                 ->when(ControlStatus::tryFrom($this->status) !== null, fn (Builder $query) => $query->where('status', $this->status))
                 ->when($this->unmapped, fn (Builder $query) => $query->whereDoesntHave('requirements'))
+                ->when($this->testOverdue, fn (Builder $query) => $query->where('status', '!=', 'retired')->where('next_test_on', '<', $today->toDateString()))
                 ->when(trim($this->search) !== '', fn (Builder $query) => $query->where(fn (Builder $inner) => $inner->whereLike('name', $like)->orWhereLike('description', $like)))
                 ->orderBy('number')
                 ->paginate(is_int($perPage) ? $perPage : 25),
             'statuses' => ControlStatus::cases(),
+            'today' => $today,
         ])->title(__('audit::compliance.controls.title'));
     }
 }

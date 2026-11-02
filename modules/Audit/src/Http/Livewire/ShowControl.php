@@ -7,31 +7,44 @@ declare(strict_types=1);
 
 namespace Modules\Audit\Http\Livewire;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use Livewire\WithFileUploads;
+use Modules\Audit\Application\Actions\ManageEvidence;
 use Modules\Audit\Application\Actions\MapControl;
+use Modules\Audit\Application\Actions\RecordControlTest;
 use Modules\Audit\Application\Actions\SaveControl;
 use Modules\Audit\Domain\Enums\ControlStatus;
+use Modules\Audit\Domain\Enums\EvidenceKind;
+use Modules\Audit\Domain\Enums\TestResult;
 use Modules\Audit\Domain\Models\Control;
+use Modules\Audit\Domain\Models\Evidence;
 use Modules\Audit\Domain\Models\Framework;
 use Modules\Audit\Domain\Models\Requirement;
+use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Models\User;
 
 /**
- * One control: how far it is implemented (kept by its owner) and the
- * requirements of every framework it helps to meet.
+ * One control: how far it is implemented (kept by its owner), the
+ * requirements of every framework it helps to meet, the evidence that it
+ * works and its periodic tests.
  *
  * @property-read Control $control Computed.
  */
 #[Layout('core::components.layouts.app')]
 final class ShowControl extends Component
 {
+    use WithFileUploads;
+
     #[Locked]
     public string $controlId = '';
 
@@ -45,12 +58,37 @@ final class ShowControl extends Component
 
     public string $mapSearch = '';
 
+    public string $evidenceType = '';
+
+    public string $evidenceSearch = '';
+
+    public string $evidenceNote = '';
+
+    public ?UploadedFile $document = null;
+
+    public string $documentTitle = '';
+
+    public string $documentDescription = '';
+
+    public string $documentValidUntil = '';
+
+    public string $testedOn = '';
+
+    public string $testResult = 'effective';
+
+    public string $testMethod = '';
+
+    public string $testNotes = '';
+
+    public ?UploadedFile $testDocument = null;
+
     public function mount(Control $control): void
     {
         $this->authorize('view', $control);
         $this->controlId = $control->id;
         $this->status = $control->status->value;
         $this->notes = $control->implementation_notes ?? '';
+        $this->testedOn = CarbonImmutable::today()->toDateString();
     }
 
     #[Computed]
@@ -94,6 +132,79 @@ final class ShowControl extends Component
         unset($this->control);
     }
 
+    public function linkEvidence(string $recordId, ManageEvidence $evidence): void
+    {
+        $this->authorize('implement', $this->control);
+        $this->validate([
+            'evidenceType' => ['required', Rule::in(array_keys(app(LinkedRecords::class)->searchable()))],
+            'evidenceNote' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        try {
+            $evidence->link($this->control, $this->evidenceType, $recordId, $this->evidenceNote, $this->actor());
+        } catch (InvalidArgumentException) {
+            $this->addError('evidenceSearch', __('audit::evidence.errors.link'));
+
+            return;
+        }
+
+        $this->reset('evidenceNote');
+        unset($this->control);
+    }
+
+    public function uploadEvidence(ManageEvidence $evidence): void
+    {
+        $this->authorize('implement', $this->control);
+        $this->validate([
+            'document' => ['required', 'file'],
+            'documentTitle' => ['nullable', 'string', 'max:255'],
+            'documentDescription' => ['nullable', 'string', 'max:2000'],
+            'documentValidUntil' => ['nullable', 'date_format:Y-m-d'],
+        ]);
+
+        if (! $this->document instanceof UploadedFile) {
+            return;
+        }
+
+        try {
+            $evidence->upload($this->control, $this->document, $this->documentTitle, $this->documentDescription, $this->documentValidUntil !== '' ? CarbonImmutable::createFromFormat('!Y-m-d', $this->documentValidUntil) ?: null : null, $this->actor());
+        } catch (ValidationException $exception) {
+            throw ValidationException::withMessages(['document' => $exception->errors()['file'] ?? [__('core::attachments.invalid')]]);
+        }
+
+        $this->reset('document', 'documentTitle', 'documentDescription', 'documentValidUntil');
+        unset($this->control);
+    }
+
+    public function removeEvidence(string $evidenceId, ManageEvidence $evidence): void
+    {
+        $this->authorize('implement', $this->control);
+        $evidence->remove(Evidence::query()->where('control_id', $this->controlId)->findOrFail($evidenceId));
+        unset($this->control);
+    }
+
+    public function recordTest(RecordControlTest $record): void
+    {
+        $this->authorize('implement', $this->control);
+        $this->validate([
+            'testedOn' => ['required', 'date_format:Y-m-d', 'before_or_equal:today'],
+            'testResult' => ['required', Rule::enum(TestResult::class)],
+            'testMethod' => ['required', 'string', 'max:5000'],
+            'testNotes' => ['nullable', 'string', 'max:10000'],
+            'testDocument' => ['nullable', 'file'],
+        ]);
+
+        try {
+            $record->handle($this->control, CarbonImmutable::createFromFormat('!Y-m-d', $this->testedOn) ?: CarbonImmutable::today(), TestResult::from($this->testResult), $this->testMethod, $this->testNotes, $this->testDocument, $this->actor());
+        } catch (ValidationException $exception) {
+            throw ValidationException::withMessages(['testDocument' => $exception->errors()['file'] ?? [__('core::attachments.invalid')]]);
+        }
+
+        $this->reset('testMethod', 'testNotes', 'testDocument');
+        $this->testResult = TestResult::Effective->value;
+        unset($this->control);
+    }
+
     public function delete(): void
     {
         $control = $this->control;
@@ -102,11 +213,23 @@ final class ShowControl extends Component
         $this->redirectRoute('audit.controls.index');
     }
 
-    public function render(): View
+    public function render(LinkedRecords $records): View
     {
         $control = $this->control;
         $this->authorize('view', $control);
-        $canMap = auth()->user()?->can('update', $control) === true;
+        $viewer = $this->actor();
+        $canMap = $viewer->can('update', $control);
+        $canImplement = $viewer->can('implement', $control);
+        $evidence = $control->evidence()->with(['attachments', 'creator'])->get();
+        $resolved = [];
+        $kindLabels = $records->searchable();
+
+        // Records shown as the viewer may open them; the others by the title kept when linked.
+        foreach ($evidence->where('kind', EvidenceKind::Link)->groupBy('linked_type') as $type => $links) {
+            foreach ($records->resolve((string) $type, array_values(array_filter($links->pluck('linked_id')->all(), is_string(...))), $viewer) as $record) {
+                $resolved[$type.':'.$record->id] = $record;
+            }
+        }
         $candidates = collect();
 
         if ($canMap && $this->mapFrameworkId !== '') {
@@ -126,6 +249,16 @@ final class ShowControl extends Component
             'frameworks' => $canMap ? Framework::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']) : collect(),
             'candidates' => $candidates,
             'statuses' => ControlStatus::cases(),
+            'canImplement' => $canImplement,
+            'evidence' => $evidence,
+            'resolved' => $resolved,
+            'kinds' => $canImplement ? $kindLabels : [],
+            'kindLabels' => $kindLabels,
+            'timezone' => config()->string('app.display_timezone'),
+            'found' => $canImplement && $this->evidenceType !== '' ? $records->search($this->evidenceType, $this->evidenceSearch, $viewer) : [],
+            'tests' => $control->tests()->with(['tester', 'evidence.attachments'])->limit(50)->get(),
+            'results' => TestResult::cases(),
+            'today' => CarbonImmutable::today(),
         ])->title($control->code().' · '.$control->name);
     }
 

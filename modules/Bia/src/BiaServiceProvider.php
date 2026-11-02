@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Bia\Application\Exports\BiaExport;
 use Modules\Bia\Application\Links\BiaBusinessProcesses;
+use Modules\Bia\Application\Links\ProcessRecords;
 use Modules\Bia\Application\Risks\BiaRiskSignals;
 use Modules\Bia\Domain\Enums\AssessmentStatus;
 use Modules\Bia\Domain\Models\Assessment;
@@ -52,7 +53,11 @@ final class BiaServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(BiaExport::TYPE, BiaExport::class, 'bia.process.view'));
         // The CMDB item page lists the processes that need the item.
-        $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('bia.assessment', self::linkedProcesses(...)));
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->register('bia.assessment', self::linkedProcesses(...));
+            $records->register('bia.process', ProcessRecords::resolve(...));
+            $records->registerSearch('bia.process', 'bia::processes.linked_kind', ProcessRecords::search(...));
+        });
     }
 
     public function boot(): void
@@ -118,5 +123,8 @@ final class BiaServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::ContinuityCoordinator, ['bia.process.view', 'bia.process.manage', 'bia.assessment.approve', 'bia.settings.manage']);
         // IT reads the business's recovery objectives to plan for them.
         $registry->grantToDefaultRole(DefaultRole::TeamLead, ['bia.process.view']);
+        // Compliance staff open the business processes linked as evidence of controls.
+        $registry->grantToDefaultRole(DefaultRole::ComplianceManager, ['bia.process.view']);
+        $registry->grantToDefaultRole(DefaultRole::Auditor, ['bia.process.view']);
     }
 }

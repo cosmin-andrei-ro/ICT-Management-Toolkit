@@ -33,6 +33,7 @@ use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Livewire\Livewire;
 use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
+use Modules\Core\Application\Links\ContractRecords;
 use Modules\Core\Application\Risks\ContractRiskSignals;
 use Modules\Core\Domain\Audit\RequestContext;
 use Modules\Core\Domain\Authorization\DefaultRole;
@@ -122,6 +123,10 @@ final class CoreServiceProvider extends ModuleServiceProvider
         // Replaced by the Risk module when it is enabled.
         $this->app->bindIf(Risks::class, NoRisks::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->register('core.contract', ContractRecords::resolve(...));
+            $records->registerSearch('core.contract', 'core::contracts.linked_kind', ContractRecords::search(...));
+        });
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */
             $config = $app->make('config')->get('core.directory', []);
@@ -277,9 +282,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::SecurityOfficer, [...$directory, 'core.audit.view']);
         // Risk managers open the panel for the method and the catalog, and read suppliers to link risks to them.
         $registry->grantToDefaultRole(DefaultRole::RiskManager, [...$directory, 'core.admin.access', 'core.supplier.view']);
-        // Compliance managers read suppliers and contracts (third-party requirements) and the audit log; auditors only read.
+        // Compliance managers read suppliers and contracts (third-party requirements, evidence) and the audit log; auditors read suppliers and contracts.
         $registry->grantToDefaultRole(DefaultRole::ComplianceManager, [...$directory, 'core.supplier.view', 'core.contract.view', 'core.audit.view']);
-        $registry->grantToDefaultRole(DefaultRole::Auditor, $directory);
+        $registry->grantToDefaultRole(DefaultRole::Auditor, [...$directory, 'core.supplier.view', 'core.contract.view']);
         $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
     }

@@ -39,6 +39,9 @@ final class ControlForm extends Component
 
     public string $notes = '';
 
+    /** Months between periodic tests; empty for none. */
+    public string $testInterval = '';
+
     public function mount(?Control $control = null): void
     {
         if ($control === null || ! $control->exists) {
@@ -54,6 +57,7 @@ final class ControlForm extends Component
         $this->ownerId = $control->owner_id ?? '';
         $this->status = $control->status->value;
         $this->notes = $control->implementation_notes ?? '';
+        $this->testInterval = (string) ($control->test_interval_months ?? '');
     }
 
     public function save(SaveControl $save, OrganizationContext $context): void
@@ -67,6 +71,7 @@ final class ControlForm extends Component
             'ownerId' => ['required', 'uuid', Rule::in($this->people($context)->pluck('id')->all())],
             'status' => ['required', Rule::enum(ControlStatus::class)],
             'notes' => ['nullable', 'string', 'max:10000'],
+            'testInterval' => ['nullable', 'integer', 'between:1,60'],
         ]);
 
         $saved = $save->handle($control, [
@@ -75,6 +80,7 @@ final class ControlForm extends Component
             'owner_id' => $this->ownerId,
             'status' => ControlStatus::from($this->status),
             'implementation_notes' => $this->notes,
+            'test_interval_months' => $this->testInterval !== '' ? (int) $this->testInterval : null,
         ]);
 
         $this->redirectRoute('audit.controls.show', $saved);

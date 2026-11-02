@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Business process',
     'menu' => 'Business impact analysis',
     'title' => 'Business processes',
     'tiers' => [

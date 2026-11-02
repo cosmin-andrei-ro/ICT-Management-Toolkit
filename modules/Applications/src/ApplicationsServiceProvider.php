@@ -12,6 +12,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Applications\Application\Exports\PortfolioExport;
+use Modules\Applications\Application\Links\ApplicationRecords;
 use Modules\Applications\Application\Links\PortfolioApplications;
 use Modules\Applications\Application\Options\OptionCatalog;
 use Modules\Applications\Application\Risks\ApplicationRiskSignals;
@@ -51,10 +52,11 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('applications', fn (): array => (new ApplicationRiskSignals)()));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PortfolioExport::TYPE, PortfolioExport::class, 'applications.application.view'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
-        // The CMDB item page lists the applications built on the item (5.2 Components).
+        // The CMDB item page lists the applications built on the item (5.2 Components); compliance evidence links to applications.
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
             $records->register('applications.sheet', self::linkedApplications(...));
-            $records->register('applications.application', self::applicationItems(...));
+            $records->register('applications.application', ApplicationRecords::resolve(...));
+            $records->registerSearch('applications.application', 'applications::applications.linked_kind', ApplicationRecords::search(...));
         });
     }
 
@@ -105,27 +107,6 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
             ->all());
     }
 
-    /**
-     * Applications a CMDB item stands for.
-     *
-     * @param  list<string>  $ids
-     * @return list<LinkedRecord>
-     */
-    private static function applicationItems(array $ids, User $viewer): array
-    {
-        $gate = Gate::forUser($viewer);
-
-        return array_values(Application::query()->whereKey($ids)->limit(100)->get()
-            ->filter(fn (Application $application): bool => $gate->allows('view', $application))
-            ->map(fn (Application $application): LinkedRecord => new LinkedRecord(
-                $application->id,
-                __('applications::applications.linked', ['application' => $application->name, 'code' => $application->code]),
-                route('applications.show', $application),
-                $application->current_version !== null ? 'v'.$application->current_version : null,
-            ))
-            ->all());
-    }
-
     private function registerPermissions(PermissionRegistry $registry): void
     {
         $registry->register([
@@ -139,6 +120,9 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::SecurityOfficer, ['applications.application.view', 'applications.sheet.approve_security']);
         // IT staff read the sheets: they support the applications.
         $registry->grantToDefaultRole(DefaultRole::TeamLead, ['applications.application.view']);
+        // Compliance staff open the applications linked as evidence of controls.
+        $registry->grantToDefaultRole(DefaultRole::ComplianceManager, ['applications.application.view']);
+        $registry->grantToDefaultRole(DefaultRole::Auditor, ['applications.application.view']);
         $registry->grantToDefaultRole(DefaultRole::Agent, ['applications.application.view']);
         $registry->grantToDefaultRole(DefaultRole::ContinuityCoordinator, ['applications.application.view']);
     }

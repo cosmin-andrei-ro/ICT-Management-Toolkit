@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Application',
     'menu' => 'Application portfolio',
     'title' => 'Application portfolio',
     'linked' => 'Application: :application (:code)',

@@ -37,6 +37,12 @@
             <textarea id="notes" wire:model="notes" rows="3" maxlength="10000" placeholder="{{ __('audit::compliance.controls.examples.notes') }}" class="mt-1 block w-full"></textarea>
             @error('notes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
         </div>
+        <div>
+            <label for="testInterval" class="block text-sm font-medium">{{ __('audit::evidence.tests.interval') }}</label>
+            <input id="testInterval" type="number" min="1" max="60" wire:model="testInterval" class="mt-1 block w-32">
+            <p class="mt-1 text-xs text-gray-500">{{ __('audit::evidence.tests.interval_help') }}</p>
+            @error('testInterval') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+        </div>
         <button type="submit" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('audit::compliance.controls.save') }}</button>
     </form>
 </div>

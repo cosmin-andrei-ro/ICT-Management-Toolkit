@@ -14,4 +14,7 @@ return [
     // Rows per page in the control register.
     'per_page' => 25,
 
+    // Days before a control's next test when its owner is emailed.
+    'test_reminder_days' => (int) env('AUDIT_TEST_REMINDER_DAYS', 14),
+
 ];

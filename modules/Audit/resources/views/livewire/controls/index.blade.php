@@ -23,6 +23,7 @@
             </select>
         </div>
         <label class="flex items-center gap-2 text-sm"><input type="checkbox" wire:model.live="unmapped"> {{ __('audit::compliance.controls.unmapped') }}</label>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" wire:model.live="testOverdue"> {{ __('audit::evidence.tests.overdue_filter') }}</label>
     </div>
 
     <div class="overflow-x-auto rounded-lg bg-white ring-1 ring-gray-200">
@@ -33,6 +34,7 @@
                     <th scope="col" class="px-4 py-2 font-medium">{{ __('audit::compliance.controls.fields.owner') }}</th>
                     <th scope="col" class="px-4 py-2 font-medium">{{ __('audit::compliance.controls.fields.status') }}</th>
                     <th scope="col" class="px-4 py-2 font-medium">{{ __('audit::compliance.controls.fields.requirements') }}</th>
+                    <th scope="col" class="px-4 py-2 font-medium">{{ __('audit::evidence.tests.next_column') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -42,9 +44,10 @@
                         <td class="px-4 py-2">{{ $control->owner?->name ?? '—' }}</td>
                         <td class="px-4 py-2"><x-audit::status :status="$control->status" /></td>
                         <td class="px-4 py-2">{{ $control->requirements_count }}</td>
+                        <td @class(['px-4 py-2', 'font-semibold text-red-700' => $control->isTestOverdue($today)])>{{ $control->next_test_on?->toDateString() ?? '—' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="px-4 py-3 text-gray-500">{{ __('audit::compliance.controls.none') }}</td></tr>
+                    <tr><td colspan="5" class="px-4 py-3 text-gray-500">{{ __('audit::compliance.controls.none') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Audit\Application\Actions;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\ConnectionInterface;
 use Modules\Audit\Domain\Enums\ControlStatus;
 use Modules\Audit\Domain\Models\Control;
@@ -24,7 +25,7 @@ final readonly class SaveControl
     ) {}
 
     /**
-     * @param  array{name: string, description: ?string, owner_id: ?string, status: ControlStatus, implementation_notes: ?string}  $data  Validated.
+     * @param  array{name: string, description: ?string, owner_id: ?string, status: ControlStatus, implementation_notes: ?string, test_interval_months: ?int}  $data  Validated.
      */
     public function handle(?Control $control, array $data): Control
     {
@@ -44,7 +45,18 @@ final readonly class SaveControl
                 'owner_id' => $data['owner_id'],
                 'status' => $data['status'],
                 'implementation_notes' => self::text($data['implementation_notes']),
-            ])->save();
+            ]);
+
+            if ($control->test_interval_months !== $data['test_interval_months']) {
+                // A new interval reschedules from the last test, or from today for a control never tested.
+                $from = $control->last_tested_on ?? CarbonImmutable::today();
+                $control->forceFill([
+                    'test_interval_months' => $data['test_interval_months'],
+                    'next_test_on' => $data['test_interval_months'] !== null ? $from->addMonthsNoOverflow($data['test_interval_months']) : null,
+                ]);
+            }
+
+            $control->save();
 
             return $control;
         });

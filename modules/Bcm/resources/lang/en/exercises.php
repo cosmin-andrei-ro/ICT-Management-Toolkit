@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Continuity exercise or recovery test',
     'types' => [
         'tabletop' => 'Tabletop exercise',
         'walkthrough' => 'Walkthrough',
