@@ -20,9 +20,11 @@ use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Itam\Application\Exports\AssetExport;
 use Modules\Itam\Application\Exports\LicenseExport;
+use Modules\Itam\Application\Risks\AssetRiskSignals;
 use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Domain\Models\AssetAssignment;
 use Modules\Itam\Domain\Models\Category;
@@ -44,6 +46,7 @@ final class ItamServiceProvider extends ModuleServiceProvider
         parent::register();
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('itam', fn (): array => app(AssetRiskSignals::class)()));
         // The register holds costs and holders: for the people who keep it.
         $this->callAfterResolving(ExportRegistry::class, function (ExportRegistry $exports): void {
             $exports->register(AssetExport::TYPE, AssetExport::class, 'itam.asset.manage');

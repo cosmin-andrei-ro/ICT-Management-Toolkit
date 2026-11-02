@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Bia\Application\Exports\BiaExport;
 use Modules\Bia\Application\Links\BiaBusinessProcesses;
+use Modules\Bia\Application\Risks\BiaRiskSignals;
 use Modules\Bia\Domain\Enums\AssessmentStatus;
 use Modules\Bia\Domain\Models\Assessment;
 use Modules\Bia\Domain\Models\BiaSettings;
@@ -29,6 +30,7 @@ use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Domain\Time\Duration;
 use Modules\Core\Http\Navigation\Navigation;
 
@@ -46,6 +48,7 @@ final class BiaServiceProvider extends ModuleServiceProvider
         $this->app->bind(BusinessProcesses::class, BiaBusinessProcesses::class);
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('bia', fn (): array => app(BiaRiskSignals::class)()));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(BiaExport::TYPE, BiaExport::class, 'bia.process.view'));
         // The CMDB item page lists the processes that need the item.

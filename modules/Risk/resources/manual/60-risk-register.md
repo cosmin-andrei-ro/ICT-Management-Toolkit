@@ -9,6 +9,17 @@ audience: everyone
 
 Risk managers click **New risk** and describe the scenario - what could happen and its consequence, for example *Ransomware encrypts the payroll database* - with its category and owner. Risks are numbered R-0001, R-0002…
 
+## Suggested risks
+
+The toolkit points risk managers to situations that call for a risk, under **Suggested risks** on the register:
+
+- **applications**: personal or payment card data processed, reachable from the internet without multifactor authentication, certificates expiring, components past their end of support - as soon as an application's documentation comes into force;
+- **continuity**: systems that cannot be recovered as fast as the business needs, critical processes depending on a supplier, processes without a plan in force, plans that would be too slow;
+- **operations**: systems with three incidents or more in 90 days, licences expiring, equipment out of warranty running important systems;
+- **suppliers**: contracts ending soon that do not renew.
+
+For each, choose the owner and **Register the risk**: it is created with the scenario, what it concerns, the threats and vulnerabilities and, where known, the scores - then assessed and treated as any other. Or **Dismiss** it, saying why; it will not be suggested again while the situation lasts. Suggestions whose situation is gone move to *No longer applies*. The list is checked every morning; **Check now** checks at once.
+
 ## Assess it
 
 On the risk page, the owner (or a risk manager):

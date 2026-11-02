@@ -15,8 +15,10 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\Risk\Domain\Enums\RiskCategory;
 use Modules\Risk\Domain\Enums\RiskLevel;
+use Modules\Risk\Domain\Enums\SuggestionStatus;
 use Modules\Risk\Domain\Models\Risk;
 use Modules\Risk\Domain\Models\RiskSettings;
+use Modules\Risk\Domain\Models\Suggestion;
 
 /**
  * The register with its heat map: open risks by likelihood and impact.
@@ -99,6 +101,7 @@ final class RiskIndex extends Component
             'settings' => $settings,
             'categories' => RiskCategory::cases(),
             'levels' => RiskLevel::cases(),
+            'openSuggestions' => auth()->user()?->can('create', Risk::class) === true ? Suggestion::query()->where('status', SuggestionStatus::Open)->count() : null,
         ])->title(__('risk::risks.title'));
     }
 

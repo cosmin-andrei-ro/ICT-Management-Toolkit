@@ -105,6 +105,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 **Risk assessment** (in progress)
 - **Risk register** of risk scenarios linked to the applications, CMDB items, business processes and suppliers they concern, with the threats and vulnerabilities involved from an editable catalog and the controls in place.
 - Configurable **5 × 5 method** (level meanings, risk bands, approval threshold, reassessment interval) and a **heat map**; owners assess their risks.
+- **Suggested risks** from the other modules - application data and exposure, certificates, unsupported components, recovery gaps, processes without a plan, recurring incidents, expiring licences, contracts and warranties, supplier dependencies - registered as prefilled risks or dismissed with a reason, never created silently.
 - **Treatment**: option, plan, **residual risk**, actions with owners and due dates (optionally tracked in the service desk); **acceptance** of the residual risk, approved by a risk manager other than the owner from the threshold; score history and reassessment reminders.
 
 **Planned modules:** datacenter infrastructure, audit and compliance, projects.
@@ -243,6 +244,7 @@ Two processes must run all the time.
 | `itam:licenses:remind` | daily at 07:20 | Emails licence managers about licences expiring soon |
 | `bia:reviews:remind` | daily at 07:30 | Emails process owners whose BIA review is due |
 | `bia:digest` | Mondays at 07:45 | Emails continuity coordinators what is overdue or waiting |
+| `risk:suggestions:refresh` | daily at 06:30 | Refreshes the risks suggested by the other modules |
 | `risk:reviews:remind` | daily at 08:00 | Emails risk owners whose risks are due for reassessment |
 | `applications:reviews:remind` | daily at 07:45 | Emails application owners whose documentation is due for review |
 | `applications:digest` | Mondays at 07:55 | Emails application managers what the portfolio needs |

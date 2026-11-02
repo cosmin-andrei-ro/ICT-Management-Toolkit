@@ -10,11 +10,13 @@ use Modules\Risk\Http\Livewire\MyRisks;
 use Modules\Risk\Http\Livewire\RiskForm;
 use Modules\Risk\Http\Livewire\RiskIndex;
 use Modules\Risk\Http\Livewire\ShowRisk;
+use Modules\Risk\Http\Livewire\SuggestionsPage;
 
 Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(function (): void {
     Route::livewire('/risks', RiskIndex::class)->name('risk.index');
     Route::livewire('/risks/mine', MyRisks::class)->name('risk.mine');
     Route::livewire('/risks/new', RiskForm::class)->name('risk.risks.create');
+    Route::livewire('/risks/suggestions', SuggestionsPage::class)->name('risk.risks.suggestions');
     Route::livewire('/risks/{risk}', ShowRisk::class)->whereUuid('risk')->name('risk.risks.show');
     Route::livewire('/risks/{risk}/edit', RiskForm::class)->whereUuid('risk')->name('risk.risks.edit');
 });

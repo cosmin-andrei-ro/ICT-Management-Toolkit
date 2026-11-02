@@ -12,6 +12,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Bcm\Application\Exports\BcmExport;
+use Modules\Bcm\Application\Risks\ContinuityRiskSignals;
 use Modules\Bcm\Domain\Enums\VersionStatus;
 use Modules\Bcm\Domain\Models\Activation;
 use Modules\Bcm\Domain\Models\Exercise;
@@ -26,6 +27,7 @@ use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 
 final class BcmServiceProvider extends ModuleServiceProvider
@@ -40,6 +42,7 @@ final class BcmServiceProvider extends ModuleServiceProvider
         parent::register();
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('bcm', fn (): array => app(ContinuityRiskSignals::class)()));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         // The CMDB item page lists the plans that recover the item.
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(BcmExport::TYPE, BcmExport::class, 'bcm.plan.view'));
