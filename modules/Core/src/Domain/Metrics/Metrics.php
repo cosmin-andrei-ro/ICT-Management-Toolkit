@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Core\Domain\Metrics;
 
+use Closure;
 use InvalidArgumentException;
 use Modules\Core\Domain\Models\User;
 
@@ -75,10 +76,30 @@ final class Metrics
      */
     public function visibleTo(User $viewer): array
     {
+        return $this->groups(fn (Metric $metric): bool => $viewer->can($metric->permission));
+    }
+
+    /**
+     * Every group and value, whatever the viewer's module permissions: for
+     * the management overview and report, which show figures only.
+     *
+     * @return list<array{source: MetricSource, metrics: list<array{metric: Metric, value: int|float|null, status: MetricStatus}>}>
+     */
+    public function overview(): array
+    {
+        return $this->groups(fn (Metric $metric): bool => true);
+    }
+
+    /**
+     * @param  Closure(Metric): bool  $shown
+     * @return list<array{source: MetricSource, metrics: list<array{metric: Metric, value: int|float|null, status: MetricStatus}>}>
+     */
+    private function groups(Closure $shown): array
+    {
         $groups = [];
 
         foreach ($this->sources as $source) {
-            $visible = array_values(array_filter($source->metrics, fn (Metric $metric): bool => $viewer->can($metric->permission)));
+            $visible = array_values(array_filter($source->metrics, $shown));
 
             if ($visible === []) {
                 continue;
