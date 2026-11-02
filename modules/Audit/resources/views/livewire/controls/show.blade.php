@@ -219,6 +219,9 @@
                     </p>
                     <p class="whitespace-pre-line text-xs text-gray-600"><span class="font-medium">{{ __('audit::evidence.tests.method') }}:</span> {{ $test->method }}</p>
                     @if ($test->notes) <p class="whitespace-pre-line text-xs text-gray-600"><span class="font-medium">{{ __('audit::evidence.tests.notes') }}:</span> {{ $test->notes }}</p> @endif
+                    @if ($test->result !== \Modules\Audit\Domain\Enums\TestResult::Effective && auth()->user()?->can('create', \Modules\Audit\Domain\Models\Finding::class))
+                        <a href="{{ route('audit.findings.create', ['test' => $test->id]) }}" class="text-xs text-blue-700 underline">{{ __('audit::audits.findings.raise_from_test') }}</a>
+                    @endif
                     @foreach ($test->evidence as $item)
                         @foreach ($item->attachments as $attachment)
                             <a href="{{ route('core.attachments.download', $attachment) }}" wire:key="test-{{ $test->id }}-file-{{ $attachment->id }}" class="text-xs text-blue-700 underline">{{ $attachment->original_name }}</a>

@@ -10,11 +10,14 @@ namespace Modules\Audit;
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Modules\Audit\Domain\Models\Audit;
 use Modules\Audit\Domain\Models\Control;
 use Modules\Audit\Domain\Models\ControlTest;
 use Modules\Audit\Domain\Models\Evidence;
+use Modules\Audit\Domain\Models\Finding;
 use Modules\Audit\Domain\Models\Framework;
 use Modules\Audit\Domain\Models\Requirement;
+use Modules\Audit\Http\Livewire\MyControls;
 use Modules\Audit\Infrastructure\Console\SendTestRemindersCommand;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
@@ -47,6 +50,8 @@ final class AuditServiceProvider extends ModuleServiceProvider
             'audit.control' => Control::class,
             'audit.control_test' => ControlTest::class,
             'audit.evidence' => Evidence::class,
+            'audit.audit' => Audit::class,
+            'audit.finding' => Finding::class,
         ]);
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
@@ -58,9 +63,11 @@ final class AuditServiceProvider extends ModuleServiceProvider
         }
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
-            $navigation->add('audit::compliance.mine.menu', 'audit.controls.mine', 'audit.controls.mine', fn (User $user): bool => ! $user->can('audit.compliance.view') && Control::query()->ownedBy($user)->exists(), order: 29);
+            $navigation->add('audit::compliance.mine.menu', 'audit.controls.mine', 'audit.controls.mine', fn (User $user): bool => ! $user->can('audit.compliance.view') && MyControls::hasWork($user), order: 29);
             $navigation->add('audit::compliance.menu', 'audit.index', 'audit.frameworks.*', fn (User $user): bool => $user->can('audit.compliance.view'), Navigation::COMPLIANCE);
             $navigation->add('audit::compliance.controls.menu', 'audit.controls.index', 'audit.controls.*', fn (User $user): bool => $user->can('audit.compliance.view'), Navigation::COMPLIANCE);
+            $navigation->add('audit::audits.menu', 'audit.audits.index', 'audit.audits.*', fn (User $user): bool => $user->can('audit.compliance.view'), Navigation::COMPLIANCE);
+            $navigation->add('audit::audits.findings.menu', 'audit.findings.index', 'audit.findings.*', fn (User $user): bool => $user->can('audit.compliance.view'), Navigation::COMPLIANCE);
         });
     }
 

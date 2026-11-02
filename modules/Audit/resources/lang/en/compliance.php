@@ -112,9 +112,9 @@ return [
         'delete_confirm' => 'Delete this control? Its mapping is kept in the history.',
     ],
     'mine' => [
-        'menu' => 'My controls',
-        'title' => 'My controls',
-        'intro' => 'The controls you own: keep their status and implementation notes up to date.',
+        'menu' => 'My compliance tasks',
+        'title' => 'My compliance tasks',
+        'intro' => 'The controls you own - keep their status, evidence and tests up to date - and your open findings and corrective actions.',
         'none' => 'You own no control.',
     ],
     'errors' => [
