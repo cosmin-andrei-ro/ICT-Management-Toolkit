@@ -51,6 +51,8 @@ function writeTicketingSheet(ApplicationsScenario $apps): Sheet
         ->call('addRow', '1_4', 'environments')
         ->set('form.1_4.environments.0.environment', 'production')
         ->set('form.1_4.environments.0.url', 'https://servicedesk.company.local')
+        ->call('openChapter', 2)
+        ->set('form.2_1.classification', 'internal')
         ->call('submit')
         ->assertHasErrors('changeSummary')
         ->set('changeSummary', 'Initial documentation of the existing Ticketing Platform')
@@ -186,7 +188,7 @@ it('checks links, references and completeness, and offers the organization\'s dr
         ->set('form.1_2_2.supplier', $foreign->id)->call('save')->assertHasErrors('form.1_2_2.supplier')
         ->set('form.1_2_2.supplier', '')->call('save')->assertHasNoErrors()
         ->set('changeSummary', 'Initial documentation')->call('submit')->assertHasErrors('sections');
-    expect(collect($page->errors()->get('sections'))->implode(' '))->toContain('1.1 Application Description')->toContain('1.4 Environments');
+    expect(collect($page->errors()->get('sections'))->implode(' '))->toContain('1.1 Application Description')->toContain('1.4 Environments')->toContain('2.1 Data Categories');
 
     // Administrators rename or retire values; sheets keep the key.
     OptionValue::query()->where('list', 'business_criticality')->where('key', 'low')->update(['is_active' => false]);

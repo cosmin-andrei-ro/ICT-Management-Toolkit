@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Applications\Http\Controllers\DiagramImageController;
 use Modules\Applications\Http\Livewire\ApplicationForm;
 use Modules\Applications\Http\Livewire\ApplicationIndex;
 use Modules\Applications\Http\Livewire\MyApplications;
@@ -19,4 +20,5 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
     Route::livewire('/applications/{application}', ShowApplication::class)->whereUuid('application')->name('applications.show');
     Route::livewire('/applications/{application}/edit', ApplicationForm::class)->whereUuid('application')->name('applications.edit');
     Route::livewire('/applications/sheets/{sheet}', SheetPage::class)->whereUuid('sheet')->name('applications.sheets.show');
+    Route::get('/applications/diagrams/{attachment}', DiagramImageController::class)->whereUuid('attachment')->name('applications.diagrams.image');
 });

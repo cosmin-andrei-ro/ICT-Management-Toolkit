@@ -22,6 +22,13 @@ Open the application and click **Write the documentation** (later **Update the d
 
 > Never store passwords, keys or secrets in the documentation - reference the vault location only.
 
+### Data, flows and roles (chapters 2 and 3)
+
+- **2.1 Data categories**: tick, for every category of data the application stores, processes or transmits, the elements concerned (personal data, payment card data, health records…), and set the overall classification to the most sensitive one.
+- **2.4 System integrations**: one row per automated exchange with another system. The **data flow diagram** in 2.2 is drawn from these rows: systems sending data on the left, systems receiving it on the right, exchanges both ways below.
+- **Your own diagram**: in 2.2 you can also attach an image of your own diagram (PNG, JPEG, WebP or GIF) and its .drawio file. Files stay with the application, so later versions keep them; remove them from a version if they no longer apply.
+- **3.4 Role permissions matrix**: list the functionalities in 2.3 and the roles in 3.3, save, then tick which role may use which functionality.
+
 At the bottom, describe **what changed in this version** (for the first one, for example *Initial documentation of the existing application*).
 
 ## Major and minor changes

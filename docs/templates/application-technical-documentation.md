@@ -27,7 +27,7 @@ The status of each part says where it lives in the toolkit: **built**, or **plan
 - **1.5 Related Documentation & Repositories** — table: Type*, Name, Link.
 - **1.6 Service Levels & Maintenance** — Availability Target (SLA), Support Hours*, Incident Response / Resolution Times, Planned Maintenance Window, Change Freeze Periods, Maintenance Notification.
 
-## 2. Data Flows & Functionalities — planned (PR 2)
+## 2. Data Flows & Functionalities — built
 
 - **2.1 Data Categories** — Data Classification* (the most sensitive category); table Data Category / Data Elements Processed with tick boxes:
   - Personal Data (GDPR): Name, Contact details, National ID / passport, Date of birth, Address, IP address / online identifiers, Photo / video
@@ -52,11 +52,11 @@ The status of each part says where it lives in the toolkit: **built**, or **plan
   - Government / Public Sector Data: Citizen records, Tax / social security IDs, Permits / licences, Case files, Classified / restricted information
   - Public Data: Published content, Marketing material, Public catalogues / prices
   - Other: free description of the data type and its elements
-- **2.2 Data Flow Diagram** — Yourdon / DeMarco notation, Level 0 and Level 1 (Level 2 for critical applications); image and .drawio file. Toolkit: drawn from 2.4, plus upload (owner's decision).
+- **2.2 Data Flow Diagram** — Yourdon / DeMarco notation, Level 0 and Level 1 (Level 2 for critical applications); image and .drawio file. Toolkit: a context diagram (level 0) drawn from 2.4, plus the team's own image and .drawio file (owner's decision).
 - **2.3 Application Functionalities** — table: Module, Menu / Screen, Functionality, Description, Input, Output (names reused in 3.4).
 - **2.4 System Integrations** — table: Integration, System, Direction*, Type*, Data / Format, Frequency*, Owner. One row per automated exchange; its network side goes in 4.3.
 
-## 3. User Management & Roles — planned (PR 2)
+## 3. User Management & Roles — built
 
 - **3.1 Authentication & Identity** — AD Integrated*, Authentication Protocol*, AD Domain / LDAP Server, IAM Integrated*, IAM Resource / Entitlement, Multifactor Authentication*, MFA Method, Single Sign-On (SSO)*.
 - **3.2 Access Request Procedure** — 3.2.1 Application Users; 3.2.2 Administrative & Technical Users (text).

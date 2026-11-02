@@ -11,10 +11,12 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Modules\Applications\Application\Options\OptionCatalog;
 use Modules\Applications\Domain\Models\Sheet;
+use Modules\Applications\Domain\Sheet\DataCategories;
 use Modules\Applications\Domain\Sheet\Field;
 use Modules\Applications\Domain\Sheet\FieldType;
 use Modules\Applications\Domain\Sheet\Section;
 use Modules\Applications\Domain\Sheet\SheetSchema;
+use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\Supplier;
 use Modules\Core\Domain\Models\User;
@@ -41,12 +43,26 @@ final readonly class SheetForm
      * @param  array<mixed>  $stored
      * @return array<string, mixed>
      */
-    public function toForm(Section $section, array $stored): array
+    public function toForm(Section $section, array $stored, Sheet $sheet): array
     {
         $form = [];
 
         foreach ($section->fields as $field) {
             $value = $stored[$field->key] ?? null;
+
+            if ($field->type === FieldType::Permissions) {
+                $form[$field->key] = $this->permissionsToForm(is_array($value) ? $value : [], $sheet);
+
+                continue;
+            }
+
+            if ($field->type === FieldType::DataCategories) {
+                $form[$field->key] = self::categoriesToForm(is_array($value) ? $value : []);
+                $other = $stored[$field->key.'_other'] ?? null;
+                $form[$field->key.'_other'] = is_string($other) ? $other : '';
+
+                continue;
+            }
 
             if ($field->type === FieldType::Table) {
                 $form[$field->key] = array_map(
@@ -101,15 +117,36 @@ final readonly class SheetForm
 
     /**
      * @param  array<mixed>  $input  Validated with rules().
+     * @param  array<string, array<string, mixed>>  $chapter  Sections of the same chapter already normalized (the roles of 3.3 for the matrix of 3.4).
      * @return array<string, mixed>
      *
-     * @throws ValidationException for a person, supplier or contract outside the organization
+     * @throws ValidationException for a person, supplier, contract or file outside the organization or the application
      */
-    public function fromForm(Section $section, array $input, string $prefix): array
+    public function fromForm(Section $section, array $input, string $prefix, Sheet $sheet, array $chapter = []): array
     {
         $stored = [];
 
         foreach ($section->fields as $field) {
+            if ($field->type === FieldType::Permissions) {
+                $stored[$field->key] = $this->permissionsFromForm(is_array($input[$field->key] ?? null) ? $input[$field->key] : [], $sheet, $chapter);
+
+                continue;
+            }
+
+            if ($field->type === FieldType::DataCategories) {
+                $stored[$field->key] = self::categoriesFromForm(is_array($input[$field->key] ?? null) ? $input[$field->key] : []);
+                $other = $input[$field->key.'_other'] ?? null;
+                $stored[$field->key.'_other'] = is_string($other) && trim($other) !== '' ? mb_substr(trim($other), 0, $field->max) : null;
+
+                continue;
+            }
+
+            if ($field->type === FieldType::Diagram) {
+                $stored[$field->key] = $this->diagramFromForm(is_array($input[$field->key] ?? null) ? $input[$field->key] : [], $sheet, "{$prefix}.{$field->key}");
+
+                continue;
+            }
+
             if ($field->type === FieldType::Table) {
                 $rows = [];
 
@@ -198,6 +235,10 @@ final readonly class SheetForm
             FieldType::Choices => [$field->key => is_array($value) ? array_values(array_filter($value, is_string(...))) : []],
             FieldType::Contacts => [$field->key => is_array($value) ? array_filter($value, is_string(...)) : []],
             FieldType::Option => $this->optionToForm($field, is_string($value) ? $value : ''),
+            FieldType::Diagram => [$field->key => [
+                'image' => is_array($value) && is_string($value['image'] ?? null) ? $value['image'] : '',
+                'source' => is_array($value) && is_string($value['source'] ?? null) ? $value['source'] : '',
+            ]],
             default => [$field->key => is_string($value) ? $value : ''],
         };
     }
@@ -236,6 +277,9 @@ final readonly class SheetForm
             FieldType::Choices => [$path => ['array'], $path.'.*' => [Rule::in($field->choices)]],
             FieldType::User, FieldType::Supplier, FieldType::Contract => [$path => ['nullable', 'uuid']],
             FieldType::Contacts => [$path => ['array'], $path.'.*' => ['nullable', 'string', 'max:255']],
+            FieldType::DataCategories => [$path => ['array'], $path.'.*' => ['array'], $path.'.*.*' => ['string', 'max:64'], $path.'_other' => ['nullable', 'string', 'max:'.$field->max]],
+            FieldType::Diagram => [$path => ['array'], $path.'.image' => ['nullable', 'uuid'], $path.'.source' => ['nullable', 'uuid']],
+            FieldType::Permissions => [$path => ['array'], $path.'.*' => ['array'], $path.'.*.*' => ['boolean']],
             FieldType::Table => [],
         };
     }
@@ -283,6 +327,157 @@ final readonly class SheetForm
             default:
                 return is_string($value) && trim($value) !== '' ? trim($value) : null;
         }
+    }
+
+    /**
+     * Rows (the functionalities of 2.3) and columns (the roles of 3.3) of the
+     * permissions matrix, keyed by short hashes so names never become form paths.
+     *
+     * @param  ?array<mixed>  $roles  Rows of 3.3 to use instead of the saved ones.
+     * @return array{rows: array<string, array{module: string, menu: string, functionality: string}>, roles: array<string, string>}
+     */
+    public function matrixAxes(Sheet $sheet, ?array $roles = null): array
+    {
+        $rows = [];
+
+        foreach ($this->listOf($sheet->section('2_3')['functionalities'] ?? null) as $functionality) {
+            $row = [
+                'module' => is_string($functionality['module'] ?? null) ? $functionality['module'] : '',
+                'menu' => is_string($functionality['menu'] ?? null) ? $functionality['menu'] : '',
+                'functionality' => is_string($functionality['functionality'] ?? null) ? $functionality['functionality'] : '',
+            ];
+            $rows[self::hash(implode('|', $row))] = $row;
+        }
+
+        $columns = [];
+
+        foreach ($this->listOf($roles ?? ($sheet->section('3_3')['roles'] ?? null)) as $role) {
+            if (is_string($role['name'] ?? null) && trim($role['name']) !== '') {
+                $columns[self::hash(trim($role['name']))] = trim($role['name']);
+            }
+        }
+
+        return ['rows' => $rows, 'roles' => $columns];
+    }
+
+    public static function hash(string $value): string
+    {
+        return 'k'.substr(hash('sha256', mb_strtolower($value)), 0, 12);
+    }
+
+    /**
+     * @param  array<mixed>  $stored
+     * @return array<string, array<string, bool>>
+     */
+    private function permissionsToForm(array $stored, Sheet $sheet): array
+    {
+        $axes = $this->matrixAxes($sheet);
+        $form = [];
+
+        foreach (array_keys($axes['rows']) as $rowKey) {
+            foreach (array_keys($axes['roles']) as $roleKey) {
+                $form[$rowKey][$roleKey] = false;
+            }
+        }
+
+        foreach ($this->listOf($stored) as $entry) {
+            $rowKey = self::hash(implode('|', [self::str($entry['module'] ?? null), self::str($entry['menu'] ?? null), self::str($entry['functionality'] ?? null)]));
+
+            foreach (is_array($entry['roles'] ?? null) ? $entry['roles'] : [] as $role) {
+                if (is_string($role) && isset($form[$rowKey][self::hash($role)])) {
+                    $form[$rowKey][self::hash($role)] = true;
+                }
+            }
+        }
+
+        return $form;
+    }
+
+    /**
+     * @param  array<mixed>  $input
+     * @param  array<string, array<string, mixed>>  $chapter
+     * @return list<array{module: string, menu: string, functionality: string, roles: list<string>}>
+     */
+    private function permissionsFromForm(array $input, Sheet $sheet, array $chapter): array
+    {
+        $axes = $this->matrixAxes($sheet, isset($chapter['3_3']) && is_array($chapter['3_3']['roles'] ?? null) ? $chapter['3_3']['roles'] : null);
+        $matrix = [];
+
+        foreach ($axes['rows'] as $rowKey => $row) {
+            $granted = [];
+
+            foreach ($axes['roles'] as $roleKey => $role) {
+                if (is_array($input[$rowKey] ?? null) && ($input[$rowKey][$roleKey] ?? false) === true) {
+                    $granted[] = $role;
+                }
+            }
+
+            if ($granted !== []) {
+                $matrix[] = [...$row, 'roles' => $granted];
+            }
+        }
+
+        return $matrix;
+    }
+
+    /**
+     * @param  array<mixed>  $stored
+     * @return array<string, list<string>>
+     */
+    private static function categoriesToForm(array $stored): array
+    {
+        $form = [];
+
+        foreach (DataCategories::all() as $category => $elements) {
+            $form[$category] = is_array($stored[$category] ?? null) ? array_values(array_intersect($elements, array_filter($stored[$category], is_string(...)))) : [];
+        }
+
+        return $form;
+    }
+
+    /**
+     * @param  array<mixed>  $input
+     * @return array<string, list<string>>
+     */
+    private static function categoriesFromForm(array $input): array
+    {
+        return array_filter(self::categoriesToForm($input), fn (array $elements): bool => $elements !== []);
+    }
+
+    /**
+     * @param  array<mixed>  $input
+     * @return array{image: ?string, source: ?string}
+     *
+     * @throws ValidationException for a file of another application
+     */
+    private function diagramFromForm(array $input, Sheet $sheet, string $path): array
+    {
+        $files = [];
+
+        foreach (['image', 'source'] as $kind) {
+            $id = is_string($input[$kind] ?? null) && $input[$kind] !== '' ? $input[$kind] : null;
+
+            if ($id !== null && ! Attachment::query()->whereKey($id)->where('attachable_type', 'applications.application')->where('attachable_id', $sheet->application_id)->exists()) {
+                throw ValidationException::withMessages([$path => __('applications::sheet.errors.unknown_reference')]);
+            }
+
+            $files[$kind] = $id;
+        }
+
+        return ['image' => $files['image'], 'source' => $files['source']];
+    }
+
+    /**
+     * @return list<array<mixed>>
+     */
+    private function listOf(mixed $value): array
+    {
+        return is_array($value) ? array_values(array_filter($value, is_array(...))) : [];
+    }
+
+    private static function str(mixed $value): string
+    {
+        return is_string($value) ? $value : '';
     }
 
     private function exists(FieldType $type, string $id): bool

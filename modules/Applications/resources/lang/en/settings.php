@@ -27,5 +27,11 @@ return [
         'document_types' => 'Related documentation types',
         'support_hours' => 'Support hours',
         'support_teams' => 'Internal support teams',
+        'data_classification' => 'Data classification',
+        'integration_direction' => 'Integration direction',
+        'integration_type' => 'Integration type',
+        'integration_frequency' => 'Integration frequency',
+        'yes_no' => 'Yes / no',
+        'authentication_protocols' => 'Authentication protocols',
     ],
 ];
