@@ -131,7 +131,10 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Trends**: every figure is recorded once a day; each one shows its last 30 days on the dashboard and has its own page with a chart over 30, 90 or 365 days (drawn on the server, so it also prints).
 - **Management overview** of every module's figures, and a **monthly management report** to print or as PDF, emailed on the first of the month to the people an administrator chose.
 
-**Planned modules:** datacenter infrastructure, projects.
+**Data centre (DCIM)**
+- **Racks** in the organization's rooms, drawn from the front and from the rear; assets of the asset register mounted on their units (full or half depth, side 0U equipment), never two on the same unit; the asset's page says where it is mounted.
+
+**Planned modules:** projects; for the data centre, cabling, power and IP addresses.
 
 **Not done yet:** single logout (SAML SLO).
 

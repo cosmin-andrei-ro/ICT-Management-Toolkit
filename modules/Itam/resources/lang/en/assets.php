@@ -41,6 +41,7 @@ return [
         'model' => 'Model',
         'serial_number' => 'Serial number',
         'status' => 'Status',
+        'rack' => 'Rack',
         'location' => 'Location',
         'holder' => 'With',
         'supplier' => 'Supplier',

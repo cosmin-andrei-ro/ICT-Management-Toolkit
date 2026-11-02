@@ -72,7 +72,9 @@
             "Modules\\Documentation\\Database\\Factories\\": "modules/Documentation/database/factories/",
             "Modules\\Audit\\Database\\Factories\\": "modules/Audit/database/factories/",
             "Modules\\Reporting\\": "modules/Reporting/src/",
-            "Modules\\Reporting\\Database\\Factories\\": "modules/Reporting/database/factories/"
+            "Modules\\Reporting\\Database\\Factories\\": "modules/Reporting/database/factories/",
+            "Modules\\Dcim\\": "modules/Dcim/src/",
+            "Modules\\Dcim\\Database\\Factories\\": "modules/Dcim/database/factories/"
         }
     },
     "autoload-dev": {
@@ -89,7 +91,8 @@
             "Modules\\Risk\\Tests\\": "modules/Risk/tests/",
             "Modules\\Audit\\Tests\\": "modules/Audit/tests/",
             "Modules\\Documentation\\Tests\\": "modules/Documentation/tests/",
-            "Modules\\Reporting\\Tests\\": "modules/Reporting/tests/"
+            "Modules\\Reporting\\Tests\\": "modules/Reporting/tests/",
+            "Modules\\Dcim\\Tests\\": "modules/Dcim/tests/"
         }
     },
     "scripts": {

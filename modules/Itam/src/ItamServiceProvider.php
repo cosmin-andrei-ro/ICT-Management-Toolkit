@@ -10,13 +10,16 @@ namespace Modules\Itam;
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Events\AssetPlaced;
 use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\ContractDependents;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
+use Modules\Core\Domain\Links\PhysicalAssets;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\Contract;
@@ -25,6 +28,8 @@ use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Itam\Application\Exports\AssetExport;
 use Modules\Itam\Application\Exports\LicenseExport;
+use Modules\Itam\Application\Links\RegisteredAssets;
+use Modules\Itam\Application\Listeners\RecordAssetLocation;
 use Modules\Itam\Application\Metrics\AssetMetrics;
 use Modules\Itam\Application\Risks\AssetRiskSignals;
 use Modules\Itam\Domain\Models\Asset;
@@ -59,6 +64,7 @@ final class ItamServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         // The CMDB shows the assets linked to an item; contracts show the assets they cover.
         $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('itam.asset', self::linkedAssets(...)));
+        $this->app->bind(PhysicalAssets::class, RegisteredAssets::class);
         $this->callAfterResolving(ContractDependents::class, function (ContractDependents $dependents): void {
             $dependents->register('itam::assets.covered_by_contract', self::assetsUnderContract(...));
             $dependents->register('itam::licenses.covered_by_contract', self::licensesUnderContract(...));
@@ -68,6 +74,8 @@ final class ItamServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        Event::listen(AssetPlaced::class, RecordAssetLocation::class);
 
         Relation::morphMap([
             'itam.category' => Category::class,

@@ -22,6 +22,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Modules\Core\Application\Collaboration\StoreAttachment;
 use Modules\Core\Domain\Links\ConfigurationItems;
+use Modules\Core\Domain\Links\RackPlacements;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\Location;
 use Modules\Core\Domain\Models\User;
@@ -229,7 +230,7 @@ final class ShowAsset extends Component
         $this->redirectRoute('itam.assets.index');
     }
 
-    public function render(ConfigurationItems $items): View
+    public function render(ConfigurationItems $items, RackPlacements $placements): View
     {
         $asset = $this->asset;
         $search = trim($this->holderSearch);
@@ -252,6 +253,7 @@ final class ShowAsset extends Component
             'licenses' => auth()->user()?->can('viewAny', License::class) === true
                 ? LicenseAssignment::query()->with('license.product')->where('asset_id', $asset->id)->get()
                 : collect(),
+            'placement' => ($viewer = auth()->user()) instanceof User ? $placements->of($asset->id, $viewer) : null,
             'cmdbAvailable' => $items->isAvailable(),
             'linkedItems' => $items->linkedTo($asset),
             'itemCandidates' => mb_strlen($itemSearch) >= 2 ? $items->search($itemSearch) : [],

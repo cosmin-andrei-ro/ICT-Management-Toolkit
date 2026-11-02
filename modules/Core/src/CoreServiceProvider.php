@@ -55,8 +55,12 @@ use Modules\Core\Domain\Links\NoApplications;
 use Modules\Core\Domain\Links\NoBusinessProcesses;
 use Modules\Core\Domain\Links\NoConfigurationItems;
 use Modules\Core\Domain\Links\NoKnowledgeArticles;
+use Modules\Core\Domain\Links\NoPhysicalAssets;
+use Modules\Core\Domain\Links\NoRackPlacements;
 use Modules\Core\Domain\Links\NoRisks;
 use Modules\Core\Domain\Links\NoServiceDeskTickets;
+use Modules\Core\Domain\Links\PhysicalAssets;
+use Modules\Core\Domain\Links\RackPlacements;
 use Modules\Core\Domain\Links\Risks;
 use Modules\Core\Domain\Links\ServiceDeskTickets;
 use Modules\Core\Domain\Manual\Manual;
@@ -135,6 +139,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->bindIf(Risks::class, NoRisks::class);
         // Replaced by the Documentation module when it is enabled.
         $this->app->bindIf(KnowledgeArticles::class, NoKnowledgeArticles::class);
+        $this->app->bindIf(PhysicalAssets::class, NoPhysicalAssets::class);
+        $this->app->bindIf(RackPlacements::class, NoRackPlacements::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
             $records->register('core.contract', ContractRecords::resolve(...));
