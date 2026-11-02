@@ -13,6 +13,7 @@ use Modules\Cmdb\CmdbServiceProvider;
 use Modules\Core\CoreServiceProvider;
 use Modules\Documentation\DocumentationServiceProvider;
 use Modules\Itam\ItamServiceProvider;
+use Modules\Reporting\ReportingServiceProvider;
 use Modules\Risk\RiskServiceProvider;
 use Modules\Ticketing\TicketingServiceProvider;
 
@@ -70,6 +71,10 @@ return [
         ],
         'documentation' => [
             'provider' => DocumentationServiceProvider::class,
+            'enabled' => true,
+        ],
+        'reporting' => [
+            'provider' => ReportingServiceProvider::class,
             'enabled' => true,
         ],
     ],

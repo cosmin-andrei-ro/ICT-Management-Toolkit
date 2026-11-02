@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Gate;
 use Modules\Applications\Application\Exports\PortfolioExport;
 use Modules\Applications\Application\Links\ApplicationRecords;
 use Modules\Applications\Application\Links\PortfolioApplications;
+use Modules\Applications\Application\Metrics\PortfolioMetrics;
 use Modules\Applications\Application\Options\OptionCatalog;
 use Modules\Applications\Application\Risks\ApplicationRiskSignals;
 use Modules\Applications\Domain\Enums\SheetStatus;
@@ -30,6 +31,7 @@ use Modules\Core\Domain\Links\Applications;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
+use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
@@ -44,6 +46,8 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+
+        $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(PortfolioMetrics::source()));
 
         // Scoped: a long-running worker must see values changed later.
         $this->app->scoped(OptionCatalog::class);

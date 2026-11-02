@@ -94,4 +94,11 @@ return [
     'errors' => [
         'invalid' => 'That change could not be made. Check the entry and try again.',
     ],
+    'metrics' => [
+        'group' => 'Risks',
+        'overdue_actions' => 'Overdue treatment actions',
+        'reviews_overdue' => 'Risks past their review',
+        'pending_acceptances' => 'Risk acceptances awaiting decision',
+        'suggestions' => 'Suggested risks to review',
+    ],
 ];

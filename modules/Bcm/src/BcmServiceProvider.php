@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Gate;
 use Modules\Bcm\Application\Exports\BcmExport;
 use Modules\Bcm\Application\Links\ExerciseRecords;
 use Modules\Bcm\Application\Links\PlanRecords;
+use Modules\Bcm\Application\Metrics\ContinuityMetrics;
 use Modules\Bcm\Application\Risks\ContinuityRiskSignals;
 use Modules\Bcm\Domain\Enums\VersionStatus;
 use Modules\Bcm\Domain\Models\Activation;
@@ -28,6 +29,7 @@ use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
+use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
@@ -42,6 +44,8 @@ final class BcmServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+
+        $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ContinuityMetrics::source()));
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('bcm', fn (): array => app(ContinuityRiskSignals::class)()));

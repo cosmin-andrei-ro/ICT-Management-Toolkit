@@ -123,4 +123,11 @@ return [
         'reference_taken' => 'This reference is already used in the framework.',
         'invalid' => 'This requirement cannot be mapped.',
     ],
+    'metrics' => [
+        'group' => 'Compliance',
+        'major_open' => 'Open major nonconformities',
+        'findings_overdue' => 'Findings past their due date',
+        'tests_overdue' => 'Controls with an overdue test',
+        'requirements_not_covered' => 'Requirements without a control',
+    ],
 ];

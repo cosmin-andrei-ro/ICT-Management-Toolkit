@@ -126,6 +126,9 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Help for employees**: articles of spaces open to everyone suggested while a ticket is written in the portal, and shown on tickets they are linked to; agents see linked and suggested articles on every ticket.
 - **Full-text search** across the spaces you read; pages linked to applications, CMDB items, plans, risks, contracts or tickets, and files attached.
 
+**Reporting**
+- **Dashboard** on the home page with the figures of every module you have access to, coloured by status and linked to the filtered lists behind them; hide figures and reorder groups to suit you.
+
 **Planned modules:** datacenter infrastructure, projects.
 
 **Not done yet:** single logout (SAML SLO).
