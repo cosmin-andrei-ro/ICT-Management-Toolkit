@@ -9,6 +9,7 @@ namespace Modules\Itam\Http\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
@@ -19,14 +20,16 @@ use Modules\Core\Infrastructure\Imports\SpreadsheetReader;
 use Modules\Core\Infrastructure\Imports\SpreadsheetUnreadable;
 use Modules\Itam\Application\Actions\ProvisionDefaultCategories;
 use Modules\Itam\Application\Import\AssetImport;
+use Modules\Itam\Application\Import\LicenseImport;
 use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Domain\Models\Category;
+use Modules\Itam\Domain\Models\License;
 use Throwable;
 
 /**
- * Import from CSV or Excel: upload, preview what each row will do, then import
- * every row or none. The file is read again when importing: the preview shown
- * in the browser is never trusted.
+ * Import of assets or licences from CSV or Excel: upload, preview what each row
+ * will do, then import every row or none. The file is read again when
+ * importing: the preview shown in the browser is never trusted.
  */
 #[Layout('core::components.layouts.app')]
 final class ImportAssets extends Component
@@ -36,6 +39,10 @@ final class ImportAssets extends Component
     public const int MAX_ROWS = 2000;
 
     public const int MAX_KILOBYTES = 5120;
+
+    /** "assets" or "licenses". */
+    #[Url]
+    public string $kind = 'assets';
 
     /** @var TemporaryUploadedFile|null */
     public $file = null;
@@ -47,7 +54,11 @@ final class ImportAssets extends Component
 
     public function mount(ProvisionDefaultCategories $provision): void
     {
-        $this->authorize('create', Asset::class);
+        if (! in_array($this->kind, ['assets', 'licenses'], true)) {
+            $this->kind = 'assets';
+        }
+
+        $this->authorizeKind();
         $provision->handle();
     }
 
@@ -56,22 +67,28 @@ final class ImportAssets extends Component
         $this->reset('preview', 'imported');
     }
 
-    public function analyse(SpreadsheetReader $reader, AssetImport $import): void
+    public function updatedKind(): void
     {
-        $this->authorize('create', Asset::class);
+        $this->reset('preview', 'imported');
+    }
+
+    public function analyse(SpreadsheetReader $reader, AssetImport $assets, LicenseImport $licenses): void
+    {
+        $this->authorizeKind();
         $rows = $this->rows($reader);
 
         if ($rows === null) {
             return;
         }
 
-        $this->preview = array_map(fn (ImportRow $row): array => $row->toArray(), $import->analyse($rows));
+        $plan = $this->kind === 'licenses' ? $licenses->analyse($rows) : $assets->analyse($rows);
+        $this->preview = array_map(fn (ImportRow $row): array => $row->toArray(), $plan);
         $this->imported = null;
     }
 
-    public function import(SpreadsheetReader $reader, AssetImport $import): void
+    public function import(SpreadsheetReader $reader, AssetImport $assets, LicenseImport $licenses): void
     {
-        $this->authorize('create', Asset::class);
+        $this->authorizeKind();
         $rows = $this->rows($reader);
         $actor = auth()->user();
 
@@ -80,9 +97,9 @@ final class ImportAssets extends Component
         }
 
         try {
-            $this->imported = $import->apply($rows, $actor);
+            $this->imported = $this->kind === 'licenses' ? $licenses->apply($rows) : $assets->apply($rows, $actor);
         } catch (ImportHasErrors) {
-            $this->analyse($reader, $import);
+            $this->analyse($reader, $assets, $licenses);
             $this->addError('file', __('itam::import.has_errors'));
 
             return;
@@ -91,12 +108,17 @@ final class ImportAssets extends Component
         $this->reset('file', 'preview');
     }
 
+    private function authorizeKind(): void
+    {
+        $this->authorize('create', $this->kind === 'licenses' ? License::class : Asset::class);
+    }
+
     public function render(): View
     {
         $errors = count(array_filter($this->preview, fn (array $row): bool => $row['action'] === ImportRow::ERROR));
 
         return view('itam::livewire.import', [
-            'columns' => AssetImport::COLUMNS,
+            'columns' => $this->kind === 'licenses' ? LicenseImport::COLUMNS : AssetImport::COLUMNS,
             'categories' => Category::query()->where('is_active', true)->orderBy('name')->get(),
             'errorCount' => $errors,
             'counts' => array_count_values(array_column($this->preview, 'action')),
@@ -109,7 +131,10 @@ final class ImportAssets extends Component
      */
     private function rows(SpreadsheetReader $reader): ?array
     {
-        $this->validate(['file' => ['required', 'file', 'max:'.self::MAX_KILOBYTES]]);
+        $this->validate([
+            'kind' => ['required', 'in:assets,licenses'],
+            'file' => ['required', 'file', 'max:'.self::MAX_KILOBYTES],
+        ]);
         $file = $this->file;
 
         if (! $file instanceof TemporaryUploadedFile) {

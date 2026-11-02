@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-4xl space-y-6">
     <header class="space-y-1">
-        <a href="{{ route('itam.assets.index') }}" class="text-sm text-gray-500 underline">{{ __('itam::assets.ui.back') }}</a>
-        <h1 class="text-xl font-semibold">{{ __('itam::import.title') }}</h1>
+        <a href="{{ $kind === 'licenses' ? route('itam.licenses.index') : route('itam.assets.index') }}" class="text-sm text-gray-500 underline">{{ __($kind === 'licenses' ? 'itam::licenses.ui.back' : 'itam::assets.ui.back') }}</a>
+        <h1 class="text-xl font-semibold">{{ __($kind === 'licenses' ? 'itam::import.licenses.title' : 'itam::import.title') }}</h1>
         <p class="text-sm text-gray-600">{{ __('itam::import.intro') }}</p>
     </header>
 
@@ -10,16 +10,32 @@
     @endif
 
     <form wire:submit="analyse" class="space-y-4 rounded-lg bg-white p-6 ring-1 ring-gray-200">
+        <fieldset class="space-y-2">
+            <legend class="text-sm font-medium">{{ __('itam::import.kind') }}</legend>
+            @can('create', \Modules\Itam\Domain\Models\Asset::class)
+                <label class="flex items-start gap-2 text-sm"><input type="radio" wire:model.live="kind" value="assets" class="mt-0.5"> <span>{{ __('itam::import.kinds.assets') }}</span></label>
+            @endcan
+            @can('create', \Modules\Itam\Domain\Models\License::class)
+                <label class="flex items-start gap-2 text-sm"><input type="radio" wire:model.live="kind" value="licenses" class="mt-0.5"> <span>{{ __('itam::import.kinds.licenses') }}</span></label>
+            @endcan
+        </fieldset>
+
         <div class="space-y-2 rounded-md bg-gray-50 p-3 text-xs text-gray-700">
-            <p>{{ __('itam::import.columns') }}</p>
-            <p class="font-mono">{{ implode(';', $columns) }}</p>
-            <p>{{ __('itam::import.column_notes') }}</p>
-            <p>{{ __('itam::import.attribute_columns') }}</p>
-            <ul class="space-y-0.5">
-                @foreach ($categories as $category)
-                    <li wire:key="import-category-{{ $category->id }}"><span class="font-mono">{{ $category->key }}</span> ({{ $category->name }}): <span class="font-mono">{{ collect($category->schema()->fields)->pluck('key')->implode(', ') ?: '—' }}</span></li>
-                @endforeach
-            </ul>
+            @if ($kind === 'licenses')
+                <p>{{ __('itam::import.licenses.columns') }}</p>
+                <p class="font-mono">{{ implode(';', $columns) }}</p>
+                <p>{{ __('itam::import.licenses.column_notes') }}</p>
+            @else
+                <p>{{ __('itam::import.columns') }}</p>
+                <p class="font-mono">{{ implode(';', $columns) }}</p>
+                <p>{{ __('itam::import.column_notes') }}</p>
+                <p>{{ __('itam::import.attribute_columns') }}</p>
+                <ul class="space-y-0.5">
+                    @foreach ($categories as $category)
+                        <li wire:key="import-category-{{ $category->id }}"><span class="font-mono">{{ $category->key }}</span> ({{ $category->name }}): <span class="font-mono">{{ collect($category->schema()->fields)->pluck('key')->implode(', ') ?: '—' }}</span></li>
+                    @endforeach
+                </ul>
+            @endif
         </div>
 
         <div>

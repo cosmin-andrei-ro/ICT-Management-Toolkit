@@ -8,7 +8,7 @@ declare(strict_types=1);
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Notification;
 use Modules\Core\Domain\Authorization\DefaultRole;
-use Modules\Itam\Application\Notifications\WarrantiesEnding;
+use Modules\Itam\Application\Notifications\EndingSoon;
 use Modules\Itam\Application\Warranty\SendWarrantyReminders;
 use Modules\Itam\Tests\Support\ItamScenario;
 
@@ -28,9 +28,9 @@ it('emails asset managers once about warranties ending soon, and again for a new
     $remind = app(SendWarrantyReminders::class);
 
     expect($remind->handle($this->today))->toBe(1);
-    Notification::assertSentTo([$this->itam->manager, $lead], WarrantiesEnding::class,
-        fn (WarrantiesEnding $mail): bool => count($mail->lines) === 1 && str_starts_with($mail->lines[0], 'AST-SOON'));
-    Notification::assertNotSentTo([$this->itam->agent, $this->itam->employee], WarrantiesEnding::class);
+    Notification::assertSentTo([$this->itam->manager, $lead], EndingSoon::class,
+        fn (EndingSoon $mail): bool => count($mail->lines) === 1 && str_starts_with($mail->lines[0], 'AST-SOON'));
+    Notification::assertNotSentTo([$this->itam->agent, $this->itam->employee], EndingSoon::class);
 
     expect($remind->handle($this->today->addDay()))->toBe(0);
 

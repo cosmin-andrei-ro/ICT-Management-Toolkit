@@ -80,7 +80,9 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - Assets linked to CMDB items and to the support contracts that cover them; warranty reminders by email.
 - **Handover protocols** to print or save as PDF, with the employee's confirmation of receipt in the portal; **QR labels**; **import** from CSV or Excel and **export** of the register.
 
-**Planned modules:** software licences (asset management, part 3), datacenter infrastructure, application portfolio, business impact analysis, continuity and recovery, risk assessment, audit and compliance, projects.
+- **Software licences** per user, per device or site: seats in use against seats bought per product, over-use flagged, keys encrypted and shown only after an authenticator code (audited), expiry reminders.
+
+**Planned modules:** datacenter infrastructure, application portfolio, business impact analysis, continuity and recovery, risk assessment, audit and compliance, projects.
 
 **Not done yet:** security keys and passkeys (WebAuthn) as a second factor; single sign-on with OIDC or SAML.
 
@@ -213,6 +215,7 @@ Two processes must run all the time.
 | `core:exports:prune` | hourly | Deletes expired exports |
 | `core:contracts:remind` | daily at 07:00 | Contract deadline reminders; renews contracts that renew automatically |
 | `itam:warranties:remind` | daily at 07:15 | Emails asset managers about warranties ending soon |
+| `itam:licenses:remind` | daily at 07:20 | Emails licence managers about licences expiring soon |
 | `ticketing:mail:prune` | daily | Deletes old entries of the incoming email log |
 | `core:directory:sync` | every 15 minutes, when AD is enabled | Blocks disabled AD accounts, refreshes roles |
 
@@ -299,6 +302,7 @@ Settings, for special cases:
 | `DEFAULT_CURRENCY` | `EUR` | Currency proposed for new contracts and assets (ISO 4217) |
 | `ITAM_TAG_PREFIX` | `AST` | Prefix of automatic asset tags (`AST-000001`) |
 | `ITAM_WARRANTY_REMINDER_DAYS` | `30` | Days before a warranty ends when asset managers are emailed |
+| `ITAM_LICENSE_REMINDER_DAYS` | `60` | Days before a licence expires when licence managers are emailed |
 | `ATTACHMENTS_DISK` | `attachments` | Storage for attachments (e.g. an S3-compatible disk) |
 | `SANCTUM_EXPIRATION` | `129600` | Lifetime of API tokens, in minutes |
 

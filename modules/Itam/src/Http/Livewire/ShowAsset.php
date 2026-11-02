@@ -33,6 +33,8 @@ use Modules\Itam\Domain\Enums\AssetStatus;
 use Modules\Itam\Domain\Enums\DisposalMethod;
 use Modules\Itam\Domain\Exceptions\AssetTransitionNotAllowed;
 use Modules\Itam\Domain\Models\Asset;
+use Modules\Itam\Domain\Models\License;
+use Modules\Itam\Domain\Models\LicenseAssignment;
 
 /**
  * One asset: its details, who has it, its life cycle, the configuration item it
@@ -145,6 +147,7 @@ final class ShowAsset extends Component
             DisposalMethod::from($this->disposalMethod),
             $this->dataWiped === '' ? null : $this->dataWiped === '1',
             $this->disposalNotes,
+            $this->actor(),
         ), 'disposalMethod');
     }
 
@@ -246,6 +249,9 @@ final class ShowAsset extends Component
                 : collect(),
             'assignments' => $asset->assignments()->with(['user', 'assigner', 'receiver'])->limit(50)->get(),
             'documents' => $asset->attachments()->get(),
+            'licenses' => auth()->user()?->can('viewAny', License::class) === true
+                ? LicenseAssignment::query()->with('license.product')->where('asset_id', $asset->id)->get()
+                : collect(),
             'cmdbAvailable' => $items->isAvailable(),
             'linkedItems' => $items->linkedTo($asset),
             'itemCandidates' => mb_strlen($itemSearch) >= 2 ? $items->search($itemSearch) : [],
