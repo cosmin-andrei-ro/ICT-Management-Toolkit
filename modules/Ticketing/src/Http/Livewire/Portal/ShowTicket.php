@@ -12,6 +12,8 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Modules\Core\Domain\Links\KnowledgeArticles;
+use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Application\Actions\AddTicketAttachment;
 use Modules\Ticketing\Application\Actions\AddTicketComment;
 use Modules\Ticketing\Application\Actions\CancelTicket;
@@ -91,11 +93,13 @@ final class ShowTicket extends Component
         $this->attempt(fn () => $cancelTicket->handle($this->ticket, '', $this->user()));
     }
 
-    public function render(): View
+    public function render(KnowledgeArticles $articles): View
     {
         $ticket = $this->ticket;
+        $user = auth()->user();
 
         return view('ticketing::livewire.portal.show', [
+            'articles' => $user instanceof User ? $articles->about($ticket->getMorphClass(), $ticket->id, $user) : [],
             'ticket' => $ticket,
             'comments' => $ticket->comments()->where('is_internal', false)->with('author')->get(),
             'attachments' => $ticket->attachments()->where('is_internal', false)->get(),

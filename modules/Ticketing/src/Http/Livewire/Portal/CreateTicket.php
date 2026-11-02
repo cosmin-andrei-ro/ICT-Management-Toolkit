@@ -15,6 +15,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Modules\Core\Domain\Links\KnowledgeArticles;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Ticketing\Application\Actions\AddTicketAttachment;
@@ -90,9 +91,13 @@ final class CreateTicket extends Component
         $this->redirectRoute('ticketing.portal.show', $ticket);
     }
 
-    public function render(): View
+    public function render(KnowledgeArticles $articles): View
     {
+        $user = Auth::user();
+
         return view('ticketing::livewire.portal.create', [
+            // Articles that may solve the problem before it becomes a ticket.
+            'suggestions' => $user instanceof User && mb_strlen(trim($this->title)) >= 5 ? $articles->suggest($this->title, $user) : [],
             'categories' => Category::query()->where('is_active', true)->with('parent')->orderBy('sort_order')->orderBy('name')->get(),
             'types' => TicketType::requestable(),
             'impacts' => Impact::cases(),

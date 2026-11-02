@@ -15,8 +15,18 @@
 
         <div>
             <label for="title" class="block text-sm font-medium">{{ __('ticketing::ui.fields.title') }}</label>
-            <input id="title" type="text" wire:model="title" maxlength="200" class="mt-1 block w-full rounded-md border-gray-300">
+            <input id="title" type="text" wire:model.live.debounce.700ms="title" maxlength="200" class="mt-1 block w-full rounded-md border-gray-300">
             @error('title') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            @if ($suggestions !== [])
+                <section aria-labelledby="suggestions-heading" class="mt-2 rounded-md bg-blue-50 p-3 text-sm ring-1 ring-blue-200" aria-live="polite">
+                    <h2 id="suggestions-heading" class="font-medium text-blue-900">{{ __('ticketing::ui.knowledge.suggestions') }}</h2>
+                    <ul class="mt-1 list-disc pl-5">
+                        @foreach ($suggestions as $article)
+                            <li wire:key="suggestion-{{ $article->id }}"><a href="{{ $article->url }}" target="_blank" rel="noopener" class="text-blue-700 underline">{{ $article->title }}</a> <span class="text-xs text-gray-500">{{ $article->status }}</span></li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
         </div>
 
         <div>

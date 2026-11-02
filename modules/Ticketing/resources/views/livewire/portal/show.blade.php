@@ -17,6 +17,15 @@
 
     <x-ticketing::service-answers :ticket="$ticket" />
 
+    @if ($articles !== [])
+        <section aria-labelledby="articles-heading" class="rounded-lg bg-blue-50 p-4 text-sm ring-1 ring-blue-200">
+            <h2 id="articles-heading" class="font-medium text-blue-900">{{ __('ticketing::ui.knowledge.for_this_ticket') }}</h2>
+            <ul class="mt-1 list-disc pl-5">
+                @foreach ($articles as $article) <li wire:key="article-{{ $article->id }}"><a href="{{ $article->url }}" class="text-blue-700 underline">{{ $article->title }}</a></li> @endforeach
+            </ul>
+        </section>
+    @endif
+
     @error('action') <p class="rounded-md bg-red-50 p-3 text-sm text-red-700">{{ $message }}</p> @enderror
 
     @if ($ticket->status->value === 'resolved')

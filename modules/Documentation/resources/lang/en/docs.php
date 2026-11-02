@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 return [
     'menu' => 'Documentation',
+    'linked_kind' => 'Documentation page',
     'title' => 'Documentation',
     'intro' => 'Procedures, how-tos and reference pages, organised in spaces.',
     'search' => 'Search',

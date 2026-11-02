@@ -29,6 +29,8 @@ use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Documentation\Domain\Models\Page;
+use Modules\Documentation\Domain\Models\Space;
 use Modules\Risk\Domain\Models\Risk;
 use Modules\Ticketing\Domain\Models\Ticket;
 
@@ -47,9 +49,10 @@ it('finds records of every module that can serve as evidence, as the viewer may 
     BusinessProcess::factory()->create(['name' => 'Backup operations']);
     Contract::factory()->create(['title' => 'Backup storage contract']);
     Ticket::factory()->create(['title' => 'Backup schedule change']);
+    Page::factory()->create(['space_id' => Space::factory()->create()->id, 'title' => 'Backup procedure', 'published_title' => 'Backup procedure', 'published_body' => 'Nightly.', 'published_version' => 1, 'published_at' => now()]);
 
     $records = app(LinkedRecords::class);
-    expect(array_keys($records->searchable()))->toEqualCanonicalizing(['risk.risk', 'applications.application', 'bcm.plan', 'bcm.exercise', 'bia.process', 'core.contract', 'ticketing.ticket']);
+    expect(array_keys($records->searchable()))->toEqualCanonicalizing(['risk.risk', 'applications.application', 'bcm.plan', 'bcm.exercise', 'bia.process', 'core.contract', 'ticketing.ticket', 'documentation.page']);
 
     $agent = $this->compliance->member(DefaultRole::Agent);
     foreach (array_keys($records->searchable()) as $type) {

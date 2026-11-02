@@ -214,6 +214,24 @@
     <aside class="space-y-6">
         <x-ticketing::affected-items :items="$configurationItems" :editable="auth()->user()?->can('work', $ticket) ?? false" />
 
+        <section class="space-y-2 rounded-lg bg-white p-4 text-sm ring-1 ring-gray-200" aria-labelledby="knowledge-heading">
+            <h2 id="knowledge-heading" class="font-semibold">{{ __('ticketing::ui.knowledge.title') }}</h2>
+            <ul class="space-y-1">
+                @forelse ($articles as $article)
+                    <li wire:key="article-{{ $article->id }}"><a href="{{ $article->url }}" class="text-blue-700 underline">{{ $article->title }}</a> <span class="text-xs text-gray-500">{{ $article->status }}</span></li>
+                @empty
+                    <li class="text-gray-500">{{ __('ticketing::ui.knowledge.none') }}</li>
+                @endforelse
+            </ul>
+            @if ($suggestedArticles !== [])
+                <p class="pt-1 text-xs font-medium text-gray-600">{{ __('ticketing::ui.knowledge.maybe') }}</p>
+                <ul class="space-y-1">
+                    @foreach ($suggestedArticles as $article) <li wire:key="suggested-{{ $article->id }}"><a href="{{ $article->url }}" class="text-blue-700 underline">{{ $article->title }}</a></li> @endforeach
+                </ul>
+            @endif
+            <p class="text-xs text-gray-500">{{ __('ticketing::ui.knowledge.how_to_link') }}</p>
+        </section>
+
         @if ($ticket->type->value === 'incident')
             <section class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200" aria-labelledby="problem-heading">
                 <h2 id="problem-heading" class="text-sm font-semibold">{{ __('ticketing::problems.ui.problem') }}</h2>

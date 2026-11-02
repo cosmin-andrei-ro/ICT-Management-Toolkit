@@ -56,6 +56,10 @@ Every published page has a **review** date, from the space's interval. On the sp
 
 On a page, **Link a record** connects it to what it is about - an application, a CMDB item, a continuity plan, a risk, a contract, a ticket: choose the kind, search, **Link**. People who may not open the record still see its name. **Files** keeps diagrams, exports or manuals with the page; whoever reads the page can download them.
 
+## Documentation and the service desk
+
+Published pages of spaces read by **everyone** are the employees' help: they find them in **Documentation** and, while writing a new ticket, as **suggestions** under its summary. Link a page to a ticket or a known error (**Link a record → Service desk ticket**) and it shows on the ticket's page - to agents always, to the requester when they may read it. Other modules can link pages too, for example a procedure as evidence of a compliance control.
+
 ## History
 
 **History** lists every saved version, who saved it and what changed. Choose one to see the lines added (in green) and removed (in red) compared with the version before. **Restore this version** makes an old text current again - as a new version, so nothing is lost.

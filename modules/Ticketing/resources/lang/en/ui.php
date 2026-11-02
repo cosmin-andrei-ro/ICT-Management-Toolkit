@@ -6,6 +6,14 @@
 declare(strict_types=1);
 
 return [
+    'knowledge' => [
+        'title' => 'Knowledge base',
+        'none' => 'No article linked to this ticket.',
+        'maybe' => 'May help:',
+        'how_to_link' => 'Link an article from its page: About → Service desk ticket.',
+        'suggestions' => 'These articles may solve it right away:',
+        'for_this_ticket' => 'Articles about your request',
+    ],
     'action_failed' => 'That action is not possible in the ticket\'s current state. Reload the page and try again.',
     'system' => 'System',
     'internal_note' => 'Internal',
