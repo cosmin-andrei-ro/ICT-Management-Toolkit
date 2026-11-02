@@ -22,5 +22,6 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
     Route::livewire('/bia/processes/{process}', ShowProcess::class)->whereUuid('process')->name('bia.processes.show');
     Route::livewire('/bia/processes/{process}/edit', ProcessForm::class)->whereUuid('process')->name('bia.processes.edit');
     Route::get('/bia/processes/{process}/sheet', ProcessSheetController::class)->whereUuid('process')->name('bia.processes.sheet');
+    Route::get('/bia/processes/{process}/sheet/pdf', [ProcessSheetController::class, 'pdf'])->whereUuid('process')->middleware('throttle:10,1')->name('bia.processes.sheet.pdf');
     Route::livewire('/bia/assessments/{assessment}', AssessmentPage::class)->whereUuid('assessment')->name('bia.assessments.show');
 });

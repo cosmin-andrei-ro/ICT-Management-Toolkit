@@ -5,6 +5,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Client\Request as HttpRequest;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 use Modules\Bcm\Application\Notifications\PlanUpdate;
@@ -155,4 +157,11 @@ it('prints the plan in force for offline use', function (): void {
         ->assertOk()
         ->assertSee('Payroll DRP')->assertSee('Restore the database from backup')->assertSee('Acme hotline')->assertSee('+40 21 000 0000')
         ->assertSee('Required: 4 hours (Payroll).');
+
+    config(['core.pdf.gotenberg_url' => 'http://gotenberg:3000']);
+    Http::fake(['gotenberg:3000/*' => Http::response('%PDF-1.7 fake', 200)]);
+    $this->get(route('bcm.plans.sheet.pdf', $version->plan))->assertOk()->assertHeader('Content-Type', 'application/pdf')
+        ->assertHeader('Content-Disposition', 'attachment; filename=payroll-drp-v1.pdf');
+    Http::assertSent(fn (HttpRequest $request): bool => str_contains($request->body(), 'Restore the database from backup'));
+    $this->actingAs($this->bcm->employee)->get(route('bcm.plans.sheet.pdf', $version->plan))->assertForbidden();
 });

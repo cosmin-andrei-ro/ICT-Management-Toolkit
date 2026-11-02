@@ -87,12 +87,12 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Business processes** with owners in the business, assessed in an **impact matrix over time** (financial, legal, reputation, operations, customers × 4 hours to 1 month); MTPD derived from the scores, RTO checked against it, RPO, workarounds; recovery tiers.
 - Versioned assessments: owners submit, a continuity coordinator approves or returns them (never their own); yearly review.
 - **Dependencies** on IT systems (CMDB), suppliers, locations, other processes, key roles and people; **recovery gaps**: the strictest RTO/RPO each system must meet, through CMDB relationships, against the recovery capability IT declared, with suggested criticality.
-- Register export to Excel, printable BIA sheet per process, review reminders to owners and a weekly digest for coordinators.
+- Register export to Excel, BIA sheet per process to print or as PDF, review reminders to owners and a weekly digest for coordinators.
 
 **Continuity and recovery (BCM/DRP)**
 - **Business continuity and IT disaster recovery plans**, versioned and approved: scope (BIA processes, CMDB systems), scenarios, activation, crisis team, communication, and a **runbook** whose recovery time is compared with the RTO.
-- Printable plan for offline use during a crisis.
-- **Exercises and recovery tests**: the runbook in force step by step with results and times, measured recovery against the RTO, systems confirmed as recovered in the CMDB, findings raised as problems in the service desk, printable report.
+- Plan in force to print or as PDF, for offline use during a crisis.
+- **Exercises and recovery tests**: the runbook in force step by step with results and times, measured recovery against the RTO, systems confirmed as recovered in the CMDB, findings raised as problems in the service desk, report to print or as PDF.
 - **Coverage report**: assessed processes without a plan in force or not brought back within their RTO, plans not approved or overdue for review or exercise; Excel export of the continuity register; reminders to owners and a weekly digest for coordinators.
 - **Activation log** for real disruptions: the crisis team is emailed a link to the plan, time to recover is compared with the RTO, lessons are kept.
 
@@ -287,7 +287,7 @@ systemctl enable --now ictmt-queue
 
 ## PDF documents
 
-PDFs (for now, an application's full documentation) are made by [Gotenberg](https://gotenberg.dev), an optional service running headless Chrome (ADR 0030). Without it, the **Print** button and the browser's *Save as PDF* do the same job.
+PDFs (application documentation, BIA sheets, continuity plans and exercise reports, the risk and compliance reports, Statements of Applicability) are made by [Gotenberg](https://gotenberg.dev), an optional service running headless Chrome (ADR 0030). Without it, the **Print** button and the browser's *Save as PDF* do the same job.
 
 Run it on the internal network only, with JavaScript off and no network access for the documents:
 

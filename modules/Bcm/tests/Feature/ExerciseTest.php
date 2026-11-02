@@ -5,6 +5,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Client\Request as HttpRequest;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 use Modules\Bcm\Domain\Enums\ExerciseStatus;
@@ -109,8 +111,19 @@ it('copies the runbook in force, records results and confirms the recovery in th
     Livewire::test(ShowItem::class, ['item' => $app])->assertSee('Recovery last tested')->assertSee('5 hours');
 
     // Kept as evidence: no further change.
-    Livewire::test(ExercisePage::class, ['exercise' => $exercise])->assertSee('Print the report')->call('saveResults')->assertForbidden();
+    Livewire::test(ExercisePage::class, ['exercise' => $exercise])->assertSeeHtml(route('bcm.exercises.report', $exercise))->call('saveResults')->assertForbidden();
     expect($exercise->auditLogs()->count())->toBeGreaterThan(1);
+
+    // The report, to print or as PDF.
+    $this->get(route('bcm.exercises.report', $exercise))->assertOk()
+        ->assertSee('Exercise report: '.$exercise->title)->assertSee('Longer than the strictest RTO')->assertSee('5 hours');
+    config(['core.pdf.gotenberg_url' => 'http://gotenberg:3000']);
+    Http::fake(['gotenberg:3000/*' => Http::response('%PDF-1.7 fake', 200)]);
+    $this->get(route('bcm.exercises.report.pdf', $exercise))->assertOk()->assertHeader('Content-Type', 'application/pdf');
+    Http::assertSent(fn (HttpRequest $request): bool => str_contains($request->body(), $exercise->title));
+    $this->actingAs($this->bcm->employee)->get(route('bcm.exercises.report', $exercise))->assertForbidden();
+    // A report only once the exercise is over.
+    $this->actingAs($this->bcm->owner)->get(route('bcm.exercises.report', Exercise::factory()->create(['plan_id' => $plan->id])))->assertNotFound();
 });
 
 it('raises findings as problems in the service desk, once, with the item of the step', function (): void {

@@ -19,10 +19,10 @@ Business continuity plans (BCP) and IT disaster recovery plans (DRP). Code: `mod
 - `/bcm`: plans with filters (type, retired).
 - `/bcm/plans/new`, `/bcm/plans/{id}/edit`, `/bcm/plans/{id}` (versions; write, continue or review).
 - `/bcm/versions/{id}`: scope, scenarios and texts, team, runbook, recovery time against RTO; submit; approve or return.
-- `/bcm/plans/{id}/print`: the version in force, to print or save as PDF for offline use.
+- `/bcm/plans/{id}/print`: the version in force, to print for offline use; `/bcm/plans/{id}/pdf` as PDF through Gotenberg (throttled, recorded as an export).
 - `/bcm/mine`: plans the signed-in person owns, for owners without `bcm.plan.view`.
 - `/bcm/plans/{id}/exercises/new`: plan an exercise (plans in force only).
-- `/bcm/exercises/{id}`: start, record step results, recovered systems and findings, raise problems, complete; printable once completed.
+- `/bcm/exercises/{id}`: start, record step results, recovered systems and findings, raise problems, complete; once completed, its report at `/bcm/exercises/{id}/report` (and `/report/pdf`).
 - `/bcm/plans/{id}/activate`, `/bcm/activations/{id}`: record a real activation (optionally emailing the crisis team), then the service back time and lessons, and close it.
 - `/bcm/coverage`: plans and where they stand (approval, review, exercise due, recovery vs RTO) and assessed processes with or without a plan in force; Excel export of the continuity register.
 - CMDB item pages list the plans covering the item and when its recovery was last tested.

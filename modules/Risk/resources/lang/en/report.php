@@ -18,7 +18,6 @@ return [
     'register' => 'Open risks, highest first',
     'print' => 'Print',
     'download_pdf' => 'Download PDF',
-    'pdf_unavailable' => 'The PDF service is not available right now. Print the page or save it as PDF from the browser.',
     'export' => [
         'button' => 'Export to Excel',
         'of' => 'Risk register of :date',

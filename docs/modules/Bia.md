@@ -13,7 +13,7 @@ Business processes, the impact of their interruption over time, and their recove
 ## Screens
 
 - `/bia`: overview (processes per tier, never assessed, reviews overdue, assessments in progress and waiting), processes with filters (department, tier, due for review, retired), export of the register to Excel (processes, dependencies, gaps).
-- `/bia/processes/{id}/sheet`: the process's BIA on one page, to print or save as PDF.
+- `/bia/processes/{id}/sheet`: the process's BIA on one page, to print; `/sheet/pdf` as PDF through Gotenberg (throttled, recorded as an export).
 - `/bia/processes/new`, `/bia/processes/{id}/edit`: for the coordinator.
 - `/bia/processes/{id}`: objectives in force, details, versions; start or continue an assessment.
 - `/bia/assessments/{id}`: the matrix and the objectives; save, submit; approve or return.

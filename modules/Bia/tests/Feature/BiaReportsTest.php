@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Client\Request as HttpRequest;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 use Modules\Bia\Application\Actions\DecideAssessment;
@@ -122,4 +124,16 @@ it('prints the BIA sheet of a process for the people who may see it', function (
         ->assertSee('4 hours');
 
     $this->actingAs($this->bia->employee)->get(route('bia.processes.sheet', $this->bia->payroll))->assertForbidden();
+    $this->actingAs($this->bia->employee)->get(route('bia.processes.sheet.pdf', $this->bia->payroll))->assertForbidden();
+
+    // Without the PDF service, back to the page to print it from the browser.
+    $this->actingAs($this->bia->owner)->get(route('bia.processes.sheet.pdf', $this->bia->payroll))
+        ->assertRedirect(route('bia.processes.sheet', $this->bia->payroll))->assertSessionHas('status');
+
+    config(['core.pdf.gotenberg_url' => 'http://gotenberg:3000']);
+    Http::fake(['gotenberg:3000/*' => Http::response('%PDF-1.7 fake', 200)]);
+    $this->get(route('bia.processes.sheet', $this->bia->payroll))->assertSee('Download PDF');
+    $this->get(route('bia.processes.sheet.pdf', $this->bia->payroll))->assertOk()->assertHeader('Content-Type', 'application/pdf');
+    Http::assertSent(fn (HttpRequest $request): bool => str_contains($request->body(), 'Paper timesheets'));
+    expect($this->bia->payroll->auditLogs()->where('event', 'exported')->exists())->toBeTrue();
 });

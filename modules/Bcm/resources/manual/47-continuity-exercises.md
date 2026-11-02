@@ -32,7 +32,7 @@ Write down everything that has to be fixed — a missing backup, a wrong phone n
 
 ## Complete it
 
-Every step needs a result. Choose the **outcome** (successful, partly successful, failed), write a summary and the lessons learned, and click **Complete**. The exercise is then kept as evidence and can no longer be changed; **Print the report** prints it or saves it as PDF.
+Every step needs a result. Choose the **outcome** (successful, partly successful, failed), write a summary and the lessons learned, and click **Complete**. The exercise is then kept as evidence and can no longer be changed; **Report** shows the exercise on one page - steps and results, systems recovered, time against the RTO, findings and lessons - to print, or to **Download PDF** where the PDF service is installed.
 
 On completion:
 

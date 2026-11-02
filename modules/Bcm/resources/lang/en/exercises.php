@@ -70,6 +70,13 @@ return [
         'lessons' => 'Lessons learned',
         'last_exercised' => 'Last exercised',
     ],
+    'report' => [
+        'title' => 'Exercise report',
+        'action' => 'Step',
+        'estimated' => 'Estimated',
+        'system' => 'System',
+        'declared' => 'Declared recovery time',
+    ],
     'ui' => [
         'title' => 'Exercises and tests',
         'new' => 'Plan an exercise',
@@ -107,7 +114,7 @@ return [
         'complete' => 'Complete',
         'complete_confirm' => 'Complete the exercise? Its results can no longer be changed.',
         'conclusion' => 'Conclusion',
-        'print' => 'Print the report',
+        'print' => 'Report',
     ],
     'evidence' => ':plan — :title (:date)',
     'ticket' => [
