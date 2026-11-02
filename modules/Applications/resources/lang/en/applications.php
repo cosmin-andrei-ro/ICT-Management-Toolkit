@@ -93,6 +93,17 @@ return [
             'subject' => 'Certificate expiring: :certificate (:application)',
             'line' => 'The certificate :certificate used by :application expires on :date. Renew it and update the documentation.',
         ],
+        'review' => [
+            'subject' => 'Documentation due for review: :application',
+            'line' => 'The documentation of :application is due for review on :date. Check it is still accurate and publish an update.',
+        ],
+        'digest' => [
+            'subject' => 'Application portfolio: what needs attention',
+            'not_documented' => '{1} :count application has no documentation in force.|[2,*] :count applications have no documentation in force.',
+            'review_overdue' => '{1} :count application is overdue for review.|[2,*] :count applications are overdue for review.',
+            'awaiting_approval' => '{1} :count documentation version waits for approval.|[2,*] :count documentation versions wait for approval.',
+            'action' => 'Open the portfolio',
+        ],
         'comment' => 'Comment: :comment',
         'open' => 'Open the documentation',
     ],

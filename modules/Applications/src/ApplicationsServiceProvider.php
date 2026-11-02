@@ -11,14 +11,18 @@ use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
+use Modules\Applications\Application\Exports\PortfolioExport;
 use Modules\Applications\Application\Options\OptionCatalog;
 use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\OptionValue;
 use Modules\Applications\Domain\Models\Sheet;
 use Modules\Applications\Infrastructure\Console\SendCertificateRemindersCommand;
+use Modules\Applications\Infrastructure\Console\SendPortfolioDigestCommand;
+use Modules\Applications\Infrastructure\Console\SendReviewRemindersCommand;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
@@ -39,9 +43,13 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
         // Scoped: a long-running worker must see values changed later.
         $this->app->scoped(OptionCatalog::class);
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PortfolioExport::TYPE, PortfolioExport::class, 'applications.application.view'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         // The CMDB item page lists the applications built on the item (5.2 Components).
-        $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('applications.sheet', self::linkedApplications(...)));
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->register('applications.sheet', self::linkedApplications(...));
+            $records->register('applications.application', self::applicationItems(...));
+        });
     }
 
     public function boot(): void
@@ -61,10 +69,12 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(SendCertificateRemindersCommand::class)->dailyAt('07:40')->withoutOverlapping()->onOneServer();
+            $schedule->command(SendReviewRemindersCommand::class)->dailyAt('07:45')->withoutOverlapping()->onOneServer();
+            $schedule->command(SendPortfolioDigestCommand::class)->weeklyOn(1, '07:55')->withoutOverlapping()->onOneServer();
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SendCertificateRemindersCommand::class]);
+            $this->commands([SendCertificateRemindersCommand::class, SendReviewRemindersCommand::class, SendPortfolioDigestCommand::class]);
         }
     }
 
@@ -85,6 +95,27 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
                 __('applications::applications.linked', ['application' => $sheet->application->name, 'code' => $sheet->application->code]),
                 route('applications.show', $sheet->application_id),
                 $sheet->status->label(),
+            ))
+            ->all());
+    }
+
+    /**
+     * Applications a CMDB item stands for.
+     *
+     * @param  list<string>  $ids
+     * @return list<LinkedRecord>
+     */
+    private static function applicationItems(array $ids, User $viewer): array
+    {
+        $gate = Gate::forUser($viewer);
+
+        return array_values(Application::query()->whereKey($ids)->limit(100)->get()
+            ->filter(fn (Application $application): bool => $gate->allows('view', $application))
+            ->map(fn (Application $application): LinkedRecord => new LinkedRecord(
+                $application->id,
+                __('applications::applications.linked', ['application' => $application->name, 'code' => $application->code]),
+                route('applications.show', $application),
+                $application->current_version !== null ? 'v'.$application->current_version : null,
             ))
             ->all());
     }

@@ -23,12 +23,12 @@
         <p class="text-xs font-medium text-gray-600">{{ __('applications::sheet.ui.own_diagram') }}</p>
         @if ($image)
             <figure class="space-y-1">
-                <img src="{{ route('applications.diagrams.image', $image) }}" alt="{{ __('applications::sheet.ui.own_diagram_alt', ['section' => $section->title()]) }}" class="max-h-[32rem] rounded border border-gray-200">
+                <img src="{{ isset($imageSrc) ? $imageSrc($image) : route('applications.diagrams.image', $image) }}" alt="{{ __('applications::sheet.ui.own_diagram_alt', ['section' => $section->title()]) }}" class="max-h-[32rem] rounded border border-gray-200">
                 <figcaption class="text-xs text-gray-500">{{ $image->original_name }}</figcaption>
             </figure>
         @endif
         <p class="flex flex-wrap items-center gap-3 text-sm">
-            @if ($source)
+            @if ($source && ($pdf ?? false)) <span>{{ __('applications::document.source_kept', ['name' => $source->original_name]) }}</span> @elseif ($source)
                 <a href="{{ route('core.attachments.download', $source) }}" class="text-blue-700 underline">{{ __('applications::sheet.ui.download_source', ['name' => $source->original_name]) }}</a>
             @endif
             @if ($editable && $image) <button type="button" wire:click="removeDiagramFile('{{ $section->key }}', '{{ $field->key }}', 'image')" class="text-xs text-red-700 underline">{{ __('applications::sheet.ui.remove_image') }}</button> @endif

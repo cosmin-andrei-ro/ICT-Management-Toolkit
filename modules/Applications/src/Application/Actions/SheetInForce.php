@@ -11,6 +11,8 @@ use Illuminate\Contracts\Config\Repository as Config;
 use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\Sheet;
+use Modules\Core\Domain\Links\ConfigurationItems;
+use Modules\Core\Domain\Models\User;
 
 /**
  * Brings a version into force, inside the caller's transaction: the previous
@@ -19,9 +21,12 @@ use Modules\Applications\Domain\Models\Sheet;
  */
 final readonly class SheetInForce
 {
-    public function __construct(private Config $config) {}
+    public function __construct(
+        private Config $config,
+        private ConfigurationItems $items,
+    ) {}
 
-    public function handle(Sheet $sheet): void
+    public function handle(Sheet $sheet, User $actor): void
     {
         $previous = Sheet::query()->where('application_id', $sheet->application_id)->where('status', SheetStatus::Approved)->lockForUpdate()->first();
 
@@ -47,6 +52,27 @@ final readonly class SheetInForce
             'current_version' => $sheet->versionLabel(),
             'approved_at' => $sheet->approved_at,
             'next_review_on' => now()->addMonthsNoOverflow(is_int($months) && $months > 0 ? $months : 12)->toDateString(),
-        ])->save();
+        ]);
+
+        // The application in the CMDB (CLAUDE.md §9: links created on approval), running on its linked components.
+        $components = $this->items->linkedIds($sheet->getMorphClass(), [$sheet->id])[$sheet->id] ?? [];
+        $itemId = $this->items->ensureItem($application->configuration_item_id, 'application', $application->code, $application->name, self::cmdbCriticality($application->criticality), $components, $actor);
+
+        if ($itemId !== null) {
+            $application->forceFill(['configuration_item_id' => $itemId]);
+            // The item's CMDB page then shows the application it stands for.
+            $this->items->link($application, $itemId, $actor);
+        }
+
+        $application->save();
+    }
+
+    /**
+     * The CMDB's scale is low to critical; values of the organization's own
+     * criticality list that are not on it count as medium.
+     */
+    private static function cmdbCriticality(?string $criticality): string
+    {
+        return in_array($criticality, ['low', 'medium', 'high', 'critical'], true) ? $criticality : 'medium';
     }
 }

@@ -55,6 +55,17 @@ At the bottom, describe **what changed in this version** (for the first one, for
 
 When a version comes into force it gets its number — 1.0 for the first, then 1.1, 1.2… for minor changes and 2.0, 3.0… for major ones — and the next review is due a year later. The application page shows the **change history**: version, date, author, description and approvals.
 
+## The full document and PDF
+
+**Full document** (on the application and on each version) shows the documentation as the company's template lays it out: cover, change history, document control and approvals, contents, then every chapter. **Print** it, or **Download PDF** when your administrator has set up the PDF service - the PDF is what auditors expect. A version that is not in force is marked as such.
+
+## After approval
+
+- The application appears in the **CMDB** as an item of its own, running on the components linked in 5.2.
+- About a month before the yearly review, the owners and the deputy get an e-mail. Start a new version to review it, even if nothing changed (a minor version with "Yearly review, no change").
+- Every Monday, application managers get an e-mail with the applications not documented, overdue for review or waiting for approval.
+- **Export to Excel** on the portfolio list gives the applications with their data, integrations, components and certificates.
+
 ## Dropdown values
 
 Application managers adjust the dropdowns in **Administration → Application portfolio → Dropdown values**: rename a value, change the order, add values, or deactivate one that should no longer be offered. Documentation that already uses a value keeps it.

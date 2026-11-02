@@ -101,6 +101,20 @@ services:
             GREENMAIL_OPTS: '-Dgreenmail.setup.test.smtp -Dgreenmail.setup.test.imap -Dgreenmail.hostname=0.0.0.0 -Dgreenmail.users=helpdesk:helpdesk-dev-only@corp.example -Dgreenmail.users.login=email -Dgreenmail.verbose'
         networks:
             - sail
+    # Optional PDF service (ADR 0030): COMPOSE_PROFILES=pdf ./vendor/bin/sail up -d, then GOTENBERG_URL=http://gotenberg:3000.
+    # Chromium runs without JavaScript and may fetch nothing: documents carry their styles and images.
+    gotenberg:
+        image: 'gotenberg/gotenberg:8.39.0'
+        profiles:
+            - pdf
+        command:
+            - gotenberg
+            - '--chromium-disable-javascript'
+            - '--chromium-deny-list=^file:(?!//\/tmp/).*'
+            - '--chromium-deny-list=^(https?|ftp|wss?):.*'
+            - '--libreoffice-disable-routes'
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge

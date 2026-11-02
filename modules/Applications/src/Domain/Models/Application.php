@@ -46,6 +46,8 @@ use Modules\Core\Domain\Models\User;
  * @property ?string $current_version
  * @property ?Carbon $approved_at
  * @property ?CarbonImmutable $next_review_on
+ * @property ?string $configuration_item_id The application's own CMDB item.
+ * @property ?CarbonImmutable $review_reminded_for
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -131,6 +133,7 @@ final class Application extends Model
         return [
             'approved_at' => 'datetime',
             'next_review_on' => 'immutable_date',
+            'review_reminded_for' => 'immutable_date',
         ];
     }
 }

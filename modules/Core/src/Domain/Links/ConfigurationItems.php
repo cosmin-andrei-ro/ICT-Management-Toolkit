@@ -87,6 +87,17 @@ interface ConfigurationItems
      */
     public function confirmRecovery(string $itemId, ?int $measuredMinutes, CarbonImmutable $on, string $evidence, User $actor): void;
 
+    /**
+     * The item standing for a record of another module (an application of the
+     * portfolio): the one given, else the one with this identifier, else a new
+     * one of the given type. It is then related ("runs on") to the given items.
+     *
+     * @param  string  $criticality  low, medium, high or critical; used for a new item only
+     * @param  list<string>  $runsOn  Items of the organization; others are ignored.
+     * @return ?string The item's id; null when the CMDB has no type with this key.
+     */
+    public function ensureItem(?string $itemId, string $typeKey, string $identifier, string $name, string $criticality, array $runsOn, User $actor): ?string;
+
     public function canChangeCriticality(User $actor): bool;
 
     /**
