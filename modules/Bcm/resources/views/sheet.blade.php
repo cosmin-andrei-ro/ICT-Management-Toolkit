@@ -1,11 +1,6 @@
 @php($duration = fn (?int $minutes): string => \Modules\Core\Domain\Time\Duration::format($minutes))
-<x-core::layouts.base :title="$plan->name">
+<x-core::printable :title="$plan->name" :pdf="$pdf" :styles="$styles ?? ''" :back-url="route('bcm.plans.show', $plan)" :back-label="'← '.$plan->name" :pdf-url="$pdfAvailable ? route('bcm.plans.sheet.pdf', $plan) : null">
     <main class="mx-auto max-w-4xl space-y-6 bg-white p-8 text-sm print:max-w-none print:p-0">
-        <div class="flex items-center justify-between gap-4 print:hidden">
-            <a href="{{ route('bcm.plans.show', $plan) }}" class="text-gray-500 underline">← {{ $plan->name }}</a>
-            <button type="button" data-print class="rounded-md bg-gray-900 px-4 py-2 font-semibold text-white">{{ __('bcm::sheet.print') }}</button>
-        </div>
-
         <header class="space-y-1 border-b border-gray-300 pb-4">
             <p class="text-gray-600">{{ $organization?->name }} · {{ $plan->type->label() }}</p>
             <h1 class="text-xl font-semibold">{{ $plan->name }}</h1>
@@ -75,4 +70,4 @@
             @if ($version->{$field}) <section class="break-inside-avoid"><h2 class="font-semibold">{{ __('bcm::plans.fields.'.$field) }}</h2><p class="whitespace-pre-line">{{ $version->{$field} }}</p></section> @endif
         @endforeach
     </main>
-</x-core::layouts.base>
+</x-core::printable>

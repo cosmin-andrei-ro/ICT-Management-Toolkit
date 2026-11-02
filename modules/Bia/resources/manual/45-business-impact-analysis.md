@@ -33,7 +33,7 @@ The **tier** follows from the RTO: tier 1 within 4 hours, tier 2 within a day, t
 
 At the top of the list, the overview counts processes per tier, those never assessed or overdue for review, and the assessments being filled in or waiting for you. **Export to Excel** gives the whole register: processes, what they need, and the recovery gaps. Every Monday you receive an email when something needs attention.
 
-On a process, **BIA sheet** shows its analysis on one page: print it, or save it as PDF from the print dialog, for an audit.
+On a process, **BIA sheet** shows its analysis on one page: print it, or **Download PDF** where the PDF service is installed, for an audit.
 
 Every version stays in the history. Approved versions never change: a review starts a new version, copied from the one in force.
 

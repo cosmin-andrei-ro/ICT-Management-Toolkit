@@ -12,7 +12,6 @@ return [
     'as_of' => 'As of :date',
     'print' => 'Print',
     'download_pdf' => 'Download PDF',
-    'pdf_unavailable' => 'The PDF service is not available: print the page to PDF from the browser instead.',
     'frameworks' => 'Frameworks',
     'requirements' => 'Requirements',
     'met_share' => 'Applicable requirements met',

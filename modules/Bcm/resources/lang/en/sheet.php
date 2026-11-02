@@ -6,7 +6,6 @@
 declare(strict_types=1);
 
 return [
-    'print' => 'Print or save as PDF',
     'version' => 'Version :version',
     'approved' => 'approved by :name on :date',
     'owner' => 'owner :name',

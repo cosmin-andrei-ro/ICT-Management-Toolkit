@@ -1,11 +1,6 @@
 @php($duration = fn (?int $minutes): string => \Modules\Core\Domain\Time\Duration::format($minutes))
-<x-core::layouts.base :title="__('bia::sheet.title').' · '.$process->name">
+<x-core::printable :title="__('bia::sheet.title').' · '.$process->name" :pdf="$pdf" :styles="$styles ?? ''" :back-url="route('bia.processes.show', $process)" :back-label="'← '.$process->name" :pdf-url="$pdfAvailable ? route('bia.processes.sheet.pdf', $process) : null">
     <main class="mx-auto max-w-4xl space-y-6 bg-white p-8 text-sm print:max-w-none print:p-0">
-        <div class="flex items-center justify-between gap-4 print:hidden">
-            <a href="{{ route('bia.processes.show', $process) }}" class="text-gray-500 underline">← {{ $process->name }}</a>
-            <button type="button" data-print class="rounded-md bg-gray-900 px-4 py-2 font-semibold text-white">{{ __('bia::sheet.print') }}</button>
-        </div>
-
         <header class="space-y-1 border-b border-gray-300 pb-4">
             <p class="text-gray-600">{{ $organization?->name }}</p>
             <h1 class="text-xl font-semibold">{{ __('bia::sheet.title') }}: {{ $process->name }}</h1>
@@ -97,4 +92,4 @@
             </section>
         @endif
     </main>
-</x-core::layouts.base>
+</x-core::printable>

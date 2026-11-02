@@ -12,7 +12,7 @@
         </div>
         <div class="flex flex-wrap gap-2 print:hidden">
             @if ($exercise->status === \Modules\Bcm\Domain\Enums\ExerciseStatus::Completed)
-                <button type="button" data-print class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('bcm::exercises.ui.print') }}</button>
+                <a href="{{ route('bcm.exercises.report', $exercise) }}" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('bcm::exercises.ui.print') }}</a>
             @endif
             @if ($editable)
                 @if ($exercise->status === \Modules\Bcm\Domain\Enums\ExerciseStatus::Planned)

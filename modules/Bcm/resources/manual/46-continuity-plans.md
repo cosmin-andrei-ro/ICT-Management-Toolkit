@@ -26,4 +26,4 @@ At the top of the page, the plan compares how long activation and recovery take 
 
 ## Keep a copy offline
 
-A crisis may take this application down too. On an approved plan, **Print the plan** shows the version in force on one page — scope, activation, crisis team with contacts, the runbook with a "done" column. Print it, or save it as PDF, and keep a copy where the crisis team can reach it.
+A crisis may take this application down too. On an approved plan, **Print the plan** shows the version in force on one page — scope, activation, crisis team with contacts, the runbook with a "done" column. Print it, or **Download PDF** where the PDF service is installed, and keep a copy where the crisis team can reach it.

@@ -16,7 +16,6 @@ return [
     'print' => 'Print',
     'download_pdf' => 'Download PDF',
     'open' => 'Full document',
-    'pdf_unavailable' => 'The PDF service is not available right now. Print the page or save it as PDF from the browser.',
     'source_kept' => 'Source file kept in the toolkit: :name',
     'generated' => 'Generated on :date by :app.',
 ];

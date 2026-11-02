@@ -13,12 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Modules\Applications\Application\Sheets\SheetDocument;
 use Modules\Applications\Domain\Models\Sheet;
-use Modules\Core\Application\Pdf\PdfRenderer;
-use Modules\Core\Application\Pdf\PdfUnavailable;
-use Modules\Core\Domain\Audit\AuditEvent;
-use Modules\Core\Domain\Audit\AuditTrail;
+use Modules\Core\Application\Pdf\PdfDownload;
 use Modules\Core\Domain\Models\User;
-use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -30,8 +26,7 @@ final readonly class SheetDocumentController
     public function __construct(
         private Gate $gate,
         private SheetDocument $document,
-        private PdfRenderer $pdf,
-        private AuditTrail $trail,
+        private PdfDownload $pdf,
     ) {}
 
     public function show(Sheet $sheet, Request $request): View
@@ -48,21 +43,7 @@ final readonly class SheetDocumentController
 
         $html = view('applications::document', [...$this->document->data($sheet, $viewer, true), 'pdfAvailable' => true, 'styles' => $this->pdf->stylesheet()])->render();
 
-        try {
-            $content = $this->pdf->render($html);
-        } catch (PdfUnavailable) {
-            return redirect()->route('applications.sheets.document', $sheet)->with('status', __('applications::document.pdf_unavailable'));
-        }
-
-        $this->trail->record(AuditEvent::Exported, $sheet, null, ['format' => 'pdf'], $viewer->id);
-        $name = Str::slug($sheet->application->code.'-'.($sheet->versionLabel() ?? 'draft')).'.pdf';
-
-        return response($content, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $name),
-            'X-Content-Type-Options' => 'nosniff',
-            'Cache-Control' => 'private, no-store',
-        ]);
+        return $this->pdf->respond($html, Str::slug($sheet->application->code.'-'.($sheet->versionLabel() ?? 'draft')), route('applications.sheets.document', $sheet), $sheet, [], $viewer);
     }
 
     private function viewer(Request $request): User

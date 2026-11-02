@@ -8,7 +8,6 @@ declare(strict_types=1);
 return [
     'title' => 'Business impact analysis',
     'button' => 'BIA sheet',
-    'print' => 'Print or save as PDF',
     'version' => 'Version :version (:status)',
     'approved' => 'approved by :name on :date',
     'printed' => 'printed on :date',
