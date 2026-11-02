@@ -7,7 +7,7 @@ If you sit on a **change advisory board** (CAB) or on the **emergency CAB** (ECA
 
 ## What waits for you
 
-You get an email when a change is submitted to your board. **Approvals** in the menu lists every change waiting for your decision, earliest window first.
+You get an email when a change is submitted to your board. **Service desk → Approvals** in the menu lists every change waiting for your decision, earliest window first.
 
 Open a change to see:
 

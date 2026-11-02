@@ -48,7 +48,7 @@ final class CmdbServiceProvider extends ModuleServiceProvider
         ]);
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
-            $navigation->add('cmdb::items.menu', 'cmdb.items.index', 'cmdb.*', fn (User $user): bool => $user->can('cmdb.ci.view'));
+            $navigation->add('cmdb::items.menu', 'cmdb.items.index', 'cmdb.*', fn (User $user): bool => $user->can('cmdb.ci.view'), Navigation::CONFIGURATION);
         });
     }
 

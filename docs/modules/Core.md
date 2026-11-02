@@ -57,6 +57,10 @@ Working hours per weekday in a time zone, extra days off, and optionally Romania
 - **Contracts** (`core_contracts`): `/contracts`. The deadline is the end date minus the notice period; the status is derived from the dates (`Contract::statusOn()`, and `withStatus()` in SQL). Documents are Core attachments.
 - **Reminders:** `core:contracts:remind`, daily at 07:00, emails the owner and the people with `core.contract.manage` at `CONTRACT_REMINDER_DAYS` (default 90,30) before each deadline, once each (`core_contract_reminders`), and renews contracts that renew automatically.
 
+## Main menu
+
+Modules add entries through `Modules\Core\Http\Navigation\Navigation::add()`: a link of its own (with an `order`), or an entry of a shared group (`SERVICE_DESK`, `CONFIGURATION`, `SUPPLIERS`) shown as a drop-down. A group with a single visible entry is shown as that link. The drop-downs are `<details>` elements, so they work without script; `resources/js/navigation.js` closes them on outside clicks and Escape.
+
 ## Administration panel
 
 Filament at `/admin`, for users with `core.admin.access`: administrators, team leads and asset managers. Every resource and page checks its own permission, so each sees only what they may manage. It uses the application login. See ADR 0006 for its CSP exception.

@@ -15,7 +15,7 @@ A **change** is planned work on a live system: a firmware upgrade, a new firewal
 
 ## Creating a change
 
-Open **Change calendar** in the menu and click **New change**.
+Open **Service desk → Change calendar** in the menu and click **New change**.
 
 - **Standard:** choose the template and the planned window. The plans come from the template, and the change is authorized at once.
 - **Normal** or **Emergency:** give a title, why the change is needed, the risk, and the plan:

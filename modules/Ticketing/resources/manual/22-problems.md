@@ -25,7 +25,7 @@ Click **Mark as known error** once the workaround is documented. A known error m
 
 ## The known error database
 
-**Known errors** in the menu lists every open known error with its workaround, most widespread first. Search with the symptom or the error text the user reports.
+**Service desk → Known errors** in the menu lists every open known error with its workaround, most widespread first. Search with the symptom or the error text the user reports.
 
 When you link an incident to a known error, its workaround is added to the incident as an **internal note**, ready for you to apply or pass on.
 

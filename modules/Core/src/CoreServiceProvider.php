@@ -203,9 +203,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
         });
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
-            $navigation->add('core::suppliers.menu', 'core.suppliers.index', 'core.suppliers.*', fn (User $user): bool => $user->can('core.supplier.view'));
-            $navigation->add('core::contracts.menu', 'core.contracts.index', 'core.contracts.*', fn (User $user): bool => $user->can('core.contract.view'));
-            $navigation->add('core::layout.admin', 'filament.admin.pages.dashboard', 'filament.admin.*', fn (User $user): bool => $user->can('core.admin.access'));
+            $navigation->add('core::suppliers.menu', 'core.suppliers.index', 'core.suppliers.*', fn (User $user): bool => $user->can('core.supplier.view'), Navigation::SUPPLIERS);
+            $navigation->add('core::contracts.menu', 'core.contracts.index', 'core.contracts.*', fn (User $user): bool => $user->can('core.contract.view'), Navigation::SUPPLIERS);
+            $navigation->add('core::layout.admin', 'filament.admin.pages.dashboard', 'filament.admin.*', fn (User $user): bool => $user->can('core.admin.access'), order: 90);
         });
 
         if ($this->app->runningInConsole()) {

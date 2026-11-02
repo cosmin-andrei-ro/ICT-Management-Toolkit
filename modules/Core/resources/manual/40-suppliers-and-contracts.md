@@ -9,7 +9,7 @@ Agents see suppliers and their contacts, to know whom to call. Contracts are vis
 
 ## Suppliers
 
-Open **Suppliers** in the menu. Each supplier has:
+Open **Suppliers & contracts → Suppliers** in the menu (agents see **Suppliers** directly). Each supplier has:
 
 - how to reach **support**: phone, email, hours, and **our customer number**, which their support desk usually asks for;
 - a legal name, a tax ID (for example the CUI) and a website;
@@ -19,7 +19,7 @@ A supplier that you no longer use can be marked **inactive**: it stays on old re
 
 ## Contracts
 
-Open **Contracts** in the menu, or **New contract** on a supplier's page. A contract has:
+Open **Suppliers & contracts → Contracts** in the menu, or **New contract** on a supplier's page. A contract has:
 
 - a **title**, the **supplier**, a **type** and the **contract number**;
 - a **start** and, unless it runs without a fixed end, an **end**;
