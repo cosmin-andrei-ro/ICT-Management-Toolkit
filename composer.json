@@ -63,7 +63,9 @@
             "Modules\\Applications\\": "modules/Applications/src/",
             "Modules\\Applications\\Database\\Factories\\": "modules/Applications/database/factories/",
             "Modules\\Risk\\": "modules/Risk/src/",
-            "Modules\\Risk\\Database\\Factories\\": "modules/Risk/database/factories/"
+            "Modules\\Risk\\Database\\Factories\\": "modules/Risk/database/factories/",
+            "Modules\\Audit\\": "modules/Audit/src/",
+            "Modules\\Audit\\Database\\Factories\\": "modules/Audit/database/factories/"
         }
     },
     "autoload-dev": {
@@ -77,7 +79,8 @@
             "Modules\\Bia\\Tests\\": "modules/Bia/tests/",
             "Modules\\Bcm\\Tests\\": "modules/Bcm/tests/",
             "Modules\\Applications\\Tests\\": "modules/Applications/tests/",
-            "Modules\\Risk\\Tests\\": "modules/Risk/tests/"
+            "Modules\\Risk\\Tests\\": "modules/Risk/tests/",
+            "Modules\\Audit\\Tests\\": "modules/Audit/tests/"
         }
     },
     "scripts": {

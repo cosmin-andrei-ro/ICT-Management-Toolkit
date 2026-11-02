@@ -22,5 +22,7 @@ enum DefaultRole: string
     case ApplicationManager = 'application-manager';
     case SecurityOfficer = 'security-officer';
     case RiskManager = 'risk-manager';
+    case ComplianceManager = 'compliance-manager';
+    case Auditor = 'auditor';
     case Requester = 'requester';
 }

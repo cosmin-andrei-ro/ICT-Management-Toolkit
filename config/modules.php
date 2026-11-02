@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Modules\Applications\ApplicationsServiceProvider;
+use Modules\Audit\AuditServiceProvider;
 use Modules\Bcm\BcmServiceProvider;
 use Modules\Bia\BiaServiceProvider;
 use Modules\Cmdb\CmdbServiceProvider;
@@ -60,6 +61,10 @@ return [
         ],
         'risk' => [
             'provider' => RiskServiceProvider::class,
+            'enabled' => true,
+        ],
+        'audit' => [
+            'provider' => AuditServiceProvider::class,
             'enabled' => true,
         ],
     ],

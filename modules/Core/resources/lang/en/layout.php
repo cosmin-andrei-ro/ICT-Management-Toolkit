@@ -13,6 +13,7 @@ return [
         'service_desk' => 'Service desk',
         'configuration' => 'Configuration & assets',
         'resilience' => 'Risk & continuity',
+        'compliance' => 'Compliance & audit',
         'suppliers' => 'Suppliers & contracts',
     ],
     'welcome' => 'Welcome, :name',

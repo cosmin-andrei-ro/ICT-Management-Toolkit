@@ -277,6 +277,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::SecurityOfficer, [...$directory, 'core.audit.view']);
         // Risk managers open the panel for the method and the catalog, and read suppliers to link risks to them.
         $registry->grantToDefaultRole(DefaultRole::RiskManager, [...$directory, 'core.admin.access', 'core.supplier.view']);
+        // Compliance managers read suppliers and contracts (third-party requirements) and the audit log; auditors only read.
+        $registry->grantToDefaultRole(DefaultRole::ComplianceManager, [...$directory, 'core.supplier.view', 'core.contract.view', 'core.audit.view']);
+        $registry->grantToDefaultRole(DefaultRole::Auditor, $directory);
         $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
     }
