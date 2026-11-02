@@ -6,8 +6,10 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Dcim\Http\Livewire\CableIndex;
 use Modules\Dcim\Http\Livewire\RackForm;
 use Modules\Dcim\Http\Livewire\RackIndex;
+use Modules\Dcim\Http\Livewire\ShowEquipment;
 use Modules\Dcim\Http\Livewire\ShowRack;
 
 Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(function (): void {
@@ -15,4 +17,6 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
     Route::livewire('/dcim/racks/new', RackForm::class)->name('dcim.racks.create');
     Route::livewire('/dcim/racks/{rack}', ShowRack::class)->whereUuid('rack')->name('dcim.racks.show');
     Route::livewire('/dcim/racks/{rack}/edit', RackForm::class)->whereUuid('rack')->name('dcim.racks.edit');
+    Route::livewire('/dcim/equipment/{mount}', ShowEquipment::class)->whereUuid('mount')->name('dcim.equipment.show');
+    Route::livewire('/dcim/cables', CableIndex::class)->name('dcim.cables.index');
 });

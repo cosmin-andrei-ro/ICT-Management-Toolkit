@@ -44,8 +44,12 @@
                                 @if ($asset?->model) · {{ trim($asset->manufacturer.' '.$asset->model) }} @endif
                             </p>
                             @if ($mount->notes) <p class="text-xs text-gray-600">{{ $mount->notes }}</p> @endif
+                            @unless ($canManage)
+                                <a href="{{ route('dcim.equipment.show', $mount) }}" class="text-xs font-medium text-blue-700 underline">{{ __('dcim::cabling.ports_link') }}<span class="sr-only">: {{ $asset?->label() }}</span></a>
+                            @endunless
                             @if ($canManage)
                                 <div class="flex gap-3 text-xs">
+                                    <a href="{{ route('dcim.equipment.show', $mount) }}" class="font-medium text-blue-700 underline">{{ __('dcim::cabling.ports_link') }}<span class="sr-only">: {{ $asset?->label() }}</span></a>
                                     <button type="button" wire:click="edit('{{ $mount->id }}')" class="font-medium text-blue-700 underline">{{ __('dcim::racks.move') }}<span class="sr-only">: {{ $asset?->label() }}</span></button>
                                     <button type="button" wire:click="unmount('{{ $mount->id }}')" wire:confirm="{{ __('dcim::racks.unmount_confirm') }}" class="font-medium text-red-700 underline">{{ __('dcim::racks.unmount') }}<span class="sr-only">: {{ $asset?->label() }}</span></button>
                                 </div>
