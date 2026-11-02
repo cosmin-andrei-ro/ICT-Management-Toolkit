@@ -144,6 +144,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Tasks** per phase on a board (to do, in progress, blocked, done) or as a list; overdue tasks marked; **My tasks** across every open project.
 - **Stage gates**: the project manager asks to move to the next phase or to close; the sponsor approves or sends it back with a reason; emails both ways.
 - **Status reports** green / amber / red (overall, schedule, budget, scope) with what was done, next steps and issues; weekly reminders when one is due; a **portfolio** of open projects for management.
+- **Deliverables** per phase linked to what they became in other modules (the application, a CMDB item, a change, a plan, a page…); for a **new application** (CLAUDE.md §9), a checklist read live from the modules - documentation approved, CMDB item, risks assessed, BIA processes with RTO - that, with the required deliverables, must be complete before the sponsor can close the project.
 
 **Not done yet:** single logout (SAML SLO).
 

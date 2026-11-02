@@ -45,4 +45,11 @@ final readonly class RegisterRisks implements Risks
             ))
             ->all());
     }
+
+    public function assessedCount(string $assetType, string $assetId): int
+    {
+        $ids = $this->db->table('risk_risk_assets')->where('asset_type', $assetType)->where('asset_id', $assetId)->pluck('risk_id')->all();
+
+        return Risk::query()->whereKey($ids)->get()->filter(fn (Risk $risk): bool => $risk->currentScore() !== null)->count();
+    }
 }

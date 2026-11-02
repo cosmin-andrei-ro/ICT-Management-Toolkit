@@ -124,6 +124,12 @@ it('approves the first version by the business owner, the IT owner and security,
         ->and($application->next_review_on?->toDateString())->toBe(now()->addYear()->toDateString());
     Notification::assertSentTo($this->apps->technicalOwner, SheetUpdate::class, fn (SheetUpdate $update): bool => $update->kind === 'in_force');
 
+    // Other modules (the Projects checklist) learn that it is documented.
+    $summary = app(Modules\Core\Domain\Links\Applications::class)->find([$application->id])[$application->id];
+    expect($summary->documented)->toBeTrue()
+        ->and($summary->configurationItemId)->toBe($application->configuration_item_id)
+        ->and($summary->processIds)->toBe(array_values(array_filter((array) ($sheet->section('10_1')['processes'] ?? []), is_string(...))));
+
     $this->actingAs($this->apps->agent);
     Livewire::test(ShowApplication::class, ['application' => $this->apps->ticketing])
         ->assertSee('Initial documentation of the existing Ticketing Platform')->assertSee('Security officer');

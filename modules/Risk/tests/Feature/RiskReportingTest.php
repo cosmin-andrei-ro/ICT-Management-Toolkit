@@ -87,3 +87,11 @@ it('emails risk managers what needs attention each week', function (): void {
     Notification::assertSentTo($this->risks->manager, RiskDigest::class, fn (RiskDigest $digest): bool => ($digest->figures['overdue_actions'] ?? 0) === 1 && ! isset($digest->figures['pending_acceptances']));
     Notification::assertNotSentTo($this->risks->lead, RiskDigest::class);
 });
+
+it('counts the assessed risks concerning an application, whoever asks', function (): void {
+    $unassessed = Risk::factory()->create(['title' => 'Not assessed yet', 'owner_id' => $this->risks->owner->id]);
+    app(Modules\Risk\Application\Actions\ManageRiskAssets::class)->add($unassessed, Modules\Risk\Domain\Enums\AssetType::Application, $this->risks->payrollApp->id, $this->risks->manager);
+
+    expect(app(Modules\Core\Domain\Links\Risks::class)->assessedCount('application', $this->risks->payrollApp->id))->toBe(1)
+        ->and(app(Modules\Core\Domain\Links\Risks::class)->assessedCount('application', (string) Illuminate\Support\Str::uuid7()))->toBe(0);
+});

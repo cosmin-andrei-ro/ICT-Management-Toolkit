@@ -38,6 +38,7 @@ use Modules\Projects\Domain\Enums\ProjectStatus;
  * @property string $name
  * @property ?string $description
  * @property ProjectKind $kind
+ * @property ?string $application_id
  * @property ProjectStatus $status
  * @property ?string $sponsor_id
  * @property ?string $manager_id
@@ -109,6 +110,14 @@ final class Project extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+
+    /**
+     * @return HasMany<Deliverable, $this>
+     */
+    public function deliverables(): HasMany
+    {
+        return $this->hasMany(Deliverable::class);
     }
 
     /**

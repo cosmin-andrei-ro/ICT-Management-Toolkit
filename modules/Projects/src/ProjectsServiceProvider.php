@@ -15,6 +15,7 @@ use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Projects\Domain\Models\Deliverable;
 use Modules\Projects\Domain\Models\GateRequest;
 use Modules\Projects\Domain\Models\Phase;
 use Modules\Projects\Domain\Models\Project;
@@ -47,6 +48,7 @@ final class ProjectsServiceProvider extends ModuleServiceProvider
             'projects.task' => Task::class,
             'projects.gate_request' => GateRequest::class,
             'projects.status_report' => StatusReport::class,
+            'projects.deliverable' => Deliverable::class,
         ]);
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {

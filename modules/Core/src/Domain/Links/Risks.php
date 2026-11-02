@@ -24,4 +24,12 @@ interface Risks
      * @return list<RiskSummary>
      */
     public function concerning(string $assetType, string $assetId, User $viewer): array;
+
+    /**
+     * How many risks concerning the thing have been assessed (they have a
+     * current score), whoever asks: a count reveals no risk.
+     *
+     * @param  string  $assetType  application, configuration_item, process or supplier
+     */
+    public function assessedCount(string $assetType, string $assetId): int;
 }
