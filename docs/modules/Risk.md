@@ -48,5 +48,5 @@ A risk's owner assesses it without a permission.
 
 1. Register, method, catalog, heat map — **done**.
 2. Treatment: options, actions (optionally service desk tickets), residual risk, acceptance with risk manager approval above the threshold, score history, reassessment reminders — **done**.
-3. Suggestions from the other modules (applications, continuity, operations, suppliers), including initial risks when an application's documentation is approved — **done**.
+3. Suggestions from the other modules (applications, continuity, operations, suppliers, and later compliance), including initial risks when an application's documentation is approved — **done**.
 4. Reporting: inherent vs residual heat maps, risks on application pages, Excel register, PDF report, weekly digest — **done**.

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Audit\Application\Actions;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use InvalidArgumentException;
 use Modules\Audit\Application\Notifications\FindingUpdate;
@@ -17,6 +18,7 @@ use Modules\Audit\Domain\Models\Control;
 use Modules\Audit\Domain\Models\ControlTest;
 use Modules\Audit\Domain\Models\Finding;
 use Modules\Audit\Domain\Models\Requirement;
+use Modules\Core\Domain\Events\RiskSignalsChanged;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 
@@ -29,6 +31,7 @@ final readonly class SaveFinding
     public function __construct(
         private ConnectionInterface $db,
         private OrganizationContext $context,
+        private Dispatcher $events,
     ) {}
 
     /**
@@ -73,6 +76,9 @@ final readonly class SaveFinding
 
             return $finding;
         });
+
+        // Major nonconformities are risk signals: the register refreshes its suggestions.
+        $this->events->dispatch(new RiskSignalsChanged($finding->organization_id));
 
         if ($finding->owner_id !== null && $finding->owner_id !== $previousOwner && $finding->owner_id !== $actor->id) {
             $owner = User::query()->find($finding->owner_id);

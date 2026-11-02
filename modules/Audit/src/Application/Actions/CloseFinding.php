@@ -7,11 +7,13 @@ declare(strict_types=1);
 
 namespace Modules\Audit\Application\Actions;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use InvalidArgumentException;
 use Modules\Audit\Application\Notifications\FindingUpdate;
 use Modules\Audit\Domain\Enums\FindingStatus;
 use Modules\Audit\Domain\Models\Finding;
+use Modules\Core\Domain\Events\RiskSignalsChanged;
 use Modules\Core\Domain\Models\User;
 
 /**
@@ -22,7 +24,10 @@ use Modules\Core\Domain\Models\User;
  */
 final readonly class CloseFinding
 {
-    public function __construct(private ConnectionInterface $db) {}
+    public function __construct(
+        private ConnectionInterface $db,
+        private Dispatcher $events,
+    ) {}
 
     public function rootCause(Finding $finding, ?string $rootCause): void
     {
@@ -78,6 +83,9 @@ final readonly class CloseFinding
                 ? ['status' => FindingStatus::Closed, 'verified_by' => $actor->id, 'closed_at' => now(), 'verification_notes' => $notes !== '' ? $notes : null]
                 : ['status' => FindingStatus::Open, 'submitted_by' => null, 'submitted_at' => null, 'verification_notes' => $notes])->save();
         });
+
+        // Major nonconformities are risk signals: the register refreshes its suggestions.
+        $this->events->dispatch(new RiskSignalsChanged($finding->organization_id));
 
         $finding->refresh();
         $owner = $finding->owner_id !== null ? User::query()->find($finding->owner_id) : null;

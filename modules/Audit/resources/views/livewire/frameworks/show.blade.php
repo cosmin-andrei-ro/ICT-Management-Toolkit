@@ -10,9 +10,14 @@
                 @if ($framework->has_soa) · {{ __('audit::compliance.ui.soa') }} @endif
             </p>
         </div>
+        <div class="flex flex-wrap gap-2">
+        @if ($framework->has_soa)
+            <a href="{{ route('audit.frameworks.soa', $framework) }}" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('audit::compliance.ui.soa') }}</a>
+        @endif
         @can('update', $framework)
             <button type="button" wire:click="toggleArchived" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __($framework->is_active ? 'audit::compliance.ui.archive' : 'audit::compliance.ui.restore') }}</button>
         @endcan
+        </div>
     </header>
 
     @if (! $framework->is_active)

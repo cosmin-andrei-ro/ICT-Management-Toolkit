@@ -10,6 +10,8 @@ namespace Modules\Audit;
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Modules\Audit\Application\Exports\ComplianceExport;
+use Modules\Audit\Application\Risks\ComplianceRiskSignals;
 use Modules\Audit\Domain\Models\Audit;
 use Modules\Audit\Domain\Models\Control;
 use Modules\Audit\Domain\Models\ControlTest;
@@ -18,11 +20,14 @@ use Modules\Audit\Domain\Models\Finding;
 use Modules\Audit\Domain\Models\Framework;
 use Modules\Audit\Domain\Models\Requirement;
 use Modules\Audit\Http\Livewire\MyControls;
+use Modules\Audit\Infrastructure\Console\SendComplianceDigestCommand;
 use Modules\Audit\Infrastructure\Console\SendTestRemindersCommand;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 
 final class AuditServiceProvider extends ModuleServiceProvider
@@ -38,6 +43,8 @@ final class AuditServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+        $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(ComplianceExport::TYPE, ComplianceExport::class, 'audit.compliance.view'));
+        $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('audit', fn (): array => (new ComplianceRiskSignals)()));
     }
 
     public function boot(): void
@@ -56,10 +63,11 @@ final class AuditServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(SendTestRemindersCommand::class)->dailyAt('08:05')->withoutOverlapping()->onOneServer();
+            $schedule->command(SendComplianceDigestCommand::class)->weeklyOn(1, '08:15')->withoutOverlapping()->onOneServer();
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SendTestRemindersCommand::class]);
+            $this->commands([SendTestRemindersCommand::class, SendComplianceDigestCommand::class]);
         }
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {

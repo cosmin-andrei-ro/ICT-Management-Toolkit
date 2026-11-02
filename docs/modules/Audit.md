@@ -30,6 +30,13 @@ Compliance with regulations and standards: frameworks and their requirements, th
 - Control page: *Raise a finding* on a test that was not fully effective.
 - `/compliance/controls/mine` (*My compliance tasks*): controls, open findings and corrective actions of the signed-in person, for those without `audit.compliance.view`.
 
+## Reports
+
+- `/compliance/report` (and `/compliance/report/pdf` through Gotenberg, throttled and audited): coverage of each framework, controls by status, overdue tests, controls meeting no requirement, expired evidence, audits of the last 12 months, findings not closed by severity.
+- `/compliance/frameworks/{id}/soa` (and `/soa/pdf`): the Statement of Applicability of a framework that keeps one - each requirement, applicable or not, justification, controls and state.
+- Compliance → **Export to Excel** (`audit.compliance`): applicability of every requirement with its controls; controls; tests; evidence; findings; corrective actions.
+- Risk signals (source `audit`, Core's `RiskSignals`): every major nonconformity not closed (`audit.major:<finding>`), every active framework with applicable requirements no control meets (`audit.uncovered:<framework>`). Raising or closing a finding dispatches `RiskSignalsChanged`.
+
 ## Records evidence can link to
 
 Registered with `LinkedRecords::registerSearch` by their modules: `risk.risk`, `applications.application`, `bcm.plan`, `bcm.exercise`, `bia.process`, `core.contract`, `ticketing.ticket` (search only for `ticketing.ticket.view_all`).
@@ -37,6 +44,7 @@ Registered with `LinkedRecords::registerSearch` by their modules: `risk.risk`, `
 ## Scheduled tasks
 
 - `audit:tests:remind` (daily 08:05): the owner of each control is emailed `AUDIT_TEST_REMINDER_DAYS` (14) before its next test, once per date.
+- `audit:digest` (Mondays 08:15): compliance managers get findings to verify, major nonconformities not closed, overdue findings and tests, evidence expired in the week and applicable requirements without a control, if any.
 
 ## Permissions
 
@@ -52,4 +60,4 @@ A control's owner updates its status and implementation notes, adds evidence and
 1. Frameworks (ISO/IEC 27001 Annex A, NIS2, GDPR, DORA, your own), applicability, controls mapped across frameworks, coverage — **done**.
 2. Evidence: links to toolkit records, uploaded documents, periodic control tests with reminders to owners — **done**.
 3. Audits (internal and external), findings, corrective action plans (optionally service desk tickets), closure verified by someone other than the owner — **done**.
-4. Reporting: Statement of Applicability in Excel and PDF, compliance report, weekly digest, compliance gaps as risk signals.
+4. Reporting: Statement of Applicability in Excel and PDF, compliance report, weekly digest, compliance gaps as risk signals — **done**.
