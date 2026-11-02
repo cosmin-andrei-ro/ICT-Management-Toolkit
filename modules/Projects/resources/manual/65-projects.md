@@ -30,4 +30,33 @@ The project manager adds tasks under **Add a task**, with:
 
 Tasks show as a **Board** with four columns, *To do*, *In progress*, *Blocked* and *Done*, or as a **List**. Filter them by phase. The buttons on each card move it to the next or previous column. The project manager moves any task; each person moves the tasks assigned to them, from the project or from **My tasks**. Overdue tasks are marked in red.
 
+## Moving from one phase to the next
+
+A project moves on only when its **sponsor** agrees. Under **Stage gate**, the project manager writes what the sponsor should know and clicks **Ask to move to** the next phase. In the closure phase, the button is **Ask to close the project**.
+
+The sponsor is emailed and finds the request on the project and under **My tasks**. They then:
+
+- **Approve**: the phase is done and the next one starts, or the project is closed;
+- or **Send back**, with a comment saying why.
+
+The manager is emailed either way. The sponsor never decides on their own request, so a project needs a sponsor other than its manager.
+
+## Status reports
+
+From time to time, the project manager clicks **Write a status report**. They rate the project **green**, **amber** or **red**, overall and for schedule, budget and scope, then write:
+
+- what was done since the last report;
+- the next steps;
+- any issues and risks.
+
+The page keeps every report. A report older than two weeks is due again, and the manager gets a reminder on Monday.
+
+**Portfolio** (from the Projects page, for project managers and the roles that read every project) shows each open project with:
+
+- its phase and its latest status, with the date;
+- any gate waiting for its sponsor;
+- its manager and sponsor, and its planned end.
+
+## Closed projects
+
 Closed and cancelled projects stay as they ended and can no longer be changed.

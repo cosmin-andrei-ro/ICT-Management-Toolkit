@@ -142,6 +142,8 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 **Projects**
 - **Projects** with a code, sponsor, manager and team, in four phases (initiation, planning, execution, closure) with their dates.
 - **Tasks** per phase on a board (to do, in progress, blocked, done) or as a list; overdue tasks marked; **My tasks** across every open project.
+- **Stage gates**: the project manager asks to move to the next phase or to close; the sponsor approves or sends it back with a reason; emails both ways.
+- **Status reports** green / amber / red (overall, schedule, budget, scope) with what was done, next steps and issues; weekly reminders when one is due; a **portfolio** of open projects for management.
 
 **Not done yet:** single logout (SAML SLO).
 
@@ -279,6 +281,7 @@ Two processes must run all the time.
 | `bia:digest` | Mondays at 07:45 | Emails continuity coordinators what is overdue or waiting |
 | `risk:suggestions:refresh` | daily at 06:30 | Refreshes the risks suggested by the other modules |
 | `risk:digest` | Mondays at 08:10 | Emails risk managers what the register needs |
+| `projects:report-reminders` | Mondays at 08:30 | Emails project managers the projects whose status report is due |
 | `risk:reviews:remind` | daily at 08:00 | Emails risk owners whose risks are due for reassessment |
 | `applications:reviews:remind` | daily at 07:45 | Emails application owners whose documentation is due for review |
 | `applications:digest` | Mondays at 07:55 | Emails application managers what the portfolio needs |

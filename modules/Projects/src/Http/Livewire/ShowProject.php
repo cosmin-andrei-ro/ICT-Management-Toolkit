@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Modules\Core\Domain\Models\User;
@@ -68,6 +69,15 @@ final class ShowProject extends Component
     {
         $this->authorize('view', $project);
         $this->projectId = $project->id;
+    }
+
+    /**
+     * A gate decision changes the phases shown above the board.
+     */
+    #[On('project-changed')]
+    public function refreshProject(): void
+    {
+        unset($this->project);
     }
 
     #[Computed]

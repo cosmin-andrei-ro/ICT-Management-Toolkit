@@ -41,6 +41,8 @@
         </ol>
     </section>
 
+    @livewire(\Modules\Projects\Http\Livewire\ProjectGovernance::class, ['project' => $project], key('governance-'.$project->id))
+
     <section aria-labelledby="tasks-heading" class="space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
             <h2 id="tasks-heading" class="text-sm font-semibold">{{ __('projects::projects.tasks') }}</h2>

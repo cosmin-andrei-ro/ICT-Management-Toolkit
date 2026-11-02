@@ -111,6 +111,32 @@ final class Project extends Model
         return $this->hasMany(Task::class);
     }
 
+    /**
+     * @return HasMany<GateRequest, $this>
+     */
+    public function gateRequests(): HasMany
+    {
+        return $this->hasMany(GateRequest::class)->latest();
+    }
+
+    /**
+     * @return HasMany<StatusReport, $this>
+     */
+    public function statusReports(): HasMany
+    {
+        return $this->hasMany(StatusReport::class)->orderByDesc('reported_on');
+    }
+
+    public function pendingGate(): ?GateRequest
+    {
+        return $this->gateRequests()->where('status', 'pending')->first();
+    }
+
+    public function latestReport(): ?StatusReport
+    {
+        return $this->statusReports()->first();
+    }
+
     public function currentPhase(): ?Phase
     {
         return $this->phases->firstWhere('status', PhaseStatus::Active);

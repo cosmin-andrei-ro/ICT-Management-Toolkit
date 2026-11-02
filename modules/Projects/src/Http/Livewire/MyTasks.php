@@ -14,6 +14,7 @@ use Modules\Core\Domain\Models\User;
 use Modules\Projects\Application\Actions\ManageTasks;
 use Modules\Projects\Domain\Enums\ProjectStatus;
 use Modules\Projects\Domain\Enums\TaskStatus;
+use Modules\Projects\Domain\Models\GateRequest;
 use Modules\Projects\Domain\Models\Task;
 
 /**
@@ -43,7 +44,12 @@ final class MyTasks extends Component
             ->get()
             ->groupBy('project_id');
 
-        return view('projects::livewire.my-tasks', ['groups' => $tasks])->title(__('projects::projects.my_tasks'));
+        $decisions = GateRequest::query()->with(['project', 'toPhase', 'requester'])
+            ->where('status', 'pending')
+            ->whereHas('project', fn ($query) => $query->where('sponsor_id', $this->actor()->id))
+            ->get();
+
+        return view('projects::livewire.my-tasks', ['groups' => $tasks, 'decisions' => $decisions])->title(__('projects::projects.my_tasks'));
     }
 
     private function actor(): User
