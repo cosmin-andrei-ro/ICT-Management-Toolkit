@@ -98,7 +98,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 **Application portfolio** (in progress)
 - Register of applications with business owner, IT / application owner and deputy.
-- **Technical documentation sheet** following the company's template chapter by chapter, with editable dropdowns: general information, support and classification; data categories (GDPR, PCI DSS…), functionalities and integrations with a **data flow diagram drawn from them** (plus the team's own diagram and .drawio file); authentication, access procedures, roles and the **role permissions matrix**.
+- **Technical documentation sheet** following the company's template chapter by chapter, with editable dropdowns: general information, support and classification; data categories (GDPR, PCI DSS…), functionalities and integrations with a **data flow diagram drawn from them** (plus the team's own diagram and .drawio file); authentication, access procedures, roles and the **role permissions matrix**; network with firewall rules and a **network diagram drawn from them**, hosting and components **linked to the CMDB**, software, databases, middleware, libraries and licences, technical accounts (vault location only).
 - Versioned: the first version and major changes are approved by the business owner, the IT owner and a security officer; minor changes are published and logged in the change history; yearly review date.
 
 **Planned modules:** datacenter infrastructure, risk assessment, audit and compliance, projects.

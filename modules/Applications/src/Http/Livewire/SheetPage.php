@@ -10,6 +10,7 @@ namespace Modules\Applications\Http\Livewire;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
@@ -31,6 +32,7 @@ use Modules\Applications\Domain\Sheet\FieldType;
 use Modules\Applications\Domain\Sheet\SheetSchema;
 use Modules\Applications\Http\Controllers\DiagramImageController;
 use Modules\Core\Application\Collaboration\StoreAttachment;
+use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\Supplier;
@@ -65,6 +67,8 @@ final class SheetPage extends Component
     public string $approvalRole = '';
 
     public string $comment = '';
+
+    public string $itemSearch = '';
 
     /** Diagram image being attached (PNG, JPEG, WebP or GIF). */
     public ?TemporaryUploadedFile $diagramImage = null;
@@ -183,6 +187,30 @@ final class SheetPage extends Component
         $this->store($sheetForm, $save);
     }
 
+    /**
+     * Links a CMDB item to the version (5.2 Components), audited on the version.
+     */
+    public function linkItem(string $itemId, ConfigurationItems $items): void
+    {
+        $this->authorize('update', $this->sheet);
+
+        try {
+            $items->link($this->sheet, $itemId, $this->actor());
+            $this->reset('itemSearch');
+        } catch (InvalidArgumentException) {
+            $this->addError('itemSearch', __('applications::sheet.errors.unknown_reference'));
+        } finally {
+            unset($this->sheet);
+        }
+    }
+
+    public function unlinkItem(string $itemId, ConfigurationItems $items): void
+    {
+        $this->authorize('update', $this->sheet);
+        $items->unlink($this->sheet, $itemId, $this->actor());
+        unset($this->sheet);
+    }
+
     public function removeDiagramFile(string $section, string $field, string $kind): void
     {
         $this->authorize('update', $this->sheet);
@@ -255,7 +283,7 @@ final class SheetPage extends Component
         $this->reset('approvalRole', 'comment');
     }
 
-    public function render(OptionCatalog $options, SheetForm $sheetForm, SheetApprovers $approvers, OrganizationContext $context): View
+    public function render(OptionCatalog $options, SheetForm $sheetForm, SheetApprovers $approvers, OrganizationContext $context, ConfigurationItems $items): View
     {
         $sheet = $this->sheet;
         $editable = $this->canWrite();
@@ -277,7 +305,11 @@ final class SheetPage extends Component
             'suppliers' => Supplier::query()->orderBy('name')->get(['id', 'name']),
             'contracts' => Contract::query()->orderBy('title')->limit(500)->get(),
             'matrix' => $sheetForm->matrixAxes($sheet),
-            'integrations' => $this->integrations($editable, $sheet),
+            'integrations' => $this->rowsOf($editable, $sheet, 2, '2_4', 'integrations'),
+            'firewallRules' => $this->rowsOf($editable, $sheet, 4, '4_3', 'rules'),
+            'cmdbAvailable' => $items->isAvailable(),
+            'linkedItems' => $items->linkedTo($sheet),
+            'itemCandidates' => $editable && mb_strlen(trim($this->itemSearch)) >= 2 ? $items->search(trim($this->itemSearch)) : [],
             'files' => Attachment::query()->where('attachable_type', 'applications.application')->where('attachable_id', $sheet->application_id)->get()->keyBy('id'),
         ])->title($sheet->application->name.' · '.__('applications::sheet.title'));
     }
@@ -343,16 +375,17 @@ final class SheetPage extends Component
     }
 
     /**
-     * The integrations the data-flow diagram is drawn from: as typed while
-     * writing chapter 2, as saved otherwise.
+     * Table rows a generated diagram is drawn from: as typed while writing
+     * their chapter, as saved otherwise.
      *
      * @return list<array<mixed>>
      */
-    private function integrations(bool $editable, Sheet $sheet): array
+    private function rowsOf(bool $editable, Sheet $sheet, int $chapter, string $section, string $field): array
     {
-        $rows = $editable && $this->chapter === 2 && is_array($this->form['2_4'] ?? null)
-            ? ($this->form['2_4']['integrations'] ?? [])
-            : ($sheet->section('2_4')['integrations'] ?? []);
+        $values = $editable && $this->chapter === $chapter && is_array($this->form[$section] ?? null)
+            ? $this->form[$section]
+            : $sheet->section($section);
+        $rows = $values[$field] ?? [];
 
         return is_array($rows) ? array_values(array_filter($rows, is_array(...))) : [];
     }

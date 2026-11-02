@@ -153,6 +153,117 @@ final class SheetSchema
             new Section('3_4', 3, [
                 Field::permissions('matrix'),
             ]),
+            new Section('4_1', 4, [
+                Field::text('dns_names', max: 1000),
+                Field::text('load_balancer'),
+                Field::option('balancing', 'load_balancing', allowOther: true),
+                Field::option('tls_termination', 'tls_termination', allowOther: true),
+            ]),
+            new Section('4_2', 4, [
+                Field::diagram('diagram'),
+            ]),
+            new Section('4_3', 4, [
+                Field::table('rules', [
+                    Field::text('source', required: true),
+                    Field::text('destination', required: true),
+                    Field::text('port', required: true, max: 100),
+                    Field::option('direction', 'integration_direction'),
+                    Field::option('protocol', 'network_protocols', allowOther: true),
+                    Field::option('encryption', 'encryption_methods', allowOther: true),
+                    Field::text('purpose'),
+                    Field::text('ticket', max: 64),
+                ]),
+            ]),
+            new Section('5_1', 5, [
+                Field::option('hosting_model', 'hosting_models', allowOther: true),
+                Field::text('provider'),
+                Field::option('platform', 'platforms', allowOther: true),
+            ]),
+            new Section('5_2', 5, [
+                Field::configurationItems('items'),
+                Field::table('components', [
+                    Field::option('component', 'component_types', required: true, allowOther: true),
+                    Field::text('server', required: true),
+                    Field::text('ip', max: 100),
+                    Field::option('os', 'operating_systems', allowOther: true),
+                    Field::text('type'),
+                    Field::text('description', max: 1000),
+                    Field::option('environment', 'environments', allowOther: true),
+                    Field::text('ticket', max: 64),
+                ]),
+            ]),
+            new Section('6_1', 6, [
+                Field::option('application_type', 'application_types', allowOther: true),
+                Field::option('access_method', 'access_methods', allowOther: true),
+                Field::text('tiers', max: 1000),
+                Field::textarea('notes'),
+            ]),
+            new Section('6_2', 6, [
+                Field::table('backends', [
+                    Field::text('framework', required: true),
+                    Field::text('framework_version', max: 64),
+                    Field::text('servers'),
+                    Field::text('role'),
+                    Field::option('app_server', 'app_servers', allowOther: true),
+                    Field::text('app_server_version', max: 64),
+                    Field::option('language', 'languages', allowOther: true),
+                    Field::text('paths', max: 1000),
+                ]),
+            ]),
+            new Section('6_3', 6, [
+                Field::table('frontends', [
+                    Field::text('name', required: true),
+                    Field::option('client_type', 'client_types', allowOther: true),
+                    Field::text('technology'),
+                    Field::text('version', max: 64),
+                    Field::text('language'),
+                    Field::text('build_tool'),
+                    Field::option('distribution', 'distribution_methods', allowOther: true),
+                    Field::text('prerequisites'),
+                ]),
+            ]),
+            new Section('6_4', 6, [
+                Field::table('databases', [
+                    Field::option('dbms', 'dbms', required: true, allowOther: true),
+                    Field::text('version', max: 64),
+                    Field::text('host'),
+                    Field::text('schemas', max: 1000),
+                    Field::option('high_availability', 'high_availability', allowOther: true),
+                ]),
+            ]),
+            new Section('6_4_1', 6, [
+                Field::diagram('diagram'),
+            ]),
+            new Section('6_5', 6, [
+                Field::table('middleware', [
+                    Field::text('product', required: true),
+                    Field::text('version', max: 64),
+                    Field::text('endpoint'),
+                    Field::text('purpose', max: 1000),
+                ]),
+            ]),
+            new Section('6_6', 6, [
+                Field::table('libraries', [
+                    Field::text('name', required: true),
+                    Field::text('version', max: 64),
+                    Field::option('license', 'licenses', allowOther: true),
+                    Field::text('vendor'),
+                    Field::date('support_until'),
+                ]),
+            ]),
+            new Section('7', 7, [
+                Field::table('accounts', [
+                    Field::text('username', required: true),
+                    Field::option('iam_category', 'iam_categories', allowOther: true),
+                    Field::text('user_type'),
+                    Field::text('purpose', max: 1000),
+                    Field::text('systems'),
+                    Field::text('owner'),
+                    Field::option('rotation', 'rotation_periods', allowOther: true),
+                    Field::text('credential_location'),
+                    Field::text('ticket', max: 64),
+                ]),
+            ]),
         ];
     }
 }

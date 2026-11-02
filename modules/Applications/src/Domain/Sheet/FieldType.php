@@ -34,4 +34,6 @@ enum FieldType: string
     case Diagram = 'diagram';
     // Which roles (3.3) may use which functionality (2.3): the permissions matrix (3.4).
     case Permissions = 'permissions';
+    // CMDB items linked to the version through Core's ConfigurationItems contract (not stored in the content).
+    case ConfigurationItems = 'configuration_items';
 }

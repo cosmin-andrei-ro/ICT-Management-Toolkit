@@ -8,6 +8,7 @@ declare(strict_types=1);
 return [
     'menu' => 'Application portfolio',
     'title' => 'Application portfolio',
+    'linked' => 'Application: :application (:code)',
     'statuses' => [
         'draft' => 'Draft',
         'submitted' => 'Waiting for approval',

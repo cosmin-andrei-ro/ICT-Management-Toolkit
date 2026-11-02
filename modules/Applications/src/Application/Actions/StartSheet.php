@@ -11,6 +11,7 @@ use Illuminate\Database\ConnectionInterface;
 use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Applications\Domain\Models\Sheet;
+use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Models\User;
 
 /**
@@ -19,7 +20,10 @@ use Modules\Core\Domain\Models\User;
  */
 final readonly class StartSheet
 {
-    public function __construct(private ConnectionInterface $db) {}
+    public function __construct(
+        private ConnectionInterface $db,
+        private ConfigurationItems $items,
+    ) {}
 
     public function handle(Application $application, User $actor): Sheet
     {
@@ -41,6 +45,11 @@ final readonly class StartSheet
                 'is_major' => $current === null,
                 'content' => $current !== null ? $current->content : ['doc' => ['document_owner' => $application->technical_owner_id ?? $actor->id]],
             ])->save();
+
+            // The components linked in the CMDB (5.2) carry over too.
+            foreach ($current !== null ? ($this->items->linkedIds($current->getMorphClass(), [$current->id])[$current->id] ?? []) : [] as $itemId) {
+                $this->items->link($sheet, $itemId, $actor);
+            }
 
             return $sheet;
         });

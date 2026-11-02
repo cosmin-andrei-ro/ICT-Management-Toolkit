@@ -17,6 +17,10 @@ return [
         1 => 'General Information',
         2 => 'Data Flows & Functionalities',
         3 => 'User Management & Roles',
+        4 => 'Network',
+        5 => 'Infrastructure',
+        6 => 'Software & Platforms',
+        7 => 'Technical Users / Service Accounts',
     ],
     'sections' => [
         'doc' => [
@@ -78,6 +82,56 @@ return [
         ],
         '3_3' => [
             'title' => 'Application Roles',
+        ],
+        '4_1' => [
+            'title' => 'Network Description',
+            'guidance' => 'Explains network zones and the communication paths needed for the application to work.',
+        ],
+        '4_2' => [
+            'title' => 'Network Architecture',
+            'guidance' => 'The network zones, firewalls and servers the application uses and how they communicate. The diagram below is drawn from 4.3 Firewall Rules & Ports; you can also attach your own diagram (security zones: Internet, DMZ, application, data, management) with its .drawio file.',
+        ],
+        '4_3' => [
+            'title' => 'Firewall Rules & Ports',
+            'guidance' => 'One row per firewall rule or network flow the application needs. Use the same source and destination names as in the network diagram and record the change ticket used to open each rule.',
+        ],
+        '5_1' => [
+            'title' => 'Hosting',
+            'guidance' => 'Describes where the application runs: hosting model, servers and other infrastructure components.',
+        ],
+        '5_2' => [
+            'title' => 'Components',
+        ],
+        '6_1' => [
+            'title' => 'Application Architecture',
+            'guidance' => 'Start here. If you are not sure whether the application is a web application, a desktop client or both, describe what users see and install. Fill in only the subsections below that apply.',
+        ],
+        '6_2' => [
+            'title' => 'Backends',
+            'guidance' => 'One row per backend component (web server, application server, reverse proxy, API or worker service). Skip this subsection for pure desktop clients that talk directly to the database.',
+        ],
+        '6_3' => [
+            'title' => 'Frontends',
+            'guidance' => 'One row per frontend or client the users work with (e.g. web portal, mobile app, desktop client, admin console).',
+        ],
+        '6_4' => [
+            'title' => 'Databases',
+            'guidance' => 'One row per database or database instance the application uses (e.g. main application database, reporting / data warehouse database, archive database). In the DBMS column, record the database software and edition used.',
+        ],
+        '6_4_1' => [
+            'title' => 'Database Diagram',
+            'guidance' => 'Attach an entity-relationship diagram (ERD) of the application database: the main tables, their primary and foreign keys and the relationships between them, with the same database and schema names as in 6.4. If there are several databases, show each one or attach one diagram per database.',
+        ],
+        '6_5' => [
+            'title' => 'Cache & Middleware',
+            'guidance' => 'One row per cache, message broker or other middleware product the application uses (e.g. Redis, RabbitMQ, Kafka, IBM MQ, Elasticsearch). Skip this subsection if the application uses none.',
+        ],
+        '6_6' => [
+            'title' => 'Third-party Libraries & Licenses',
+        ],
+        '7' => [
+            'title' => 'Technical Users / Service Accounts',
+            'guidance' => 'List every non-personal account the application uses. Do not write passwords here - record only where the credential is stored (vault name).',
         ],
         '3_4' => [
             'title' => 'Role Permissions Matrix',
@@ -184,6 +238,117 @@ return [
         '3_4' => [
             'matrix' => 'Permissions',
         ],
+        '4_1' => [
+            'dns_names' => 'DNS names / aliases',
+            'load_balancer' => 'Load balancer / VIP',
+            'balancing' => 'Load balancing method',
+            'tls_termination' => 'TLS termination',
+        ],
+        '4_2' => [
+            'diagram' => 'Network diagram',
+        ],
+        '4_3' => [
+            'rules' => [
+                'source' => 'Source',
+                'destination' => 'Destination',
+                'port' => 'Port',
+                'direction' => 'Direction',
+                'protocol' => 'Protocol',
+                'encryption' => 'Encryption method',
+                'purpose' => 'Purpose',
+                'ticket' => 'Ticket ID',
+            ],
+        ],
+        '5_1' => [
+            'hosting_model' => 'Hosting model',
+            'provider' => 'Data center / cloud provider',
+            'platform' => 'Platform',
+        ],
+        '5_2' => [
+            'items' => 'CMDB items',
+            'components' => [
+                'component' => 'Component',
+                'server' => 'Server name',
+                'ip' => 'IP address',
+                'os' => 'Operating system',
+                'type' => 'Type',
+                'description' => 'Description',
+                'environment' => 'Env.',
+                'ticket' => 'Ticket ID',
+            ],
+        ],
+        '6_1' => [
+            'application_type' => 'Application type',
+            'access_method' => 'User access method',
+            'tiers' => 'Main tiers / layers',
+            'notes' => 'Architecture notes',
+        ],
+        '6_2' => [
+            'backends' => [
+                'framework' => 'Framework',
+                'framework_version' => 'Framework version',
+                'servers' => 'Server(s)',
+                'role' => 'Role',
+                'app_server' => 'Application server',
+                'app_server_version' => 'App server version',
+                'language' => 'Language & version',
+                'paths' => 'Config / logs path',
+            ],
+        ],
+        '6_3' => [
+            'frontends' => [
+                'name' => 'Name',
+                'client_type' => 'Client type',
+                'technology' => 'Framework / technology',
+                'version' => 'Framework version',
+                'language' => 'Language',
+                'build_tool' => 'Build tool',
+                'distribution' => 'Distribution / installation',
+                'prerequisites' => 'Client prerequisites',
+            ],
+        ],
+        '6_4' => [
+            'databases' => [
+                'dbms' => 'DBMS',
+                'version' => 'Version',
+                'host' => 'Host:Port / service name',
+                'schemas' => 'Schemas / databases',
+                'high_availability' => 'High availability',
+            ],
+        ],
+        '6_4_1' => [
+            'diagram' => 'Database diagram',
+        ],
+        '6_5' => [
+            'middleware' => [
+                'product' => 'Product',
+                'version' => 'Version',
+                'endpoint' => 'Server / endpoint',
+                'purpose' => 'Purpose',
+            ],
+        ],
+        '6_6' => [
+            'libraries' => [
+                'name' => 'Name',
+                'version' => 'Version',
+                'license' => 'License',
+                'vendor' => 'Vendor',
+                'support_until' => 'Support until',
+            ],
+        ],
+        '7' => [
+            'accounts' => [
+                'username' => 'Username',
+                'iam_category' => 'IAM category',
+                'user_type' => 'User type',
+                'purpose' => 'Usage / purpose',
+                'systems' => 'Systems used on',
+                'owner' => 'Owner',
+                'rotation' => 'Password rotation',
+                'credential_location' => 'Credential location (vault, never the password)',
+                'ticket' => 'Ticket ID',
+            ],
+        ],
     ],
     'examples' => [
         'doc' => [
@@ -252,6 +417,88 @@ return [
                 'group' => 'e.g. SD_Agents',
             ],
         ],
+        '4_1' => [
+            'dns_names' => 'e.g. servicedesk.company.local',
+            'load_balancer' => 'e.g. SD-LB-VIP 10.20.10.10:443',
+        ],
+        '4_3' => [
+            'rules' => [
+                'source' => 'e.g. Users (VLAN 100)',
+                'destination' => 'e.g. SD-LB-VIP',
+                'port' => 'e.g. 443',
+                'purpose' => 'e.g. User web access',
+                'ticket' => 'e.g. CHG123',
+            ],
+        ],
+        '5_1' => [
+            'provider' => 'e.g. DC Bucharest, Azure West Europe',
+        ],
+        '5_2' => [
+            'components' => [
+                'server' => 'e.g. SDAPP01',
+                'ip' => 'e.g. 10.20.10.11',
+                'type' => 'e.g. VM',
+                'description' => 'e.g. Web UI & REST API (node 1)',
+                'ticket' => 'e.g. CHG123',
+            ],
+        ],
+        '6_1' => [
+            'tiers' => 'e.g. Browser › Web server › Application server › Database',
+            'notes' => 'e.g. Worker server SDWRK01 processes e-mails and SLA timers asynchronously through a Redis queue',
+        ],
+        '6_2' => [
+            'backends' => [
+                'framework' => 'e.g. Laravel',
+                'framework_version' => 'e.g. 11',
+                'servers' => 'e.g. SDAPP01 / 02',
+                'role' => 'e.g. Web UI & REST API',
+                'app_server_version' => 'e.g. 2.4',
+                'paths' => 'e.g. /etc/httpd/',
+            ],
+        ],
+        '6_3' => [
+            'frontends' => [
+                'name' => 'e.g. Agent web portal',
+                'technology' => 'e.g. Angular',
+                'version' => 'e.g. 17.3',
+                'language' => 'e.g. TypeScript',
+                'build_tool' => 'e.g. npm',
+                'prerequisites' => 'e.g. Chrome / Edge (latest)',
+            ],
+        ],
+        '6_4' => [
+            'databases' => [
+                'version' => 'e.g. 16',
+                'host' => 'e.g. SDDB01:5432/sddb',
+                'schemas' => 'e.g. sd_app, sd_audit',
+            ],
+        ],
+        '6_5' => [
+            'middleware' => [
+                'product' => 'e.g. Redis',
+                'version' => 'e.g. 7.2',
+                'endpoint' => 'e.g. SDWRK01:6379',
+                'purpose' => 'e.g. Session cache and queue for e-mails and SLA timers',
+            ],
+        ],
+        '6_6' => [
+            'libraries' => [
+                'name' => 'e.g. Laravel Framework',
+                'version' => 'e.g. 11.9.2',
+                'vendor' => 'e.g. Laravel LLC',
+            ],
+        ],
+        '7' => [
+            'accounts' => [
+                'username' => 'e.g. svc_sd_db',
+                'user_type' => 'e.g. Privileged',
+                'purpose' => 'e.g. Application access to SDDB01',
+                'systems' => 'e.g. SDAPP01 / 02, SDWRK01 › SDDB01',
+                'owner' => 'e.g. Application Support (L2/L3)',
+                'credential_location' => 'e.g. CyberArk safe SD-PROD',
+                'ticket' => 'e.g. CHG123',
+            ],
+        ],
     ],
     'choices' => [
         'exposure' => [
@@ -262,7 +509,16 @@ return [
     ],
     'ui' => [
         'chapters' => 'Chapters',
-        'more_chapters' => 'The other chapters of the template (network, infrastructure, software, security, continuity, operations) are added in the next releases.',
+        'more_chapters' => 'The other chapters of the template (security, logging, continuity, deployment, operations, decommissioning, glossary) are added in the next releases.',
+        'network_title' => 'Network diagram of :application',
+        'network_caption' => 'Drawn from 4.3 Firewall Rules & Ports: one box per source or destination, one arrow per rule with its port and protocol.',
+        'network_empty' => 'Add the firewall rules in 4.3 and the network diagram is drawn here.',
+        'cmdb_items' => 'Linked CMDB items',
+        'cmdb_off' => 'The CMDB is not enabled.',
+        'no_items' => 'No CMDB item linked yet.',
+        'find_item' => 'Link a CMDB item: search by name',
+        'link' => 'Link',
+        'cmdb_help' => 'Linked items show this application on their CMDB page, and the version in force keeps them.',
         'dfd_title' => 'Data flow diagram of :application',
         'dfd_caption' => 'Drawn from 2.4 System Integrations: systems sending data on the left, systems receiving it on the right, exchanges both ways below.',
         'dfd_empty' => 'Add the system integrations in 2.4 and the data flow diagram is drawn here.',
