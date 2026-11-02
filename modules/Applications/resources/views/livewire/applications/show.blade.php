@@ -88,4 +88,20 @@
             </div>
         </section>
     </div>
+
+    @if ($risks !== null)
+        <section aria-labelledby="risks-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+            <h2 id="risks-heading" class="text-sm font-semibold">{{ __('applications::applications.ui.risks') }}</h2>
+            <ul class="divide-y divide-gray-100 text-sm">
+                @forelse ($risks as $risk)
+                    <li wire:key="risk-{{ $risk->id }}" class="flex flex-wrap items-center justify-between gap-2 py-1.5">
+                        <a href="{{ $risk->url }}" class="text-blue-700 underline">{{ $risk->code }} · {{ $risk->title }}</a>
+                        <span class="text-xs text-gray-600">{{ $risk->level ? $risk->level.' · '.$risk->score : __('applications::applications.ui.risk_not_scored') }}</span>
+                    </li>
+                @empty
+                    <li class="py-1.5 text-gray-500">{{ __('applications::applications.ui.no_risks') }}</li>
+                @endforelse
+            </ul>
+        </section>
+    @endif
 </div>

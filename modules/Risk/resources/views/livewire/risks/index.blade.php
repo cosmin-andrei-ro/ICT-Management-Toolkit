@@ -1,20 +1,47 @@
-<div class="space-y-6">
+<div class="space-y-6" @if ($preparing) wire:poll.3s @endif>
     <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
             <h1 class="text-xl font-semibold">{{ __('risk::risks.title') }}</h1>
             <p class="text-sm text-gray-600">{{ __('risk::risks.ui.intro') }}</p>
         </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('risk.report') }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('risk::report.button') }}</a>
+            <button type="button" wire:click="export('xlsx')" wire:loading.attr="disabled" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('risk::report.export.button') }}</button>
         @can('create', \Modules\Risk\Domain\Models\Risk::class)
-            <div class="flex flex-wrap gap-2">
                 <a href="{{ route('risk.risks.suggestions') }}" @class(['rounded-md px-4 py-2 text-sm font-semibold ring-1', 'bg-amber-50 text-amber-900 ring-amber-300' => $openSuggestions > 0, 'bg-white ring-gray-300' => ! $openSuggestions])>{{ __('risk::suggestions.ui.link', ['count' => $openSuggestions]) }}</a>
                 <a href="{{ route('risk.risks.create') }}" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('risk::risks.ui.new') }}</a>
-            </div>
         @endcan
+        </div>
     </div>
+
+    @if ($exports->isNotEmpty())
+        <ul class="divide-y divide-gray-100 rounded-lg bg-white px-4 text-sm ring-1 ring-gray-200">
+            @foreach ($exports as $export)
+                <li wire:key="export-{{ $export->id }}" class="flex flex-wrap items-center justify-between gap-2 py-2">
+                    <span>{{ __('risk::report.export.of', ['date' => $export->created_at?->timezone($timezone)->format('Y-m-d H:i')]) }}</span>
+                    @if ($export->isDownloadable())
+                        <span class="text-gray-500">
+                            <a href="{{ route('core.exports.download', $export) }}" class="font-medium text-blue-700 underline">{{ __('core::exports.download') }}</a>
+                            · {{ __('core::exports.expires', ['date' => $export->expires_at?->timezone($timezone)->format('Y-m-d H:i')]) }}
+                        </span>
+                    @else
+                        <span class="text-gray-500">{{ $export->status->label() }}</span>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+    @endif
 
     <div class="grid gap-6 lg:grid-cols-3">
         <section aria-labelledby="heat-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
-            <h2 id="heat-heading" class="text-sm font-semibold">{{ __('risk::risks.ui.heat_map') }}</h2>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <h2 id="heat-heading" class="text-sm font-semibold">{{ __('risk::risks.ui.heat_map') }}</h2>
+                <fieldset class="flex gap-3 text-xs">
+                    <legend class="sr-only">{{ __('risk::risks.ui.map_kind') }}</legend>
+                    <label class="flex items-center gap-1"><input type="radio" wire:model.live="map" value="current"> {{ __('risk::risks.ui.map_current') }}</label>
+                    <label class="flex items-center gap-1"><input type="radio" wire:model.live="map" value="inherent"> {{ __('risk::risks.ui.map_inherent') }}</label>
+                </fieldset>
+            </div>
             <table class="w-full table-fixed text-center text-xs">
                 <caption class="sr-only">{{ __('risk::risks.ui.heat_caption') }}</caption>
                 <tbody>

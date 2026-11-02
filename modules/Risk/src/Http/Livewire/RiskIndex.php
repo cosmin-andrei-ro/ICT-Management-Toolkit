@@ -13,6 +13,12 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Modules\Core\Application\Exports\RequestExport;
+use Modules\Core\Domain\Exports\ExportFormat;
+use Modules\Core\Domain\Exports\ExportStatus;
+use Modules\Core\Domain\Models\Export;
+use Modules\Core\Domain\Models\User;
+use Modules\Risk\Application\Exports\RiskRegisterExport;
 use Modules\Risk\Domain\Enums\RiskCategory;
 use Modules\Risk\Domain\Enums\RiskLevel;
 use Modules\Risk\Domain\Enums\SuggestionStatus;
@@ -40,6 +46,10 @@ final class RiskIndex extends Component
     #[Url]
     public bool $closed = false;
 
+    /** inherent: before treatment; current: the residual risk where assessed, else the inherent one. */
+    #[Url]
+    public string $map = 'current';
+
     /** A cell of the heat map: "likelihood-impact". */
     #[Url]
     public string $cell = '';
@@ -51,9 +61,27 @@ final class RiskIndex extends Component
 
     public function updated(string $property): void
     {
-        if (in_array($property, ['search', 'category', 'level', 'closed', 'cell'], true)) {
+        if ($property === 'map') {
+            $this->cell = '';
+        }
+
+        if (in_array($property, ['search', 'category', 'level', 'closed', 'cell', 'map'], true)) {
             $this->resetPage();
         }
+    }
+
+    public function export(string $format, RequestExport $request): void
+    {
+        $this->authorize('viewAny', Risk::class);
+        $user = auth()->user();
+        $format = ExportFormat::tryFrom($format);
+
+        if (! $user instanceof User || $format === null) {
+            return;
+        }
+
+        // RequestExport checks the permission and records the export in the audit trail.
+        $request->handle($user, RiskRegisterExport::TYPE, $format, []);
     }
 
     public function selectCell(int $likelihood, int $impact): void
@@ -74,11 +102,15 @@ final class RiskIndex extends Component
             ->when(RiskCategory::tryFrom($this->category) !== null, fn (Builder $query) => $query->where('category', $this->category))
             ->when(trim($this->search) !== '', fn (Builder $query) => $query->where(fn (Builder $inner) => $inner->whereLike('title', $like)->orWhereLike('description', $like)));
 
+        // Column expressions for the map shown; fixed strings, never user input.
+        [$likelihoodColumn, $impactColumn] = $this->map === 'inherent'
+            ? ['inherent_likelihood', 'inherent_impact']
+            : ['coalesce(residual_likelihood, inherent_likelihood)', 'coalesce(residual_impact, inherent_impact)'];
         $heat = [];
 
-        foreach ((clone $filtered)->whereNotNull('inherent_likelihood')->selectRaw('inherent_likelihood, inherent_impact, count(*) as total')->groupBy('inherent_likelihood', 'inherent_impact')->toBase()->get() as $row) {
-            if (is_numeric($row->inherent_likelihood) && is_numeric($row->inherent_impact) && is_numeric($row->total)) {
-                $heat[(int) $row->inherent_likelihood][(int) $row->inherent_impact] = (int) $row->total;
+        foreach ((clone $filtered)->whereNotNull('inherent_likelihood')->selectRaw("{$likelihoodColumn} as l, {$impactColumn} as i, count(*) as total")->groupByRaw("{$likelihoodColumn}, {$impactColumn}")->toBase()->get() as $row) {
+            if (is_numeric($row->l) && is_numeric($row->i) && is_numeric($row->total)) {
+                $heat[(int) $row->l][(int) $row->i] = (int) $row->total;
             }
         }
 
@@ -89,9 +121,9 @@ final class RiskIndex extends Component
 
         $risks = (clone $filtered)
             ->with('owner')
-            ->when($likelihood > 0 && $impact > 0, fn (Builder $query) => $query->where('inherent_likelihood', $likelihood)->where('inherent_impact', $impact))
-            ->when($scoreRange !== null, fn (Builder $query) => $query->whereRaw('inherent_likelihood * inherent_impact BETWEEN ? AND ?', $scoreRange))
-            ->orderByRaw('inherent_likelihood * inherent_impact DESC NULLS LAST')
+            ->when($likelihood > 0 && $impact > 0, fn (Builder $query) => $query->whereRaw("{$likelihoodColumn} = ? AND {$impactColumn} = ?", [$likelihood, $impact]))
+            ->when($scoreRange !== null, fn (Builder $query) => $query->whereRaw("{$likelihoodColumn} * {$impactColumn} BETWEEN ? AND ?", $scoreRange))
+            ->orderByRaw("{$likelihoodColumn} * {$impactColumn} DESC NULLS LAST")
             ->orderBy('reference')
             ->paginate(is_int($perPage) ? $perPage : 25);
 
@@ -101,6 +133,9 @@ final class RiskIndex extends Component
             'settings' => $settings,
             'categories' => RiskCategory::cases(),
             'levels' => RiskLevel::cases(),
+            'exports' => $exports = Export::query()->where('user_id', auth()->id())->where('type', RiskRegisterExport::TYPE)->latest()->limit(3)->get(),
+            'preparing' => $exports->contains(fn (Export $export): bool => $export->status === ExportStatus::Pending),
+            'timezone' => config()->string('app.display_timezone'),
             'openSuggestions' => auth()->user()?->can('create', Risk::class) === true ? Suggestion::query()->where('status', SuggestionStatus::Open)->count() : null,
         ])->title(__('risk::risks.title'));
     }

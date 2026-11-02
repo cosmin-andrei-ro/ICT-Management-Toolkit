@@ -14,9 +14,13 @@ use Illuminate\Support\Facades\Event;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Events\RiskSignalsChanged;
+use Modules\Core\Domain\Exports\ExportRegistry;
+use Modules\Core\Domain\Links\Risks;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Risk\Application\Exports\RiskRegisterExport;
+use Modules\Risk\Application\Links\RegisterRisks;
 use Modules\Risk\Application\Listeners\RefreshSuggestionsOnSignal;
 use Modules\Risk\Domain\Models\CatalogEntry;
 use Modules\Risk\Domain\Models\Risk;
@@ -24,6 +28,7 @@ use Modules\Risk\Domain\Models\RiskSettings;
 use Modules\Risk\Domain\Models\Suggestion;
 use Modules\Risk\Infrastructure\Console\RefreshSuggestionsCommand;
 use Modules\Risk\Infrastructure\Console\SendReviewRemindersCommand;
+use Modules\Risk\Infrastructure\Console\SendRiskDigestCommand;
 
 final class RiskServiceProvider extends ModuleServiceProvider
 {
@@ -36,7 +41,10 @@ final class RiskServiceProvider extends ModuleServiceProvider
     {
         parent::register();
 
+        $this->app->bind(Risks::class, RegisterRisks::class);
+
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(RiskRegisterExport::TYPE, RiskRegisterExport::class, 'risk.risk.view'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
     }
 
@@ -56,10 +64,11 @@ final class RiskServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(SendReviewRemindersCommand::class)->dailyAt('08:00')->withoutOverlapping()->onOneServer();
             $schedule->command(RefreshSuggestionsCommand::class)->dailyAt('06:30')->withoutOverlapping()->onOneServer();
+            $schedule->command(SendRiskDigestCommand::class)->weeklyOn(1, '08:10')->withoutOverlapping()->onOneServer();
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SendReviewRemindersCommand::class, RefreshSuggestionsCommand::class]);
+            $this->commands([SendReviewRemindersCommand::class, RefreshSuggestionsCommand::class, SendRiskDigestCommand::class]);
         }
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {

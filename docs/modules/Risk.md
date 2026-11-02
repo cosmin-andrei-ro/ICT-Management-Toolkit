@@ -21,12 +21,16 @@ The risk register and the organization's scoring method. Code: `modules/Risk/`. 
 - `/risks/new`, `/risks/{id}/edit`: identification (risk managers).
 - `/risks/{id}`: what it concerns, threats and vulnerabilities, controls, inherent score with the meaning of each level; treatment and residual risk; actions; acceptance (ask, approve, reject); score history.
 - `/risks/suggestions`: suggested risks by status and source; register one as a prefilled risk or dismiss it; **Check now** (risk managers).
+- `/risks/report` (and `/risks/report/pdf` through Gotenberg, throttled and audited): method, heat maps before and after treatment, risks by level, every open risk with its treatment and actions.
+- Register → **Export to Excel** (`risk.register`): risks with inherent and residual scores, treatment, acceptance; actions; acceptances.
+- Application pages list their open risks through Core's `Risks` contract (implemented here), for viewers who may read the register.
 - `/risks/mine`: risks the signed-in person owns, for owners without `risk.risk.view`.
 - Administration → Risk → Risk method; Threats and vulnerabilities.
 
 ## Scheduled tasks
 
 - `risk:suggestions:refresh` (daily 06:30): every organization's suggestions brought in line with the modules' signals; also run on Core's `RiskSignalsChanged`.
+- `risk:digest` (Mondays 08:10): risk managers get suggestions to review, acceptances waiting or expiring within 30 days, overdue actions and reassessments, if any.
 - `risk:reviews:remind` (daily 08:00): the owner of each open risk is emailed `RISK_REMINDER_DAYS` (30) before its reassessment, once per date.
 
 ## Permissions
@@ -45,4 +49,4 @@ A risk's owner assesses it without a permission.
 1. Register, method, catalog, heat map — **done**.
 2. Treatment: options, actions (optionally service desk tickets), residual risk, acceptance with risk manager approval above the threshold, score history, reassessment reminders — **done**.
 3. Suggestions from the other modules (applications, continuity, operations, suppliers), including initial risks when an application's documentation is approved — **done**.
-4. Reporting: inherent vs residual heat maps, risks on application pages, Excel register, PDF report, weekly digest.
+4. Reporting: inherent vs residual heat maps, risks on application pages, Excel register, PDF report, weekly digest — **done**.
