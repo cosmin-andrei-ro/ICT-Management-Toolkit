@@ -8,6 +8,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Modules\Core\Http\Controllers\AttachmentController;
 use Modules\Core\Http\Controllers\ExportController;
+use Modules\Core\Http\Controllers\HomeController;
 use Modules\Core\Http\Controllers\LogoutController;
 use Modules\Core\Http\Controllers\ManualController;
 use Modules\Core\Http\Controllers\SamlController;
@@ -53,7 +54,7 @@ Route::middleware(['auth', 'auth.session', 'organization'])->group(function (): 
 });
 
 Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(function (): void {
-    Route::view('/', 'core::home')->name('home');
+    Route::get('/', HomeController::class)->name('home');
     Route::get('/attachments/{attachment}', AttachmentController::class)->name('core.attachments.download');
     Route::get('/exports/{export}', ExportController::class)->whereUuid('export')->name('core.exports.download');
 

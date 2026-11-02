@@ -18,10 +18,12 @@ use Modules\Core\Domain\Events\ApplicationDocumented;
 use Modules\Core\Domain\Links\KnowledgeArticles;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
+use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Documentation\Application\Links\DocumentationArticles;
 use Modules\Documentation\Application\Listeners\GenerateApplicationPage;
+use Modules\Documentation\Application\Metrics\DocumentationMetrics;
 use Modules\Documentation\Application\SpaceAccess;
 use Modules\Documentation\Domain\Models\Page;
 use Modules\Documentation\Domain\Models\Space;
@@ -37,6 +39,8 @@ final class DocumentationServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+
+        $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(DocumentationMetrics::source()));
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));

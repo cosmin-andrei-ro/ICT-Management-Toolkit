@@ -177,4 +177,11 @@ return [
         'comment' => 'Comment: :comment',
         'open' => 'Open the plan',
     ],
+    'metrics' => [
+        'group' => 'Continuity',
+        'uncovered' => 'Critical processes without a plan in force',
+        'not_in_force' => 'Plans not in force',
+        'exercise_overdue' => 'Plans with an overdue exercise',
+        'review_overdue' => 'Plans past their review',
+    ],
 ];

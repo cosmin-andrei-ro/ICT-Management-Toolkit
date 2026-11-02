@@ -18,6 +18,7 @@ use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Links\ServiceDeskTickets;
 use Modules\Core\Domain\Manual\Manual;
+use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
@@ -25,6 +26,7 @@ use Modules\Ticketing\Application\Email\MailboxReader;
 use Modules\Ticketing\Application\Email\ReplyAddress;
 use Modules\Ticketing\Application\Links\TicketingServiceDeskTickets;
 use Modules\Ticketing\Application\Links\TicketRecords;
+use Modules\Ticketing\Application\Metrics\ServiceDeskMetrics;
 use Modules\Ticketing\Application\Notifications\SendChangeNotifications;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
@@ -66,6 +68,8 @@ final class TicketingServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+
+        $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ServiceDeskMetrics::source()));
 
         $this->app->bind(MailboxReader::class, ImapMailboxReader::class);
         $this->app->bind(ServiceDeskTickets::class, TicketingServiceDeskTickets::class);

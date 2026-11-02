@@ -143,4 +143,9 @@ return [
         'license_open' => 'Open the licences',
         'and_more' => '… and :count more.',
     ],
+    'metrics' => [
+        'group' => 'Assets and licences',
+        'licenses_expiring' => 'Licences expiring within 60 days',
+        'warranties_ending' => 'Warranties ending within 30 days',
+    ],
 ];

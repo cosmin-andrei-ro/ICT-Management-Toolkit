@@ -174,4 +174,9 @@ return [
         'notes' => 'Notes',
         'notes_help' => 'Procedures, tips and known issues of the team. This part is kept when the summary above is regenerated.',
     ],
+    'metrics' => [
+        'group' => 'Documentation',
+        'review_overdue' => 'Published pages past their review',
+        'awaiting_approval' => 'Pages awaiting approval',
+    ],
 ];

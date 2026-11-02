@@ -11,6 +11,7 @@ use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Audit\Application\Exports\ComplianceExport;
+use Modules\Audit\Application\Metrics\ComplianceMetrics;
 use Modules\Audit\Application\Risks\ComplianceRiskSignals;
 use Modules\Audit\Domain\Models\Audit;
 use Modules\Audit\Domain\Models\Control;
@@ -26,6 +27,7 @@ use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Manual\Manual;
+use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
@@ -40,6 +42,8 @@ final class AuditServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+
+        $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ComplianceMetrics::source()));
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));

@@ -18,12 +18,14 @@ use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Links\Risks;
 use Modules\Core\Domain\Manual\Manual;
+use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Risk\Application\Exports\RiskRegisterExport;
 use Modules\Risk\Application\Links\RegisterRisks;
 use Modules\Risk\Application\Links\RiskRecords;
 use Modules\Risk\Application\Listeners\RefreshSuggestionsOnSignal;
+use Modules\Risk\Application\Metrics\RiskMetrics;
 use Modules\Risk\Domain\Models\CatalogEntry;
 use Modules\Risk\Domain\Models\Risk;
 use Modules\Risk\Domain\Models\RiskSettings;
@@ -42,6 +44,8 @@ final class RiskServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+
+        $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(RiskMetrics::source()));
 
         $this->app->bind(Risks::class, RegisterRisks::class);
 

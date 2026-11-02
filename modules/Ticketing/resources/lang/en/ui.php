@@ -101,4 +101,10 @@ return [
         'invalid' => 'This item cannot be linked.',
         'impact' => 'If these fail, :count other item(s) are affected:',
     ],
+    'metrics' => [
+        'group' => 'Service desk',
+        'open' => 'Open tickets',
+        'unassigned' => 'Open tickets without an assignee',
+        'sla_breached' => 'Open tickets past their SLA',
+    ],
 ];

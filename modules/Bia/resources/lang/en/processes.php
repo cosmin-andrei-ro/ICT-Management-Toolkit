@@ -87,4 +87,10 @@ return [
         'due' => 'Review due',
         'up_to_date' => 'Up to date',
     ],
+    'metrics' => [
+        'group' => 'Business impact analysis',
+        'never_assessed' => 'Processes never assessed',
+        'review_overdue' => 'Assessments past their review',
+        'awaiting_approval' => 'Assessments awaiting approval',
+    ],
 ];

@@ -116,4 +116,10 @@ return [
         'name_taken' => 'Another application already has this name.',
         'code_taken' => 'Another application already has this code.',
     ],
+    'metrics' => [
+        'group' => 'Applications',
+        'not_documented' => 'Applications without approved documentation',
+        'review_overdue' => 'Documentation past its review',
+        'awaiting_approval' => 'Documentation awaiting approval',
+    ],
 ];
