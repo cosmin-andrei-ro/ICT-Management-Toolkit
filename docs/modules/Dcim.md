@@ -1,6 +1,6 @@
 # DCIM module
 
-Data centre infrastructure: racks and what is mounted in them; then cabling, power and IP addresses. Code: `modules/Dcim/`. Decisions: [ADR 0047](../adr/0047-dcim-racks-and-itam-assets.md), [ADR 0048](../adr/0048-dcim-ports-cables-and-paths.md), [ADR 0049](../adr/0049-dcim-power-chain.md), [ADR 0050](../adr/0050-dcim-ipam.md).
+Data centre infrastructure: racks and what is mounted in them; then cabling, power and IP addresses. Code: `modules/Dcim/`. Decisions: [ADR 0047](../adr/0047-dcim-racks-and-itam-assets.md), [ADR 0048](../adr/0048-dcim-ports-cables-and-paths.md), [ADR 0049](../adr/0049-dcim-power-chain.md), [ADR 0050](../adr/0050-dcim-ipam.md), [ADR 0051](../adr/0051-dcim-indicators-exports-and-rack-sheet.md).
 
 ## Concepts
 
@@ -22,6 +22,8 @@ Data centre infrastructure: racks and what is mounted in them; then cabling, pow
 - `/dcim/racks` (**Configuration & assets → Racks**): racks by room with their occupancy.
 - `/dcim/racks/new[?location=]`, `/dcim/racks/{id}/edit`: the rack form.
 - `/dcim/racks/{id}`: the rack from the front and from the rear; mounted equipment; mount, move, take out.
+- `/dcim/racks/{id}/print` and `/pdf`: the rack sheet (both sides, equipment with serials, draw and supplies, cables).
+- **Export to Excel** on the Racks page: racks, equipment, cables, power and IP addresses (`dcim.inventory`).
 - `/dcim/equipment/{mount}`: a device's ports, their cables and far ends, trace, connect / edit / disconnect, add ports (series, patch panel).
 - `/dcim/power` (**Configuration & assets → Power**): the chain by room with load bars; `/dcim/power/new`, `/{id}`, `/{id}/edit`: a source, what it feeds, its load, what fails with it (equipment and CMDB items).
 - The equipment page has a **Power** section: supplies, redundancy, plug in / unplug.
@@ -34,6 +36,10 @@ Data centre infrastructure: racks and what is mounted in them; then cabling, pow
 
 - Implements Core `RackPlacements` (`MountedAssets`); uses `ConfigurationItems::find()` and `impactOfItems()`.
 - Uses Core `PhysicalAssets` (implemented by ITAM) and dispatches Core `AssetPlaced` (ITAM records the room as the asset's location).
+
+## Indicators
+
+Source `dcim` in Core `Metrics`: `dcim.rack_space_used` (%), `dcim.power_over`, `dcim.power_high`, `dcim.single_fed`, `dcim.subnets_full` (IPv4 ≥ 90%). They appear on the dashboards, in the trends and in the monthly management report.
 
 ## For the risk register
 
@@ -56,4 +62,4 @@ Signals of source `dcim`: single-fed equipment linked to CMDB items (`dcim.singl
 2. Ports and cables with path tracing through patch panels — **done**.
 3. Power: UPS, PDUs, A/B feeds, load and what fails with a UPS — **done**.
 4. IPAM: VLANs, subnets, addresses — **done**.
-5. Indicators, exports, suggested risks, rack sheet to print.
+5. Indicators, exports, suggested risks, rack sheet to print — **done**.
