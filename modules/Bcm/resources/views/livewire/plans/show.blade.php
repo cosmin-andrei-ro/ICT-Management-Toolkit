@@ -34,6 +34,7 @@
                 <div><dt class="text-xs text-gray-500">{{ __('bcm::plans.fields.owner') }}</dt><dd>{{ $plan->owner?->name ?? '—' }}</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('bcm::plans.fields.deputy') }}</dt><dd>{{ $plan->deputy?->name ?? '—' }}</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('bcm::plans.fields.approved_version') }}</dt><dd>{{ $plan->approved_version !== null ? 'v'.$plan->approved_version.' · '.$plan->approved_at?->toDateString() : __('bcm::plans.ui.not_approved') }}</dd></div>
+                <div><dt class="text-xs text-gray-500">{{ __('bcm::exercises.fields.last_exercised') }}</dt><dd>{{ $plan->last_exercised_on?->toDateString() ?? __('bcm::exercises.ui.never') }}</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('bcm::plans.fields.next_review') }}</dt><dd @class(['font-medium text-amber-700' => $plan->next_review_on?->isPast()])>{{ $plan->next_review_on?->toDateString() ?? '—' }}</dd></div>
                 @if ($plan->description) <div><dt class="text-xs text-gray-500">{{ __('bcm::plans.fields.description') }}</dt><dd class="whitespace-pre-line">{{ $plan->description }}</dd></div> @endif
             </dl>
@@ -58,4 +59,28 @@
             </ul>
         </section>
     </div>
+
+    <section aria-labelledby="exercises-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 id="exercises-heading" class="text-sm font-semibold">{{ __('bcm::exercises.ui.title') }}</h2>
+            @can('exercise', $plan)
+                <a href="{{ route('bcm.exercises.create', $plan) }}" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('bcm::exercises.ui.new') }}</a>
+            @endcan
+        </div>
+        @if ($plan->approved_version === null) <p class="text-xs text-gray-500">{{ __('bcm::exercises.ui.needs_approval') }}</p> @endif
+        <ul class="divide-y divide-gray-100 text-sm">
+            @forelse ($exercises as $exercise)
+                <li wire:key="exercise-{{ $exercise->id }}" class="flex flex-wrap items-center justify-between gap-2 py-2">
+                    <a href="{{ route('bcm.exercises.show', $exercise) }}" class="text-blue-700 underline">{{ $exercise->title }}</a>
+                    <span class="flex items-center gap-2 text-xs text-gray-500">
+                        {{ $exercise->type->label() }} · {{ $exercise->scheduled_on->toDateString() }}
+                        <x-bcm::exercise-status :status="$exercise->status" />
+                        @if ($exercise->outcome) <span class="font-medium">{{ $exercise->outcome->label() }}</span> @endif
+                    </span>
+                </li>
+            @empty
+                <li class="py-2 text-gray-500">{{ __('bcm::exercises.ui.none') }}</li>
+            @endforelse
+        </ul>
+    </section>
 </div>

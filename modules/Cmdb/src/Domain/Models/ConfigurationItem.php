@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Cmdb\Domain\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -49,6 +50,9 @@ use Modules\Core\Domain\Models\User;
  * @property array<string, string|int|float|bool|null> $properties Values of the type's attributes
  * @property ?int $recovery_time_minutes How fast IT can bring it back after a failure.
  * @property ?int $recovery_point_minutes How much recent data a failure could lose.
+ * @property ?CarbonImmutable $recovery_verified_on Last recovery test that brought it back.
+ * @property ?int $recovery_verified_minutes How long that test took.
+ * @property ?string $recovery_verified_by The plan and exercise that proved it.
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -153,6 +157,8 @@ final class ConfigurationItem extends Model
             'properties' => 'array',
             'recovery_time_minutes' => 'integer',
             'recovery_point_minutes' => 'integer',
+            'recovery_verified_on' => 'immutable_date',
+            'recovery_verified_minutes' => 'integer',
         ];
     }
 }

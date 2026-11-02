@@ -27,6 +27,18 @@
                 <div><dt class="text-xs text-gray-500">{{ __('cmdb::items.fields.team') }}</dt><dd>{{ $item->team?->name ?? '—' }}</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('cmdb::items.fields.recovery_time') }}</dt><dd>{{ \Modules\Core\Domain\Time\Duration::format($item->recovery_time_minutes) }}</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('cmdb::items.fields.recovery_point') }}</dt><dd>{{ \Modules\Core\Domain\Time\Duration::format($item->recovery_point_minutes) }}</dd></div>
+                <div>
+                    <dt class="text-xs text-gray-500">{{ __('cmdb::items.fields.recovery_verified') }}</dt>
+                    @if ($item->recovery_verified_on)
+                        <dd>{{ $item->recovery_verified_on->toDateString() }}@if ($item->recovery_verified_minutes !== null) · {{ \Modules\Core\Domain\Time\Duration::format($item->recovery_verified_minutes) }}@endif</dd>
+                        @if ($item->recovery_verified_by) <dd class="text-xs text-gray-500">{{ $item->recovery_verified_by }}</dd> @endif
+                        @if ($item->recovery_verified_minutes !== null && $item->recovery_time_minutes !== null && $item->recovery_verified_minutes > $item->recovery_time_minutes)
+                            <dd class="text-xs font-medium text-amber-700">{{ __('cmdb::items.ui.verified_slower') }}</dd>
+                        @endif
+                    @else
+                        <dd class="text-gray-500">{{ __('cmdb::items.ui.never_verified') }}</dd>
+                    @endif
+                </div>
                 @foreach ($fields as $field)
                     @if (array_key_exists($field->key, $item->properties))
                         <div wire:key="property-{{ $field->key }}">

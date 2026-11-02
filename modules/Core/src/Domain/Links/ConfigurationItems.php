@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Core\Domain\Links;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use Modules\Core\Domain\Models\User;
@@ -65,6 +66,17 @@ interface ConfigurationItems
      * @return array<string, RecoveryProfile> By item id; unknown ids are left out.
      */
     public function recoveryProfiles(array $itemIds): array;
+
+    /**
+     * Records that a recovery test brought the item back, the evidence behind
+     * its declared recovery capability. The caller authorizes the test.
+     *
+     * @param  ?int  $measuredMinutes  How long it took; null when not measured.
+     * @param  string  $evidence  What proved it (the plan and the exercise).
+     *
+     * @throws InvalidArgumentException for an item of another organization
+     */
+    public function confirmRecovery(string $itemId, ?int $measuredMinutes, CarbonImmutable $on, string $evidence, User $actor): void;
 
     public function canChangeCriticality(User $actor): bool;
 

@@ -11,6 +11,7 @@ use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Modules\Bcm\Domain\Enums\VersionStatus;
+use Modules\Bcm\Domain\Models\Exercise;
 use Modules\Bcm\Domain\Models\Plan;
 use Modules\Bcm\Domain\Models\PlanVersion;
 use Modules\Core\Domain\Authorization\DefaultRole;
@@ -45,6 +46,7 @@ final class BcmServiceProvider extends ModuleServiceProvider
         Relation::morphMap([
             'bcm.plan' => Plan::class,
             'bcm.plan_version' => PlanVersion::class,
+            'bcm.exercise' => Exercise::class,
         ]);
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {

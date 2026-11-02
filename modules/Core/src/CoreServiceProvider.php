@@ -47,6 +47,8 @@ use Modules\Core\Domain\Links\ContractDependents;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Links\NoBusinessProcesses;
 use Modules\Core\Domain\Links\NoConfigurationItems;
+use Modules\Core\Domain\Links\NoServiceDeskTickets;
+use Modules\Core\Domain\Links\ServiceDeskTickets;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\BusinessCalendar;
@@ -105,6 +107,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->bindIf(ConfigurationItems::class, NoConfigurationItems::class);
         // Replaced by the BIA module when it is enabled.
         $this->app->bindIf(BusinessProcesses::class, NoBusinessProcesses::class);
+        // Replaced by the Ticketing module when it is enabled.
+        $this->app->bindIf(ServiceDeskTickets::class, NoServiceDeskTickets::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */

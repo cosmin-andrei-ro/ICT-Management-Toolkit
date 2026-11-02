@@ -22,5 +22,8 @@ final readonly class RecoveryProfile
         public string $criticality,
         public ?int $recoveryTimeMinutes,
         public ?int $recoveryPointMinutes,
+        /** Y-m-d of the last recovery test that brought it back. */
+        public ?string $verifiedOn = null,
+        public ?int $verifiedMinutes = null,
     ) {}
 }
