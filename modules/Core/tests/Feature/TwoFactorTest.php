@@ -151,6 +151,23 @@ describe('setting it up', function (): void {
             ->and(AuditLog::query()->where('auditable_id', $user->id)->get()->toJson())->not->toContain($secret);
     });
 
+    it('downloads the recovery codes on screen as a text file', function (): void {
+        $this->actingAs($this->user);
+
+        $component = Livewire::test(AccountSecurity::class)->set('code', otp())->call('regenerateRecoveryCodes')->assertHasNoErrors();
+        $codes = $component->get('recoveryCodes');
+
+        $component->call('downloadRecoveryCodes')->assertFileDownloaded('recovery-codes.txt');
+        $file = base64_decode($component->effects['download']['content']);
+
+        expect($file)->toContain('jane@example.com');
+        foreach ($codes as $code) {
+            expect($file)->toContain($code);
+        }
+
+        Livewire::test(AccountSecurity::class)->call('downloadRecoveryCodes')->assertNoFileDownloaded();
+    });
+
     it('turns off only with a valid code, and staff must then set it up again', function (): void {
         $agent = User::factory()->memberOf($this->organization)->withTwoFactor()->create();
         role($agent, $this->organization, DefaultRole::Agent);

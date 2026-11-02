@@ -15,6 +15,7 @@ use Livewire\Component;
 use Modules\Core\Application\Authentication\SetPassword;
 use Modules\Core\Application\Authentication\TwoFactorAuthentication;
 use Modules\Core\Domain\Models\User;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * The signed-in person's own security settings: two-factor authentication and,
@@ -75,6 +76,28 @@ final class AccountSecurity extends Component
     {
         $this->confirmWithCode($twoFactor);
         $this->recoveryCodes = $twoFactor->regenerateRecoveryCodes($this->user());
+    }
+
+    /**
+     * A text file of the codes on screen, so they can go straight into a password
+     * manager or a safe. Only the codes this page already shows are written.
+     */
+    public function downloadRecoveryCodes(): ?StreamedResponse
+    {
+        if ($this->recoveryCodes === []) {
+            return null;
+        }
+
+        $lines = [
+            __('core::security.mfa.recovery_file_heading', ['app' => config()->string('app.name'), 'account' => $this->user()->email]),
+            __('core::security.mfa.recovery_file_made', ['date' => now()->toDateString()]),
+            '',
+            ...$this->recoveryCodes,
+        ];
+
+        return response()->streamDownload(function () use ($lines): void {
+            echo implode(PHP_EOL, $lines).PHP_EOL;
+        }, 'recovery-codes.txt', ['Content-Type' => 'text/plain; charset=UTF-8']);
     }
 
     /**
