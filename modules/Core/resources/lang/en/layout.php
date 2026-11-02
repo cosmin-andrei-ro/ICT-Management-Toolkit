@@ -9,6 +9,11 @@ return [
     'home' => 'Home',
     'main_menu' => 'Main menu',
     'admin' => 'Administration',
+    'groups' => [
+        'service_desk' => 'Service desk',
+        'configuration' => 'Configuration & assets',
+        'suppliers' => 'Suppliers & contracts',
+    ],
     'welcome' => 'Welcome, :name',
     'source_code' => 'Source code',
     'license' => 'AGPL-3.0-or-later',

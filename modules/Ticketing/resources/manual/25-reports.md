@@ -3,7 +3,7 @@ title: Service desk reports
 audience: agents
 ---
 
-**Reports** in the menu shows how the service desk is doing. It is available to team leads and administrators. It counts incidents and service requests; problems and changes are left out.
+**Service desk → Reports** in the menu shows how the service desk is doing. It is available to team leads and administrators. It counts incidents and service requests; problems and changes are left out.
 
 ## Choosing the period
 

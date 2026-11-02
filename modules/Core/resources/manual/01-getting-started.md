@@ -33,15 +33,18 @@ If you use two-factor authentication, you then enter the code from your authenti
 
 ## Finding your way
 
-The menu at the top shows only what you are allowed to use:
+The menu at the top shows only what you are allowed to use. Entries marked **▾** open a list; click elsewhere or press Escape to close it.
 
 | Menu entry | Who sees it | What it is for |
 |---|---|---|
 | **Request a service** | everyone | Order something from the IT service catalog (a laptop, VPN access…). |
 | **My tickets** | everyone | Report a problem and follow your requests. |
-| **Service desk** | IT staff | Work on tickets. |
-| **Known errors** | IT staff | Find documented workarounds. |
-| **Administration** | administrators | Configure the application. |
+| **Service desk ▾** | IT staff | Work on tickets (**Service desk**), find documented workarounds (**Known errors**), plan changes (**Change calendar**), approve them (**Approvals**, CAB members) and see **Reports** (team leads). |
+| **CMDB** | IT staff | What IT runs and how it depends on each other. |
+| **Suppliers & contracts ▾** | IT staff | Whom to call at a supplier (**Suppliers**) and, for asset managers and team leads, the **Contracts** with them. |
+| **Administration** | administrators, team leads, asset managers | Configure the application. Each person sees only the settings they may change. |
+
+When only one entry of a group is yours, it appears on its own, without the **▾**.
 
 **User manual**, at the top right of every page, opens this manual.
 
