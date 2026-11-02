@@ -111,14 +111,14 @@ describe('organization-scoped roles', function (): void {
     });
 
     it('cannot assign a role defined by another organization', function (): void {
-        $this->context->runAs($this->orgB, fn () => Role::query()->create(['name' => 'auditor', 'guard_name' => 'web']));
+        $this->context->runAs($this->orgB, fn () => Role::query()->create(['name' => 'external-reviewer', 'guard_name' => 'web']));
         $user = User::factory()->memberOf($this->orgA)->create();
 
-        $this->context->runAs($this->orgA, fn () => $user->assignRole('auditor'));
+        $this->context->runAs($this->orgA, fn () => $user->assignRole('external-reviewer'));
     })->throws(RoleDoesNotExist::class);
 
     it('creates roles in the current organization unless a global role is explicitly requested', function (): void {
-        $orgRole = $this->context->runAs($this->orgA, fn () => Role::query()->create(['name' => 'auditor', 'guard_name' => 'web']));
+        $orgRole = $this->context->runAs($this->orgA, fn () => Role::query()->create(['name' => 'external-reviewer', 'guard_name' => 'web']));
         $globalRole = Role::query()->create(['organization_id' => null, 'name' => 'observer', 'guard_name' => 'web']);
 
         expect($orgRole->organization_id)->toBe($this->orgA->id)
@@ -126,7 +126,7 @@ describe('organization-scoped roles', function (): void {
     });
 
     it('refuses to create a role without an organization context or an explicit null', function (): void {
-        Role::query()->create(['name' => 'auditor', 'guard_name' => 'web']);
+        Role::query()->create(['name' => 'external-reviewer', 'guard_name' => 'web']);
     })->throws(MissingOrganizationContext::class);
 
     it('denies everything to a member without roles', function (): void {

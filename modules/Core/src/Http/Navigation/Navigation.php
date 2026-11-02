@@ -29,11 +29,14 @@ final class Navigation
 
     public const string RESILIENCE = 'resilience';
 
+    public const string COMPLIANCE = 'compliance';
+
     /** @var array<string, array{label: string, order: int}> */
     private array $groups = [
         self::SERVICE_DESK => ['label' => 'core::layout.groups.service_desk', 'order' => 30],
         self::CONFIGURATION => ['label' => 'core::layout.groups.configuration', 'order' => 40],
         self::RESILIENCE => ['label' => 'core::layout.groups.resilience', 'order' => 45],
+        self::COMPLIANCE => ['label' => 'core::layout.groups.compliance', 'order' => 47],
         self::SUPPLIERS => ['label' => 'core::layout.groups.suppliers', 'order' => 50],
     ];
 

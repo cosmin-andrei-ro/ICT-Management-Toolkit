@@ -17,8 +17,10 @@ Each person can have different roles in different organizations. Every role is a
 | **Continuity coordinator** | business continuity | Run the business impact analysis and the continuity and recovery plans: processes, plans, their owners, approvals, exercises and recovery tests, activations, coverage and the weekly digest, settings; keep departments. |
 | **Asset manager** | IT asset and contract management | Raise tickets; see the CMDB; keep the asset register (assets, categories, disposal) and the software licences, including showing licence keys; manage suppliers, contracts and locations. |
 | **Application manager** | application portfolio | Keep the application portfolio: register applications and their owners, write any application's documentation, approve in place of an owner, edit the documentation's dropdown values; read suppliers and contracts. |
-| **Security officer** | information security | Read the application portfolio and give the security approval of the applications' documentation; read the audit log. |
-| **Risk manager** | risk management | Keep the risk register: register risks and their owners, assess any risk, set the risk method and the catalog of threats and vulnerabilities; read suppliers. |
+| **Security officer** | information security | Read the application portfolio and give the security approval of the applications' documentation; read compliance and the audit log. |
+| **Risk manager** | risk management | Keep the risk register: register risks and their owners, assess any risk, set the risk method and the catalog of threats and vulnerabilities; read compliance and suppliers. |
+| **Compliance manager** | compliance, internal audit | Keep compliance: add frameworks and their requirements, decide which apply and why (the Statement of Applicability), register controls and their owners, map them to requirements; read suppliers, contracts and the audit log. |
+| **Auditor** | internal or external auditor | Read compliance - frameworks, applicability, controls - without changing anything. |
 | **CAB member** | change advisory board | Raise tickets; approve changes on the boards they sit on; see the CMDB. |
 | **Administrator** | IT administrator | Everything, including people, Active Directory mappings, teams and business calendars. |
 
