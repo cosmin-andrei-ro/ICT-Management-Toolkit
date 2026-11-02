@@ -161,7 +161,7 @@ it('clears the disabled mark when the user signs in again successfully', functio
     $user->forceFill(['directory_disabled_at' => now()])->save();
 
     Livewire\Livewire::test(Modules\Core\Http\Livewire\Auth\Login::class)
-        ->set('login', 'jdoe')->set('password', 'secret')->call('login')
+        ->set('login', 'jdoe')->set('password', 'secret')->call('submit')
         ->assertHasNoErrors();
 
     expect($user->fresh()?->directory_disabled_at)->toBeNull();

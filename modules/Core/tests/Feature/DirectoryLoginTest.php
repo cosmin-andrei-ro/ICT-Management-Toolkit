@@ -52,7 +52,7 @@ function directoryLogin(string $login, string $password, bool $remember = false)
         ->set('login', $login)
         ->set('password', $password)
         ->set('remember', $remember)
-        ->call('login');
+        ->call('submit');
 }
 
 /**
