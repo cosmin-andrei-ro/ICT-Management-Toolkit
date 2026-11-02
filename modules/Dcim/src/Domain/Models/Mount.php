@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
@@ -67,6 +68,14 @@ final class Mount extends Model
     public function rack(): BelongsTo
     {
         return $this->belongsTo(Rack::class);
+    }
+
+    /**
+     * @return HasMany<Port, $this>
+     */
+    public function ports(): HasMany
+    {
+        return $this->hasMany(Port::class)->orderBy('side')->orderBy('position');
     }
 
     public function isZeroU(): bool

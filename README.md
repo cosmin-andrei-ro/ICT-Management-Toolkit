@@ -133,8 +133,9 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 **Data centre (DCIM)**
 - **Racks** in the organization's rooms, drawn from the front and from the rear; assets of the asset register mounted on their units (full or half depth, side 0U equipment), never two on the same unit; the asset's page says where it is mounted.
+- **Cabling**: ports on each device (added in series, patch panels with their rear ports), labelled cables between them, one per port; every connection traced end to end through the patch panels.
 
-**Planned modules:** projects; for the data centre, cabling, power and IP addresses.
+**Planned modules:** projects; for the data centre, power and IP addresses.
 
 **Not done yet:** single logout (SAML SLO).
 

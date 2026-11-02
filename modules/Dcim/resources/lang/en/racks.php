@@ -55,7 +55,7 @@ return [
     'half_depth' => 'Half depth',
     'move' => 'Move or edit',
     'unmount' => 'Take out',
-    'unmount_confirm' => 'Take this equipment out of the rack? It stays in the asset register.',
+    'unmount_confirm' => 'Take this equipment out of the rack? It stays in the asset register, but its ports and cables are removed.',
     'mount_heading' => 'Mount equipment',
     'move_heading' => 'Move equipment',
     'asset_search' => 'Asset tag, name, serial number or model',

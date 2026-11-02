@@ -16,7 +16,9 @@ use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Dcim\Application\Links\MountedAssets;
+use Modules\Dcim\Domain\Models\Cable;
 use Modules\Dcim\Domain\Models\Mount;
+use Modules\Dcim\Domain\Models\Port;
 use Modules\Dcim\Domain\Models\Rack;
 
 final class DcimServiceProvider extends ModuleServiceProvider
@@ -42,10 +44,13 @@ final class DcimServiceProvider extends ModuleServiceProvider
         Relation::morphMap([
             'dcim.rack' => Rack::class,
             'dcim.mount' => Mount::class,
+            'dcim.port' => Port::class,
+            'dcim.cable' => Cable::class,
         ]);
 
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('dcim::racks.menu', 'dcim.racks.index', 'dcim.racks.*', fn (User $user): bool => $user->can('dcim.infrastructure.view'), Navigation::CONFIGURATION);
+            $navigation->add('dcim::cabling.menu', 'dcim.cables.index', 'dcim.cables.*', fn (User $user): bool => $user->can('dcim.infrastructure.view'), Navigation::CONFIGURATION);
         });
     }
 
