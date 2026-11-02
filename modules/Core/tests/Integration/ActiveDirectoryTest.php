@@ -75,7 +75,7 @@ it('signs in through a nested group mapping end to end', function (): void {
     Livewire::test(Login::class)
         ->set('login', 'bo.nested@corp.example')
         ->set('password', USER_PASSWORD)
-        ->call('login')
+        ->call('submit')
         ->assertHasNoErrors();
 
     $user = User::query()->where('directory_username', 'bnested')->sole();
@@ -93,7 +93,7 @@ it('rejects disabled accounts and users without a mapped group', function (strin
     Livewire::test(Login::class)
         ->set('login', $login)
         ->set('password', USER_PASSWORD)
-        ->call('login')
+        ->call('submit')
         ->assertHasErrors(['login']);
 
     $this->assertGuest();

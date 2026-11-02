@@ -48,7 +48,6 @@ export default () => ({
                 },
             ],
             layout: { name: 'breadthfirst', directed: true, padding: 20, spacingFactor: 1.1 },
-            wheelSensitivity: 0.3,
         });
 
         this.cy.on('tap', 'node', (event) => {

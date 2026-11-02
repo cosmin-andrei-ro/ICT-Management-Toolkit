@@ -26,7 +26,7 @@ function attemptLogin(string $email, string $password): Testable
     return Livewire::test(Login::class)
         ->set('login', $email)
         ->set('password', $password)
-        ->call('login');
+        ->call('submit');
 }
 
 it('shows the login page to guests', function (): void {
@@ -95,7 +95,7 @@ it('validates the input', function (): void {
     Livewire::test(Login::class)
         ->set('login', '')
         ->set('password', '')
-        ->call('login')
+        ->call('submit')
         ->assertHasErrors(['login' => 'required', 'password' => 'required']);
 });
 

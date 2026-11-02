@@ -2,7 +2,7 @@
 @if (session('status'))
     <p class="mb-4 rounded-md bg-green-50 p-3 text-sm text-green-800" role="status">{{ session('status') }}</p>
 @endif
-<form wire:submit="login" class="space-y-5" novalidate>
+<form wire:submit="submit" class="space-y-5" novalidate>
     <div>
         <label for="login" class="block text-sm font-medium">{{ __('core::auth.login.identifier') }}</label>
         <input wire:model="login" id="login" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus

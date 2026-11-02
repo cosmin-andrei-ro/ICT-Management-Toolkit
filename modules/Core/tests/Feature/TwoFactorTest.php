@@ -40,7 +40,7 @@ function otp(int $offsetSteps = 0): string
 
 function passwordStep(): void
 {
-    Livewire::test(Login::class)->set('login', 'jane@example.com')->set('password', 'correct-horse-battery')->call('login')
+    Livewire::test(Login::class)->set('login', 'jane@example.com')->set('password', 'correct-horse-battery')->call('submit')
         ->assertRedirect(route('login.challenge'));
 }
 
@@ -103,7 +103,7 @@ describe('signing in', function (): void {
     it('signs in at once without two-factor authentication', function (): void {
         $plain = User::factory()->memberOf($this->organization)->create(['email' => 'bob@example.com', 'password' => 'correct-horse-battery']);
 
-        Livewire::test(Login::class)->set('login', 'bob@example.com')->set('password', 'correct-horse-battery')->call('login')->assertRedirect(route('home'));
+        Livewire::test(Login::class)->set('login', 'bob@example.com')->set('password', 'correct-horse-battery')->call('submit')->assertRedirect(route('home'));
 
         $this->assertAuthenticatedAs($plain);
     });

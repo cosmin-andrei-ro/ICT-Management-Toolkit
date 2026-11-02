@@ -107,3 +107,18 @@ describe('admin panel', function (): void {
         $this->get('/admin')->assertRedirect(route('login'));
     });
 });
+
+it('draws admin avatars locally instead of sending names to a third party', function (): void {
+    app(SyncPermissions::class)->handle();
+    $organization = Organization::factory()->create();
+    $user = User::factory()->memberOf($organization)->withTwoFactor()->create(['name' => 'Ana <Pop>']);
+    app(OrganizationContext::class)->runAs($organization, fn () => $user->assignRole(DefaultRole::Administrator->value));
+
+    $avatar = (new Modules\Core\Http\Filament\Support\InitialsAvatarProvider)->get($user);
+    $svg = base64_decode(substr($avatar, strlen('data:image/svg+xml;base64,')));
+
+    expect($avatar)->toStartWith('data:image/svg+xml;base64,')
+        ->and($svg)->toContain('>A&lt;<')->not->toContain('<Pop>');
+
+    $this->actingAs($user)->get('/admin')->assertOk()->assertDontSee('ui-avatars.com');
+});

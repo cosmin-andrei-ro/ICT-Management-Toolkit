@@ -25,7 +25,11 @@ final class Login extends Component
 
     public bool $remember = false;
 
-    public function login(AttemptLogin $attemptLogin, Request $request): void
+    /**
+     * Not named login(): the CSP build of Livewire would resolve wire:submit="login"
+     * to the $login property and never call the action.
+     */
+    public function submit(AttemptLogin $attemptLogin, Request $request): void
     {
         $this->login = trim($this->login);
         $this->validate();
