@@ -250,6 +250,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
         // Panel access only opens the door: every page and resource in it checks its own permission.
         $registry->grantToDefaultRole(DefaultRole::TeamLead, [...$directory, 'core.audit.view', 'core.admin.access', ...$contracts]);
         $registry->grantToDefaultRole(DefaultRole::AssetManager, [...$directory, 'core.admin.access', ...$contracts]);
+        // The BIA coordinator keeps the organization chart processes hang from, and reads suppliers and locations for dependencies.
+        $registry->grantToDefaultRole(DefaultRole::BiaCoordinator, [...$directory, 'core.admin.access', 'core.department.create', 'core.department.update', 'core.supplier.view', 'core.location.manage']);
         $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
     }

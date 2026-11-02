@@ -5,6 +5,7 @@
 
 declare(strict_types=1);
 
+use Modules\Bia\BiaServiceProvider;
 use Modules\Cmdb\CmdbServiceProvider;
 use Modules\Core\CoreServiceProvider;
 use Modules\Itam\ItamServiceProvider;
@@ -40,6 +41,10 @@ return [
         ],
         'itam' => [
             'provider' => ItamServiceProvider::class,
+            'enabled' => true,
+        ],
+        'bia' => [
+            'provider' => BiaServiceProvider::class,
             'enabled' => true,
         ],
     ],

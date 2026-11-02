@@ -1,0 +1,89 @@
+<?php
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 ICT Management Toolkit contributors
+
+declare(strict_types=1);
+
+return [
+    'menu' => 'Business impact analysis',
+    'title' => 'Business processes',
+    'tiers' => [
+        1 => 'Tier 1 (within 4 hours)',
+        2 => 'Tier 2 (within a day)',
+        3 => 'Tier 3 (within 3 days)',
+        4 => 'Tier 4 (later)',
+    ],
+    'units' => [
+        'minutes' => '{1} :count minute|[2,*] :count minutes',
+        'hours' => '{1} :count hour|[2,*] :count hours',
+        'days' => '{1} :count day|[2,*] :count days',
+    ],
+    'unit_names' => [
+        'minutes' => 'minutes',
+        'hours' => 'hours',
+        'days' => 'days',
+    ],
+    'statuses' => [
+        'active' => 'Active',
+        'retired' => 'Retired',
+    ],
+    'fields' => [
+        'name' => 'Process',
+        'department' => 'Department',
+        'owner' => 'Owner',
+        'deputy' => 'Deputy',
+        'description' => 'Description',
+        'peak_periods' => 'Peak periods',
+        'status' => 'Status',
+        'tier' => 'Tier',
+        'rto' => 'RTO',
+        'rpo' => 'RPO',
+        'mtpd' => 'MTPD',
+        'next_review' => 'Next review',
+        'approved_at' => 'Approved',
+    ],
+    'help' => [
+        'owner' => 'The business person responsible. The owner and the deputy fill in the assessment.',
+        'peak_periods' => 'When an interruption would hurt most, for example month-end closing or the sales season.',
+    ],
+    'ui' => [
+        'intro' => 'What the business does, how badly an interruption would hurt over time, and how fast each process must be back.',
+        'new' => 'New process',
+        'edit' => 'Edit',
+        'back' => '← Business processes',
+        'search' => 'Search by name or description',
+        'all_departments' => 'All departments',
+        'all_tiers' => 'All tiers',
+        'show_retired' => 'Show retired',
+        'only_due' => 'Never approved or due for review',
+        'empty' => 'No processes match.',
+        'save' => 'Save',
+        'details' => 'Details',
+        'objectives' => 'Recovery objectives in force',
+        'not_assessed' => 'Not assessed yet.',
+        'versions' => 'Assessments',
+        'no_versions' => 'No assessment yet.',
+        'version' => 'Version :version',
+        'start' => 'Start the assessment',
+        'review' => 'Start a review',
+        'continue' => 'Continue the assessment',
+        'in_progress' => 'In progress: :status',
+        'review_due' => 'Review due',
+        'delete' => 'Delete',
+        'delete_confirm' => 'Delete this process and its assessments? To keep them, set its status to Retired instead.',
+        'name_taken' => 'Another process already has this name.',
+        'glossary' => 'MTPD: the longest the process can be interrupted before the impact becomes unacceptable. RTO: how fast it must be back, never later than the MTPD. RPO: how much recent data may be lost.',
+    ],
+    'mine' => [
+        'menu' => 'My processes',
+        'title' => 'My processes',
+        'intro' => 'The business processes you own or deputize for. Assess how an interruption would affect them; the BIA coordinator approves.',
+        'empty' => 'You own no business process.',
+        'to_start' => 'Assessment to fill in',
+        'returned' => 'Returned to you: see the comment',
+        'submitted' => 'Waiting for approval',
+        'due' => 'Review due',
+        'up_to_date' => 'Up to date',
+    ],
+];

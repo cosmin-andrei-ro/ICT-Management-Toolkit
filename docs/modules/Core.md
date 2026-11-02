@@ -50,6 +50,10 @@ For development, an optional Samba AD container provides a test domain: see [doc
 
 Working hours per weekday in a time zone, extra days off, and optionally Romanian public holidays (computed each year, including Orthodox Easter and Pentecost). An organization's default calendar drives working-time calculations such as SLA deadlines. Without one, Monday–Friday 09:00–17:00, Europe/Bucharest, with Romanian holidays applies. Managed in Administration → Organization → Business calendars (`core.calendar.manage`).
 
+## Departments
+
+The organization chart (`core_departments`), nested, with a manager: Administration → Organization → Departments. Business processes (BIA) belong to them.
+
 ## Locations, suppliers and contracts (ADR 0019)
 
 - **Locations** (`core_locations`): nested sites, buildings, floors and rooms; `Location::paths()` gives "Site › Building › Room" labels for forms. Managed in Administration → Organization → Locations (`core.location.manage`).
@@ -59,11 +63,11 @@ Working hours per weekday in a time zone, extra days off, and optionally Romania
 
 ## Main menu
 
-Modules add entries through `Modules\Core\Http\Navigation\Navigation::add()`: a link of its own (with an `order`), or an entry of a shared group (`SERVICE_DESK`, `CONFIGURATION`, `SUPPLIERS`) shown as a drop-down. A group with a single visible entry is shown as that link. The drop-downs are `<details>` elements, so they work without script; `resources/js/navigation.js` closes them on outside clicks and Escape.
+Modules add entries through `Modules\Core\Http\Navigation\Navigation::add()`: a link of its own (with an `order`), or an entry of a shared group (`SERVICE_DESK`, `CONFIGURATION`, `RESILIENCE`, `SUPPLIERS`) shown as a drop-down. A group with a single visible entry is shown as that link. The drop-downs are `<details>` elements, so they work without script; `resources/js/navigation.js` closes them on outside clicks and Escape.
 
 ## Administration panel
 
-Filament at `/admin`, for users with `core.admin.access`: administrators, team leads and asset managers. Every resource and page checks its own permission, so each sees only what they may manage. It uses the application login. See ADR 0006 for its CSP exception.
+Filament at `/admin`, for users with `core.admin.access`: administrators, team leads, asset managers and BIA coordinators. Every resource and page checks its own permission, so each sees only what they may manage. It uses the application login. See ADR 0006 for its CSP exception.
 
 ## Security headers (ADR 0006)
 

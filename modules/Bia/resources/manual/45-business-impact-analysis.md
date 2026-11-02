@@ -1,0 +1,32 @@
+---
+title: Business impact analysis
+audience: everyone
+---
+
+A **business impact analysis** (BIA) answers, for each thing the business does, two questions: *how bad would it be if it stopped, and how fast must it be back?* IT then plans its recovery for those answers.
+
+Each **business process** (payroll, invoicing, customer support…) has an **owner** in the business and, optionally, a **deputy**. They fill in its assessment; the **BIA coordinator** approves it.
+
+## For process owners
+
+**My processes** in the menu lists the processes you own or deputize for, and what is expected of you: an assessment to fill in, one returned to you, or a review due.
+
+Open the process and click **Start the assessment** (or **Start a review** once one was approved). Then:
+
+1. **Impact of an interruption over time.** For each kind of impact (financial, legal, reputation, operations, customers) and each period (4 hours, 1 day…), choose how bad it would be if the process stopped for that long, from 1 (negligible) to 5 (severe). Hover over a level, or open **What each level means**, to see what it means. Impact never goes down with time. Cells at or above the unacceptable level are shown in red.
+2. **MTPD**, the maximum tolerable period of disruption, follows from your scores: the first period in which any impact becomes unacceptable. If it should be different, tick **Use another MTPD** and explain why.
+3. **RTO**: how fast the process must work again. It cannot be longer than the MTPD.
+4. **RPO**: how much recent data may be lost. 0 if none; 1 day if yesterday's backup is enough.
+5. Describe the **minimum level of service** while recovering, the **manual workarounds** (paper forms, phone, another site) and the **minimum staff**.
+
+**Save draft** keeps your work; **Submit for approval** sends it to the coordinator. If it comes back, the coordinator's comment says what to change. Once approved, the objectives are in force until the next review, usually a year later.
+
+## For the BIA coordinator
+
+**Risk & continuity → Business impact analysis** lists every process with its tier, RTO, RPO and next review. **New process** adds one: name it, choose its department, its owner and, optionally, a deputy. A process no longer done is set to **Retired**, which keeps its history.
+
+When an assessment is submitted you receive an email. Open it, check it, and **Approve** it or **Return to the owner** with a comment. You cannot approve a process you own or an assessment you submitted: another coordinator does.
+
+The **tier** follows from the RTO: tier 1 within 4 hours, tier 2 within a day, tier 3 within 3 days, tier 4 later. Team leads see the BIA too, to plan IT recovery.
+
+Every version stays in the history. Approved versions never change: a review starts a new version, copied from the one in force.
