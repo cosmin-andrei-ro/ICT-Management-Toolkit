@@ -3,7 +3,7 @@ title: Compliance
 audience: everyone
 ---
 
-**Compliance & audit → Compliance** shows the regulations and standards your organization complies with, and how far its controls meet them. Compliance managers keep it; auditors, security officers and risk managers read it. Each control has an **owner** who says how far it is implemented; owners who do not read compliance find their controls under **My controls**.
+**Compliance & audit → Compliance** shows the regulations and standards your organization complies with, and how far its controls meet them. Compliance managers keep it; auditors, security officers and risk managers read it. Each control has an **owner** who says how far it is implemented; owners who do not read compliance find their controls, findings and corrective actions under **My compliance tasks**.
 
 ## Add a framework
 
@@ -54,4 +54,32 @@ A compliance manager sets how often a control is tested, in months, when editing
 
 To **Record a test**, give the date, the result - effective, partly effective, not effective - **how it was tested** (for example *a sample of 25 remote sign-ins checked for a second factor*), what was found and, optionally, the document the test produced. The next test is planned from the date of the test.
 
-Every change - to frameworks, applicability, controls and their mapping - is kept in the history.
+## Audits
+
+**Compliance & audit → Audits** lists internal and external audits. Compliance managers click **New audit** and give it a title, whether it is internal or external (with the certification body or audit firm), the lead auditor, the dates, the scope and the frameworks it covers. Audits are numbered AUD-001, AUD-002…
+
+On the audit's page, **Start the audit** when it begins; **Complete the audit** with its conclusion when it ends. A cancelled or completed audit can be reopened.
+
+## Findings
+
+Compliance managers record what an audit found with **New finding** on the audit's page, or **Raise a finding** under a control test that was not fully effective (the finding is then prefilled with the control and its owner). Each finding has:
+
+- a **severity**: major nonconformity, minor nonconformity, observation, opportunity for improvement;
+- the **control** and the **requirement** concerned, if any;
+- an **owner**, emailed when it is assigned to them, and a **due date**.
+
+**Compliance & audit → Findings** lists them, the most severe first; overdue ones are in red.
+
+## Correct a finding
+
+The finding's owner, on its page:
+
+1. records the **root cause** - why it happened, not only what;
+2. adds **corrective actions**, each with an owner and a due date. The owner of an action marks it started, done or cancelled; **Track in the service desk** opens a problem for IT;
+3. once every action is done or cancelled, clicks **Submit for verification**.
+
+A nonconformity cannot be submitted without a root cause and at least one corrective action; an observation or an opportunity can.
+
+A compliance manager - not the owner, and not whoever submitted it - then checks that the correction works and clicks **Effective: close**, or **Not effective: reopen** saying why; the owner is emailed either way.
+
+Every change - to frameworks, applicability, controls, evidence, tests, audits and findings - is kept in the history.

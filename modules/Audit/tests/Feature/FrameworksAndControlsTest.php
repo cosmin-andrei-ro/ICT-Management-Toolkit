@@ -148,9 +148,9 @@ it('shows compliance in the menu of its readers, and owners their controls', fun
     Control::factory()->create(['owner_id' => $this->compliance->owner->id]);
     $menu = fn ($user): array => array_map(fn (array $entry): string|array => isset($entry['items']) ? [$entry['label'] => array_column($entry['items'], 'label')] : $entry['label'], app(Navigation::class)->for($user));
 
-    expect($menu($this->compliance->auditor))->toContain(['Compliance & audit' => ['Compliance', 'Controls']])
-        ->and($menu($this->compliance->owner))->toContain('My controls')
-        ->and($menu($this->compliance->employee))->not->toContain('My controls');
+    expect($menu($this->compliance->auditor))->toContain(['Compliance & audit' => ['Compliance', 'Controls', 'Audits', 'Findings']])
+        ->and($menu($this->compliance->owner))->toContain('My compliance tasks')
+        ->and($menu($this->compliance->employee))->not->toContain('My compliance tasks');
 });
 
 it('lets auditors and security officers read, and keeps everyone else and other organizations out', function (): void {
