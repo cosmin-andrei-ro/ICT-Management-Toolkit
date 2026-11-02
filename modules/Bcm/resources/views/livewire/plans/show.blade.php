@@ -13,6 +13,9 @@
             </div>
         </div>
         <div class="flex flex-wrap gap-2">
+            @can('activate', $plan)
+                <a href="{{ route('bcm.activations.create', $plan) }}" class="rounded-md bg-red-700 px-3 py-1.5 text-sm font-semibold text-white">{{ __('bcm::activations.ui.new') }}</a>
+            @endcan
             @if ($plan->approved_version !== null)
                 <a href="{{ route('bcm.plans.sheet', $plan) }}" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('bcm::plans.ui.print') }}</a>
             @endif
@@ -35,6 +38,7 @@
                 <div><dt class="text-xs text-gray-500">{{ __('bcm::plans.fields.deputy') }}</dt><dd>{{ $plan->deputy?->name ?? '—' }}</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('bcm::plans.fields.approved_version') }}</dt><dd>{{ $plan->approved_version !== null ? 'v'.$plan->approved_version.' · '.$plan->approved_at?->toDateString() : __('bcm::plans.ui.not_approved') }}</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('bcm::exercises.fields.last_exercised') }}</dt><dd>{{ $plan->last_exercised_on?->toDateString() ?? __('bcm::exercises.ui.never') }}</dd></div>
+                @if ($exerciseDueOn) <div><dt class="text-xs text-gray-500">{{ __('bcm::coverage.next_exercise') }}</dt><dd @class(['font-medium text-amber-700' => $exerciseDueOn->isPast()])>{{ $exerciseDueOn->toDateString() }}</dd></div> @endif
                 <div><dt class="text-xs text-gray-500">{{ __('bcm::plans.fields.next_review') }}</dt><dd @class(['font-medium text-amber-700' => $plan->next_review_on?->isPast()])>{{ $plan->next_review_on?->toDateString() ?? '—' }}</dd></div>
                 @if ($plan->description) <div><dt class="text-xs text-gray-500">{{ __('bcm::plans.fields.description') }}</dt><dd class="whitespace-pre-line">{{ $plan->description }}</dd></div> @endif
             </dl>
@@ -83,4 +87,18 @@
             @endforelse
         </ul>
     </section>
+
+    @if ($activations->isNotEmpty())
+        <section aria-labelledby="activations-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
+            <h2 id="activations-heading" class="text-sm font-semibold">{{ __('bcm::activations.ui.list') }}</h2>
+            <ul class="divide-y divide-gray-100 text-sm">
+                @foreach ($activations as $activation)
+                    <li wire:key="activation-{{ $activation->id }}" class="flex flex-wrap items-center justify-between gap-2 py-2">
+                        <a href="{{ route('bcm.activations.show', $activation) }}" class="text-blue-700 underline">{{ $activation->activated_at->copy()->setTimezone(config()->string('app.display_timezone'))->format('Y-m-d H:i') }} · {{ \Illuminate\Support\Str::limit($activation->reason, 80) }}</a>
+                        <span @class(['rounded px-2 py-0.5 text-xs font-medium', 'bg-red-50 text-red-800' => $activation->isOpen(), 'bg-gray-100 text-gray-700' => ! $activation->isOpen()])>{{ __($activation->isOpen() ? 'bcm::activations.open' : 'bcm::activations.closed') }}</span>
+                    </li>
+                @endforeach
+            </ul>
+        </section>
+    @endif
 </div>
