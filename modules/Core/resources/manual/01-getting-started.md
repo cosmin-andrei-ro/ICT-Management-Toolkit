@@ -40,8 +40,10 @@ The menu at the top shows only what you are allowed to use. Entries marked **▾
 | **Request a service** | everyone | Order something from the IT service catalog (a laptop, VPN access…). |
 | **My tickets** | everyone | Report a problem and follow your requests. |
 | **My equipment** | people who have IT equipment or software | The devices IT handed to you, and your software. |
+| **My processes** | owners of business processes | The processes you own and their impact analysis. |
 | **Service desk ▾** | IT staff | Work on tickets (**Service desk**), find documented workarounds (**Known errors**), plan changes (**Change calendar**), approve them (**Approvals**, CAB members) and see **Reports** (team leads). |
 | **Configuration & assets ▾** | IT staff | What IT runs and how it depends on each other (**CMDB**), the equipment register (**Assets**) and software **Licences**. |
+| **Risk & continuity ▾** | team leads, BIA coordinators | The **business impact analysis** of business processes. |
 | **Suppliers & contracts ▾** | IT staff | Whom to call at a supplier (**Suppliers**) and, for asset managers and team leads, the **Contracts** with them. |
 | **Administration** | administrators, team leads, asset managers | Configure the application. Each person sees only the settings they may change. |
 

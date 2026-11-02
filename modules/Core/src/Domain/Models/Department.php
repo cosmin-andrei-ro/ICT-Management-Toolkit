@@ -71,6 +71,30 @@ final class Department extends Model
     }
 
     /**
+     * Ids of this department and everything under it: none of them can become its parent.
+     *
+     * @return list<string>
+     */
+    public function selfAndDescendantIds(): array
+    {
+        $parents = self::query()->whereNotNull('parent_id')->pluck('parent_id', 'id')->all();
+        $ids = [$this->id];
+
+        for ($added = true; $added;) {
+            $added = false;
+
+            foreach ($parents as $id => $parentId) {
+                if (in_array($parentId, $ids, true) && ! in_array($id, $ids, true)) {
+                    $ids[] = (string) $id;
+                    $added = true;
+                }
+            }
+        }
+
+        return $ids;
+    }
+
+    /**
      * @return BelongsTo<User, $this>
      */
     public function manager(): BelongsTo

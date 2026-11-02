@@ -54,7 +54,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - Sign-in with local accounts or **Active Directory** (LDAPS). AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
 - **Two-factor authentication** with an authenticator app, required for IT staff, plus recovery codes.
 - **People management**: invitations to local accounts by email, roles, deactivation. Password reset by email and password change for local accounts.
-- Role-based permissions: requester, agent, team lead, CAB member, asset manager, administrator.
+- Role-based permissions: requester, agent, team lead, CAB member, asset manager, BIA coordinator, administrator.
 - **Suppliers** with their support contacts, **contracts** with documents, deadlines and email reminders before each notice deadline, and nested **locations** (sites, buildings, rooms).
 - Teams, business calendars (working hours, Romanian public holidays), API tokens.
 - Append-only **audit trail**: who changed what, when, with old and new values; sign-ins, role changes, exports.
@@ -82,7 +82,11 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 
 - **Software licences** per user, per device or site: seats in use against seats bought per product, over-use flagged, keys encrypted and shown only after an authenticator code (audited), expiry reminders.
 
-**Planned modules:** datacenter infrastructure, application portfolio, business impact analysis, continuity and recovery, risk assessment, audit and compliance, projects.
+**Business impact analysis**
+- **Business processes** with owners in the business, assessed in an **impact matrix over time** (financial, legal, reputation, operations, customers × 4 hours to 1 month); MTPD derived from the scores, RTO checked against it, RPO, workarounds; recovery tiers.
+- Versioned assessments: owners submit, a BIA coordinator approves or returns them (never their own); yearly review.
+
+**Planned modules:** datacenter infrastructure, application portfolio, continuity and recovery, risk assessment, audit and compliance, projects.
 
 **Not done yet:** security keys and passkeys (WebAuthn) as a second factor; single sign-on with OIDC or SAML.
 

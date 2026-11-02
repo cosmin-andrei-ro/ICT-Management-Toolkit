@@ -55,7 +55,9 @@
             "Modules\\Cmdb\\": "modules/Cmdb/src/",
             "Modules\\Cmdb\\Database\\Factories\\": "modules/Cmdb/database/factories/",
             "Modules\\Itam\\": "modules/Itam/src/",
-            "Modules\\Itam\\Database\\Factories\\": "modules/Itam/database/factories/"
+            "Modules\\Itam\\Database\\Factories\\": "modules/Itam/database/factories/",
+            "Modules\\Bia\\": "modules/Bia/src/",
+            "Modules\\Bia\\Database\\Factories\\": "modules/Bia/database/factories/"
         }
     },
     "autoload-dev": {
@@ -65,7 +67,8 @@
             "Modules\\Core\\Tests\\": "modules/Core/tests/",
             "Modules\\Ticketing\\Tests\\": "modules/Ticketing/tests/",
             "Modules\\Cmdb\\Tests\\": "modules/Cmdb/tests/",
-            "Modules\\Itam\\Tests\\": "modules/Itam/tests/"
+            "Modules\\Itam\\Tests\\": "modules/Itam/tests/",
+            "Modules\\Bia\\Tests\\": "modules/Bia/tests/"
         }
     },
     "scripts": {

@@ -18,5 +18,6 @@ enum DefaultRole: string
     case Agent = 'agent';
     case CabMember = 'cab-member';
     case AssetManager = 'asset-manager';
+    case BiaCoordinator = 'bia-coordinator';
     case Requester = 'requester';
 }

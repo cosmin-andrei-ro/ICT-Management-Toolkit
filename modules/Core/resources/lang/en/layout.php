@@ -12,6 +12,7 @@ return [
     'groups' => [
         'service_desk' => 'Service desk',
         'configuration' => 'Configuration & assets',
+        'resilience' => 'Risk & continuity',
         'suppliers' => 'Suppliers & contracts',
     ],
     'welcome' => 'Welcome, :name',
