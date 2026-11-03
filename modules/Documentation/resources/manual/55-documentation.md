@@ -54,7 +54,7 @@ Every published page has a **review** date, from the space's interval. On the sp
 
 ## About and files
 
-On a page, **Link a record** connects it to what it is about - an application, a CMDB item, a continuity plan, a risk, a contract, a ticket: choose the kind, search, **Link**. People who may not open the record still see its name. **Files** keeps diagrams, exports or manuals with the page; whoever reads the page can download them.
+On a page, **Link a record** connects it to what it is about - an application, a CMDB item, a continuity plan, a risk, a contract, a ticket: choose the kind, search, **Link**. Readers who may not open the record see "A record you cannot open" instead of its name, so a page never reveals the title of a ticket, risk or plan they may not read; editors of the space still see the name, to manage the link. **Files** keeps diagrams, exports or manuals with the page; whoever reads the page can download them.
 
 ## Documentation and the service desk
 

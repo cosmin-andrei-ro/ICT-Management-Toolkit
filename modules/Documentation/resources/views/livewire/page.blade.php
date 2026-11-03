@@ -101,7 +101,7 @@
                     <li wire:key="link-{{ $link->id }}" class="flex items-start justify-between gap-2">
                         <span>
                             <span class="block text-xs text-gray-500">{{ $kindLabels[$link->linked_type] ?? $link->linked_type }}</span>
-                            @if ($record) <a href="{{ $record->url }}" class="text-blue-700 underline">{{ $record->title }}</a> @else {{ $link->title }} @endif
+                            @if ($record) <a href="{{ $record->url }}" class="text-blue-700 underline">{{ $record->title }}</a> @elseif ($canEdit) {{ $link->title }} @else <span class="text-gray-500">{{ __('documentation::docs.pages.link_unavailable') }}</span> @endif
                         </span>
                         @if ($canEdit) <button type="button" wire:click="unlink('{{ $link->id }}')" class="text-xs text-red-700 underline">{{ __('documentation::docs.remove') }}</button> @endif
                     </li>

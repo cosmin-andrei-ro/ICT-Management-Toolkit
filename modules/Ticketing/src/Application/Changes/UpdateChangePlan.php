@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Ticketing\Application\Changes;
 
 use DomainException;
+use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Domain\Changes\ApprovalStatus;
 use Modules\Ticketing\Domain\Changes\ChangeType;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
@@ -23,7 +24,7 @@ final readonly class UpdateChangePlan
     /**
      * @return bool Whether earlier approvals were withdrawn.
      */
-    public function handle(Ticket $change, ChangePlan $plan): bool
+    public function handle(Ticket $change, ChangePlan $plan, User $actor): bool
     {
         $details = $change->changeDetails ?? throw new DomainException('Not a change.');
 
@@ -47,6 +48,11 @@ final readonly class UpdateChangePlan
         $details->planned_end = $plan->plannedEnd;
 
         $withdrawn = in_array($details->approval_status, [ApprovalStatus::Pending, ApprovalStatus::Approved], true) && $details->isDirty();
+
+        if ($details->isDirty()) {
+            // Whoever wrote the plan may not approve it (CabApprovers).
+            $details->planned_by = $actor->id;
+        }
 
         if ($withdrawn) {
             $details->approval_status = ApprovalStatus::Draft;

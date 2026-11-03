@@ -72,6 +72,8 @@ it('keeps a page of a controlled space from readers until an owner other than it
     $this->get(route('documentation.pages.show', $page))->assertOk()->assertSee('Step one: open a change.')->assertDontSee('secret draft wording')
         ->assertSee('approved by '.$this->docs->lead->name);
     Livewire::test(DocsIndex::class)->set('q', 'secret')->assertSee('No page found');
+    // Nor in the extract of a page found by its published words.
+    Livewire::test(DocsIndex::class)->set('q', 'change')->assertSee('One page found')->assertDontSee('secret draft wording');
     $this->get(route('documentation.pages.history', $page))->assertForbidden();
 });
 

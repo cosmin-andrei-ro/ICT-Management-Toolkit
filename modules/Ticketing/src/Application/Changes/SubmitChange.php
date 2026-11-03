@@ -49,6 +49,9 @@ final readonly class SubmitChange
             throw new DomainException($wantsEmergencyBoard ? 'Emergency changes go to an emergency CAB (ECAB).' : 'Normal changes go to a regular CAB.');
         }
 
+        // Whoever sends it may not approve it either, so they are left out of the board from here.
+        $details->submitted_by = $actor->id;
+
         if ($this->approvers->for($change, $board)->isEmpty()) {
             throw new DomainException('This board has nobody who could approve the change.');
         }

@@ -66,6 +66,8 @@ return [
         'children' => 'In this section',
         'links' => 'About',
         'no_links' => 'Not linked to any record.',
+        // Shown to readers instead of the title kept at linking, which they may not be allowed to see.
+        'link_unavailable' => 'A record you cannot open',
         'link_kind' => 'Link a record',
         'link' => 'Link',
         'link_failed' => 'This record cannot be linked, or it is already linked.',

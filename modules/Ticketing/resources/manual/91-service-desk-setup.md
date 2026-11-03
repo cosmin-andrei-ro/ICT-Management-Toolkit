@@ -62,7 +62,7 @@ Deactivate a service to remove it from the catalog without losing its history.
 
 Under **CAB boards**, create the boards that authorize changes, and choose their members.
 
-- A **regular** board authorizes normal changes. Every member except the requester must approve.
+- A **regular** board authorizes normal changes. Every member except the requester, the person who submitted the change and the last person who edited its plan must approve.
 - Tick **Emergency CAB (ECAB)** for the board that authorizes emergency changes, such as a critical security patch. Keep it small, so it can decide in minutes.
 
 Members must belong to the organization. Only people with the **CAB member** or **Team lead** role are asked to decide; give that role to anyone else you add. Membership changes are recorded in the audit trail.

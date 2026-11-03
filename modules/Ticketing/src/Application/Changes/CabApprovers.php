@@ -14,7 +14,8 @@ use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
  * Who must approve a change: every active board member allowed to approve, except
- * the change's requester (separation of duties).
+ * the change's requester, whoever sent it to the board and whoever last wrote its
+ * plan (separation of duties).
  */
 final class CabApprovers
 {
@@ -26,7 +27,11 @@ final class CabApprovers
         return $board->members()
             ->where('is_active', true)
             ->whereNull('directory_disabled_at')
-            ->whereKeyNot($change->requester_id)
+            ->whereKeyNot(array_values(array_filter([
+                $change->requester_id,
+                $change->changeDetails?->submitted_by,
+                $change->changeDetails?->planned_by,
+            ])))
             ->get()
             ->filter(fn (User $user): bool => $user->can('ticketing.change.approve'))
             ->values();

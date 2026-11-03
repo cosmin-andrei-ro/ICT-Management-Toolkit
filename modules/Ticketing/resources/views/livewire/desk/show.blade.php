@@ -179,7 +179,7 @@
             </section>
         @endif
 
-        <x-ticketing::conversation :comments="$comments" :attachments="$attachments" :show-internal="true" />
+        <x-ticketing::conversation :comments="$comments" :attachments="$attachments" :show-internal="$showInternal" />
 
         @can('comment', $ticket)
             <form wire:submit="addComment" class="space-y-3 rounded-lg bg-white p-4 ring-1 ring-gray-200">

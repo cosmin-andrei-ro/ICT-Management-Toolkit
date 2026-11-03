@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Ticketing\Application\Actions\AutoCloseResolvedTickets;
 use Modules\Ticketing\Application\Actions\ChangeTicketStatus;
 use Modules\Ticketing\Application\Actions\CloseTicket;
@@ -114,6 +115,28 @@ describe('CAB approval (unanimity)', function (): void {
         app(DecideOnChange::class)->handle($change->fresh(), $this->desk->agent, ApprovalDecision::Approved, '');
     })->throws(DomainException::class, 'never its requester');
 
+    it('never lets whoever sent the change or last wrote its plan approve it', function (): void {
+        // Requested by the agent, then re-planned by Bob and sent by Alice: only the lead remains to approve.
+        $this->cab->members()->attach($this->desk->lead->id);
+        app(OrganizationContext::class)->runAs($this->desk->organization, fn () => $this->desk->lead->givePermissionTo('ticketing.change.approve'));
+        $change = draftChange($this->desk);
+        app(UpdateChangePlan::class)->handle($change->fresh(), plan('2026-11-21 22:00', '2026-11-22 02:00'), $this->bob);
+        app(SubmitChange::class)->handle($change->fresh(), $this->cab, $this->alice);
+
+        expect(fn () => approveBy($change, $this->alice))->toThrow(DomainException::class)
+            ->and(fn () => approveBy($change, $this->bob))->toThrow(DomainException::class);
+
+        approveBy($change, $this->desk->lead);
+        expect($change->fresh()->changeDetails?->approval_status)->toBe(ApprovalStatus::Approved);
+    });
+
+    it('cannot be sent to a board on which only the sender could approve', function (): void {
+        $solo = CabBoard::query()->create(['name' => 'Just me']);
+        $solo->members()->attach($this->alice->id);
+
+        app(SubmitChange::class)->handle(draftChange($this->desk), $solo, $this->alice);
+    })->throws(DomainException::class, 'nobody who could approve');
+
     it('refuses people outside the board and double decisions', function (): void {
         $change = draftChange($this->desk);
         app(SubmitChange::class)->handle($change, $this->cab, $this->desk->agent);
@@ -142,7 +165,7 @@ describe('CAB approval (unanimity)', function (): void {
         approveBy($change, $this->alice, $this->bob);
         expect($change->fresh()->changeDetails?->isApproved())->toBeTrue();
 
-        $withdrawn = app(UpdateChangePlan::class)->handle($change->fresh(), plan('2026-11-21 22:00', '2026-11-22 02:00'));
+        $withdrawn = app(UpdateChangePlan::class)->handle($change->fresh(), plan('2026-11-21 22:00', '2026-11-22 02:00'), $this->desk->agent);
 
         expect($withdrawn)->toBeTrue()
             ->and($change->fresh()->changeDetails?->approval_status)->toBe(ApprovalStatus::Draft);

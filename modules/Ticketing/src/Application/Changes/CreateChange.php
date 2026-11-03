@@ -85,6 +85,7 @@ final readonly class CreateChange
                 'test_plan' => self::orNull($plan->testPlan),
                 'planned_start' => $plan->plannedStart,
                 'planned_end' => $plan->plannedEnd,
+                'planned_by' => $actor->id,
                 'approval_status' => $template !== null ? ApprovalStatus::Approved : ApprovalStatus::Draft,
                 'approved_at' => $template !== null ? now() : null,
             ])->save();
