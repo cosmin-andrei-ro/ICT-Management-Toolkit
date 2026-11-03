@@ -32,3 +32,18 @@ Configuration items, their relationships and the impact of failures. Code: `modu
 | `cmdb.type.manage` | team-lead | Item types and their attributes |
 
 Administrators have every permission.
+
+## API (ADR 0062)
+
+Abilities: `cmdb:read`, `cmdb:write`. Permissions are the screens' (`cmdb.ci.view`, `cmdb.ci.manage`).
+
+| Method | Path | |
+|---|---|---|
+| GET | `/api/v1/cmdb/types` | Types and their attribute schemas |
+| GET | `/api/v1/cmdb/items` | Filters `type` (key or id), `status`, `environment`, `criticality`, `owner_id`, `team_id`, `search`; sorts `name`, `identifier`, `criticality`, `created_at`, `updated_at` |
+| POST | `/api/v1/cmdb/items` | Through `SaveConfigurationItem`; `properties` are checked against the type's schema (errors under `properties.<key>`) |
+| GET | `/api/v1/cmdb/items/{id}` | With `outgoing` and `incoming` relationships |
+| PATCH | `/api/v1/cmdb/items/{id}` | Only the fields sent; `properties` merged by key |
+| DELETE | `/api/v1/cmdb/items/{id}` | Soft delete |
+| POST | `/api/v1/cmdb/relationships` | `source_id`, `type`, `target_id`; an identical relationship is returned as is (200) |
+| DELETE | `/api/v1/cmdb/relationships/{id}` | |
