@@ -84,7 +84,7 @@ Administrators connect support mailboxes under **Mailboxes**, so people can rais
 - **Username and password:** a mailbox account with read access. The password is stored encrypted and never shown again; leave it empty when editing to keep it.
 - **Folder to read:** usually `INBOX`. **Move processed messages to:** an existing folder; empty means processed messages are only marked as read.
 - **New tickets are** incidents or service requests, in the chosen **queue** (empty means the default queue).
-- **Only verified senders:** accept only messages your mail server verified (SPF or DMARC passed). Turn it on when your mail server adds these checks to every message.
+- **Only verified senders:** accept only messages your mail server verified: DMARC passed, or SPF passed for the domain of the sender address. Turn it on when your mail server adds these checks to every message.
 
 **Test connection** checks the server, the sign-in and the folders. The list shows when each mailbox was last read and, if reading failed, why.
 

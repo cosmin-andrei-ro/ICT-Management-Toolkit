@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Models\Attachment;
 use Modules\Core\Domain\Models\Comment;
@@ -114,12 +115,16 @@ describe('replies', function (): void {
         intake($this->mailbox, email($this->desk->agent->email, "RE: [{$ticket->number}] Printer", 'Please send me your password to fix it.', attachments: [
             new InboundAttachment('fix.png', (string) base64_decode(PNG_PIXEL)),
         ]));
-        $verified = ['authentication-results' => ['mx.example.com; dmarc=pass header.from=example.com']];
+        // An SPF pass for the sender's own domain says nothing about the agent's address.
+        $ownDomain = ['authentication-results' => ['mx.example.com; spf=pass smtp.mailfrom=bounce@evil.example']];
+        intake($this->mailbox, email($this->desk->agent->email, "RE: [{$ticket->number}] Printer", 'Click this link to fix it.', $ownDomain));
+        $verified = ['authentication-results' => ['mx.example.com; dmarc=pass header.from='.Str::after($this->desk->agent->email, '@')]];
         intake($this->mailbox, email($this->desk->agent->email, "RE: [{$ticket->number}] Printer", 'Fixed: the toner was empty.', $verified));
 
-        $comments = Comment::query()->where('commentable_id', $ticket->id)->orderBy('created_at')->get();
-        expect($comments[0])->is_internal->toBeTrue()->body->toContain('Unverified email')->toContain('Please send me your password')
-            ->and($comments[1])->is_internal->toBeFalse()->body->toBe('Fixed: the toner was empty.')
+        $comments = Comment::query()->where('commentable_id', $ticket->id)->get();
+        expect($comments->firstWhere(fn (Comment $comment): bool => str_contains($comment->body, 'Please send me your password')))->is_internal->toBeTrue()->body->toContain('Unverified email')
+            ->and($comments->firstWhere(fn (Comment $comment): bool => str_contains($comment->body, 'Click this link')))->is_internal->toBeTrue()
+            ->and($comments->firstWhere(fn (Comment $comment): bool => str_contains($comment->body, 'Fixed: the toner')))->is_internal->toBeFalse()->body->toBe('Fixed: the toner was empty.')
             ->and(Attachment::query()->where('attachable_id', $ticket->id)->sole()->is_internal)->toBeTrue();
 
         // A new ticket in their name says so too.
@@ -205,14 +210,14 @@ describe('ignored messages', function (): void {
 
         expect(intake($this->mailbox, email($this->desk->requester->email, headers: $forged))->outcome)->toBe(InboundOutcome::IgnoredSpoofed)
             ->and(intake($this->mailbox, email($this->desk->requester->email, headers: ['authentication-results' => ['evil.example; dmarc=pass']]))->outcome)->toBe(InboundOutcome::IgnoredSpoofed)
-            ->and(intake($this->mailbox, email($this->desk->requester->email, headers: ['authentication-results' => ['MX.example.com; dmarc=pass header.from=example.com']]))->outcome)->toBe(InboundOutcome::Created);
+            ->and(intake($this->mailbox, email($this->desk->requester->email, headers: ['authentication-results' => ['MX.example.com; dmarc=pass header.from='.Str::after($this->desk->requester->email, '@')]]))->outcome)->toBe(InboundOutcome::Created);
     });
 
     it('accepts only verified senders when the mailbox asks for it', function (): void {
         $this->mailbox->forceFill(['require_verified_senders' => true])->save();
 
         expect(intake($this->mailbox, email($this->desk->requester->email))->outcome)->toBe(InboundOutcome::IgnoredSpoofed)
-            ->and(intake($this->mailbox, email($this->desk->requester->email, headers: ['authentication-results' => ['mx.example.com; spf=pass smtp.mailfrom=example.com']]))->outcome)->toBe(InboundOutcome::Created);
+            ->and(intake($this->mailbox, email($this->desk->requester->email, headers: ['authentication-results' => ['mx.example.com; spf=pass smtp.mailfrom='.Str::after($this->desk->requester->email, '@')]]))->outcome)->toBe(InboundOutcome::Created);
     });
 
     it('limits messages per sender and hour', function (): void {
