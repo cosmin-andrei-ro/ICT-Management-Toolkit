@@ -9,13 +9,20 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Notification;
+use Modules\Applications\Database\Seeders\ApplicationsDemoSeeder;
+use Modules\Audit\Database\Seeders\AuditDemoSeeder;
+use Modules\Bcm\Database\Seeders\BcmDemoSeeder;
+use Modules\Bia\Database\Seeders\BiaDemoSeeder;
 use Modules\Cmdb\Database\Seeders\CmdbDemoSeeder;
 use Modules\Core\Application\Authorization\SyncPermissions;
 use Modules\Core\Database\Seeders\CoreDemoSeeder;
 use Modules\Core\Database\Seeders\DemoClock;
 use Modules\Core\Database\Seeders\DemoCompany;
 use Modules\Core\Domain\Models\Organization;
+use Modules\Documentation\Database\Seeders\DocumentationDemoSeeder;
 use Modules\Itam\Database\Seeders\ItamDemoSeeder;
+use Modules\Risk\Database\Seeders\RiskDemoSeeder;
+use Modules\Risk\Database\Seeders\RiskSuggestionsDemoSeeder;
 use Modules\Ticketing\Database\Seeders\TicketingDemoSeeder;
 use RuntimeException;
 
@@ -31,6 +38,13 @@ final class DatabaseSeeder extends Seeder
         TicketingDemoSeeder::class,
         CmdbDemoSeeder::class,
         ItamDemoSeeder::class,
+        BiaDemoSeeder::class,
+        ApplicationsDemoSeeder::class,
+        BcmDemoSeeder::class,
+        RiskDemoSeeder::class,
+        AuditDemoSeeder::class,
+        DocumentationDemoSeeder::class,
+        RiskSuggestionsDemoSeeder::class,
     ];
 
     /**

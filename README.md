@@ -178,7 +178,7 @@ Open http://localhost and sign in with one of the demo accounts below. Email sen
 
 ### Demo data
 
-`migrate --seed` builds **Demo Logistics**, a fictional company with three months of history: the service desk's tickets, problems and changes, the CMDB and its dependencies, equipment and licences, and more as the demo grows. It refuses to run outside the local and testing environments.
+`migrate --seed` builds **Demo Logistics**, a fictional company with three months of history: the service desk's tickets, problems and changes, the CMDB and its dependencies, equipment and licences, the business impact analysis, documented applications, continuity plans with an exercise and an activation, the risk register, ISO 27001 and NIS2 controls with an internal audit, and documentation including help articles for employees. It refuses to run outside the local and testing environments.
 
 Every demo account has the password `password`. IT staff accounts also have two-factor authentication set up with the shared demo secret `JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP`: add it to an authenticator app (as a manual key, time-based, 6 digits) to sign in.
 
