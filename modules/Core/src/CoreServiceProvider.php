@@ -33,6 +33,7 @@ use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Livewire\Livewire;
 use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
+use Modules\Core\Application\Exports\AuditLogExport;
 use Modules\Core\Application\Links\ContractRecords;
 use Modules\Core\Application\Risks\ContractRiskSignals;
 use Modules\Core\Application\Sso\DnsHostResolver;
@@ -121,6 +122,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->singleton(HomePanels::class);
         $this->app->singleton(Manual::class);
         $this->app->singleton(ExportRegistry::class);
+        $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(AuditLogExport::TYPE, AuditLogExport::class, 'core.audit.view'));
         $this->app->singleton(LinkedRecords::class);
         $this->app->singleton(ContractDependents::class);
         $this->app->singleton(RiskSignals::class);
@@ -253,6 +255,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('core::suppliers.menu', 'core.suppliers.index', 'core.suppliers.*', fn (User $user): bool => $user->can('core.supplier.view'), Navigation::SUPPLIERS);
             $navigation->add('core::contracts.menu', 'core.contracts.index', 'core.contracts.*', fn (User $user): bool => $user->can('core.contract.view'), Navigation::SUPPLIERS);
+            $navigation->add('core::audit.menu', 'core.audit-log.index', 'core.audit-log.*', fn (User $user): bool => $user->can('core.audit.view'), Navigation::COMPLIANCE, 90);
             $navigation->add('core::layout.admin', 'filament.admin.pages.dashboard', 'filament.admin.*', fn (User $user): bool => $user->can('core.admin.access'), order: 90);
         });
 
@@ -303,9 +306,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::SecurityOfficer, [...$directory, 'core.audit.view']);
         // Risk managers open the panel for the method and the catalog, and read suppliers to link risks to them.
         $registry->grantToDefaultRole(DefaultRole::RiskManager, [...$directory, 'core.admin.access', 'core.supplier.view']);
-        // Compliance managers read suppliers and contracts (third-party requirements, evidence) and the audit log; auditors read suppliers and contracts.
+        // Compliance managers and auditors read suppliers and contracts (third-party requirements, evidence) and the audit log.
         $registry->grantToDefaultRole(DefaultRole::ComplianceManager, [...$directory, 'core.supplier.view', 'core.contract.view', 'core.audit.view']);
-        $registry->grantToDefaultRole(DefaultRole::Auditor, [...$directory, 'core.supplier.view', 'core.contract.view']);
+        $registry->grantToDefaultRole(DefaultRole::Auditor, [...$directory, 'core.supplier.view', 'core.contract.view', 'core.audit.view']);
         $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
         // Project managers pick sponsors and teams from the directory.

@@ -80,4 +80,6 @@
     </div>
 
     @if ($source->notes) <p class="whitespace-pre-line text-sm text-gray-700">{{ $source->notes }}</p> @endif
+
+    <x-core::record-history :record="$source" :can-change="auth()->user()->can('create', \Modules\Dcim\Domain\Models\Rack::class)" />
 </div>

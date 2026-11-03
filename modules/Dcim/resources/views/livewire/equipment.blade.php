@@ -253,4 +253,6 @@
             <p class="text-xs text-gray-500">{{ __('dcim::cabling.pattern_help') }}</p>
         </section>
     @endif
+
+    <x-core::record-history :record="$equipment" :can-change="auth()->user()->can('update', $equipment->rack)" />
 </div>

@@ -48,7 +48,7 @@ final class Navigation
      * @param  string  $active  Route name pattern marking the entry as current (e.g. "ticketing.desk.*").
      * @param  Closure(User): bool  $visible
      * @param  ?string  $group  One of the group constants; null for a link of its own.
-     * @param  int  $order  Position of a link of its own among the links and groups; inside a group, entries keep the order they were added in.
+     * @param  int  $order  Position of a link of its own among the links and groups, or of an entry inside its group; equal orders keep the order they were added in.
      */
     public function add(string $label, string $route, string $active, Closure $visible, ?string $group = null, int $order = 60): void
     {
@@ -79,12 +79,14 @@ final class Navigation
             if ($item['group'] === null) {
                 $entries[] = ['order' => $item['order'], 'position' => $position, 'entry' => $link];
             } else {
-                $grouped[$item['group']]['links'][] = $link;
+                $grouped[$item['group']]['links'][] = ['order' => $item['order'], 'position' => $position, 'entry' => $link];
                 $grouped[$item['group']]['position'] ??= $position;
             }
         }
 
         foreach ($grouped as $key => $group) {
+            usort($group['links'], fn (array $a, array $b): int => [$a['order'], $a['position']] <=> [$b['order'], $b['position']]);
+            $group['links'] = array_map(fn (array $link): array => $link['entry'], $group['links']);
             $entries[] = [
                 'order' => $this->groups[$key]['order'],
                 'position' => $group['position'],

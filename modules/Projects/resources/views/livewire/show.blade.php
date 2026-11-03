@@ -188,4 +188,6 @@
             @error('memberId') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
         @endif
     </section>
+
+    <x-core::record-history :record="$project" :can-change="auth()->user()->can('update', $project)" />
 </div>

@@ -101,4 +101,6 @@
             </ul>
         </section>
     @endif
+
+    <x-core::record-history :record="$plan" :can-change="auth()->user()->can('update', $plan)" />
 </div>

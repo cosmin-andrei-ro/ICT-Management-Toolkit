@@ -263,4 +263,6 @@
             </ul>
         </section>
     @endif
+
+    <x-core::record-history :record="$asset" :can-change="auth()->user()->can('update', $asset)" />
 </div>
