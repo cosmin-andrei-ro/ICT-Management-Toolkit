@@ -51,7 +51,7 @@ final class ContractDeadlineApproaching extends Notification implements ShouldQu
             'end' => $this->endDate,
         ];
 
-        $message = (new MailMessage)
+        $message = (new PlainTextMailMessage)
             ->subject(__('core::contracts.mail.subject', $replace))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');

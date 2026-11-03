@@ -21,7 +21,18 @@ use Symfony\Component\HttpFoundation\IpUtils;
 final readonly class WebhookUrlGuard
 {
     /** Internal too, though PHP's private flag misses them: carrier-grade NAT (some clouds' metadata) and NAT64. */
-    private const array OTHER_PRIVATE_RANGES = ['100.64.0.0/10', '64:ff9b::/96', '64:ff9b:1::/48'];
+    private const array OTHER_PRIVATE_RANGES = [
+        '100.64.0.0/10',    // carrier-grade NAT
+        '192.0.0.0/24',     // IETF protocol assignments
+        '198.18.0.0/15',    // benchmarking
+        '224.0.0.0/4',      // multicast
+        '64:ff9b::/96',     // NAT64
+        '64:ff9b:1::/48',
+        '::ffff:0:0:0/96',  // IPv4-translated
+        '2002::/16',        // 6to4: wraps any IPv4 address, internal ones included
+        'fec0::/10',        // old site-local
+        'ff00::/8',         // multicast
+    ];
 
     public function __construct(private Config $config, private HostResolver $resolver) {}
 

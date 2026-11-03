@@ -33,7 +33,7 @@ final class AccountLocked extends Notification implements ShouldQueue
         $name = config('app.name');
         $app = is_string($name) ? $name : '';
 
-        return (new MailMessage)
+        return (new PlainTextMailMessage)
             ->subject(__('core::security.mail.locked.subject', ['app' => $app]))
             ->line(__('core::security.mail.locked.line', ['app' => $app]))
             ->line(__('core::security.mail.locked.unlock'))

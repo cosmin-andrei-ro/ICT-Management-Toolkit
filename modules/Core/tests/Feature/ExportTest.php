@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Support\Facades\Storage;
 use Modules\Core\Application\Authorization\SyncPermissions;
 use Modules\Core\Application\Exports\PruneExports;
@@ -124,4 +125,13 @@ it('marks an export failed when its source breaks', function (): void {
     $export = app(RequestExport::class)->handle($this->user, 'test.broken', ExportFormat::Csv, []);
 
     expect($export->fresh()->status)->toBe(ExportStatus::Failed);
+});
+
+it('limits how many exports one person requests a minute', function (): void {
+    foreach (range(1, RequestExport::PER_MINUTE) as $_) {
+        requestExport($this->user);
+    }
+
+    expect(fn () => requestExport($this->user))->toThrow(ThrottleRequestsException::class)
+        ->and(Export::query()->count())->toBe(RequestExport::PER_MINUTE);
 });

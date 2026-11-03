@@ -11,6 +11,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Core\Application\Notifications\PlainTextMailMessage;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -44,7 +45,7 @@ final class RiskUpdate extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $replace = ['risk' => $this->risk, 'detail' => $this->detail ?? ''];
-        $message = (new MailMessage)
+        $message = (new PlainTextMailMessage)
             ->subject(__("risk::treatment.mail.{$this->kind}.subject", $replace))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');

@@ -11,6 +11,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Core\Application\Notifications\PlainTextMailMessage;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -45,7 +46,7 @@ final class SheetUpdate extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $replace = ['application' => $this->application, 'version' => $this->version ?? ''];
-        $message = (new MailMessage)
+        $message = (new PlainTextMailMessage)
             ->subject(__("applications::applications.mail.{$this->kind}.subject", $replace))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');

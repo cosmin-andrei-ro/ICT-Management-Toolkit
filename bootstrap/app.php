@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // SAML identity providers post their signed answer from their own site (ADR 0039).
         $middleware->validateCsrfTokens(except: ['login/saml/*/acs']);
+        // Links built during a request (SSO addresses, redirects) use the Host header: only
+        // APP_URL's host (and its subdomains) is accepted. Not applied locally or in tests.
+        $middleware->trustHosts();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

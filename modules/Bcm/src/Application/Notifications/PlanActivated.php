@@ -12,6 +12,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Core\Application\Notifications\PlainTextMailMessage;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -49,7 +50,7 @@ final class PlanActivated extends Notification implements ShouldQueue
             'date' => CarbonImmutable::parse($this->activatedAt)->setTimezone(is_string($timezone) && $timezone !== '' ? $timezone : 'UTC')->format('Y-m-d H:i'),
         ];
 
-        return (new MailMessage)
+        return (new PlainTextMailMessage)
             ->subject(__('bcm::activations.mail.subject', $replace))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');

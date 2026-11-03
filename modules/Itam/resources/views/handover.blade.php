@@ -1,7 +1,7 @@
 <x-core::layouts.base :title="__('itam::handover.title').' '.$asset->asset_tag">
     <main class="mx-auto max-w-3xl space-y-6 bg-white p-8 text-sm print:max-w-none print:p-0">
         <div class="flex items-center justify-between gap-4 print:hidden">
-            <a href="{{ url()->previous() }}" class="text-gray-500 underline">{{ __('itam::handover.back') }}</a>
+            <a href="{{ auth()->user()?->can('view', $asset) ? route('itam.assets.show', $asset) : route('home') }}" class="text-gray-500 underline">{{ __('itam::handover.back') }}</a>
             <button type="button" data-print class="rounded-md bg-gray-900 px-4 py-2 font-semibold text-white">{{ __('itam::handover.print') }}</button>
         </div>
 

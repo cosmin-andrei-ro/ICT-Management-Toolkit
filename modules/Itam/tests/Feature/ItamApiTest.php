@@ -76,6 +76,10 @@ it('manages licences and seats without ever showing the key', function (): void 
     $seat = License::query()->findOrFail($id)->assignments()->sole();
     $this->deleteJson("/api/v1/licenses/{$id}/seats/{$seat->id}", [], $headers)->assertNoContent();
     $this->patchJson("/api/v1/licenses/{$id}", ['remove_key' => true], $headers)->assertOk()->assertJsonPath('data.has_key', false)->assertJsonPath('data.name', 'Office 2026');
+
+    // Malformed filters answer cleanly, never with a database error.
+    $this->getJson('/api/v1/licenses?filter[product_id]=not-a-uuid', $headers)->assertOk()->assertJsonCount(0, 'data');
+    $this->getJson('/api/v1/licenses?filter[expires_before]=2026-99-99', $headers)->assertUnprocessable();
 });
 
 it('applies abilities and permissions, and keeps to the organization', function (): void {

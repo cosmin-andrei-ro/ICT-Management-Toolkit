@@ -297,6 +297,15 @@ it('puts the reply marker and anti-loop headers in ticket emails', function (): 
         ->and($mail->callbacks)->toHaveCount(1);
 });
 
+it('never turns a ticket title into a link or an image in ticket emails', function (): void {
+    $title = '[Your session expired - sign in again](https://evil.example/login) ![](https://evil.example/pixel.png) **urgent**';
+
+    $html = (string) (new TicketUpdate('created', 'INC-000001', $title, 'https://example.com'))->toMail($this->desk->requester)->render();
+
+    expect($html)->not->toContain('href="https://evil.example')->not->toContain('src="https://evil.example')->not->toContain('<strong>urgent')
+        ->toContain('Your session expired');
+});
+
 it('still sends ticket emails queued by a version without the reply address', function (): void {
     // Serialized as before the reply address existed: the property is simply absent.
     $current = serialize(new TicketUpdate('created', 'INC-000001', 'Printer', 'https://example.com'));
