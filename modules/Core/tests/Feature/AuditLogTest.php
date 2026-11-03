@@ -62,10 +62,12 @@ describe('the audit log page', function (): void {
         $page->set('person', '')->set('type', 'core.supplier')->set('category', 'all');
         expect($page->viewData('entries')->pluck('auditable_type')->unique()->all())->toBe(['core.supplier']);
 
-        $page->set('type', '')->set('from', now()->addDay()->toDateString());
+        // The filter's dates are in the display time zone, whose day can differ from UTC's.
+        $today = now(config()->string('app.display_timezone'));
+        $page->set('type', '')->set('from', $today->copy()->addDay()->toDateString());
         expect($page->viewData('entries'))->toHaveCount(0);
 
-        $page->set('from', now()->subDay()->toDateString())->set('until', now()->toDateString());
+        $page->set('from', $today->copy()->subDay()->toDateString())->set('until', $today->toDateString());
         expect($page->viewData('entries')->total())->toBeGreaterThan(0);
     });
 
