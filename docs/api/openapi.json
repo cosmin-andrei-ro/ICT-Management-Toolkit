@@ -4346,6 +4346,166 @@
                 }
             }
         },
+        "/monitoring/alerts": {
+            "post": {
+                "operationId": "v1.monitoring.alerts.store",
+                "description": "`action` says what happened: `created`, `repeated`, `resolved`, `noted`\n(cleared, but the incident is being worked on) or `ignored` (no firing\nalert with that key).",
+                "summary": "Receive one alert in the toolkit's own format",
+                "tags": [
+                    "MonitoringAlert"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreMonitoringAlertRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "action": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "created",
+                                                        "repeated",
+                                                        "noted",
+                                                        "resolved",
+                                                        "ignored"
+                                                    ]
+                                                },
+                                                "alert": {
+                                                    "type": [
+                                                        "object",
+                                                        "null"
+                                                    ],
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "key": {
+                                                            "type": "string"
+                                                        },
+                                                        "status": {
+                                                            "type": "string"
+                                                        },
+                                                        "occurrences": {
+                                                            "type": "string"
+                                                        },
+                                                        "ticket": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "string"
+                                                                },
+                                                                "number": {
+                                                                    "type": "string"
+                                                                },
+                                                                "url": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "id",
+                                                                "number",
+                                                                "url"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "key",
+                                                        "status",
+                                                        "occurrences",
+                                                        "ticket"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "action",
+                                                "alert"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/monitoring/alertmanager": {
+            "post": {
+                "operationId": "v1.monitoring.alertmanager",
+                "summary": "Receive a Prometheus Alertmanager notification (webhook receiver)",
+                "tags": [
+                    "MonitoringAlert"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreAlertmanagerAlertsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/continuity/plans": {
             "get": {
                 "operationId": "v1.continuity.plans.index",
@@ -10687,6 +10847,141 @@
                 ],
                 "title": "SaveRiskRequest"
             },
+            "StoreAlertmanagerAlertsRequest": {
+                "type": "object",
+                "description": "Prometheus Alertmanager's webhook payload, as it sends it (ADR 0067). The\nitem comes from the `ci` label, else `instance` (without its port), else\n`host`; the severity from the `severity` label.",
+                "properties": {
+                    "alerts": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "enum": [
+                                        "firing",
+                                        "resolved"
+                                    ]
+                                },
+                                "labels": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 1000
+                                    },
+                                    "minItems": 1
+                                },
+                                "annotations": {
+                                    "type": [
+                                        "array",
+                                        "null"
+                                    ],
+                                    "items": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 10000
+                                    }
+                                },
+                                "fingerprint": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "maxLength": 100
+                                }
+                            },
+                            "required": [
+                                "status",
+                                "labels"
+                            ]
+                        },
+                        "minItems": 1,
+                        "maxItems": 100
+                    }
+                },
+                "required": [
+                    "alerts"
+                ],
+                "title": "StoreAlertmanagerAlertsRequest"
+            },
+            "StoreMonitoringAlertRequest": {
+                "type": "object",
+                "description": "An alert in the toolkit's own format, which Zabbix, Nagios and others send\nthrough their webhook templates (ADR 0067).",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "Stable for one problem, e.g. \"<host>:<check>\": repeats find the open incident by it.",
+                        "maxLength": 255
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "firing",
+                            "resolved"
+                        ]
+                    },
+                    "title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "minLength": 3,
+                        "maxLength": 200
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10000
+                    },
+                    "severity": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "critical",
+                            "major",
+                            "minor",
+                            "warning",
+                            "info",
+                            null
+                        ]
+                    },
+                    "item": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "item_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "source": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    }
+                },
+                "required": [
+                    "key",
+                    "status"
+                ],
+                "title": "StoreMonitoringAlertRequest"
+            },
             "StoreRelationshipRequest": {
                 "type": "object",
                 "properties": {
@@ -10851,7 +11146,8 @@
                             "agent",
                             "email",
                             "api",
-                            "phone"
+                            "phone",
+                            "monitoring"
                         ]
                     },
                     "requester": {

@@ -92,6 +92,34 @@ final readonly class CmdbConfigurationItems implements ConfigurationItems
             ->all());
     }
 
+    public function findByReference(string $reference): ?ConfigurationItemSummary
+    {
+        $reference = mb_strtolower(trim($reference));
+
+        if ($reference === '') {
+            return null;
+        }
+
+        // Retired items no longer run anywhere: an alert cannot be about them.
+        foreach (['identifier', 'name'] as $column) {
+            $matches = ConfigurationItem::query()->with('type')
+                ->where('status', '!=', 'retired')
+                ->whereRaw("lower({$column}) = ?", [$reference])
+                ->limit(2)
+                ->get();
+
+            if ($matches->count() === 1) {
+                return self::summary($matches->sole());
+            }
+
+            if ($matches->count() > 1) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
     public function link(Model $record, string $itemId, User $actor): void
     {
         // Scoped lookup: an item of another organization is not found.
