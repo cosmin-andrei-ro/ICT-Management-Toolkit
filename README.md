@@ -27,11 +27,19 @@ The full list is in [Features](docs/features.md).
 
 ## Security
 
-- **Sign-in:** local accounts, Active Directory, OpenID Connect or SAML, with two-factor authentication required for IT staff, security keys and passkeys
-- **Access:** permissions checked on every action, 13 default roles, separation of duties on approvals
-- **Traceability:** an append-only audit trail of every change, sign-in and export, with old and new values
-- **Protection of data:** secrets encrypted at rest, uploads checked by content, a strict Content Security Policy
-- **Personal data:** export and anonymization on request, retention periods per organization
+| Feature | What you get | Standard it follows |
+|---|---|---|
+| **Multi-factor authentication** | Authenticator app codes with recovery codes, security keys and passkeys. Required for IT staff by default; each organization chooses the roles. | RFC 6238 (TOTP), W3C WebAuthn / FIDO2, NIS2 Art. 21(2)(j), DORA Art. 9(4)(d) |
+| **Password policy** | 12 to 128 characters, no forced mix of symbols, passwords known from data breaches refused | NIST SP 800-63B |
+| **Protection against guessing** | Limits on sign-in attempts, account locked after 10 failures in a row, an email to the person | NIST SP 800-63B |
+| **Single sign-on** | OpenID Connect and SAML per organization, Active Directory over LDAPS, roles from groups | OpenID Connect 1.0, SAML 2.0 |
+| **Access control** | Permissions checked on every action, 13 default roles, nobody approves their own work, organizations kept apart | NIS2 Art. 21(2)(i), ISO/IEC 27001 A.5.15-5.18 |
+| **Audit trail** | Every change, sign-in, role change and export, with old and new values; the database refuses edits and deletions | ISO/IEC 27001 A.8.15 |
+| **Secrets** | Mailbox passwords, licence keys, two-factor and single sign-on secrets encrypted at rest and never logged; a licence key is shown only after a fresh code, and that is recorded | OWASP ASVS (design target) |
+| **Web protections** | Strict Content Security Policy, HSTS and other security headers, CSRF protection, uploads checked by content, outgoing connections kept off internal addresses | OWASP Top 10 |
+| **Personal data** | Export of what is held about a person, anonymization, retention periods per organization | GDPR Art. 15, 17, 20 |
+
+Following a standard here means built to its requirements. Nothing has been certified or audited by a third party: see [Standards and compliance](docs/compliance.md). NIS2 and DORA set obligations for your organization, not password rules; these features help you meet them.
 
 ## Integrations
 
