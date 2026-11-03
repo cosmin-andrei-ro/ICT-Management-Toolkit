@@ -14,6 +14,7 @@ use InvalidArgumentException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Modules\Core\Application\Authentication\ConfirmSecondFactor;
+use Modules\Core\Application\Authentication\PasswordPolicy;
 use Modules\Core\Application\Authentication\SecurityKeys;
 use Modules\Core\Application\Authentication\SetPassword;
 use Modules\Core\Application\Authentication\TwoFactorAuthentication;
@@ -192,7 +193,7 @@ final class AccountSecurity extends Component
         session()->flash('password_changed', __('core::security.password.changed'));
     }
 
-    public function render(TwoFactorAuthentication $twoFactor): View
+    public function render(TwoFactorAuthentication $twoFactor, PasswordPolicy $passwordPolicy): View
     {
         $user = $this->user();
         $secret = $this->settingUp ? session()->get(self::SETUP_SECRET) : null;
@@ -204,6 +205,7 @@ final class AccountSecurity extends Component
             'remaining' => $twoFactor->remainingRecoveryCodes($user),
             'secret' => is_string($secret) ? $secret : null,
             'qrCode' => is_string($secret) ? $twoFactor->qrCode($user, $secret) : null,
+            'passwordHint' => $passwordPolicy->hintFor($user),
             'pendingInvitations' => OrganizationInvitation::pendingFor($user)->count(),
             'securityKeys' => SecurityKey::query()->where('user_id', $user->id)->orderBy('created_at')->get(),
         ])->title(__('core::security.title'));

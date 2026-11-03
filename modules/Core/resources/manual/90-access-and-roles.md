@@ -47,6 +47,8 @@ Invitations, role changes, resets and removals are recorded in the audit trail.
 
 **Administration → Access → Security settings** chooses which roles must use two-factor authentication. People holding one of them cannot work until they set up an authenticator app or a security key. Administrators always must. Until you change it, every role except *Requester* must.
 
+**Require upper and lower case letters, a digit and a symbol in passwords** is off by default. Turn it on only if an audit or a contract demands it: this kind of rule leads people to predictable patterns, and it departs from NIST SP 800-63B. It applies to passwords chosen from then on, and to anyone who also belongs to another organization. Whatever you choose, passwords have at least 15 characters, or 12 for accounts with two-factor authentication.
+
 The page also shows two settings that apply to the whole installation and are set by whoever runs it (`AUTH_LOCKOUT_AFTER` and `AUTH_CHECK_BREACHED_PASSWORDS`):
 
 - how many failed sign-ins in a row lock an account;

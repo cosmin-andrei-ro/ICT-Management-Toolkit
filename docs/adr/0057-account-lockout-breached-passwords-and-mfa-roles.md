@@ -2,6 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-12-19
+- **Amended by:** [ADR 0069](0069-password-length-and-composition.md) (password length and composition)
 
 ## Context
 

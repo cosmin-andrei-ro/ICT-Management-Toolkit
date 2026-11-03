@@ -36,6 +36,7 @@ use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Livewire\Livewire;
 use Modules\Core\Application\Api\ApiAbility;
+use Modules\Core\Application\Authentication\PasswordPolicy;
 use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
 use Modules\Core\Application\Exports\AuditLogExport;
@@ -219,10 +220,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
         }
 
         // NIST SP 800-63B: length over composition rules, long passphrases allowed, and no
-        // password known from breaches (ADR 0057; the check can be turned off).
-        Password::defaults(fn (): Password => config()->boolean('core.authentication.check_breached_passwords')
-            ? Password::min(12)->max(128)->uncompromised()
-            : Password::min(12)->max(128));
+        // password known from breaches (ADR 0057; the check can be turned off). The first
+        // administrator's minimum: they must use a second factor. Everyone else: PasswordPolicy.
+        Password::defaults(fn (): Password => PasswordPolicy::base(PasswordPolicy::MIN_WITH_SECOND_FACTOR, config()->boolean('core.authentication.check_breached_passwords')));
 
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('organization', SetCurrentOrganization::class);

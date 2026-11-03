@@ -21,6 +21,7 @@ use Modules\Core\Domain\Concerns\BelongsToOrganization;
  *
  * @property string $organization_id
  * @property ?list<string> $mfa_required_roles
+ * @property bool $password_composition_required
  * @property ?string $updated_by
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
@@ -64,6 +65,7 @@ final class SecuritySettings extends Model
     {
         return [
             'mfa_required_roles' => 'array',
+            'password_composition_required' => 'boolean',
         ];
     }
 }

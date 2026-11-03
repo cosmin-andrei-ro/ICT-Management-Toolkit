@@ -41,7 +41,7 @@ Your authenticator app and recovery codes stay as a fallback. Turning two-factor
 
 ## Password
 
-Local accounts change their password here: enter the current one and the new one twice. Passwords have at least 12 characters; a sentence of several words is easy to remember and hard to guess. Passwords that appeared in known data breaches are refused, even if they look strong: attackers try those first. Changing it signs you out everywhere else, for example on a computer where you forgot to sign out.
+Local accounts change their password here: enter the current one and the new one twice. Passwords have at least 15 characters, or 12 if your account uses two-factor authentication, and your organization may also ask for upper and lower case letters, a digit and a symbol; a sentence of several words is easy to remember and hard to guess. Passwords that appeared in known data breaches are refused, even if they look strong: attackers try those first. Changing it signs you out everywhere else, for example on a computer where you forgot to sign out.
 
 Active Directory accounts change their password in Windows.
 

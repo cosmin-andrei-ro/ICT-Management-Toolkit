@@ -7,12 +7,18 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
+use Modules\Core\Application\Authentication\PasswordPolicy;
+use Modules\Core\Application\Authorization\SyncPermissions;
 use Modules\Core\Application\Notifications\PasswordLink;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditLog;
+use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Models\Organization;
+use Modules\Core\Domain\Models\SecuritySettings;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Livewire\Account\AccountSecurity;
 use Modules\Core\Http\Livewire\Auth\ForgotPassword;
 use Modules\Core\Http\Livewire\Auth\ResetPassword;
@@ -119,6 +125,57 @@ describe('reset', function (): void {
             ->assertHasErrors(['email']);
 
         expect(Hash::check('correct-horse-battery', $this->user->fresh()->password))->toBeTrue();
+    });
+});
+
+describe('password policy', function (): void {
+    function choosePassword(string $password): Testable
+    {
+        return Livewire::test(AccountSecurity::class)
+            ->set('currentPassword', 'correct-horse-battery')->set('newPassword', $password)->set('newPasswordConfirmation', $password)
+            ->call('changePassword');
+    }
+
+    it('asks for 15 characters from someone whose password is the only factor', function (): void {
+        $this->actingAs($this->user);
+
+        choosePassword('only-14-chars!')->assertHasErrors(['newPassword']);
+        expect(Hash::check('correct-horse-battery', $this->user->fresh()->password))->toBeTrue();
+
+        Livewire::test(AccountSecurity::class)->assertSee('At least 15 characters');
+        choosePassword('exactly-15-char')->assertHasNoErrors();
+    });
+
+    it('asks for 12 from someone with a second factor, or who must use one', function (): void {
+        $withFactor = User::factory()->memberOf($this->organization)->withTwoFactor()->create(['password' => 'correct-horse-battery']);
+        $this->actingAs($withFactor);
+        Livewire::test(AccountSecurity::class)->assertSee('At least 12 characters');
+        choosePassword('only-11-char')->assertHasNoErrors();
+        expect(Hash::check('only-11-char', $withFactor->fresh()->password))->toBeTrue();
+
+        expect(app(PasswordPolicy::class)->minimumFor($this->user))->toBe(15);
+        app(SyncPermissions::class)->handle();
+        app(OrganizationContext::class)->runAs($this->organization, fn () => $this->user->assignRole(DefaultRole::Agent->value));
+        expect(app(PasswordPolicy::class)->minimumFor($this->user->fresh()))->toBe(12);
+    });
+
+    it('asks for mixed characters only when an organization of the person wants them', function (): void {
+        $this->actingAs($this->user);
+        choosePassword('all lower case words')->assertHasNoErrors();
+        $this->user->forceFill(['password' => 'correct-horse-battery'])->save();
+
+        $other = Organization::factory()->create();
+        (new SecuritySettings)->forceFill(['organization_id' => $other->id, 'password_composition_required' => true])->save();
+        expect(app(PasswordPolicy::class)->needsCompositionFor($this->user))->toBeFalse();
+
+        $this->user->organizations()->attach($other);
+        Livewire::test(AccountSecurity::class)->assertSee(__('core::security.password.rules_composition'));
+
+        foreach (['all lower case words 1', 'ALL UPPER CASE WORDS 1', 'Mixed Case Words Only', 'MixedCaseWords1234'] as $weak) {
+            choosePassword($weak)->assertHasErrors(['newPassword']);
+        }
+
+        choosePassword('Mixed Case Words 123!')->assertHasNoErrors();
     });
 });
 

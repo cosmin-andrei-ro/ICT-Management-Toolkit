@@ -11,7 +11,6 @@ use Illuminate\Cache\RateLimiter;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Modules\Core\Domain\Audit\AuditEvent;
@@ -33,6 +32,7 @@ final readonly class SetPassword
         private AuditTrail $trail,
         private AccountLockout $lockout,
         private RateLimiter $limiter,
+        private PasswordPolicy $policy,
     ) {}
 
     /**
@@ -83,7 +83,7 @@ final readonly class SetPassword
 
         Validator::make(
             ['password' => $new, 'password_confirmation' => $confirmation],
-            ['password' => ['required', 'string', 'confirmed', Password::defaults()]],
+            ['password' => ['required', 'string', 'confirmed', $this->policy->ruleFor($user)]],
         )->validate();
 
         $user->forceFill([
