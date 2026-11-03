@@ -84,3 +84,7 @@ Abilities: `compliance:read`, `compliance:write`. Permissions are the screens':
 | POST / PATCH | `.../findings/{id}/actions`, `.../actions/{action}` | Corrective actions |
 
 Submitting a finding for verification and verifying it, audits' lifecycle and the statement of applicability stay on screen.
+
+## Webhook events (ADR 0066)
+
+`finding.raised`, `finding.closed` (`AuditWebhooks`, from model events).

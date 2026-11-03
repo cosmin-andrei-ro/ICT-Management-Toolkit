@@ -17,6 +17,7 @@ use Modules\Bcm\Application\Links\PlanRecords;
 use Modules\Bcm\Application\Metrics\ContinuityMetrics;
 use Modules\Bcm\Application\PersonalData\BcmPersonalData;
 use Modules\Bcm\Application\Risks\ContinuityRiskSignals;
+use Modules\Bcm\Application\Webhooks\BcmWebhooks;
 use Modules\Bcm\Domain\Enums\VersionStatus;
 use Modules\Bcm\Domain\Models\Activation;
 use Modules\Bcm\Domain\Models\Exercise;
@@ -35,6 +36,7 @@ use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Domain\Risks\RiskSignals;
+use Modules\Core\Domain\Webhooks\WebhookEvents;
 use Modules\Core\Http\Navigation\Navigation;
 
 final class BcmServiceProvider extends ModuleServiceProvider
@@ -48,6 +50,7 @@ final class BcmServiceProvider extends ModuleServiceProvider
     {
         parent::register();
         $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('bcm::personal_data.sheet', fn (User $person): iterable => app(BcmPersonalData::class)($person)));
+        $this->callAfterResolving(WebhookEvents::class, BcmWebhooks::register(...));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ContinuityMetrics::source()));
 
@@ -68,6 +71,8 @@ final class BcmServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        BcmWebhooks::listen();
 
         ApiAbility::register('continuity:read', 'bcm::api.abilities.read');
         ApiAbility::register('continuity:write', 'bcm::api.abilities.write');

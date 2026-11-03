@@ -124,3 +124,6 @@ Administrators have every permission.
 
 It removes the requester (`requester_id` is nullable), the title, the description, the resolution note, custom fields, watchers, comments and attachments (the files too), and the sender and subject of linked inbound e-mails. The same fields are taken out of the ticket's, its comments' and its files' audit entries. `anonymized_at` marks the ticket.
 
+## Webhook events (ADR 0066)
+
+`ticket.created`, `ticket.assigned`, `ticket.status_changed`, `ticket.resolved`, `ticket.sla_warning`, `ticket.sla_breached`, `change.submitted`, `change.approved`, `change.rejected` (`PublishTicketWebhooks`, from the domain events).

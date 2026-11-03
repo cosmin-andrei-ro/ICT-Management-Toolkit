@@ -30,8 +30,17 @@ Integrations (chat, monitoring, an external service desk, a SIEM) want to hear w
   | `change.submitted` | A change is submitted for approval |
   | `change.approved` | A change is approved |
   | `change.rejected` | A change is rejected |
+  | `cmdb.item.created` / `.updated` / `.deleted` | A configuration item is created, changed (`changes.fields`: names only) or deleted |
+  | `asset.assigned` / `asset.returned` | An asset is handed to someone, or back (the holder is not named) |
+  | `risk.registered` | A risk is registered |
+  | `risk.score_changed` | A new entry in the risk's score history (`changes.inherent_score` / `residual_score`) |
+  | `risk.acceptance_decided` | An acceptance is approved or rejected (`changes.decision`) |
+  | `finding.raised` / `finding.closed` | A finding is raised, or closed after verification (`changes.severity`) |
+  | `continuity.plan_approved` | A plan version is approved (`changes.version`) |
+  | `continuity.plan_activated` / `.activation_closed` | A plan is activated, or its activation closed (`changes.scenario`) |
+  | `continuity.exercise_completed` | An exercise is completed (`changes.outcome`) |
 
-  The other modules follow in a later PR.
+  Ticketing publishes from its domain events. The other modules have none, so they publish from model events (`created` / `updated` / `deleted`). That way the screens, the API and imports all raise them. Continuity events link to the plan, with `changes.record_id` naming the version, activation or exercise.
 - **Payload:**
 
   ```json
@@ -62,4 +71,5 @@ Integrations (chat, monitoring, an external service desk, a SIEM) want to hear w
 ## Consequences
 
 - Receivers must keep a token to fetch details. That is the point: what they read stays under the API's rules.
+- Every save of a record that publishes events costs one indexed query for subscribed webhooks. Large imports therefore also send one event per record to the webhooks that subscribe.
 - Delivery is at least once. Receivers must handle duplicates by delivery id.

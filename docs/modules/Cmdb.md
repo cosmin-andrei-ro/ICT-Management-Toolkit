@@ -47,3 +47,7 @@ Abilities: `cmdb:read`, `cmdb:write`. Permissions are the screens' (`cmdb.ci.vie
 | DELETE | `/api/v1/cmdb/items/{id}` | Soft delete |
 | POST | `/api/v1/cmdb/relationships` | `source_id`, `type`, `target_id`; an identical relationship is returned as is (200) |
 | DELETE | `/api/v1/cmdb/relationships/{id}` | |
+
+## Webhook events (ADR 0066)
+
+`cmdb.item.created`, `cmdb.item.updated` (`changes.fields`: names only), `cmdb.item.deleted` (`CmdbWebhooks`, from model events).

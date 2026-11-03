@@ -66,3 +66,7 @@ Abilities: `risks:read`, `risks:write`. Permissions are the screens': risk manag
 | POST / PATCH | `/api/v1/risks/{id}/actions`, `.../actions/{action}` | Add a treatment action; change its status |
 
 Acceptances (request and decision) and suggestions stay on screen.
+
+## Webhook events (ADR 0066)
+
+`risk.registered`, `risk.score_changed` (each score history entry), `risk.acceptance_decided` (`RiskWebhooks`, from model events).

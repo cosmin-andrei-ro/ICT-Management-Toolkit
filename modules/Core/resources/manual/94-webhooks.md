@@ -25,11 +25,19 @@ Each event carries:
 
 Descriptions, comments and the people involved are never sent. The receiver reads the details through the API, with its own token and only what that token allows.
 
-## Ticket and change events
+## Events
 
-- Ticket created, assigned, status changed, resolved.
-- Ticket close to its SLA target, ticket SLA breached.
-- Change submitted for approval, approved, rejected.
+- **Tickets:**
+  - created, assigned, status changed, resolved;
+  - close to its SLA target, SLA breached.
+- **Changes:** submitted for approval, approved, rejected.
+- **Configuration items:** created, changed (which fields, not their values), deleted.
+- **Assets:** assigned, returned.
+- **Risks:** registered, score changed, acceptance decided.
+- **Findings:** raised, closed.
+- **Continuity plans:** approved, activated, activation closed, exercise completed. These events link to the plan.
+
+Imports raise the same events as the screens, one per record.
 
 ## Deliveries
 

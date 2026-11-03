@@ -14,6 +14,7 @@ use Modules\Audit\Application\Exports\ComplianceExport;
 use Modules\Audit\Application\Metrics\ComplianceMetrics;
 use Modules\Audit\Application\PersonalData\AuditPersonalData;
 use Modules\Audit\Application\Risks\ComplianceRiskSignals;
+use Modules\Audit\Application\Webhooks\AuditWebhooks;
 use Modules\Audit\Domain\Models\Audit;
 use Modules\Audit\Domain\Models\Control;
 use Modules\Audit\Domain\Models\ControlTest;
@@ -33,6 +34,7 @@ use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Domain\Risks\RiskSignals;
+use Modules\Core\Domain\Webhooks\WebhookEvents;
 use Modules\Core\Http\Navigation\Navigation;
 
 final class AuditServiceProvider extends ModuleServiceProvider
@@ -46,6 +48,7 @@ final class AuditServiceProvider extends ModuleServiceProvider
     {
         parent::register();
         $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('audit::personal_data.sheet', fn (User $person): iterable => app(AuditPersonalData::class)($person)));
+        $this->callAfterResolving(WebhookEvents::class, AuditWebhooks::register(...));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ComplianceMetrics::source()));
 
@@ -58,6 +61,8 @@ final class AuditServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        AuditWebhooks::listen();
 
         ApiAbility::register('compliance:read', 'audit::api.abilities.read');
         ApiAbility::register('compliance:write', 'audit::api.abilities.write');
