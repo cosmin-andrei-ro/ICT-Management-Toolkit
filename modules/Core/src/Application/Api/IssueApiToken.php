@@ -25,8 +25,9 @@ final readonly class IssueApiToken
 
     /**
      * @param  list<string>  $abilities
+     * @param  ?string  $organizationId  Where the token works; the user's current organization when null.
      */
-    public function handle(User $user, string $name, array $abilities, ?DateTimeInterface $expiresAt = null): NewAccessToken
+    public function handle(User $user, string $name, array $abilities, ?DateTimeInterface $expiresAt = null, ?string $organizationId = null): NewAccessToken
     {
         $unknown = array_diff($abilities, ApiAbility::all());
 
@@ -38,12 +39,36 @@ final readonly class IssueApiToken
             throw new InvalidArgumentException('Tokens cannot be issued to inactive accounts.');
         }
 
+        $organizationId ??= $user->current_organization_id;
+
+        if ($organizationId === null || ! $user->organizations()->whereKey($organizationId)->where('is_active', true)->exists()) {
+            throw new InvalidArgumentException('Tokens work in one of the user\'s organizations.');
+        }
+
         $token = $user->createToken($name, $abilities, $expiresAt ?? now()->addMinutes(self::defaultLifetime()));
+        $token->accessToken->forceFill(['organization_id' => $organizationId])->save();
 
         // Access to secrets and credentials is a security event (CLAUDE.md §6). Never log the token itself.
-        $this->trail->record(AuditEvent::Updated, $user, null, ['api_token_issued' => ['name' => $name, 'abilities' => $abilities]]);
+        $this->trail->record(AuditEvent::Updated, $user, null, ['api_token_issued' => ['name' => $name, 'abilities' => $abilities, 'organization' => $organizationId]]);
 
         return $token;
+    }
+
+    /**
+     * Revokes a token of the user's, recorded like its issuing.
+     */
+    public function revoke(User $owner, string $tokenId, User $actor): bool
+    {
+        $token = $owner->tokens()->whereKey($tokenId)->first();
+
+        if ($token === null) {
+            return false;
+        }
+
+        $token->delete();
+        $this->trail->record(AuditEvent::Updated, $owner, null, ['api_token_revoked' => ['name' => $token->getAttribute('name')]], $actor->id);
+
+        return true;
     }
 
     private static function defaultLifetime(): int

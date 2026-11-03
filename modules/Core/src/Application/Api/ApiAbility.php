@@ -22,6 +22,14 @@ final class ApiAbility
     }
 
     /**
+     * @return array<string, string> Ability => description translation key.
+     */
+    public static function descriptions(): array
+    {
+        return self::$abilities;
+    }
+
+    /**
      * @return list<string>
      */
     public static function all(): array

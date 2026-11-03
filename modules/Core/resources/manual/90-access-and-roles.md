@@ -115,13 +115,14 @@ Signing out of the toolkit does not sign out of the identity provider.
 
 ## API tokens
 
-Other systems (monitoring, scripts) can use the REST API at `/api/v1` with a personal access token. Ask whoever runs the server to issue one:
+Other systems (monitoring, scripts) use the REST API at `/api/v1` with a personal token. IT staff create their own, under their name → **API tokens**:
 
-```
-php artisan core:api-token jane@example.com "Monitoring" --ability=tickets:write
-```
+- the token works only in the organization it was created in;
+- it can only do what was chosen for it, and never more than its owner may do;
+- creating one asks for a code from the authenticator app;
+- it is shown once, then only its name, abilities, last use and expiry (at most a year).
 
-The token acts as that person: it can never do more than they can. Tokens expire after 90 days by default. The token is shown once; store it in a password manager.
+**Administration → Access → API tokens** lists every token of the organization, whose it is and when it was last used. **Revoke** stops one at once, for example when its owner leaves or a token may have leaked. Whoever runs the server can still issue tokens from the command line (`php artisan core:api-token`).
 
 ## Audit trail
 

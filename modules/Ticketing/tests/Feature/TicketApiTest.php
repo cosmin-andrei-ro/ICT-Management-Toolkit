@@ -44,7 +44,7 @@ it('issues prefixed tokens that expire, and audits issuance', function (): void 
     expect($token->plainTextToken)->toMatch('/^\d+\|ictmt_/')
         ->and($token->accessToken->expires_at)->not->toBeNull()
         ->and(Modules\Core\Domain\Audit\AuditLog::query()->where('auditable_id', $this->desk->requester->id)->latest('created_at')->latest('id')->first()?->new_values)
-        ->toBe(['api_token_issued' => ['name' => 'CI', 'abilities' => ['tickets:read']]]);
+        ->toBe(['api_token_issued' => ['name' => 'CI', 'abilities' => ['tickets:read'], 'organization' => $this->desk->organization->id]]);
 });
 
 it('refuses unknown abilities', function (): void {

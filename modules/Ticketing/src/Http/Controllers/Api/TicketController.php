@@ -8,14 +8,19 @@ declare(strict_types=1);
 namespace Modules\Ticketing\Http\Controllers\Api;
 
 use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Http\Api\ApiQuery;
 use Modules\Ticketing\Application\Actions\CreateTicket;
 use Modules\Ticketing\Application\Actions\NewTicketData;
 use Modules\Ticketing\Domain\Enums\Impact;
+use Modules\Ticketing\Domain\Enums\Priority;
 use Modules\Ticketing\Domain\Enums\TicketChannel;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Enums\TicketType;
@@ -31,6 +36,11 @@ final readonly class TicketController
     /**
      * List tickets visible to the token's user: all tickets of the organization for
      * service desk staff, otherwise the user's own and watched tickets.
+     *
+     * Filters: `filter[status]` (open, closed or a status), `filter[type]`, `filter[priority]`,
+     * `filter[queue_id]`, `filter[assignee_id]`, `filter[search]`. Sorts: `created_at`,
+     * `updated_at`, `number`, `priority`; newest first by default. The `status` and
+     * `search` parameters of the first version still work.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
@@ -39,21 +49,33 @@ final readonly class TicketController
         $request->validate([
             'status' => ['sometimes', Rule::in(['open', 'closed', ...array_map(fn (TicketStatus $s): string => $s->value, TicketStatus::cases())])],
             'search' => ['sometimes', 'string', 'max:200'],
-            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $user = $this->user($request);
-        $status = $request->string('status')->toString();
+        // The first version's parameters, as filters.
+        foreach (['status', 'search'] as $legacy) {
+            if ($request->has($legacy) && ! $request->has("filter.{$legacy}")) {
+                $request->query->set('filter', [...(array) $request->query('filter', []), $legacy => $request->string($legacy)->toString()]);
+            }
+        }
 
-        $tickets = Ticket::query()
+        $user = $this->user($request);
+        $invalid = fn (string $value): ValidationException => ValidationException::withMessages(['filter' => __('ticketing::api.invalid_filter', ['value' => $value])]);
+
+        $tickets = ApiQuery::paginate($request, Ticket::query()
             ->unless($user->can('ticketing.ticket.view_all'), fn ($query) => $query->visibleToRequester($user))
-            ->search($request->string('search')->toString())
-            ->when($status === 'open', fn ($query) => $query->whereIn('status', TicketStatus::open()))
-            ->when($status === 'closed', fn ($query) => $query->whereNotIn('status', TicketStatus::open()))
-            ->when(TicketStatus::tryFrom($status) !== null, fn ($query) => $query->where('status', $status))
-            ->with(['requester', 'assignee', 'queue', 'category', 'service'])
-            ->latest()
-            ->paginate($request->integer('per_page', 25));
+            ->with(['requester', 'assignee', 'queue', 'category', 'service']), [
+                'status' => fn (Builder $query, string $value) => match (true) {
+                    $value === 'open' => $query->whereIn('status', TicketStatus::open()),
+                    $value === 'closed' => $query->whereNotIn('status', TicketStatus::open()),
+                    TicketStatus::tryFrom($value) !== null => $query->where('status', $value),
+                    default => throw $invalid($value),
+                },
+                'type' => fn (Builder $query, string $value) => $query->where('type', TicketType::tryFrom($value)->value ?? throw $invalid($value)),
+                'priority' => fn (Builder $query, string $value) => $query->where('priority', Priority::tryFrom($value)->value ?? throw $invalid($value)),
+                'queue_id' => fn (Builder $query, string $value) => $query->where('queue_id', Str::isUuid($value) ? $value : null),
+                'assignee_id' => fn (Builder $query, string $value) => $query->where('assignee_id', Str::isUuid($value) ? $value : null),
+                'search' => fn (Builder $query, string $value) => $query->search($value),
+            ], ['created_at' => 'created_at', 'updated_at' => 'updated_at', 'number' => 'number', 'priority' => 'priority'], '-created_at');
 
         return TicketResource::collection($tickets);
     }

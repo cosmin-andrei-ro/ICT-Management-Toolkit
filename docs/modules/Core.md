@@ -17,6 +17,16 @@ The foundation every other module builds on. Code: `modules/Core/`.
 - Each entry carries the IP address, user agent and request id of the HTTP request (`X-Request-Id`, echoed in the response).
 - Shown in the application (ADR 0056): a **History** section on record pages (`<x-core::record-history :record :can-change />`, for those who may change the record or hold `core.audit.view`) and the **Audit log** page `/audit-log` (security events by default, filters, Excel export `core.audit_log`), scoped to the organization by `AuditLogQuery`.
 
+## REST API (ADR 0009, 0061)
+
+- Modules mount `routes/api.php` under `/api/v1` with `organization:sanctum`, `auth:sanctum`, `throttle:api` and `abilities:...` per route. Abilities are registered with `ApiAbility::register()`. Abilities narrow; policies decide.
+- **Tokens:** `IssueApiToken` binds each token to an organization (`personal_access_tokens.organization_id`). `SetCurrentOrganization` uses that organization for the request; tokens issued before the binding follow the user's current organization. Issuing and revoking are audited.
+  - `/account/api-tokens` (`core.api.use`, every IT role) lets people issue their own, after a fresh authenticator code. The token is shown once.
+  - Administration → Access → API tokens (`core.api.manage`, administrators) lists and revokes every token of the organization.
+  - `php artisan core:api-token` remains for operators.
+- **Lists** go through `ApiQuery::paginate()`: declared `filter[name]` and `sort=a,-b` only, `per_page` 1–100 (default 25); anything else answers 422. Errors are Laravel's JSON (`message`, plus `errors` for 422).
+- After changing the API, regenerate the description: `php artisan scramble:export --path=docs/api/openapi.json`.
+
 ## Personal data (ADR 0058)
 
 - `PersonalData` (Core registry): each module registers a collector, `fn (User $person): iterable<PersonalDataEntry>` (record, reference, title, the person's part, date, personal content), under a translated sheet name. Core never reads module tables.
