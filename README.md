@@ -21,9 +21,24 @@ An incident links to the server it took down, the server to the application it r
 | **Projects** | Phases, task boards, sponsor gates, status reports, budget |
 | **Reporting** | Dashboards by role, trends, a monthly management report |
 
-They share one core: organizations, people and roles, suppliers and contracts, locations, and an append-only audit trail. Sign-in works with local accounts, Active Directory, OpenID Connect or SAML, with two-factor authentication and passkeys. A REST API, signed webhooks and a monitoring endpoint connect it to other systems.
+They share one core: several organizations in one installation with their data kept apart, people and roles, suppliers and contracts, locations, comments and attachments.
 
 The full list is in [Features](docs/features.md).
+
+## Security
+
+- **Sign-in:** local accounts, Active Directory, OpenID Connect or SAML, with two-factor authentication required for IT staff, security keys and passkeys
+- **Access:** permissions checked on every action, 13 default roles, separation of duties on approvals
+- **Traceability:** an append-only audit trail of every change, sign-in and export, with old and new values
+- **Protection of data:** secrets encrypted at rest, uploads checked by content, a strict Content Security Policy
+- **Personal data:** export and anonymization on request, retention periods per organization
+
+## Integrations
+
+- **REST API** at `/api/v1`, with tokens limited to chosen abilities
+- **Signed webhooks** for events from tickets, changes, the CMDB, assets, risks, findings and continuity plans
+- **Monitoring alerts** that open and resolve incidents, in the toolkit's own format or from [Prometheus Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/)
+- **Email to ticket** from IMAP mailboxes, and **imports** from CSV or Excel
 
 ## Try it
 
@@ -49,13 +64,35 @@ The other roles and the development tools are in [Development setup](docs/develo
 
 ## Run it
 
-The toolkit needs PHP 8.3 or later, [PostgreSQL](https://www.postgresql.org) 18 (no other database is supported), [Redis](https://redis.io), a web server with HTTPS, and two background processes: the scheduler and the queue worker. PDF generation through [Gotenberg](https://gotenberg.dev) is optional.
+| Needs | Version |
+|---|---|
+| [PHP](https://www.php.net) | 8.3 or later |
+| [PostgreSQL](https://www.postgresql.org) | 18 (no other database is supported) |
+| [Redis](https://redis.io) | 7 or later |
+| [nginx](https://nginx.org) or [Apache](https://httpd.apache.org) with [PHP-FPM](https://www.php.net/manual/en/install.fpm.php) | HTTPS required |
+| [Node.js](https://nodejs.org) | 20 or later, only to build the assets |
+| Mail server | SMTP; IMAP only for email to ticket |
+| Optional | Active Directory, [Gotenberg](https://gotenberg.dev) for PDFs |
 
-[Installation and operation](docs/installation.md) covers installing, Active Directory, email, settings, updating and backups.
+In short, after setting `.env`:
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+php artisan key:generate
+php artisan migrate --force
+php artisan core:permissions:sync
+php artisan core:setup      # the first organization and administrator
+php artisan optimize
+```
+
+Two processes must also run all the time: the scheduler and the queue worker. Without them no email is sent and exports are never generated.
+
+[Installation and operation](docs/installation.md) has every step, plus Active Directory, email, settings, updating and backups.
 
 ## Standards
 
-The toolkit is **not certified** and has not been audited by a third party. It gives you the records, workflows and evidence that NIS2, DORA, GDPR, ISO/IEC 27001 and ISO 22301 ask for, but compliance also depends on your own processes. [Standards and compliance](docs/compliance.md) says what is in place and what is not, requirement by requirement.
+The toolkit is **not certified** and has not been audited by a third party. It gives you the records, workflows and evidence that NIS2, DORA, GDPR, ISO/IEC 27001 and ISO 22301 ask for, but compliance also depends on your own processes. [Standards and compliance](docs/compliance.md) says what is in place and what is not, requirement by requirement. Single logout (SAML) is not done yet.
 
 ## Documentation
 
