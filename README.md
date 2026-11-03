@@ -59,7 +59,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **People management**: invitations to local accounts by email, roles, deactivation. Password reset by email and password change for local accounts.
 - Role-based permissions: requester, agent, team lead, CAB member, asset manager, continuity coordinator, application manager, security officer, risk manager, compliance manager, auditor, project manager, administrator.
 - **Suppliers** with their support contacts, **contracts** with documents, deadlines and email reminders before each notice deadline, and nested **locations** (sites, buildings, rooms).
-- Teams, business calendars (working hours, Romanian public holidays), API tokens that IT staff issue themselves, bound to one organization, with administrators able to revoke any of them.
+- Teams, business calendars (working hours, Romanian public holidays), API tokens that IT staff issue themselves, bound to one organization, with administrators able to revoke any of them, and signed outbound webhooks for ticket and change events.
 - Append-only **audit trail**: who changed what, when, with old and new values; sign-ins, role changes, exports.
 - Administration panel at `/admin`, a REST API at `/api/v1` for tickets, the CMDB, assets and licences, risks, controls and findings, business processes, continuity plans and applications, plus read-only access to the directory, suppliers and contracts, the data centre, documentation, projects and indicators (OpenAPI in [docs/api/openapi.json](docs/api/openapi.json)), and the **user manual** at `/manual`.
 
@@ -427,6 +427,9 @@ Settings, for special cases:
 | `APPLICATIONS_CERTIFICATE_REMINDER_DAYS` | `30` | Days before a certificate of an application expires when its owners are emailed |
 | `ATTACHMENTS_DISK` | `attachments` | Storage for attachments (e.g. an S3-compatible disk) |
 | `SANCTUM_EXPIRATION` | `129600` | Lifetime of API tokens, in minutes |
+| `WEBHOOKS_ALLOW_PRIVATE_NETWORKS` | `false` | Allow webhook receivers on private networks (internal receivers only) |
+| `WEBHOOKS_ALLOW_HTTP` | `false` | Allow webhook receivers over plain HTTP |
+| `WEBHOOKS_TIMEOUT` | `10` | Seconds to wait for a webhook receiver |
 
 ## Updating
 
