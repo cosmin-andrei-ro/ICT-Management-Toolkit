@@ -16,6 +16,439 @@
         }
     ],
     "paths": {
+        "/applications": {
+            "get": {
+                "operationId": "v1.applications.index",
+                "description": "Filters: `filter[status]`, `filter[criticality]` (list keys), `filter[owner_id]` (business or technical owner,\nor deputy), `filter[department_id]`, `filter[documented]` (true/false), `filter[search]` (code or name).\nSorts: `code`, `name`, `next_review_on`, `updated_at`; by code by default.",
+                "summary": "List applications",
+                "tags": [
+                    "Application"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `ApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ApplicationResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1.applications.store",
+                "summary": "Register an application",
+                "tags": [
+                    "Application"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveApplicationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "department",
+                                                        "business_owner",
+                                                        "technical_owner",
+                                                        "deputy"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/applications/{application}": {
+            "get": {
+                "operationId": "v1.applications.show",
+                "summary": "Show an application",
+                "tags": [
+                    "Application"
+                ],
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "description": "The application ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "department",
+                                                        "business_owner",
+                                                        "technical_owner",
+                                                        "deputy"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "v1.applications.update",
+                "summary": "Change an application's identity and owners: only the fields sent",
+                "tags": [
+                    "Application"
+                ],
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "description": "The application ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveApplicationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "department",
+                                                        "business_owner",
+                                                        "technical_owner",
+                                                        "deputy"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/applications/{application}/sheet": {
+            "get": {
+                "operationId": "v1.applications.sheet",
+                "summary": "The documentation sheet in force, chapter by chapter, as stored (keys follow the template's numbering)",
+                "tags": [
+                    "Application"
+                ],
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "description": "The application ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "version": {
+                                                    "type": "string"
+                                                },
+                                                "approved_at": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "change_summary": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "content": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "version",
+                                                "approved_at",
+                                                "change_summary",
+                                                "content"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/assets": {
             "get": {
                 "operationId": "v1.assets.index",
@@ -3134,6 +3567,1015 @@
                 }
             }
         },
+        "/continuity/plans": {
+            "get": {
+                "operationId": "v1.continuity.plans.index",
+                "description": "Filters: `filter[type]` (bcp, drp), `filter[status]`, `filter[owner_id]`, `filter[approved]` (true/false),\n`filter[search]` (name). Sorts: `name`, `next_review_on`, `last_exercised_on`, `updated_at`; by name by default.",
+                "summary": "List plans",
+                "tags": [
+                    "Plan"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `PlanResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PlanResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1.continuity.plans.store",
+                "summary": "Create a plan",
+                "tags": [
+                    "Plan"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavePlanRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`PlanResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PlanResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "deputy"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/continuity/plans/{plan}": {
+            "get": {
+                "operationId": "v1.continuity.plans.show",
+                "summary": "Show a plan with the version in force: objective, activation, team and recovery steps",
+                "tags": [
+                    "Plan"
+                ],
+                "parameters": [
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "description": "The plan ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PlanResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PlanResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "deputy"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "v1.continuity.plans.update",
+                "summary": "Change a plan's name, type, description, owner, deputy or status: only the fields sent",
+                "tags": [
+                    "Plan"
+                ],
+                "parameters": [
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "description": "The plan ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavePlanRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PlanResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PlanResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "deputy"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/continuity/exercises": {
+            "get": {
+                "operationId": "v1.continuity.exercises.index",
+                "summary": "List exercises. Filters: `filter[plan_id]`, `filter[status]`. Sort: `scheduled_on` (newest first by default)",
+                "tags": [
+                    "Plan"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `ExerciseResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ExerciseResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/continuity/activations": {
+            "get": {
+                "operationId": "v1.continuity.activations.index",
+                "summary": "List activations: real incidents the plans were used for. Filter: `filter[plan_id]`. Sort: `activated_at` (newest first by default)",
+                "tags": [
+                    "Plan"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `ActivationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ActivationResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/bia/processes": {
+            "get": {
+                "operationId": "v1.bia.processes.index",
+                "description": "Filters: `filter[status]`, `filter[tier]` (1\u20134), `filter[department_id]`, `filter[owner_id]`,\n`filter[approved]` (true/false), `filter[search]` (name). Sorts: `name`, `tier`, `rto_minutes`,\n`next_review_on`, `updated_at`; by name by default.",
+                "summary": "List business processes",
+                "tags": [
+                    "Process"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `ProcessResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProcessResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1.bia.processes.store",
+                "summary": "Register a business process",
+                "tags": [
+                    "Process"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveProcessRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ProcessResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProcessResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "department",
+                                                        "owner",
+                                                        "deputy"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/bia/processes/{process}": {
+            "get": {
+                "operationId": "v1.bia.processes.show",
+                "summary": "Show a business process",
+                "tags": [
+                    "Process"
+                ],
+                "parameters": [
+                    {
+                        "name": "process",
+                        "in": "path",
+                        "required": true,
+                        "description": "The process ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ProcessResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProcessResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "department",
+                                                        "owner",
+                                                        "deputy"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "v1.bia.processes.update",
+                "summary": "Change a business process: only the fields sent",
+                "tags": [
+                    "Process"
+                ],
+                "parameters": [
+                    {
+                        "name": "process",
+                        "in": "path",
+                        "required": true,
+                        "description": "The process ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveProcessRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProcessResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProcessResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "department",
+                                                        "owner",
+                                                        "deputy"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/cmdb/relationships": {
             "post": {
                 "operationId": "v1.cmdb.relationships.store",
@@ -4385,6 +5827,238 @@
                 ],
                 "title": "ActionStatus"
             },
+            "ActivationResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "plan_id": {
+                        "type": "string"
+                    },
+                    "scenario": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "site_loss",
+                            "it_outage",
+                            "cyber_attack",
+                            "supplier_failure",
+                            "staff_unavailable",
+                            "utility_failure",
+                            null
+                        ]
+                    },
+                    "reason": {
+                        "type": "string"
+                    },
+                    "activated_at": {
+                        "type": "string"
+                    },
+                    "restored_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "closed_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "rto_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "summary": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lessons": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "plan_id",
+                    "scenario",
+                    "reason",
+                    "activated_at",
+                    "restored_at",
+                    "closed_at",
+                    "rto_minutes",
+                    "summary",
+                    "lessons"
+                ],
+                "title": "ActivationResource"
+            },
+            "ApplicationResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "department": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "department_email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "business_owner": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "technical_owner": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "deputy": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Keys of the editable lists (Administration \u2192 Application portfolio)."
+                    },
+                    "criticality": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "documentation_version": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "The version in force of the documentation sheet, e.g. \"2.1\"; null until one is approved."
+                    },
+                    "approved_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "next_review_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "configuration_item_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "code",
+                    "name",
+                    "department_email",
+                    "status",
+                    "criticality",
+                    "documentation_version",
+                    "approved_at",
+                    "next_review_on",
+                    "configuration_item_id",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ApplicationResource"
+            },
             "AssessRiskRequest": {
                 "type": "object",
                 "properties": {
@@ -5468,6 +7142,107 @@
                 ],
                 "title": "Environment"
             },
+            "ExerciseResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "plan_id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "tabletop",
+                            "walkthrough",
+                            "technical",
+                            "full"
+                        ]
+                    },
+                    "scenario": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "site_loss",
+                            "it_outage",
+                            "cyber_attack",
+                            "supplier_failure",
+                            "staff_unavailable",
+                            "utility_failure",
+                            null
+                        ]
+                    },
+                    "scheduled_on": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "planned",
+                            "in_progress",
+                            "completed",
+                            "cancelled"
+                        ]
+                    },
+                    "outcome": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "successful",
+                            "partial",
+                            "failed",
+                            null
+                        ]
+                    },
+                    "measured_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "rto_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "summary": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lessons": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "plan_id",
+                    "title",
+                    "type",
+                    "scenario",
+                    "scheduled_on",
+                    "status",
+                    "outcome",
+                    "measured_minutes",
+                    "rto_minutes",
+                    "summary",
+                    "lessons"
+                ],
+                "title": "ExerciseResource"
+            },
             "FindingActionRequest": {
                 "type": "object",
                 "description": "Adding a corrective action (POST) or moving it on (PATCH: status only).",
@@ -5941,6 +7716,467 @@
                     "cancelled"
                 ],
                 "title": "Modules.Audit.Domain.Enums.ActionStatus"
+            },
+            "PlanResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "bcp",
+                            "drp"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "owner": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "deputy": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "approved_version": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "approved_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "next_review_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "last_exercised_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "in_force": {
+                        "type": "object",
+                        "description": "The approved version: what to do when the plan is activated.",
+                        "properties": {
+                            "version": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "objective": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "scenarios": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "activation_criteria": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "activation_authority": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "communication": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "strategy": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "assumptions": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "process_ids": {
+                                "type": "array",
+                                "items": {}
+                            },
+                            "estimated_recovery_minutes": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "team": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "role": {
+                                            "type": "string"
+                                        },
+                                        "user_id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "phone": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "email": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "is_deputy": {
+                                            "type": "boolean"
+                                        },
+                                        "responsibilities": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "role",
+                                        "user_id",
+                                        "name",
+                                        "phone",
+                                        "email",
+                                        "is_deputy",
+                                        "responsibilities"
+                                    ]
+                                }
+                            },
+                            "steps": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "position": {
+                                            "type": "integer"
+                                        },
+                                        "phase": {
+                                            "type": "string",
+                                            "enum": [
+                                                "activation",
+                                                "recovery",
+                                                "resumption",
+                                                "restoration"
+                                            ]
+                                        },
+                                        "action": {
+                                            "type": "string"
+                                        },
+                                        "responsible": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "estimated_minutes": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "configuration_item_id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "notes": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "position",
+                                        "phase",
+                                        "action",
+                                        "responsible",
+                                        "estimated_minutes",
+                                        "configuration_item_id",
+                                        "notes"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "version",
+                            "objective",
+                            "scenarios",
+                            "activation_criteria",
+                            "activation_authority",
+                            "communication",
+                            "strategy",
+                            "assumptions",
+                            "process_ids",
+                            "estimated_recovery_minutes",
+                            "team",
+                            "steps"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "name",
+                    "description",
+                    "status",
+                    "approved_version",
+                    "approved_at",
+                    "next_review_on",
+                    "last_exercised_on",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "PlanResource"
+            },
+            "PlanType": {
+                "type": "string",
+                "description": "| |\n|---|\n| `bcp` <br/> How the business keeps working: people, places, manual workarounds. |\n| `drp` <br/> How IT brings systems back. |",
+                "enum": [
+                    "bcp",
+                    "drp"
+                ],
+                "title": "PlanType"
+            },
+            "ProcessResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "department": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "owner": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "deputy": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "peak_periods": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "tier": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "From the approved impact analysis; null until one is approved.",
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            null
+                        ]
+                    },
+                    "mtpd_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "rto_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "rpo_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "approved_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "next_review_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "peak_periods",
+                    "status",
+                    "tier",
+                    "mtpd_minutes",
+                    "rto_minutes",
+                    "rpo_minutes",
+                    "approved_at",
+                    "next_review_on",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ProcessResource"
             },
             "RelationshipResource": {
                 "type": "object",
@@ -6429,6 +8665,63 @@
                 ],
                 "title": "RiskStatus"
             },
+            "SaveApplicationRequest": {
+                "type": "object",
+                "description": "Registering (POST) or changing (PATCH: only the fields sent) an application.\nIts documentation sheet is written, submitted and approved on screen.",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+                        "maxLength": 32
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "department_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid",
+                        "description": "Scoped: departments of other organizations are not found.",
+                        "enum": [
+                            "",
+                            null
+                        ]
+                    },
+                    "department_email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 255
+                    },
+                    "business_owner_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "technical_owner_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "deputy_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "code",
+                    "name",
+                    "business_owner_id",
+                    "technical_owner_id"
+                ],
+                "title": "SaveApplicationRequest"
+            },
             "SaveAssetRequest": {
                 "type": "object",
                 "description": "Creating (POST) or changing (PATCH: only the fields sent) an asset. The\nstatus is chosen at creation only (ordered or in stock); afterwards it\nchanges through the assign and status endpoints, as on screen.",
@@ -6875,6 +9168,109 @@
                     "model"
                 ],
                 "title": "SaveLicenseRequest"
+            },
+            "SavePlanRequest": {
+                "type": "object",
+                "description": "Creating (POST) or changing (PATCH: only the fields sent) a plan. Its content\nis written in versions, submitted and approved on screen.",
+                "properties": {
+                    "type": {
+                        "$ref": "#/components/schemas/PlanType"
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "owner_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "deputy_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "retired"
+                        ]
+                    }
+                },
+                "required": [
+                    "type",
+                    "name",
+                    "owner_id"
+                ],
+                "title": "SavePlanRequest"
+            },
+            "SaveProcessRequest": {
+                "type": "object",
+                "description": "Creating (POST) or changing (PATCH: only the fields sent) a business process.\nIts impact analysis is filled in, submitted and approved on screen.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "department_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid",
+                        "description": "Scoped: departments of other organizations are not found.",
+                        "enum": [
+                            "",
+                            null
+                        ]
+                    },
+                    "owner_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "deputy_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "peak_periods": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "retired"
+                        ]
+                    }
+                },
+                "required": [
+                    "name",
+                    "owner_id"
+                ],
+                "title": "SaveProcessRequest"
             },
             "SaveRiskRequest": {
                 "type": "object",

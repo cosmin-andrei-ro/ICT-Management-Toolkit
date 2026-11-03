@@ -36,3 +36,14 @@ Business processes, the impact of their interruption over time, and their recove
 | `bia.settings.manage` | continuity-coordinator | Impact categories, time horizons, settings |
 
 Owners and deputies see their processes and fill in their assessments without a permission. Administrators have every permission.
+
+## API (ADR 0064)
+
+Abilities: `bia:read`, `bia:write`. Permissions are the screens': `bia.process.view` / `bia.process.manage`, and a process's owner or deputy reads it.
+
+| Method | Path | |
+|---|---|---|
+| GET | `/api/v1/bia/processes` | Filters `status`, `tier`, `department_id`, `owner_id`, `approved`, `search`; sorts `name`, `tier`, `rto_minutes`, `next_review_on`, `updated_at` |
+| POST / GET / PATCH | `/api/v1/bia/processes`, `.../{id}` | Name (unique), department, owner and deputy (active members), description, peak periods, status; tier, MTPD, RTO and RPO come from the approved analysis |
+
+Impact analyses are filled in, submitted and approved on screen.
