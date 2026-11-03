@@ -27,6 +27,7 @@ final readonly class SetPassword
     public function __construct(
         private Hasher $hasher,
         private AuditTrail $trail,
+        private AccountLockout $lockout,
     ) {}
 
     /**
@@ -49,6 +50,8 @@ final readonly class SetPassword
     public function reset(User $user, #[SensitiveParameter] string $new, #[SensitiveParameter] string $confirmation): void
     {
         $this->set($user, $new, $confirmation, AuditEvent::PasswordReset);
+        // The link proved control of the mailbox: that also unlocks a locked account.
+        $this->lockout->unlock($user, null);
     }
 
     private function set(User $user, #[SensitiveParameter] string $new, #[SensitiveParameter] string $confirmation, AuditEvent $event): void

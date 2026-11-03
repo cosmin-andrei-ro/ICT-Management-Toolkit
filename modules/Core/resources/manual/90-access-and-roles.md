@@ -36,10 +36,20 @@ The default roles are defined by the application and restored on every update. I
 - **Active** turns an account off: the person cannot sign in anymore. It is offered only for people who belong to your organization alone; otherwise **remove** them from it.
 - **Remove from organization** takes away their roles and their access to your organization. Their account and their history stay.
 - **Reset two-factor** is for someone who lost their phone and their recovery codes. Make sure the request really comes from them, for example by calling them. They set it up again at their next sign-in.
+- **Locked** shows since when an account has been locked after too many failed sign-ins in a row. **Unlock** lifts the lock. The person can also unlock it themselves by resetting their password. Make sure the request comes from them: the failures may have been someone guessing the password.
 
 You cannot change your own roles, deactivate yourself or remove yourself, so you cannot lock yourself out by mistake. Ask another administrator.
 
 Invitations, role changes, resets and removals are recorded in the audit trail.
+
+## Security settings
+
+**Administration → Access → Security settings** chooses which roles must use two-factor authentication. People holding one of them cannot work until they set up an authenticator app or a security key. Administrators always must. Until you change it, every role except *Requester* must.
+
+The page also shows two settings that apply to the whole installation and are set by whoever runs it (`AUTH_LOCKOUT_AFTER` and `AUTH_CHECK_BREACHED_PASSWORDS`):
+
+- how many failed sign-ins in a row lock an account;
+- whether passwords known from breaches are refused.
 
 ## Teams
 

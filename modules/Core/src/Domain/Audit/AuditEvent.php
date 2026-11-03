@@ -40,6 +40,8 @@ enum AuditEvent: string
     case SecretRevealed = 'secret_revealed';
     case SecurityKeyAdded = 'security_key_added';
     case SecurityKeyRemoved = 'security_key_removed';
+    case AccountLocked = 'account_locked';
+    case AccountUnlocked = 'account_unlocked';
 
     public function label(): string
     {

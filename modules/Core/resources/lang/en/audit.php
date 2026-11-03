@@ -80,5 +80,7 @@ return [
         'secret_revealed' => 'Secret revealed',
         'security_key_added' => 'Passkey added',
         'security_key_removed' => 'Passkey removed',
+        'account_locked' => 'Account locked',
+        'account_unlocked' => 'Account unlocked',
     ],
 ];

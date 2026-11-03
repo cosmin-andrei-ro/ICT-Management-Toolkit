@@ -103,5 +103,12 @@ return [
             'expiry' => 'The link works for 3 days.',
         ],
         'ignore' => 'If you did not expect this email, ignore it: nothing changes.',
+        'locked' => [
+            'subject' => 'Your :app account is locked',
+            'line' => 'Your :app account was locked after too many failed sign-ins in a row.',
+            'unlock' => 'To unlock it, choose a new password with the link below, or ask an administrator.',
+            'action' => 'Choose a new password',
+            'not_you' => 'If these sign-ins were not yours, someone may be trying to guess your password: choose a new one and tell the IT department.',
+        ],
     ],
 ];

@@ -18,7 +18,9 @@ use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Contracts\Validation\UncompromisedVerifier;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
@@ -26,6 +28,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\NotPwnedVerifier;
 use Illuminate\Validation\Rules\Password;
 use InvalidArgumentException;
 use Laravel\Sanctum\Http\Middleware\CheckAbilities;
@@ -74,6 +77,7 @@ use Modules\Core\Domain\Models\Department;
 use Modules\Core\Domain\Models\Export;
 use Modules\Core\Domain\Models\Location;
 use Modules\Core\Domain\Models\Organization;
+use Modules\Core\Domain\Models\SecuritySettings;
 use Modules\Core\Domain\Models\Supplier;
 use Modules\Core\Domain\Models\SupplierContact;
 use Modules\Core\Domain\Models\Team;
@@ -121,6 +125,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->singleton(Navigation::class);
         $this->app->singleton(HomePanels::class);
         $this->app->singleton(Manual::class);
+        // A short timeout: when the breach service does not answer, the password is accepted (fail open).
+        // Extended, not bound: the validation provider is deferred and would replace a binding when it loads.
+        $this->app->extend(UncompromisedVerifier::class, fn (UncompromisedVerifier $verifier, Application $app): NotPwnedVerifier => new NotPwnedVerifier($app->make(HttpFactory::class), config()->integer('core.authentication.breached_passwords_timeout')));
         $this->app->singleton(ExportRegistry::class);
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(AuditLogExport::TYPE, AuditLogExport::class, 'core.audit.view'));
         $this->app->singleton(LinkedRecords::class);
@@ -180,8 +187,11 @@ final class CoreServiceProvider extends ModuleServiceProvider
             TrustProxies::at(array_values(array_filter($proxies, 'is_string')));
         }
 
-        // NIST SP 800-63B: length over composition rules; long passphrases allowed.
-        Password::defaults(fn (): Password => Password::min(12)->max(128));
+        // NIST SP 800-63B: length over composition rules, long passphrases allowed, and no
+        // password known from breaches (ADR 0057; the check can be turned off).
+        Password::defaults(fn (): Password => config()->boolean('core.authentication.check_breached_passwords')
+            ? Password::min(12)->max(128)->uncompromised()
+            : Password::min(12)->max(128));
 
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('organization', SetCurrentOrganization::class);
@@ -226,6 +236,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.supplier' => Supplier::class,
             'core.supplier_contact' => SupplierContact::class,
             'core.contract' => Contract::class,
+            'core.security_settings' => SecuritySettings::class,
         ]);
 
         Event::listen(
