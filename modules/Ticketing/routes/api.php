@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Ticketing\Http\Controllers\Api\MonitoringAlertController;
 use Modules\Ticketing\Http\Controllers\Api\TicketCommentController;
 use Modules\Ticketing\Http\Controllers\Api\TicketController;
 
@@ -16,4 +17,6 @@ Route::middleware(['organization:sanctum', 'auth:sanctum', 'throttle:api'])->gro
     Route::post('/tickets', [TicketController::class, 'store'])->middleware('abilities:tickets:write')->name('api.v1.tickets.store');
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->whereUuid('ticket')->middleware('abilities:tickets:read')->name('api.v1.tickets.show');
     Route::post('/tickets/{ticket}/comments', [TicketCommentController::class, 'store'])->whereUuid('ticket')->middleware('abilities:tickets:write')->name('api.v1.tickets.comments.store');
+    Route::post('/monitoring/alerts', [MonitoringAlertController::class, 'store'])->middleware('abilities:monitoring:write')->name('api.v1.monitoring.alerts.store');
+    Route::post('/monitoring/alertmanager', [MonitoringAlertController::class, 'alertmanager'])->middleware('abilities:monitoring:write')->name('api.v1.monitoring.alertmanager');
 });

@@ -47,6 +47,7 @@ use Modules\Ticketing\Domain\Enums\TicketType;
 use Modules\Ticketing\Domain\Enums\Urgency;
 use Modules\Ticketing\Domain\Models\CabBoard;
 use Modules\Ticketing\Domain\Models\Category;
+use Modules\Ticketing\Domain\Models\MonitoringAlert;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Ticket;
 use Modules\Ticketing\Domain\Workflow\TicketWorkflow;
@@ -340,6 +341,7 @@ final class ShowTicket extends Component
             'attachments' => $ticket->attachments()->get(),
             'transitions' => $ticket->statusTransitions()->with('user')->get(),
             'slaTimers' => $ticket->slaTimers()->orderBy('metric', 'desc')->get(),
+            'monitoringAlerts' => MonitoringAlert::query()->where('ticket_id', $ticket->id)->orderByDesc('first_seen_at')->get(),
             'workingTargets' => array_values(array_filter(
                 $workflow->allowedFrom($ticket->status),
                 fn (TicketStatus $status): bool => in_array($status, [TicketStatus::New, TicketStatus::InProgress, TicketStatus::Pending], true),

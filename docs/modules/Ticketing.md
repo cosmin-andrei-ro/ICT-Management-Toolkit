@@ -91,7 +91,12 @@ Each ticket gets two clocks, **first response** and **resolution**, counted in w
 
 ## API
 
-`/api/v1/tickets` (list, create), `/api/v1/tickets/{id}` (show, with the comments the user may see), `/api/v1/tickets/{id}/comments` (add). Token abilities are `tickets:read` and `tickets:write`. See [ADR 0009](../adr/0009-rest-api.md) and [docs/api/openapi.json](../api/openapi.json).
+`/api/v1/tickets` (list, create), `/api/v1/tickets/{id}` (show, with the comments the user may see), `/api/v1/tickets/{id}/comments` (add). Token abilities are `tickets:read` and `tickets:write`.
+
+**Monitoring alerts (ADR 0067):** `POST /api/v1/monitoring/alerts` (own format) and `POST /api/v1/monitoring/alertmanager` (Prometheus Alertmanager), ability `monitoring:write`, user with `ticketing.ticket.work` (a service account with the agent role).
+- A firing alert opens an incident (channel `monitoring`, priority from severity), linked to the CMDB item matched by identifier, then by name.
+- Repeats of the same key are counted while the incident is open.
+- A cleared alert resolves the incident if it is still New or Assigned; otherwise it adds an internal note. See [ADR 0009](../adr/0009-rest-api.md) and [docs/api/openapi.json](../api/openapi.json).
 
 ```bash
 php artisan core:api-token jane@example.com "Monitoring" --ability=tickets:write --days=90

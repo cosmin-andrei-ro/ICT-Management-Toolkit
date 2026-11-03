@@ -55,6 +55,7 @@ use Modules\Ticketing\Domain\Models\ChangeApproval;
 use Modules\Ticketing\Domain\Models\ChangeDetails;
 use Modules\Ticketing\Domain\Models\ChangeTemplate;
 use Modules\Ticketing\Domain\Models\Mailbox;
+use Modules\Ticketing\Domain\Models\MonitoringAlert;
 use Modules\Ticketing\Domain\Models\ProblemDetails;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Service;
@@ -101,6 +102,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
 
         ApiAbility::register('tickets:read', 'ticketing::api.abilities.read');
         ApiAbility::register('tickets:write', 'ticketing::api.abilities.write');
+        ApiAbility::register('monitoring:write', 'ticketing::api.abilities.monitoring');
         $this->callAfterResolving(WebhookEvents::class, PublishTicketWebhooks::register(...));
     }
 
@@ -120,6 +122,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.change_template' => ChangeTemplate::class,
             'ticketing.cab_board' => CabBoard::class,
             'ticketing.mailbox' => Mailbox::class,
+            'ticketing.monitoring_alert' => MonitoringAlert::class,
             'ticketing.sla_timer' => SlaTimer::class,
         ]);
 

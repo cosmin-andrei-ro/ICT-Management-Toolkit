@@ -9,6 +9,7 @@ return [
     'abilities' => [
         'read' => 'Read tickets visible to the user',
         'write' => 'Create tickets and add comments as the user',
+        'monitoring' => 'Send monitoring alerts that open and resolve incidents (agents)',
     ],
     'invalid_filter' => 'No ticket can match ":value".',
 ];

@@ -285,6 +285,26 @@
             </section>
         @endif
 
+        @foreach ($monitoringAlerts as $alert)
+            <section wire:key="alert-{{ $alert->id }}" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200" aria-labelledby="alert-heading-{{ $alert->id }}">
+                <h2 id="alert-heading-{{ $alert->id }}" class="text-sm font-semibold">{{ __('ticketing::monitoring.panel.title') }}</h2>
+                <dl class="grid grid-cols-2 gap-x-2 gap-y-1 text-sm">
+                    <dt class="text-gray-500">{{ __('ticketing::monitoring.panel.status') }}</dt>
+                    <dd>{{ __('ticketing::monitoring.panel.'.$alert->status) }}</dd>
+                    <dt class="text-gray-500">{{ __('ticketing::monitoring.panel.occurrences') }}</dt>
+                    <dd>{{ $alert->occurrences }}</dd>
+                    <dt class="text-gray-500">{{ __('ticketing::monitoring.panel.first_seen') }}</dt>
+                    <dd>{{ $alert->first_seen_at->timezone(config('app.display_timezone'))->format('Y-m-d H:i') }}</dd>
+                    <dt class="text-gray-500">{{ __('ticketing::monitoring.panel.last_seen') }}</dt>
+                    <dd>{{ $alert->last_seen_at->timezone(config('app.display_timezone'))->format('Y-m-d H:i') }}</dd>
+                    <dt class="text-gray-500">{{ __('ticketing::monitoring.panel.source') }}</dt>
+                    <dd>{{ $alert->source ?? '—' }}</dd>
+                    <dt class="text-gray-500">{{ __('ticketing::monitoring.panel.key') }}</dt>
+                    <dd class="break-all">{{ $alert->key }}</dd>
+                </dl>
+            </section>
+        @endforeach
+
         @if ($ticket->status->isOpen())
             <section class="space-y-3 rounded-lg bg-white p-4 ring-1 ring-gray-200">
                 <h2 class="text-sm font-semibold">{{ __('ticketing::ui.desk.status') }}</h2>

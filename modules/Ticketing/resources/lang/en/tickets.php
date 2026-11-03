@@ -44,6 +44,7 @@ return [
         'email' => 'Email',
         'api' => 'API',
         'phone' => 'Phone',
+        'monitoring' => 'Monitoring',
     ],
     'resolution_codes' => [
         'fixed' => 'Fixed',

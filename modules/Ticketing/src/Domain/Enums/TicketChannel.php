@@ -17,6 +17,7 @@ enum TicketChannel: string
     case Email = 'email';
     case Api = 'api';
     case Phone = 'phone';
+    case Monitoring = 'monitoring';
 
     public function label(): string
     {

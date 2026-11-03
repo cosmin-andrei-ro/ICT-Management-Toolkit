@@ -40,6 +40,12 @@ interface ConfigurationItems
     public function find(array $ids): array;
 
     /**
+     * The item a monitoring tool means by a host or check name: by identifier,
+     * else by exact name, ignoring case. Null when none, or several, match.
+     */
+    public function findByReference(string $reference): ?ConfigurationItemSummary;
+
+    /**
      * @throws InvalidArgumentException when the item is not one of the organization
      */
     public function link(Model $record, string $itemId, User $actor): void;

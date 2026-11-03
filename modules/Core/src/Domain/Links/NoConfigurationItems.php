@@ -32,6 +32,11 @@ final class NoConfigurationItems implements ConfigurationItems
         return [];
     }
 
+    public function findByReference(string $reference): ?ConfigurationItemSummary
+    {
+        return null;
+    }
+
     public function link(Model $record, string $itemId, User $actor): void {}
 
     public function unlink(Model $record, string $itemId, User $actor): void {}
