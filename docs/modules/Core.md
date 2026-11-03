@@ -144,3 +144,8 @@ A strict CSP with a per-request nonce, plus the standard hardening headers on ev
 | `core.location.manage` | Locations |
 | `core.supplier.view` / `.manage` | Suppliers and their contacts |
 | `core.contract.view` / `.manage` | Contracts, their values and documents |
+
+## Read-only API (ADR 0065)
+
+- `directory:read`: `GET /api/v1/directory/people` (name, e-mail and active only; `core.user.view`), `/directory/teams` (`core.team.view`), `/directory/departments`, `/directory/locations` (their policies).
+- `suppliers:read`: `GET /api/v1/suppliers`, `/suppliers/{id}` (with contacts), `/contracts`. Filters include `supplier_id`, `type` and `ends_before`.

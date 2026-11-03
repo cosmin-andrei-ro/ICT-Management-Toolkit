@@ -9,6 +9,7 @@ namespace Modules\Dcim;
 
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
@@ -54,6 +55,8 @@ final class DcimServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('dcim:read', 'dcim::api.abilities.read');
 
         Relation::morphMap([
             'dcim.rack' => Rack::class,

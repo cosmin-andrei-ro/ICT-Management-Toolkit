@@ -35,6 +35,7 @@ use InvalidArgumentException;
 use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Livewire\Livewire;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
 use Modules\Core\Application\Exports\AuditLogExport;
@@ -196,6 +197,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('directory:read', 'core::api.abilities.directory');
+        ApiAbility::register('suppliers:read', 'core::api.abilities.suppliers');
 
         $proxies = $this->app->make('config')->get('core.http.trusted_proxies');
 

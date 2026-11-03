@@ -63,3 +63,12 @@ Signals of source `dcim`: single-fed equipment linked to CMDB items (`dcim.singl
 3. Power: UPS, PDUs, A/B feeds, load and what fails with a UPS — **done**.
 4. IPAM: VLANs, subnets, addresses — **done**.
 5. Indicators, exports, suggested risks, rack sheet to print — **done**.
+
+## API (ADR 0065)
+
+`dcim:read`, permission `dcim.infrastructure.view`. Read-only:
+
+- `GET /api/v1/dcim/racks` and `/racks/{id}`: equipment top to bottom, with the ITAM asset tag and name;
+- `/dcim/power`: capacity, and normal and worst load from `PowerGrid`;
+- `/dcim/subnets`: VLAN and next free address;
+- `/dcim/addresses`: filters `subnet_id`, `status`, `search`.
