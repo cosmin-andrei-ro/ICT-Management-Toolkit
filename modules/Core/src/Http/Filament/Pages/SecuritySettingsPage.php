@@ -10,6 +10,7 @@ namespace Modules\Core\Http\Filament\Pages;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
@@ -30,7 +31,7 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 
 /**
  * Which of the organization's roles must use two-factor authentication
- * (ADR 0057). The lockout threshold and the breached-password check apply to
+ * (ADR 0057), and whether its passwords need mixed characters (ADR 0069). The lockout threshold and the breached-password check apply to
  * the whole installation and come from its configuration: they are shown here.
  *
  * @property-read Schema $form
@@ -70,7 +71,10 @@ final class SecuritySettingsPage extends Page
     {
         abort_unless(self::canAccess(), 403);
         $settings = SecuritySettings::current();
-        $this->form->fill(['mfa_required_roles' => array_values(array_filter(array_keys(self::roles()), fn (string $role): bool => $settings->requiresMfa($role)))]);
+        $this->form->fill([
+            'mfa_required_roles' => array_values(array_filter(array_keys(self::roles()), fn (string $role): bool => $settings->requiresMfa($role))),
+            'password_composition_required' => $settings->password_composition_required ?? false,
+        ]);
     }
 
     public function form(Schema $schema): Schema
@@ -86,6 +90,7 @@ final class SecuritySettingsPage extends Page
                 ->options(fn (): array => self::roles())
                 ->in(fn (): array => array_keys(self::roles()))
                 ->columns(2),
+            Toggle::make('password_composition_required')->label(__('core::security_settings.composition'))->helperText(__('core::security_settings.composition_help')),
         ])->statePath('data');
     }
 
@@ -105,7 +110,7 @@ final class SecuritySettingsPage extends Page
     {
         abort_unless(self::canAccess(), 403);
 
-        /** @var array{mfa_required_roles?: list<string>} $state */
+        /** @var array{mfa_required_roles?: list<string>, password_composition_required?: bool} $state */
         $state = $this->form->getState();
         $roles = array_values(array_intersect($state['mfa_required_roles'] ?? [], array_keys(self::roles())));
 
@@ -113,6 +118,7 @@ final class SecuritySettingsPage extends Page
         $settings->forceFill([
             'organization_id' => app(OrganizationContext::class)->requireId(),
             'mfa_required_roles' => $roles,
+            'password_composition_required' => $state['password_composition_required'] ?? false,
             'updated_by' => Auth::id(),
         ])->save();
 

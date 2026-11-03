@@ -206,6 +206,9 @@ describe('roles that must use two-factor authentication', function (): void {
             ->call('save')->assertHasErrors();
         Livewire::test(SecuritySettingsPage::class)->set('data.mfa_required_roles', ['team-lead'])->call('save')->assertHasNoErrors();
 
+        Livewire::test(SecuritySettingsPage::class)->assertSet('data.password_composition_required', false)->set('data.password_composition_required', true)->call('save')->assertHasNoErrors();
+        Livewire::test(SecuritySettingsPage::class)->assertSet('data.password_composition_required', true);
+
         expect(SecuritySettings::current()->mfa_required_roles)->toBe(['team-lead'])
             ->and(AuditLog::query()->where('auditable_type', 'core.security_settings')->exists())->toBeTrue();
     });

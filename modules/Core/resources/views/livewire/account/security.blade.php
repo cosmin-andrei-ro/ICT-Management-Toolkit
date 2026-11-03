@@ -119,7 +119,7 @@
                     <span class="font-medium">{{ __('core::security.password.confirm') }}</span>
                     <input wire:model="newPasswordConfirmation" type="password" autocomplete="new-password" required class="mt-1 block w-full rounded-md border-gray-300">
                 </label>
-                <p class="text-xs text-gray-500">{{ __('core::security.password.rules') }}</p>
+                <p class="text-xs text-gray-500">{{ $passwordHint }}</p>
                 <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white">{{ __('core::security.password.submit') }}</button>
             </form>
         @endif

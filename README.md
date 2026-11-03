@@ -30,7 +30,7 @@ The full list is in [Features](docs/features.md).
 | Feature | What you get | Standard it follows |
 |---|---|---|
 | **Multi-factor authentication** | Authenticator app codes with recovery codes, security keys and passkeys. Required for IT staff by default; each organization chooses the roles. | RFC 6238 (TOTP), W3C WebAuthn / FIDO2, NIS2 Art. 21(2)(j), DORA Art. 9(4)(d) |
-| **Password policy** | 12 to 128 characters, no forced mix of symbols, passwords known from data breaches refused | NIST SP 800-63B |
+| **Password policy** | At least 15 characters, or 12 with two-factor authentication; passwords known from data breaches refused. No forced mix of symbols by default; an organization can require upper and lower case, digits and symbols when an audit demands it | NIST SP 800-63B-4 (requiring a mix departs from it) |
 | **Protection against guessing** | Limits on sign-in attempts, account locked after 10 failures in a row, an email to the person | NIST SP 800-63B |
 | **Single sign-on** | OpenID Connect and SAML per organization, Active Directory over LDAPS, roles from groups | OpenID Connect 1.0, SAML 2.0 |
 | **Access control** | Permissions checked on every action, 13 default roles, nobody approves their own work, organizations kept apart | NIS2 Art. 21(2)(i), ISO/IEC 27001 A.5.15-5.18 |
