@@ -83,7 +83,7 @@ People can sign in with their company account at your identity provider - Micros
 ### Connecting a provider
 
 1. At the provider, register the toolkit as a **web application** (OpenID Connect, authorization code flow). Your identity administrator gives you its **issuer URL**, a **client ID** and a **client secret**. For Microsoft Entra ID the issuer is `https://login.microsoftonline.com/<tenant id>/v2.0`; for Keycloak `https://<server>/realms/<realm>`.
-2. In **Single sign-on**, click **New**, give the name shown on the sign-in button (for example *Microsoft*), the issuer, client ID and secret, and the **email domains** of your people (for example `company.com`). Only these domains sign in through this provider.
+2. In **Single sign-on**, click **New**, give the name shown on the sign-in button (for example *Microsoft*), the issuer, client ID and secret, and the **email domains** of your people (for example `company.com`). Only these domains sign in through this provider. If other organizations on this installation also use single sign-on, the sign-in page asks for the email instead of showing buttons; a domain claimed by two organizations then finds no provider, so tell the operator if your people get that message.
 3. Edit the provider: copy the **Redirect URI** shown and register it at the provider as the application's redirect (reply) URI.
 4. To give roles by group, have the provider send the groups in the ID token (Entra ID: *groups claim*; Keycloak: a *group membership* mapper) and set the claim's name if it is not `groups`.
 

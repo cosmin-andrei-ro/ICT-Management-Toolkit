@@ -6,7 +6,10 @@
 declare(strict_types=1);
 
 use Filament\Facades\Filament;
+use Illuminate\Http\Client\Factory as HttpFactory;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\TestResponse;
 use Jose\Component\KeyManagement\JWKFactory;
 use Livewire\Livewire;
@@ -25,6 +28,7 @@ use Modules\Core\Domain\Sso\SsoProvider;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Filament\Resources\SsoGroupMappings\Pages\ManageSsoGroupMappings;
 use Modules\Core\Http\Filament\Resources\SsoProviders\Pages\ManageSsoProviders;
+use Modules\Core\Http\Livewire\Auth\Login;
 use Modules\Core\Tests\Support\FakeIdentityProvider;
 
 beforeEach(function (): void {
@@ -156,6 +160,51 @@ it('rejects a token signed with another key or with an HMAC of the public key', 
     $this->get(route('login.sso.callback', ['provider' => $this->provider->id, 'state' => $query['state'], 'code' => 'c']))->assertRedirect(route('login'));
 
     $this->assertGuest();
+});
+
+describe('with several organizations using single sign-on', function (): void {
+    beforeEach(function (): void {
+        $this->other = Organization::factory()->create();
+        $this->otherProvider = app(OrganizationContext::class)->runAs($this->other, fn () => SsoProvider::query()->create([
+            'name' => 'Other company account', 'issuer' => 'https://idp.other.example', 'client_id' => 'x', 'client_secret' => 'y', 'allowed_domains' => ['other.test'],
+        ]));
+    });
+
+    it('does not list who uses this instance, and finds the provider by the address', function (): void {
+        $this->get(route('login'))->assertOk()->assertDontSee('Company account')->assertDontSee('Other company account')->assertSee(__('core::sso.find'));
+
+        Livewire::test(Login::class)->set('ssoEmail', 'Ana@Company.test')->call('findSsoProvider')->assertRedirect(route('login.sso', $this->provider->id));
+        Livewire::test(Login::class)->set('ssoEmail', 'ana@nobody.test')->call('findSsoProvider')->assertHasErrors(['ssoEmail' => __('core::sso.no_provider')]);
+    });
+
+    it('sends nobody to a provider when two organizations claim the same domain', function (): void {
+        app(OrganizationContext::class)->runAs($this->other, fn () => $this->otherProvider->update(['allowed_domains' => ['company.test']]));
+
+        Livewire::test(Login::class)->set('ssoEmail', 'ana@company.test')->call('findSsoProvider')->assertNoRedirect()->assertHasErrors(['ssoEmail' => __('core::sso.no_provider')]);
+    });
+
+    it('limits how many addresses one visitor tries', function (): void {
+        foreach (range(1, 10) as $_) {
+            Livewire::test(Login::class)->set('ssoEmail', 'ana@nobody.test')->call('findSsoProvider');
+        }
+
+        Livewire::test(Login::class)->set('ssoEmail', 'ana@company.test')->call('findSsoProvider')->assertNoRedirect()->assertHasErrors('ssoEmail');
+    });
+});
+
+it('connects to the address it checked, not to a new DNS answer', function (): void {
+    $pins = [];
+    $issuer = FakeIdentityProvider::ISSUER;
+    Http::swap(new HttpFactory);
+    Http::fake(function (Request $request, array $options) use (&$pins, $issuer) {
+        $pins[] = $options['curl'][CURLOPT_RESOLVE][0] ?? null;
+
+        return Http::response(['issuer' => $issuer, 'authorization_endpoint' => $issuer.'/auth', 'token_endpoint' => $issuer.'/token', 'jwks_uri' => $issuer.'/keys']);
+    });
+
+    $this->get(route('login.sso', $this->provider->id))->assertRedirect();
+
+    expect($pins)->toBe([parse_url($issuer, PHP_URL_HOST).':443:93.184.216.34']);
 });
 
 it('never connects to providers on internal addresses, nor to disabled providers', function (): void {

@@ -25,26 +25,38 @@ final readonly class OutboundUrlGuard
 
     public function allows(string $url): bool
     {
+        return $this->target($url) !== null;
+    }
+
+    /**
+     * @return ?array{host: string, port: int, address: string} What to connect to; null when refused.
+     */
+    public function target(string $url): ?array
+    {
         $parts = parse_url($url);
 
         if (! is_array($parts) || ! isset($parts['scheme'], $parts['host']) || isset($parts['user']) || isset($parts['pass'])) {
-            return false;
+            return null;
         }
 
         $scheme = strtolower($parts['scheme']);
 
         if ($scheme !== 'https' && ! ($scheme === 'http' && $this->config->get('core.sso.allow_http') === true)) {
-            return false;
+            return null;
         }
 
         $addresses = $this->resolver->resolve($parts['host']);
 
         foreach ($addresses as $address) {
             if (filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE) === false) {
-                return false;
+                return null;
             }
         }
 
-        return $addresses !== [];
+        return $addresses === [] ? null : [
+            'host' => $parts['host'],
+            'port' => $parts['port'] ?? ($scheme === 'https' ? 443 : 80),
+            'address' => $addresses[0],
+        ];
     }
 }

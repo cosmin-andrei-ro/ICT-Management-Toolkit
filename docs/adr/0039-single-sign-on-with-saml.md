@@ -25,7 +25,7 @@ OpenID Connect sign-in (ADR 0038) covers modern identity providers. Many compani
   - its assertion consumer service is `POST /login/saml/{provider}/acs`;
   - requests are not signed, and no SP certificate is needed.
 - **Cross-site POST:** the IdP posts its answer from its own site.
-  - The consumer is exempt from CSRF, because the signed assertion stands in for the token.
+  - The consumer is exempt from CSRF, because the signed assertion stands in for the token. A short-lived cookie named after the request ID (`SameSite=None; Secure`, HTTP-only) marks the browser that started the sign-in, and an answer from any other browser is refused (`saml_other_browser`). Otherwise a page could post an attacker's valid answer and sign a victim in to the attacker's account (login CSRF; security review of 2026-11-03). Without HTTPS the cookie is `SameSite=Lax`, so a development provider must share the site.
   - The session cookie (SameSite=Lax) is not sent with that POST, so the AuthnRequest ID is kept in the **cache** for 10 minutes and **consumed** by the answer. Unsolicited answers, answers to another provider's request and replays are refused.
   - SameSite is not relaxed for the rest of the application.
 - **Current URL:** the library reads it from server globals. They are set to the consumer URL while the answer is validated, then put back, so validation behaves the same behind a proxy and in tests.

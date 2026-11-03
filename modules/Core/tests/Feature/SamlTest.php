@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Modules\Core\Application\Authorization\SyncPermissions;
+use Modules\Core\Application\Sso\Saml;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditLog;
 use Modules\Core\Domain\Authorization\DefaultRole;
@@ -43,13 +44,18 @@ beforeEach(function (): void {
  */
 function samlRequestId(object $test): string
 {
-    $location = (string) $test->get(route('login.saml', $test->provider->id))->assertRedirect()->headers->get('Location');
+    $response = $test->get(route('login.saml', $test->provider->id))->assertRedirect();
+    $location = (string) $response->headers->get('Location');
     expect($location)->toStartWith(FakeSamlIdentityProvider::SSO_URL.'?SAMLRequest=');
     parse_str((string) parse_url($location, PHP_URL_QUERY), $query);
     $xml = gzinflate(base64_decode(is_string($query['SAMLRequest'] ?? null) ? $query['SAMLRequest'] : '', true) ?: '');
     preg_match('/ ID="([^"]+)"/', (string) $xml, $match);
+    $requestId = $match[1] ?? '';
+    // This browser started the sign-in: it keeps the cookie that says so.
+    $response->assertCookie(Saml::browserCookie($requestId));
+    $test->withCookie(Saml::browserCookie($requestId), '1');
 
-    return $match[1] ?? '';
+    return $requestId;
 }
 
 /**
@@ -121,6 +127,18 @@ it('takes the provider\'s second factor only from the signed assertion', functio
     // A password-only sign-in at the provider: the toolkit still asks for its own second factor.
     $this->post(route('login.saml.acs', $this->provider->id), ['SAMLResponse' => $answer])->assertRedirect();
     $this->get(route('home'))->assertRedirect();
+});
+
+it('refuses a valid answer posted from a browser that did not ask for it', function (): void {
+    // The attacker's own valid answer, auto-submitted from a page to a victim's browser.
+    $requestId = samlRequestId($this);
+    $answer = samlAnswer($this, $requestId, ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress' => ['ana@company.test']], ['authnContext' => 'http://schemas.microsoft.com/claims/multipleauthn']);
+    $this->defaultCookies = [];
+
+    $this->post(route('login.saml.acs', $this->provider->id), ['SAMLResponse' => $answer])->assertRedirect(route('login'))->assertSessionHas('sso_error');
+
+    $this->assertGuest();
+    expect(User::query()->where('email', 'ana@company.test')->exists())->toBeFalse();
 });
 
 it('refuses an assertion altered after signing', function (): void {
