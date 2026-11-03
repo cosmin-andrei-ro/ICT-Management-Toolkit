@@ -19,6 +19,14 @@ use Modules\Itam\Domain\Models\LicenseAssignment;
 final readonly class ItamPersonalData
 {
     /**
+     * Handovers keep that they were acknowledged, not from which address.
+     */
+    public static function erase(User $person, string $email): void
+    {
+        AssetAssignment::query()->where('user_id', $person->id)->whereNotNull('acknowledged_ip')->update(['acknowledged_ip' => 'anonymized']);
+    }
+
+    /**
      * @return Generator<PersonalDataEntry>
      */
     public function __invoke(User $person): Generator

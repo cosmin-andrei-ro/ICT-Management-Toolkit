@@ -10,6 +10,7 @@ namespace Modules\Ticketing\Application\PersonalData;
 use Generator;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalDataEntry;
+use Modules\Ticketing\Domain\Models\InboundEmail;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
@@ -17,6 +18,14 @@ use Modules\Ticketing\Domain\Models\Ticket;
  */
 final readonly class TicketingPersonalData
 {
+    /**
+     * Received e-mails keep their outcome, without the sender's address or the subject.
+     */
+    public static function erase(User $person, string $email): void
+    {
+        InboundEmail::query()->whereRaw('lower(from_address) = ?', [mb_strtolower($email)])->update(['from_address' => 'anonymized', 'subject' => null]);
+    }
+
     /**
      * @return Generator<PersonalDataEntry>
      */

@@ -34,6 +34,7 @@ final class ReportingServiceProvider extends ModuleServiceProvider
     {
         parent::register();
         $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('reporting::personal_data.sheet', fn (User $person): iterable => app(ReportingPersonalData::class)($person)));
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->registerEraser(ReportingPersonalData::erase(...)));
 
         $this->callAfterResolving(PermissionRegistry::class, function (PermissionRegistry $registry): void {
             $registry->register([
