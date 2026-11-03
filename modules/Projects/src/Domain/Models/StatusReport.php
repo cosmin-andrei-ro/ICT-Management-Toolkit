@@ -33,6 +33,7 @@ use Modules\Projects\Domain\Enums\Rag;
  * @property ?string $issues
  * @property ?string $author_id
  * @property Carbon $created_at
+ * @property-read ?Project $project
  * @property-read ?User $author
  */
 #[Table('projects_status_reports')]
@@ -53,6 +54,15 @@ final class StatusReport extends Model
     /**
      * @return array<string, string>
      */
+
+    /**
+     * @return BelongsTo<Project, $this>
+     */
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
     protected function casts(): array
     {
         return [

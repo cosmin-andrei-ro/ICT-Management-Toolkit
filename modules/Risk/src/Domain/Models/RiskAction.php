@@ -33,6 +33,7 @@ use Modules\Risk\Domain\Enums\ActionStatus;
  * @property ?string $ticket_id
  * @property ?string $ticket_number
  * @property ?Carbon $created_at
+ * @property-read ?Risk $risk
  * @property-read ?User $owner
  */
 #[Table('risk_actions')]
@@ -58,6 +59,14 @@ final class RiskAction extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * @return BelongsTo<Risk, $this>
+     */
+    public function risk(): BelongsTo
+    {
+        return $this->belongsTo(Risk::class);
     }
 
     protected function casts(): array

@@ -27,6 +27,7 @@ use Modules\Core\Domain\Models\User;
  * @property ?string $approved_by
  * @property ?Carbon $approved_at
  * @property Carbon $created_at
+ * @property-read ?Page $page
  * @property-read ?User $author
  * @property-read ?User $approver
  */
@@ -51,6 +52,14 @@ final class PageVersion extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * @return BelongsTo<Page, $this>
+     */
+    public function page(): BelongsTo
+    {
+        return $this->belongsTo(Page::class);
     }
 
     protected function casts(): array

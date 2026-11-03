@@ -37,7 +37,9 @@ use Livewire\Livewire;
 use Modules\Core\Application\Authentication\RecordAuthenticationEvent;
 use Modules\Core\Application\Authorization\RecordAuthorizationChange;
 use Modules\Core\Application\Exports\AuditLogExport;
+use Modules\Core\Application\Exports\PersonalDataExport;
 use Modules\Core\Application\Links\ContractRecords;
+use Modules\Core\Application\PersonalData\CorePersonalData;
 use Modules\Core\Application\Risks\ContractRiskSignals;
 use Modules\Core\Application\Sso\DnsHostResolver;
 use Modules\Core\Application\Sso\HostResolver;
@@ -82,6 +84,7 @@ use Modules\Core\Domain\Models\Supplier;
 use Modules\Core\Domain\Models\SupplierContact;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Domain\Sso\SsoGroupMapping;
 use Modules\Core\Domain\Sso\SsoProvider;
@@ -118,6 +121,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('core::personal_data.sheet', fn (User $person): iterable => app(CorePersonalData::class)($person)));
 
         $this->app->scoped(OrganizationContext::class);
         $this->app->scoped(RequestContext::class);
@@ -129,7 +133,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
         // Extended, not bound: the validation provider is deferred and would replace a binding when it loads.
         $this->app->extend(UncompromisedVerifier::class, fn (UncompromisedVerifier $verifier, Application $app): NotPwnedVerifier => new NotPwnedVerifier($app->make(HttpFactory::class), config()->integer('core.authentication.breached_passwords_timeout')));
         $this->app->singleton(ExportRegistry::class);
+        $this->app->singleton(PersonalData::class);
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(AuditLogExport::TYPE, AuditLogExport::class, 'core.audit.view'));
+        $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PersonalDataExport::TYPE, PersonalDataExport::class, 'core.personal_data.manage'));
         $this->app->singleton(LinkedRecords::class);
         $this->app->singleton(ContractDependents::class);
         $this->app->singleton(RiskSignals::class);
@@ -292,6 +298,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.department.update',
             'core.department.delete',
             'core.audit.view',
+            // Export (and anonymize) a person's data on request (GDPR Art. 15–17, 20): administrators.
+            'core.personal_data.manage',
             'core.directory.manage',
             'core.team.view',
             'core.team.manage',

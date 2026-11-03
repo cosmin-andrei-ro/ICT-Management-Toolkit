@@ -17,6 +17,18 @@ The foundation every other module builds on. Code: `modules/Core/`.
 - Each entry carries the IP address, user agent and request id of the HTTP request (`X-Request-Id`, echoed in the response).
 - Shown in the application (ADR 0056): a **History** section on record pages (`<x-core::record-history :record :can-change />`, for those who may change the record or hold `core.audit.view`) and the **Audit log** page `/audit-log` (security events by default, filters, Excel export `core.audit_log`), scoped to the organization by `AuditLogQuery`.
 
+## Personal data (ADR 0058)
+
+- `PersonalData` (Core registry): each module registers a collector, `fn (User $person): iterable<PersonalDataEntry>` (record, reference, title, the person's part, date, personal content), under a translated sheet name. Core never reads module tables.
+- `PersonalDataExport` (`core.personal_data`, permission `core.personal_data.manage`) builds the workbook in the export's organization:
+  - an account sheet;
+  - one sheet per module with entries;
+  - comments and files the person wrote or uploaded;
+  - their audit log activity, both what they did and what was done to their account.
+  The person must be a member of that organization.
+- Administration → Access → **Personal data** prepares it (queued, audited like every export) and lists the administrator's recent exports.
+- New modules that store people in their records register a collector.
+
 ## Authorization (ADR 0004)
 
 - Permissions are named `<module>.<entity>.<action>`. Modules register them, and their grants to the default roles, in `PermissionRegistry` from their service provider.
@@ -88,6 +100,7 @@ A strict CSP with a per-request nonce, plus the standard hardening headers on ev
 | `core.role.view` / `.manage` | Organization-specific roles |
 | `core.department.view` / `.create` / `.update` / `.delete` | Departments |
 | `core.audit.view` | Read the audit log |
+| `core.personal_data.manage` | Export a person's personal data (administrators) |
 | `core.directory.manage` | Manage AD group mappings |
 | `core.team.view` / `.manage` | Teams |
 | `core.calendar.manage` | Business calendars |

@@ -15,6 +15,7 @@ use Modules\Bcm\Application\Exports\BcmExport;
 use Modules\Bcm\Application\Links\ExerciseRecords;
 use Modules\Bcm\Application\Links\PlanRecords;
 use Modules\Bcm\Application\Metrics\ContinuityMetrics;
+use Modules\Bcm\Application\PersonalData\BcmPersonalData;
 use Modules\Bcm\Application\Risks\ContinuityRiskSignals;
 use Modules\Bcm\Domain\Enums\VersionStatus;
 use Modules\Bcm\Domain\Models\Activation;
@@ -31,6 +32,7 @@ use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 
@@ -44,6 +46,7 @@ final class BcmServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('bcm::personal_data.sheet', fn (User $person): iterable => app(BcmPersonalData::class)($person)));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ContinuityMetrics::source()));
 

@@ -16,9 +16,11 @@ use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Projects\Application\Exports\PortfolioExport;
 use Modules\Projects\Application\Metrics\ProjectMetrics;
+use Modules\Projects\Application\PersonalData\ProjectsPersonalData;
 use Modules\Projects\Domain\Models\Cost;
 use Modules\Projects\Domain\Models\Deliverable;
 use Modules\Projects\Domain\Models\GateRequest;
@@ -38,6 +40,7 @@ final class ProjectsServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('projects::personal_data.sheet', fn (User $person): iterable => app(ProjectsPersonalData::class)($person)));
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ProjectMetrics::source()));

@@ -1,0 +1,26 @@
+---
+title: Requests about personal data
+audience: administrators
+---
+
+People have the right to receive the personal data an organization holds about them, in a format they can read and reuse (GDPR articles 15 and 20). The toolkit prepares it for you.
+
+## Exporting a person's data
+
+1. Open **Administration → Access → Personal data**.
+2. Choose the person and select **Prepare the export**, then confirm.
+3. When the export is ready, it appears under **Your recent exports** with a **Download** link, available for seven days.
+
+The workbook contains:
+
+- **Account:** name, e-mail, type of account, roles, when it was created and last used, whether two-factor authentication is on, and whether the account is locked.
+- **One sheet per module** where the person appears. Each lists the records they are part of and how: requester or watcher of tickets, owner of risks, controls or processes, holder of equipment and licences, author of documentation pages, project member, and so on. It also includes the text they wrote, such as the description of their tickets.
+- **Comments** and **files** they wrote or uploaded.
+- **Activity:** everything recorded in the audit log about what they did, or about their account.
+
+## Good practice
+
+- Check who is asking before preparing the export, for example by calling the person on a known number.
+- The workbook contains personal data: give it only to the person, through a safe channel. Do not keep copies.
+- Each organization answers for its own data. If the person also belongs to another organization in the toolkit, that organization's administrator exports its part.
+- Preparing and downloading the export are both recorded in the audit log.

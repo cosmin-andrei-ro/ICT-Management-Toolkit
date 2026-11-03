@@ -20,12 +20,14 @@ use Modules\Core\Domain\Links\Risks;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Risk\Application\Exports\RiskRegisterExport;
 use Modules\Risk\Application\Links\RegisterRisks;
 use Modules\Risk\Application\Links\RiskRecords;
 use Modules\Risk\Application\Listeners\RefreshSuggestionsOnSignal;
 use Modules\Risk\Application\Metrics\RiskMetrics;
+use Modules\Risk\Application\PersonalData\RiskPersonalData;
 use Modules\Risk\Domain\Models\CatalogEntry;
 use Modules\Risk\Domain\Models\Risk;
 use Modules\Risk\Domain\Models\RiskSettings;
@@ -44,6 +46,7 @@ final class RiskServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('risk::personal_data.sheet', fn (User $person): iterable => app(RiskPersonalData::class)($person)));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(RiskMetrics::source()));
 

@@ -33,6 +33,7 @@ use Modules\Core\Domain\Models\User;
  * @property ?string $ticket_id
  * @property ?string $ticket_number
  * @property ?Carbon $created_at
+ * @property-read ?Finding $finding
  * @property-read ?User $owner
  */
 #[Table('audit_finding_actions')]
@@ -58,6 +59,14 @@ final class FindingAction extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * @return BelongsTo<Finding, $this>
+     */
+    public function finding(): BelongsTo
+    {
+        return $this->belongsTo(Finding::class);
     }
 
     protected function casts(): array
