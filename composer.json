@@ -55,6 +55,8 @@
             "Modules\\Ticketing\\": "modules/Ticketing/src/",
             "Modules\\Ticketing\\Database\\Factories\\": "modules/Ticketing/database/factories/",
             "Modules\\Ticketing\\Database\\Seeders\\": "modules/Ticketing/database/seeders/",
+            "Modules\\Cmdb\\Database\\Seeders\\": "modules/Cmdb/database/seeders/",
+            "Modules\\Itam\\Database\\Seeders\\": "modules/Itam/database/seeders/",
             "Modules\\Cmdb\\": "modules/Cmdb/src/",
             "Modules\\Cmdb\\Database\\Factories\\": "modules/Cmdb/database/factories/",
             "Modules\\Itam\\": "modules/Itam/src/",

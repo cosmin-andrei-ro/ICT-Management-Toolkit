@@ -174,7 +174,31 @@ docker run --rm -v "$(pwd)":/var/www/html -w /var/www/html laravelsail/php84-com
 ./vendor/bin/sail npm install && ./vendor/bin/sail npm run build
 ```
 
-Open http://localhost and sign in as `admin@example.com` with the password `password` (demo data, local environment only). You are then asked to set up two-factor authentication with an authenticator app, as every administrator is. Email sent by the application lands in Mailpit at http://localhost:8025.
+Open http://localhost and sign in with one of the demo accounts below. Email sent by the application lands in Mailpit at http://localhost:8025.
+
+### Demo data
+
+`migrate --seed` builds **Demo Logistics**, a fictional company with three months of history: the service desk's tickets, problems and changes, the CMDB and its dependencies, equipment and licences, and more as the demo grows. It refuses to run outside the local and testing environments.
+
+Every demo account has the password `password`. IT staff accounts also have two-factor authentication set up with the shared demo secret `JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP`: add it to an authenticator app (as a manual key, time-based, 6 digits) to sign in.
+
+| Account | Role |
+|---|---|
+| `admin@example.com` | Administrator |
+| `agent@example.com`, `agent2@example.com` | Agent |
+| `teamlead@example.com` | Team lead |
+| `cab@example.com` | CAB member |
+| `assets@example.com` | Asset manager |
+| `continuity@example.com` | Continuity coordinator |
+| `applications@example.com` | Application manager |
+| `security@example.com` | Security officer |
+| `risk@example.com` | Risk manager |
+| `compliance@example.com` | Compliance manager |
+| `auditor@example.com` | Auditor |
+| `projects@example.com` | Project manager |
+| `employee@example.com`, `finance@example.com`, `logistics@example.com`, `hr@example.com`, `sales@example.com`, `warehouse@example.com` | Requester (employees; no two-factor) |
+
+Never seed demo data on a server people can reach: the passwords and the two-factor secret are public.
 
 Optional containers for development:
 
