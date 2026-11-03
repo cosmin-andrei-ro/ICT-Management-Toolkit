@@ -106,11 +106,13 @@ use Modules\Core\Http\Navigation\Navigation;
 use Modules\Core\Infrastructure\Console\ApplyRetentionCommand;
 use Modules\Core\Infrastructure\Console\IssueApiTokenCommand;
 use Modules\Core\Infrastructure\Console\PruneExportsCommand;
+use Modules\Core\Infrastructure\Console\ResetAccountMfaCommand;
 use Modules\Core\Infrastructure\Console\SendContractRemindersCommand;
 use Modules\Core\Infrastructure\Console\SetupCommand;
 use Modules\Core\Infrastructure\Console\SyncDirectoryCommand;
 use Modules\Core\Infrastructure\Console\SyncPermissionsCommand;
 use Modules\Core\Infrastructure\Console\TestDirectoryCommand;
+use Modules\Core\Infrastructure\Console\UnlockAccountCommand;
 use Modules\Core\Infrastructure\Directory\DisabledDirectory;
 use Modules\Core\Infrastructure\Directory\LdapConnectionFactory;
 use Modules\Core\Infrastructure\Directory\LdapDirectory;
@@ -303,7 +305,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class, IssueApiTokenCommand::class, PruneExportsCommand::class, SetupCommand::class, SendContractRemindersCommand::class, ApplyRetentionCommand::class]);
+            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class, IssueApiTokenCommand::class, ResetAccountMfaCommand::class, UnlockAccountCommand::class, PruneExportsCommand::class, SetupCommand::class, SendContractRemindersCommand::class, ApplyRetentionCommand::class]);
         }
     }
 

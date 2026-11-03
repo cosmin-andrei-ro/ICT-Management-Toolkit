@@ -84,16 +84,17 @@ final readonly class AccountLockout
     }
 
     /**
-     * @param  ?User  $actor  The administrator; null when the person reset their password.
+     * @param  ?User  $actor  The administrator; null when the person reset their password, or for an operator.
+     * @param  ?string  $by  Who lifted it when there is no administrator; a password reset by default.
      */
-    public function unlock(User $user, ?User $actor): void
+    public function unlock(User $user, ?User $actor, ?string $by = null): void
     {
         $wasLocked = $this->isLocked($user);
         $this->db->table('users')->where('id', $user->id)->update(['failed_logins' => 0, 'locked_at' => null]);
         $user->refresh();
 
         if ($wasLocked) {
-            $this->trail->record(AuditEvent::AccountUnlocked, $user, null, ['by' => $actor !== null ? 'administrator' : 'password_reset'], $actor->id ?? $user->id);
+            $this->trail->record(AuditEvent::AccountUnlocked, $user, null, ['by' => $actor !== null ? 'administrator' : ($by ?? 'password_reset')], $actor->id ?? ($by === null ? $user->id : null));
         }
     }
 }
