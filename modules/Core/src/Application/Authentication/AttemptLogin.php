@@ -44,6 +44,9 @@ final readonly class AttemptLogin
     /** Attempts per identifier from any address, per 15 minutes: slows distributed guessing. */
     private const int MAX_ATTEMPTS_PER_ACCOUNT = 20;
 
+    /** Failed sign-ins from one address per minute, whatever the accounts: stops spraying many accounts at once. */
+    private const int MAX_ATTEMPTS_PER_ADDRESS = 30;
+
     public function __construct(
         private AuthFactory $auth,
         private RateLimiter $limiter,
@@ -68,6 +71,7 @@ final readonly class AttemptLogin
         $throttleKeys = [
             'login:client:'.sha1($identifier.'|'.$request->ip()) => [self::MAX_ATTEMPTS_PER_CLIENT, 60],
             'login:account:'.sha1($identifier) => [self::MAX_ATTEMPTS_PER_ACCOUNT, 15 * 60],
+            'login:address:'.sha1((string) $request->ip()) => [self::MAX_ATTEMPTS_PER_ADDRESS, 60],
         ];
 
         $this->ensureNotThrottled($request, $throttleKeys);
@@ -115,15 +119,17 @@ final readonly class AttemptLogin
         $guard = $this->guard();
         $account = User::query()->where('email', $email)->where('auth_source', AuthSource::Local)->first();
 
-        // A locked account fails like a wrong password, without checking it: the e-mail sent at locking says why.
+        if (! $guard instanceof SessionGuard) {
+            throw new LogicException('The web guard must be session based.');
+        }
+
+        // A locked account fails like a wrong password, whatever the password: the e-mail sent at locking says why.
+        // The password is still checked, and ignored, so a locked account answers as slowly as any other.
         if ($account !== null && $this->lockout->isLocked($account)) {
+            $guard->validate($credentials);
             $this->trail->record(AuditEvent::LoginFailed, $account, null, ['email' => $email, 'reason' => 'locked'], $account->id);
 
             return null;
-        }
-
-        if (! $guard instanceof SessionGuard) {
-            throw new LogicException('The web guard must be session based.');
         }
 
         if (! $guard->validate($credentials)) {

@@ -76,6 +76,28 @@ describe('reset', function (): void {
             ->assertHasErrors(['email']);
     });
 
+    it('ends the API tokens made while someone else may have had the account', function (): void {
+        $this->user->createToken('integration');
+        $token = resetToken($this->user);
+
+        Livewire::test(ResetPassword::class, ['token' => $token])
+            ->set('email', 'jane@example.com')->set('password', 'a brand new passphrase')->set('passwordConfirmation', 'a brand new passphrase')
+            ->call('save')->assertHasNoErrors();
+
+        expect($this->user->tokens()->count())->toBe(0);
+    });
+
+    it('does not accept a reset link as an invitation, where it would last three days', function (): void {
+        $token = resetToken($this->user);
+
+        $this->get(route('invitation.accept', ['token' => $token, 'email' => 'jane@example.com']))->assertOk();
+        Livewire::withQueryParams(['email' => 'jane@example.com'])->test(ResetPassword::class, ['token' => $token, 'invitation' => true])
+            ->set('email', 'jane@example.com')->set('password', 'a brand new passphrase')->set('passwordConfirmation', 'a brand new passphrase')
+            ->call('save')->assertHasErrors(['email']);
+
+        expect(Hash::check('correct-horse-battery', $this->user->fresh()->password))->toBeTrue();
+    });
+
     it('refuses short passwords and keeps the link usable', function (): void {
         $token = resetToken($this->user);
 
@@ -119,6 +141,24 @@ describe('change password', function (): void {
 
         // Another browser still holding the old password hash is signed out.
         $this->actingAs($this->user->fresh())->withSession(['password_hash_web' => $oldSessionHash])->get(route('home'))->assertRedirect(route('login'));
+    });
+
+    it('limits guesses of the current password and counts them towards the lockout', function (): void {
+        $this->actingAs($this->user);
+
+        foreach (range(1, 5) as $_) {
+            Livewire::test(AccountSecurity::class)
+                ->set('currentPassword', 'wrong')->set('newPassword', 'a brand new passphrase')->set('newPasswordConfirmation', 'a brand new passphrase')
+                ->call('changePassword')->assertHasErrors(['currentPassword' => __('core::security.password.current_wrong')]);
+        }
+
+        Livewire::test(AccountSecurity::class)
+            ->set('currentPassword', 'correct-horse-battery')->set('newPassword', 'a brand new passphrase')->set('newPasswordConfirmation', 'a brand new passphrase')
+            ->call('changePassword')->assertHasErrors(['currentPassword']);
+
+        expect(Hash::check('correct-horse-battery', $this->user->fresh()->password))->toBeTrue()
+            ->and($this->user->fresh()->failed_logins)->toBe(5)
+            ->and(AuditLog::query()->where('event', AuditEvent::LoginFailed)->where('auditable_id', $this->user->id)->count())->toBe(5);
     });
 
     it('has nothing to change for Active Directory accounts', function (): void {

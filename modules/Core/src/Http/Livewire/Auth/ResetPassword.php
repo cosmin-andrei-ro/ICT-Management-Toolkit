@@ -36,10 +36,13 @@ final class ResetPassword extends Component
 
     public string $passwordConfirmation = '';
 
-    public function mount(string $token): void
+    /**
+     * @param  bool  $invitation  Set by the invitation route: its links come from their own broker.
+     */
+    public function mount(string $token, bool $invitation = false): void
     {
         $this->token = $token;
-        $this->invitation = request()->routeIs('invitation.accept');
+        $this->invitation = $invitation;
         $email = request()->query('email');
         $this->email = is_string($email) ? $email : '';
     }

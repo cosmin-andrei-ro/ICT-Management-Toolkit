@@ -64,7 +64,7 @@ it('invites a new person, who chooses their own password from the link', functio
 
     auth()->logout();
     $this->get(route('invitation.accept', ['token' => $token, 'email' => 'ana@example.com']))->assertOk()->assertSee(__('core::security.reset.welcome_intro'));
-    Livewire::withQueryParams(['email' => 'ana@example.com'])->test(ResetPassword::class, ['token' => $token])
+    Livewire::withQueryParams(['email' => 'ana@example.com'])->test(ResetPassword::class, ['token' => $token, 'invitation' => true])
         ->set('password', 'ana chooses this one')->set('passwordConfirmation', 'ana chooses this one')
         ->call('save')
         ->assertHasNoErrors();

@@ -168,6 +168,21 @@ describe('setting it up', function (): void {
         Livewire::test(AccountSecurity::class)->call('downloadRecoveryCodes')->assertNoFileDownloaded();
     });
 
+    it('limits and audits the codes that confirm changes to the account', function (): void {
+        $this->actingAs($this->user);
+
+        foreach (range(1, 5) as $_) {
+            Livewire::test(AccountSecurity::class)->set('code', '000000')->call('regenerateRecoveryCodes')->assertHasErrors(['code' => __('core::security.challenge.invalid')]);
+        }
+
+        // Even the right code waits now: a stolen session cannot guess codes without limit.
+        Livewire::test(AccountSecurity::class)->set('code', otp())->call('regenerateRecoveryCodes')->assertHasErrors(['code'])->assertSet('recoveryCodes', []);
+        Livewire::test(AccountSecurity::class)->set('keyCode', otp())->call('removeKey', 'any')->assertHasErrors(['keyCode']);
+
+        expect(AuditLog::query()->where('event', AuditEvent::MfaFailed)->where('auditable_id', $this->user->id)->count())->toBe(5)
+            ->and($this->user->fresh()->failed_logins)->toBe(5);
+    });
+
     it('turns off only with a valid code, and staff must then set it up again', function (): void {
         $agent = User::factory()->memberOf($this->organization)->withTwoFactor()->create();
         role($agent, $this->organization, DefaultRole::Agent);

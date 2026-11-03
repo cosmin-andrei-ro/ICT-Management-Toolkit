@@ -32,7 +32,7 @@ OpenID Connect sign-in (ADR 0038) covers modern identity providers. Many compani
 - **Mapping to the account model:** the assertion becomes the same claims as an OIDC ID token, and `SignInWithSso` applies the same rules (ADR 0038):
   - **sub** is the NameID;
   - **email**, **name** and **groups** come from the attributes;
-  - **amr** is `mfa` when the AuthnContextClassRef is a multi-factor context (Microsoft *multipleauthn*, REFEDS MFA, SAML two-factor and smartcard classes).
+  - **amr** is `mfa` when the AuthnContextClassRef is a multi-factor context (Microsoft *multipleauthn*, REFEDS MFA, SAML two-factor and smartcard classes). It is read from the **signed assertion** only (`SamlResponse`): the response around it is not signed, and an `AuthnStatement` slipped into `samlp:Extensions` must not pass for a second factor (found in the security review of 2026-11-03).
 
 ## Alternatives considered
 

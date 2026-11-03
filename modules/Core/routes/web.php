@@ -42,7 +42,7 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/login/saml/{provider}/acs', [SamlController::class, 'consume'])->whereUuid('provider')->middleware('throttle:20,1')->name('login.saml.acs');
     Route::livewire('/forgot-password', ForgotPassword::class)->name('password.request');
     Route::livewire('/reset-password/{token}', ResetPassword::class)->name('password.reset');
-    Route::livewire('/welcome/{token}', ResetPassword::class)->name('invitation.accept');
+    Route::livewire('/welcome/{token}', ResetPassword::class)->defaults('invitation', true)->name('invitation.accept');
 });
 
 Route::middleware('auth')->group(function (): void {
