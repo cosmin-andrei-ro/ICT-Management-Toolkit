@@ -10,6 +10,7 @@ namespace Modules\Projects\Application\Actions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Modules\Core\Domain\Models\User;
+use Modules\Projects\Application\ClosureReadiness;
 use Modules\Projects\Application\Notifications\GateDecided;
 use Modules\Projects\Application\Notifications\GateRequested;
 use Modules\Projects\Domain\Enums\GateStatus;
@@ -25,6 +26,8 @@ use Modules\Projects\Domain\Models\Project;
  */
 final readonly class StageGates
 {
+    public function __construct(private ClosureReadiness $readiness) {}
+
     public function request(Project $project, User $actor, ?string $note): GateRequest
     {
         $project->loadMissing('phases');
@@ -44,6 +47,10 @@ final readonly class StageGates
         }
 
         $next = $project->phases->firstWhere('position', $current->position + 1);
+
+        if ($next === null) {
+            $this->ensureReadyToClose($project);
+        }
 
         $gate = new GateRequest;
         $gate->forceFill([
@@ -75,6 +82,11 @@ final readonly class StageGates
             throw ValidationException::withMessages(['decisionNote' => __('projects::governance.errors.reason')]);
         }
 
+        // Things may have changed since the request: check again before closing.
+        if ($approve && $gate->closesProject()) {
+            $this->ensureReadyToClose($project);
+        }
+
         DB::transaction(function () use ($gate, $project, $actor, $approve, $note): void {
             $gate->forceFill([
                 'status' => $approve ? GateStatus::Approved : GateStatus::Rejected,
@@ -100,6 +112,15 @@ final readonly class StageGates
 
         if ($requester !== null && $requester->canSignIn()) {
             $requester->notify(new GateDecided($project->code.' '.$project->name, $approve, $gate->toPhase?->key->label(), $actor->name, $note, route('projects.show', $project)));
+        }
+    }
+
+    private function ensureReadyToClose(Project $project): void
+    {
+        $blockers = $this->readiness->blockers($project);
+
+        if ($blockers !== []) {
+            throw ValidationException::withMessages(['gate' => __('projects::deliverables.not_ready', ['reasons' => implode(' ', $blockers)])]);
         }
     }
 }

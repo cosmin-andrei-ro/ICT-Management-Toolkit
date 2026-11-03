@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Modules\Applications\Application\Links;
 
+use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
 use Modules\Core\Domain\Links\Applications;
 use Modules\Core\Domain\Links\ApplicationSummary;
@@ -53,6 +54,17 @@ final class PortfolioApplications implements Applications
 
     private static function summary(Application $application): ApplicationSummary
     {
-        return new ApplicationSummary($application->id, $application->code, $application->name, route('applications.show', $application), $application->criticality);
+        $approved = $application->sheets()->where('status', SheetStatus::Approved->value)->latest('approved_at')->first();
+
+        return new ApplicationSummary(
+            $application->id,
+            $application->code,
+            $application->name,
+            route('applications.show', $application),
+            $application->criticality,
+            $approved !== null,
+            $application->configuration_item_id,
+            $approved !== null ? array_values(array_filter((array) ($approved->section('10_1')['processes'] ?? []), is_string(...))) : [],
+        );
     }
 }

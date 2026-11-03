@@ -23,4 +23,9 @@ final class NoRisks implements Risks
     {
         return [];
     }
+
+    public function assessedCount(string $assetType, string $assetId): int
+    {
+        return 0;
+    }
 }

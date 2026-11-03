@@ -32,7 +32,7 @@ beforeEach(function (): void {
     $this->projects = ProjectsScenario::create();
     $this->actingAs($this->projects->manager);
     $this->project = app(SaveProject::class)->handle(null, [
-        'name' => 'Payroll replacement', 'description' => null, 'kind' => ProjectKind::Application,
+        'name' => 'Payroll replacement', 'description' => null, 'kind' => ProjectKind::General,
         'sponsor_id' => $this->projects->sponsor->id, 'manager_id' => $this->projects->manager->id, 'planned_start' => null, 'planned_end' => null,
     ]);
 });

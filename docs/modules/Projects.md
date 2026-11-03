@@ -1,6 +1,6 @@
 # Projects module
 
-IT projects: phases, team and tasks; then gates, status reports, deliverables and budget. Code: `modules/Projects/`. Decisions: [ADR 0052](../adr/0052-projects-phases-and-tasks.md), [ADR 0053](../adr/0053-project-gates-and-status-reports.md).
+IT projects: phases, team and tasks; then gates, status reports, deliverables and budget. Code: `modules/Projects/`. Decisions: [ADR 0052](../adr/0052-projects-phases-and-tasks.md), [ADR 0053](../adr/0053-project-gates-and-status-reports.md), [ADR 0054](../adr/0054-project-deliverables-and-closure-checklist.md).
 
 ## Concepts
 
@@ -9,6 +9,9 @@ IT projects: phases, team and tasks; then gates, status reports, deliverables an
 - **Member** (`projects_members`): a person on the team, with a role in the project.
 - **Gate request** (`projects_gate_requests`): from the phase under way to the next (`to_phase_id`), or to close the project (null); note; status (`pending`, `approved`, `rejected`; one pending per project); decided by the sponsor with a note.
 - **Status report** (`projects_status_reports`): date (one per day), overall / schedule / budget / scope in `green`, `amber`, `red`; done, next steps, issues and risks; author.
+- **Deliverable** (`projects_deliverables`): phase, title, required to close, linked record (`linked_type` / `linked_id` through Core `LinkedRecords`, title kept), delivered by and when.
+- **Application** of a new-application project (`projects_projects.application_id`, through Core `Applications`).
+- **Closure checklist** (`ClosureReadiness`, computed, not stored): application chosen, documentation approved, CMDB item, assessed risks, BIA processes with RTO. With the required deliverables, it blocks the closing gate.
 - **Task** (`projects_tasks`): phase, title, description, assignee, due date, status (`todo`, `in_progress`, `blocked`, `done`), position on the board, completion time.
 
 ## Screens
@@ -18,7 +21,12 @@ IT projects: phases, team and tasks; then gates, status reports, deliverables an
 - `/projects/{id}`: phases with their dates, tasks as a board or a list (filter by phase), the team.
 - `/projects/my-tasks`: a person's unfinished tasks in open projects, and the gates waiting for them as sponsor.
 - The project page has the **stage gate** (ask, approve, send back, history) and the **status reports** (write, history, due).
+- The project page has **Deliverables** (add, link a record, mark delivered) and, for a new application, the **checklist** with the application chooser and what still blocks closure.
 - `/projects/portfolio`: open projects with phase, latest RAG, waiting gates and planned end.
+
+## For other modules
+
+Uses Core `Applications` (with `documented`, `configurationItemId`, `processIds`), `Risks::assessedCount()`, `BusinessProcesses::find()` and `LinkedRecords`.
 
 ## Scheduled tasks
 
@@ -37,5 +45,5 @@ A project's manager changes it and asks for gates; its sponsor decides on them; 
 
 1. Projects, phases, team and tasks on a board — **done**.
 2. Stage gates approved by the sponsor; RAG status reports; the portfolio — **done**.
-3. Deliverables linked to other modules; the new-application checklist blocking closure.
+3. Deliverables linked to other modules; the new-application checklist blocking closure — **done**.
 4. Budget against actual costs; indicators, export, status report PDF.

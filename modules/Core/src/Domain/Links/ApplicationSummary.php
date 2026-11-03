@@ -19,5 +19,11 @@ final readonly class ApplicationSummary
         public string $url,
         /** Key of the organization's business criticality list; null while not documented. */
         public ?string $criticality,
+        /** A version of its documentation sheet has been approved. */
+        public bool $documented = false,
+        /** Its own CMDB item. */
+        public ?string $configurationItemId = null,
+        /** @var list<string> Business processes it supports, from the approved documentation. */
+        public array $processIds = [],
     ) {}
 }

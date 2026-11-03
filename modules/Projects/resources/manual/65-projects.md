@@ -30,6 +30,25 @@ The project manager adds tasks under **Add a task**, with:
 
 Tasks show as a **Board** with four columns, *To do*, *In progress*, *Blocked* and *Done*, or as a **List**. Filter them by phase. The buttons on each card move it to the next or previous column. The project manager moves any task; each person moves the tasks assigned to them, from the project or from **My tasks**. Overdue tasks are marked in red.
 
+## Deliverables
+
+Under **Deliverables**, the project manager lists what each phase produces, such as "Go-live change", "Recovery plan" or "Training". Each deliverable is either **required to close** or optional. Then:
+
+- **Link a record** connects a deliverable to what it became in another module: choose the kind of record and search it. Only records you may see are offered.
+- **Mark delivered** records who delivered it and when.
+
+## New applications
+
+A project of type *New application* has a **checklist**. First choose the application in the portfolio that the project brings in. The checklist then shows, as they become true:
+
+1. the application is recorded in the portfolio;
+2. its documentation is approved;
+3. it has its item in the CMDB, created when the documentation is approved;
+4. at least one of its risks is assessed in the risk register;
+5. the business processes it serves, linked in its documentation, are assessed in the BIA with their RTO.
+
+Nothing is ticked by hand: each item comes from its module.
+
 ## Moving from one phase to the next
 
 A project moves on only when its **sponsor** agrees. Under **Stage gate**, the project manager writes what the sponsor should know and clicks **Ask to move to** the next phase. In the closure phase, the button is **Ask to close the project**.
@@ -40,6 +59,8 @@ The sponsor is emailed and finds the request on the project and under **My tasks
 - or **Send back**, with a comment saying why.
 
 The manager is emailed either way. The sponsor never decides on their own request, so a project needs a sponsor other than its manager.
+
+A project closes only when its required deliverables are delivered and, for a new application, its checklist is complete. Until then, the page lists what is missing, and both asking to close and approving the closure are refused.
 
 ## Status reports
 
