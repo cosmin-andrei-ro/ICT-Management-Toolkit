@@ -14,6 +14,7 @@ use Modules\Cmdb\Application\PersonalData\CmdbPersonalData;
 use Modules\Cmdb\Domain\Models\CiType;
 use Modules\Cmdb\Domain\Models\ConfigurationItem;
 use Modules\Cmdb\Domain\Models\Relationship;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Links\ConfigurationItems;
@@ -43,6 +44,9 @@ final class CmdbServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('cmdb:read', 'cmdb::api.abilities.read');
+        ApiAbility::register('cmdb:write', 'cmdb::api.abilities.write');
 
         Relation::morphMap([
             'cmdb.ci_type' => CiType::class,

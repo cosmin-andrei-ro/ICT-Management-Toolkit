@@ -48,3 +48,20 @@ Hardware assets (who has them, where they are, their warranty and how they left 
 | `itam.license.reveal_key` | team-lead, asset-manager | Show a licence key, after an authenticator code (audited) |
 
 Administrators have every permission.
+
+## API (ADR 0062)
+
+Abilities: `assets:read`, `assets:write`. Permissions are the screens' (`itam.asset.*`, `itam.license.*`): agents may hand assets out and back, asset managers may also register, change and retire them.
+
+| Method | Path | |
+|---|---|---|
+| GET | `/api/v1/assets/categories` | Categories and their attribute schemas |
+| GET | `/api/v1/assets` | Filters `category`, `status`, `holder_id`, `location_id`, `search`; sorts `asset_tag`, `name`, `created_at`, `updated_at`, `warranty_ends_on` |
+| POST | `/api/v1/assets` | Through `SaveAsset`; status `ordered` or `in_stock` only |
+| GET / PATCH | `/api/v1/assets/{id}` | PATCH changes only the fields sent; `status` is refused there |
+| POST | `/api/v1/assets/{id}/assign` | `user_id`, `location_id`, `notes`, `notify` (`AssignAsset`, keeps the history) |
+| POST | `/api/v1/assets/{id}/status` | `in_stock` (returned), `deployed` (back from repair), `in_repair`, `retired`, `lost` (`ChangeAssetStatus`); disposal stays on screen |
+| GET / POST | `/api/v1/licenses` | Filters `product_id`, `model`, `expires_before`, `search`; `seats_used` counted |
+| GET / PATCH | `/api/v1/licenses/{id}` | `license_key` and `remove_key` are write-only: the key is never returned (`has_key`) |
+| POST | `/api/v1/licenses/{id}/seats` | `user_id` (per-user) or `asset_id` (per-device) |
+| DELETE | `/api/v1/licenses/{id}/seats/{seat}` | |

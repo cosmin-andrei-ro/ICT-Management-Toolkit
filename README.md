@@ -61,7 +61,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 - **Suppliers** with their support contacts, **contracts** with documents, deadlines and email reminders before each notice deadline, and nested **locations** (sites, buildings, rooms).
 - Teams, business calendars (working hours, Romanian public holidays), API tokens that IT staff issue themselves, bound to one organization, with administrators able to revoke any of them.
 - Append-only **audit trail**: who changed what, when, with old and new values; sign-ins, role changes, exports.
-- Administration panel at `/admin`, a REST API at `/api/v1` (OpenAPI in [docs/api/openapi.json](docs/api/openapi.json)), and the **user manual** at `/manual`.
+- Administration panel at `/admin`, a REST API at `/api/v1` for tickets, the CMDB, assets and licences (OpenAPI in [docs/api/openapi.json](docs/api/openapi.json)), and the **user manual** at `/manual`.
 
 **Service desk (Ticketing, ITIL 4)**
 - **Incidents and service requests**: self-service portal, service catalog with request forms, agent desk with queues, assignment, internal notes, attachments and full-text search.
