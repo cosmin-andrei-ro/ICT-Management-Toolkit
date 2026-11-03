@@ -23,7 +23,7 @@ Messages are read every minute or so. A message is ignored, without any answer, 
 
 - it comes from an address that has no account in the application;
 - it is an automatic message, such as an out-of-office reply or a delivery failure;
-- the mail server could not verify that it really comes from your address;
+- the mail server could not verify that it really comes from your address (when IT staff write to a ticket by email without this check, their message stays internal until they confirm it);
 - you sent many messages in a short time;
 - it is very large.
 

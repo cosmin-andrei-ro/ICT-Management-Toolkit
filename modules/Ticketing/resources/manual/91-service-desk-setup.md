@@ -84,10 +84,11 @@ Administrators connect support mailboxes under **Mailboxes**, so people can rais
 - **Username and password:** a mailbox account with read access. The password is stored encrypted and never shown again; leave it empty when editing to keep it.
 - **Folder to read:** usually `INBOX`. **Move processed messages to:** an existing folder; empty means processed messages are only marked as read.
 - **New tickets are** incidents or service requests, in the chosen **queue** (empty means the default queue).
+- **Only verified senders:** accept only messages your mail server verified (SPF or DMARC passed). Turn it on when your mail server adds these checks to every message.
 
 **Test connection** checks the server, the sign-in and the folders. The list shows when each mailbox was last read and, if reading failed, why.
 
-Only people with an account in the organization can raise tickets by email; other senders are ignored without an answer. Automatic messages (out-of-office replies, delivery failures, mailing lists) are ignored too, to prevent mail loops.
+Only people with an account in the organization can raise tickets by email; other senders are ignored without an answer. Automatic messages (out-of-office replies, delivery failures, mailing lists) are ignored too, to prevent mail loops. A message that seems to come from IT staff but that the mail server did not verify becomes an internal note marked **Unverified email**, so a forged sender address cannot answer requesters in an agent's name.
 
 **Incoming email** lists every message read and what happened to it. Entries are deleted after 90 days. A message that failed is marked as read in the mailbox; mark it as unread there to have it read again.
 

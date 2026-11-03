@@ -87,6 +87,7 @@ final class MailboxResource extends Resource
             Select::make('queue_id')->label(__('ticketing::email.admin.queue'))->helperText(__('ticketing::email.admin.queue_help'))
                 ->options(fn (): array => self::queueOptions())
                 ->in(fn (): array => array_keys(self::queueOptions())),
+            Toggle::make('require_verified_senders')->label(__('ticketing::email.admin.require_verified'))->helperText(__('ticketing::email.admin.require_verified_help')),
             Toggle::make('is_active')->label(__('ticketing::admin.active'))->default(true),
         ]);
     }
