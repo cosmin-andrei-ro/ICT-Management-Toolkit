@@ -30,6 +30,7 @@ use Modules\Core\Domain\Models\User;
  * @property ?string $contact_email
  * @property bool $is_deputy
  * @property ?string $responsibilities
+ * @property-read ?PlanVersion $version
  * @property-read ?User $user
  */
 #[Table('bcm_team_members')]
@@ -51,6 +52,14 @@ final class TeamMember extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo<PlanVersion, $this>
+     */
+    public function version(): BelongsTo
+    {
+        return $this->belongsTo(PlanVersion::class, 'version_id');
     }
 
     protected function casts(): array

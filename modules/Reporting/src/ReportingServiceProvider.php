@@ -13,9 +13,11 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Http\Home\HomePanels;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Reporting\Application\Actions\ManageReportSubscriptions;
+use Modules\Reporting\Application\PersonalData\ReportingPersonalData;
 use Modules\Reporting\Domain\Models\ReportSubscription;
 use Modules\Reporting\Http\Livewire\Dashboard;
 use Modules\Reporting\Infrastructure\Console\SendMonthlyReportsCommand;
@@ -31,6 +33,7 @@ final class ReportingServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('reporting::personal_data.sheet', fn (User $person): iterable => app(ReportingPersonalData::class)($person)));
 
         $this->callAfterResolving(PermissionRegistry::class, function (PermissionRegistry $registry): void {
             $registry->register([

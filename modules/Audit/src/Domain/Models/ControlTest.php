@@ -33,6 +33,7 @@ use Modules\Core\Domain\Models\User;
  * @property ?string $notes
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
+ * @property-read ?Control $control
  * @property-read ?User $tester
  */
 #[Table('audit_control_tests')]
@@ -57,6 +58,14 @@ final class ControlTest extends Model
     public function evidence(): HasMany
     {
         return $this->hasMany(Evidence::class, 'test_id');
+    }
+
+    /**
+     * @return BelongsTo<Control, $this>
+     */
+    public function control(): BelongsTo
+    {
+        return $this->belongsTo(Control::class);
     }
 
     protected function casts(): array

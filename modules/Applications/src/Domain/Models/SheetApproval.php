@@ -27,6 +27,7 @@ use Modules\Core\Domain\Models\User;
  * @property ?string $user_id
  * @property ?string $comment
  * @property Carbon $approved_at
+ * @property-read ?Sheet $sheet
  * @property-read ?User $user
  */
 #[Table('applications_sheet_approvals')]
@@ -43,6 +44,14 @@ final class SheetApproval extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo<Sheet, $this>
+     */
+    public function sheet(): BelongsTo
+    {
+        return $this->belongsTo(Sheet::class);
     }
 
     protected function casts(): array

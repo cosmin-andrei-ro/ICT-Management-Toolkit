@@ -20,6 +20,7 @@ use Modules\Core\Domain\Links\ServiceDeskTickets;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Ticketing\Application\Email\MailboxReader;
@@ -30,6 +31,7 @@ use Modules\Ticketing\Application\Metrics\ServiceDeskMetrics;
 use Modules\Ticketing\Application\Notifications\SendChangeNotifications;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
+use Modules\Ticketing\Application\PersonalData\TicketingPersonalData;
 use Modules\Ticketing\Application\Reports\TicketExport;
 use Modules\Ticketing\Application\Risks\IncidentRiskSignals;
 use Modules\Ticketing\Domain\Events\ChangeApproved;
@@ -68,6 +70,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('ticketing::personal_data.sheet', fn (User $person): iterable => app(TicketingPersonalData::class)($person)));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ServiceDeskMetrics::source()));
 

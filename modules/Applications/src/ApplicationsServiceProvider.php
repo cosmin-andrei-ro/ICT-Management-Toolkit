@@ -16,6 +16,7 @@ use Modules\Applications\Application\Links\ApplicationRecords;
 use Modules\Applications\Application\Links\PortfolioApplications;
 use Modules\Applications\Application\Metrics\PortfolioMetrics;
 use Modules\Applications\Application\Options\OptionCatalog;
+use Modules\Applications\Application\PersonalData\ApplicationsPersonalData;
 use Modules\Applications\Application\Risks\ApplicationRiskSignals;
 use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Applications\Domain\Models\Application;
@@ -33,6 +34,7 @@ use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 
@@ -46,6 +48,7 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('applications::personal_data.sheet', fn (User $person): iterable => app(ApplicationsPersonalData::class)($person)));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(PortfolioMetrics::source()));
 

@@ -18,8 +18,10 @@ use Modules\Bcm\Domain\Models\Plan;
 use Modules\Bia\Domain\Models\BusinessProcess;
 use Modules\Cmdb\Domain\Models\ConfigurationItem;
 use Modules\Cmdb\Domain\Models\Relationship;
+use Modules\Core\Application\Exports\PersonalDataExport;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Links\ConfigurationItems;
+use Modules\Core\Domain\Models\Export;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
@@ -119,6 +121,19 @@ it('builds the demo company with an account per role and three months of history
         ->and(MetricSnapshot::query()->where('metric_key', 'dcim.single_fed')->where('taken_on', today()->toDateString())->value('value'))->toEqual(1)
         ->and(MetricSnapshot::query()->where('metric_key', 'projects.over_budget')->where('taken_on', today()->toDateString())->value('value'))->toEqual(1)
         ->and(ReportSubscription::query()->count())->toBe(1);
+
+    // The export of a person's data reads every module: a busy team lead and an employee.
+    foreach (['teamlead@example.com' => ['Organization', 'Service desk', 'CMDB', 'Continuity', 'Risks', 'Projects', 'Activity'], 'finance@example.com' => ['Service desk', 'Assets and licences', 'Applications', 'Business impact analysis']] as $email => $expected) {
+        $export = new Export;
+        $export->forceFill(['organization_id' => $organization->id, 'user_id' => User::query()->where('email', 'admin@example.com')->sole()->id, 'type' => PersonalDataExport::TYPE, 'format' => 'xlsx', 'status' => 'pending', 'parameters' => ['person_id' => User::query()->where('email', $email)->sole()->id]])->save();
+        $sheets = app(PersonalDataExport::class)->sheets($export);
+        $names = array_map(fn ($sheet): string => $sheet->name, $sheets);
+
+        expect($names)->toContain(...$expected);
+        foreach ($sheets as $sheet) {
+            iterator_to_array((fn () => yield from $sheet->rows)(), false);
+        }
+    }
 });
 
 it('refuses to seed demo data outside local and testing', function (): void {

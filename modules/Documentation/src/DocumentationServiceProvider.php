@@ -20,10 +20,12 @@ use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Documentation\Application\Links\DocumentationArticles;
 use Modules\Documentation\Application\Listeners\GenerateApplicationPage;
 use Modules\Documentation\Application\Metrics\DocumentationMetrics;
+use Modules\Documentation\Application\PersonalData\DocumentationPersonalData;
 use Modules\Documentation\Application\SpaceAccess;
 use Modules\Documentation\Domain\Models\Page;
 use Modules\Documentation\Domain\Models\Space;
@@ -39,6 +41,7 @@ final class DocumentationServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('documentation::personal_data.sheet', fn (User $person): iterable => app(DocumentationPersonalData::class)($person)));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(DocumentationMetrics::source()));
 
