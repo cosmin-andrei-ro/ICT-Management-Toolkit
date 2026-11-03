@@ -15,6 +15,7 @@ use Modules\Core\Http\Controllers\SamlController;
 use Modules\Core\Http\Controllers\SsoController;
 use Modules\Core\Http\Livewire\Account\AccountSecurity;
 use Modules\Core\Http\Livewire\Account\ApiTokens;
+use Modules\Core\Http\Livewire\Account\Invitations;
 use Modules\Core\Http\Livewire\Audit\AuditLogIndex;
 use Modules\Core\Http\Livewire\Auth\ForgotPassword;
 use Modules\Core\Http\Livewire\Auth\Login;
@@ -67,6 +68,7 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
 
     Route::livewire('/audit-log', AuditLogIndex::class)->name('core.audit-log.index');
     Route::livewire('/account/api-tokens', ApiTokens::class)->name('account.api-tokens');
+    Route::livewire('/account/invitations', Invitations::class)->name('account.invitations');
 
     Route::livewire('/contracts', ContractIndex::class)->name('core.contracts.index');
     Route::livewire('/contracts/new', ContractForm::class)->name('core.contracts.create');

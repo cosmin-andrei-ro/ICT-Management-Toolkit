@@ -67,6 +67,7 @@ final readonly class AnonymizePerson
             $this->db->table('core_sso_identities')->where('user_id', $person->id)->delete();
             $this->db->table('password_reset_tokens')->where('email', $email)->delete();
             $this->db->table('core_invitation_tokens')->where('email', $email)->delete();
+            $this->db->table('core_organization_invitations')->where('user_id', $person->id)->delete();
             $this->db->table('core_team_user')->where('user_id', $person->id)->delete();
 
             $person->syncRoles([]);

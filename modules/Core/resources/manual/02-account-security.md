@@ -54,6 +54,10 @@ After 10 failed sign-ins in a row (wrong password or wrong code, including codes
 
 If you did not cause the failures yourself, someone may be trying to guess your password: choose a new one and tell the IT department. Active Directory accounts follow the lockout rules of Windows instead.
 
+## Invitations from other organizations
+
+If another organization using this toolkit invites you, you receive an email. Sign in and open **Invitations** (the link in the email, or `/account/invitations`): you see who invited you and with which roles. **Join** adds that organization to your account; **Decline** discards the invitation. Nothing changes until you accept, and an invitation expires after 14 days. Accept only invitations you expected.
+
 ## API tokens
 
 If you work in IT, **API tokens** (link at the bottom of this page) lets you create a token for a script or another system that uses the toolkit's API as you:

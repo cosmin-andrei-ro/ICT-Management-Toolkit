@@ -16,6 +16,7 @@ use InvalidArgumentException;
 use LogicException;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
+use Modules\Core\Domain\Directory\AuthSource;
 use Modules\Core\Domain\Models\User;
 use SensitiveParameter;
 
@@ -73,13 +74,15 @@ final readonly class CompleteLogin
     /**
      * After single sign-on: signed in at once when the identity provider is
      * trusted to have asked for a second factor and says it did; otherwise as
-     * after a password.
+     * after a password. Only for accounts the provider created: a local or AD
+     * account linked by e-mail keeps its own second factor, so whoever sets up
+     * a provider cannot sign in as an existing administrator without it.
      *
      * @return bool Whether a second factor is still needed.
      */
     public function afterSso(User $user, bool $mfaByProvider): bool
     {
-        if (! $mfaByProvider) {
+        if (! $mfaByProvider || $user->auth_source !== AuthSource::Sso) {
             return $this->afterPassword($user, false);
         }
 

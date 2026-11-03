@@ -101,6 +101,25 @@ it('asks for the toolkit\'s own code when the provider did not ask for a second 
         ->and($user->fresh()?->auth_source)->toBe(AuthSource::Local);
 });
 
+it('keeps a linked local account\'s own second factor, even when the provider is trusted for it', function (): void {
+    $admin = User::factory()->memberOf($this->organization)->withTwoFactor()->create(['email' => 'admin@company.test']);
+
+    // Whoever set up the provider could otherwise sign in as an existing administrator without their code.
+    ssoSignIn($this, ['sub' => 'admin', 'email' => 'admin@company.test', 'amr' => ['pwd', 'mfa']])->assertRedirect(route('login.challenge'));
+    $this->assertGuest();
+    expect(SsoIdentity::query()->where('user_id', $admin->id)->exists())->toBeTrue();
+});
+
+it('refuses an identity already linked once its account also belongs to another organization', function (): void {
+    ssoSignIn($this, ['sub' => 'user-1', 'email' => 'ana@company.test', 'amr' => ['mfa']])->assertRedirect(route('home'));
+    auth()->logout();
+    User::query()->where('email', 'ana@company.test')->sole()->organizations()->attach(Organization::factory()->create()->id);
+
+    ssoSignIn($this, ['sub' => 'user-1', 'email' => 'ana@company.test', 'amr' => ['mfa']])->assertRedirect(route('login'))->assertSessionHas('sso_error');
+    $this->assertGuest();
+    expect(AuditLog::query()->where('event', AuditEvent::LoginDenied)->pluck('new_values')->map(fn ($values) => $values['reason'] ?? null)->all())->toContain('other_organizations');
+});
+
 it('refuses other domains and accounts of other organizations, and records why', function (): void {
     ssoSignIn($this, ['sub' => 'x', 'email' => 'mallory@elsewhere.test'])->assertRedirect(route('login'))->assertSessionHas('sso_error');
 
