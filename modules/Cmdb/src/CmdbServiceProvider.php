@@ -11,6 +11,7 @@ use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Cmdb\Application\Links\CmdbConfigurationItems;
 use Modules\Cmdb\Application\PersonalData\CmdbPersonalData;
+use Modules\Cmdb\Application\Webhooks\CmdbWebhooks;
 use Modules\Cmdb\Domain\Models\CiType;
 use Modules\Cmdb\Domain\Models\ConfigurationItem;
 use Modules\Cmdb\Domain\Models\Relationship;
@@ -21,6 +22,7 @@ use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalData;
+use Modules\Core\Domain\Webhooks\WebhookEvents;
 use Modules\Core\Http\Navigation\Navigation;
 
 final class CmdbServiceProvider extends ModuleServiceProvider
@@ -34,6 +36,7 @@ final class CmdbServiceProvider extends ModuleServiceProvider
     {
         parent::register();
         $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('cmdb::personal_data.sheet', fn (User $person): iterable => app(CmdbPersonalData::class)($person)));
+        $this->callAfterResolving(WebhookEvents::class, CmdbWebhooks::register(...));
 
         $this->app->bind(ConfigurationItems::class, CmdbConfigurationItems::class);
 
@@ -44,6 +47,8 @@ final class CmdbServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        CmdbWebhooks::listen();
 
         ApiAbility::register('cmdb:read', 'cmdb::api.abilities.read');
         ApiAbility::register('cmdb:write', 'cmdb::api.abilities.write');

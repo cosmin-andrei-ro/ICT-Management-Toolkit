@@ -22,6 +22,7 @@ use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalData;
+use Modules\Core\Domain\Webhooks\WebhookEvents;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Risk\Application\Exports\RiskRegisterExport;
 use Modules\Risk\Application\Links\RegisterRisks;
@@ -29,6 +30,7 @@ use Modules\Risk\Application\Links\RiskRecords;
 use Modules\Risk\Application\Listeners\RefreshSuggestionsOnSignal;
 use Modules\Risk\Application\Metrics\RiskMetrics;
 use Modules\Risk\Application\PersonalData\RiskPersonalData;
+use Modules\Risk\Application\Webhooks\RiskWebhooks;
 use Modules\Risk\Domain\Models\CatalogEntry;
 use Modules\Risk\Domain\Models\Risk;
 use Modules\Risk\Domain\Models\RiskSettings;
@@ -48,6 +50,7 @@ final class RiskServiceProvider extends ModuleServiceProvider
     {
         parent::register();
         $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('risk::personal_data.sheet', fn (User $person): iterable => app(RiskPersonalData::class)($person)));
+        $this->callAfterResolving(WebhookEvents::class, RiskWebhooks::register(...));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(RiskMetrics::source()));
 
@@ -65,6 +68,8 @@ final class RiskServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        RiskWebhooks::listen();
 
         ApiAbility::register('risks:read', 'risk::api.abilities.read');
         ApiAbility::register('risks:write', 'risk::api.abilities.write');

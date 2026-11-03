@@ -65,3 +65,7 @@ Abilities: `assets:read`, `assets:write`. Permissions are the screens' (`itam.as
 | GET / PATCH | `/api/v1/licenses/{id}` | `license_key` and `remove_key` are write-only: the key is never returned (`has_key`) |
 | POST | `/api/v1/licenses/{id}/seats` | `user_id` (per-user) or `asset_id` (per-device) |
 | DELETE | `/api/v1/licenses/{id}/seats/{seat}` | |
+
+## Webhook events (ADR 0066)
+
+`asset.assigned`, `asset.returned`; the holder is not named (`ItamWebhooks`, from model events).

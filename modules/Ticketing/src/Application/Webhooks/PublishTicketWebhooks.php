@@ -43,9 +43,7 @@ final readonly class PublishTicketWebhooks
 
     public static function register(WebhookEvents $events): void
     {
-        foreach (self::EVENTS as $type => $label) {
-            $events->register($type, $label);
-        }
+        $events->registerMany(self::EVENTS);
     }
 
     public function handle(TicketCreated|TicketAssigned|TicketStatusChanged|TicketResolved|SlaWarning|SlaBreached|ChangeSubmitted|ChangeApproved|ChangeRejected $event): void

@@ -22,6 +22,16 @@ final class WebhookEvents
     }
 
     /**
+     * @param  array<string, string>  $types  type => label translation key
+     */
+    public function registerMany(array $types): void
+    {
+        foreach ($types as $type => $label) {
+            $this->register($type, $label);
+        }
+    }
+
+    /**
      * @return array<string, string>
      */
     public function all(): array

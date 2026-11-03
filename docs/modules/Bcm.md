@@ -55,3 +55,7 @@ Abilities: `continuity:read`, `continuity:write`. Permissions are the screens': 
 | GET | `/api/v1/continuity/exercises`, `/api/v1/continuity/activations` | Read-only |
 
 Versions are written, submitted and approved on screen; exercises and activations are run there too.
+
+## Webhook events (ADR 0066)
+
+`continuity.plan_approved`, `continuity.plan_activated`, `continuity.activation_closed`, `continuity.exercise_completed`, all linking to the plan, with `changes.record_id` (`BcmWebhooks`, from model events).
