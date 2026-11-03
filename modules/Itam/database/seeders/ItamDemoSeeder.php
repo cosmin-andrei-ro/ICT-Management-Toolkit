@@ -13,10 +13,12 @@ use Modules\Core\Database\Seeders\DemoCompany;
 use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Itam\Application\Actions\AssignAsset;
+use Modules\Itam\Application\Actions\ChangeAssetStatus;
 use Modules\Itam\Application\Actions\ManageLicenseSeats;
 use Modules\Itam\Application\Actions\ProvisionDefaultCategories;
 use Modules\Itam\Application\Actions\SaveAsset;
 use Modules\Itam\Application\Actions\SaveLicense;
+use Modules\Itam\Domain\Enums\AssetStatus;
 use Modules\Itam\Domain\Models\Category;
 
 /**
@@ -47,9 +49,9 @@ final class ItamDemoSeeder extends Seeder
     /** Assets that are what a CMDB item describes. */
     private const array CMDB = ['host_1' => 'host_1', 'host_2' => 'host_2', 'core_switch' => 'core_switch', 'firewall' => 'firewall', 'nas' => 'nas', 'wh_ap_1' => 'wh_ap', 'wh_ap_2' => 'wh_ap'];
 
-    public function run(DemoCompany $company, OrganizationContext $context, ProvisionDefaultCategories $categories, SaveAsset $save, AssignAsset $assign, SaveLicense $licenses, ManageLicenseSeats $seats, ConfigurationItems $items): void
+    public function run(DemoCompany $company, OrganizationContext $context, ProvisionDefaultCategories $categories, SaveAsset $save, AssignAsset $assign, ChangeAssetStatus $change, SaveLicense $licenses, ManageLicenseSeats $seats, ConfigurationItems $items): void
     {
-        $context->runAs($company->organization, function () use ($company, $categories, $save, $assign, $licenses, $seats, $items): void {
+        $context->runAs($company->organization, function () use ($company, $categories, $save, $assign, $change, $licenses, $seats, $items): void {
             $categories->handle();
             $category = fn (string $key): Category => Category::query()->where('key', $key)->sole();
             $today = DemoClock::today();
@@ -78,10 +80,12 @@ final class ItamDemoSeeder extends Seeder
                 $bought = $today->subMonths($age);
                 $asset = $save->handle(null, $category($type), [
                     'name' => $name, 'manufacturer' => $manufacturer, 'model' => $model, 'serial_number' => strtoupper(substr($manufacturer, 0, 2)).sprintf('%07d', crc32($key) % 10000000),
-                    'status' => 'deployed', 'location_id' => $company->locations[str_starts_with($key, 'wh_') ? 'comms_room' : ($key === 'floor2_printer' ? 'office' : 'server_room')]->id,
+                    'location_id' => $company->locations[str_starts_with($key, 'wh_') ? 'comms_room' : ($key === 'floor2_printer' ? 'office' : 'server_room')]->id,
                     'supplier_id' => $company->suppliers[$supplier]->id, 'contract_id' => $company->contracts[$supplier === 'network' ? 'network_support' : 'hardware_support']->id,
                     'purchase_date' => $bought->toDateString(), 'warranty_ends_on' => $bought->addYears(5)->toDateString(),
                 ], $properties);
+                // Saved assets arrive in stock; infrastructure is then put in service where it stands.
+                $asset = $change->handle($asset, AssetStatus::Deployed, $actor);
                 $company->refs['itam.'.$key] = $asset->id;
 
                 if (isset(self::CMDB[$key])) {

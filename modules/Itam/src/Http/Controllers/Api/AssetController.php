@@ -123,6 +123,7 @@ final readonly class AssetController
 
     /**
      * Change the status: back in stock (returned), in or out of repair, retired, lost.
+     * `deployed` without a holder puts infrastructure in service at `location_id` (or where it is).
      */
     public function status(ChangeAssetStatusRequest $request, Asset $asset, ChangeAssetStatus $change): AssetResource
     {

@@ -23,6 +23,7 @@ return [
         'in_stock' => 'Back in stock',
         'in_repair' => 'Send for repair',
         'deployed' => 'Back from repair',
+        'in_service' => 'Put in service at the location',
         'retired' => 'Retire',
         'lost' => 'Report lost or stolen',
     ],

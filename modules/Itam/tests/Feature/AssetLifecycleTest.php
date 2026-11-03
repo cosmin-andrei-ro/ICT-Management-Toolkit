@@ -75,6 +75,25 @@ it('keeps the holder while the asset is away for repair', function (): void {
         ->and(AssetAssignment::query()->where('asset_id', $laptop->id)->count())->toBe(1);
 });
 
+it('puts infrastructure in service at a location, with no holder', function (): void {
+    $server = $this->itam->laptop(['location_id' => null]);
+    $room = Location::factory()->create(['name' => 'Server room']);
+    $change = app(ChangeAssetStatus::class);
+
+    expect(fn () => $change->handle($server, AssetStatus::Deployed, $this->itam->agent))->toThrow(AssetTransitionNotAllowed::class, 'location');
+
+    $change->handle($server, AssetStatus::Deployed, $this->itam->agent, $room->id);
+    $server->refresh();
+    expect($server->status)->toBe(AssetStatus::Deployed)->and($server->assigned_to_id)->toBeNull()->and($server->location_id)->toBe($room->id)
+        ->and(AssetAssignment::query()->where('asset_id', $server->id)->exists())->toBeFalse();
+
+    // Away for repair and back, still where it stands; or handed to a person later.
+    $change->handle($server, AssetStatus::InRepair, $this->itam->agent);
+    $change->handle($server, AssetStatus::Deployed, $this->itam->agent);
+    app(AssignAsset::class)->handle($server->refresh(), $this->itam->employee, $this->itam->manager);
+    expect($server->refresh())->status->toBe(AssetStatus::Deployed)->assigned_to_id->toBe($this->itam->employee->id);
+});
+
 it('refuses moves the life cycle does not allow', function (): void {
     $laptop = $this->itam->laptop();
     app(AssignAsset::class)->handle($laptop, $this->itam->employee, $this->itam->manager);
