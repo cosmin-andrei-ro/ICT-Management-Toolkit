@@ -114,3 +114,13 @@ curl -H "Authorization: Bearer <token>" -H "Accept: application/json" https://<h
 | `ticketing.report.view` | team-lead | Reports and their exports |
 
 Administrators have every permission.
+
+## Retention (ADR 0060)
+
+`AnonymizeClosedTickets` is the `ticketing.closed_tickets` retention policy (default 3 years from closing). It keeps:
+
+- number, type, category, service, queue, assignee;
+- dates, SLA timers, status history and linked items.
+
+It removes the requester (`requester_id` is nullable), the title, the description, the resolution note, custom fields, watchers, comments and attachments (the files too), and the sender and subject of linked inbound e-mails. The same fields are taken out of the ticket's, its comments' and its files' audit entries. `anonymized_at` marks the ticket.
+

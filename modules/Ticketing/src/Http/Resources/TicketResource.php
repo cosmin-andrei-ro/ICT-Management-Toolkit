@@ -32,7 +32,7 @@ final class TicketResource extends JsonResource
             'urgency' => $this->urgency->value,
             'priority' => $this->priority->value,
             'channel' => $this->channel->value,
-            'requester' => $this->whenLoaded('requester', fn (): array => ['id' => $this->requester->id, 'name' => $this->requester->name]),
+            'requester' => $this->whenLoaded('requester', fn (): ?array => $this->requester !== null ? ['id' => $this->requester->id, 'name' => $this->requester->name] : null),
             'assignee' => $this->whenLoaded('assignee', fn (): ?array => $this->assignee !== null ? ['id' => $this->assignee->id, 'name' => $this->assignee->name] : null),
             'queue' => $this->whenLoaded('queue', fn (): ?array => $this->queue !== null ? ['id' => $this->queue->id, 'name' => $this->queue->name] : null),
             'category' => $this->whenLoaded('category', fn (): ?array => $this->category !== null ? ['id' => $this->category->id, 'name' => $this->category->name] : null),

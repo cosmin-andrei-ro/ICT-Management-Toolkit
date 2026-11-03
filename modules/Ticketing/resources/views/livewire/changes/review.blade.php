@@ -4,7 +4,7 @@
         <h1 class="text-xl font-semibold"><span class="font-mono text-gray-500">{{ $change->number }}</span> {{ $change->title }}</h1>
         <p class="text-sm text-gray-600">
             {{ $details?->change_type->label() }} · {{ __('ticketing::changes.ui.risk') }}: {{ $details?->risk->label() }} ·
-            {{ __('ticketing::ui.requested_by', ['name' => $change->requester->name]) }} · {{ $details?->approval_status->label() }}
+            {{ __('ticketing::ui.requested_by', ['name' => $change->requester->name ?? __('ticketing::retention.requester')]) }} · {{ $details?->approval_status->label() }}
         </p>
     </header>
 

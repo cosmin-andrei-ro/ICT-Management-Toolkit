@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Ticketing;
 
 use App\Support\Modules\ModuleServiceProvider;
+use Carbon\CarbonImmutable;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
@@ -21,6 +22,7 @@ use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalData;
+use Modules\Core\Domain\Retention\DataRetention;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Ticketing\Application\Email\MailboxReader;
@@ -33,6 +35,7 @@ use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
 use Modules\Ticketing\Application\PersonalData\TicketingPersonalData;
 use Modules\Ticketing\Application\Reports\TicketExport;
+use Modules\Ticketing\Application\Retention\AnonymizeClosedTickets;
 use Modules\Ticketing\Application\Risks\IncidentRiskSignals;
 use Modules\Ticketing\Domain\Events\ChangeApproved;
 use Modules\Ticketing\Domain\Events\ChangeRejected;
@@ -72,6 +75,10 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         parent::register();
         $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('ticketing::personal_data.sheet', fn (User $person): iterable => app(TicketingPersonalData::class)($person)));
         $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->registerEraser(TicketingPersonalData::erase(...)));
+        $this->callAfterResolving(DataRetention::class, fn (DataRetention $retention) => $retention->register(
+            'ticketing.closed_tickets', 'ticketing::retention.policy', 'ticketing::retention.policy_help', 3,
+            fn (string $organizationId, CarbonImmutable $before): int => app(AnonymizeClosedTickets::class)($organizationId, $before),
+        ));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ServiceDeskMetrics::source()));
 

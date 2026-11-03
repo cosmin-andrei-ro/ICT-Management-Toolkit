@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Core;
 
 use App\Support\Modules\ModuleServiceProvider;
+use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;
@@ -40,6 +41,7 @@ use Modules\Core\Application\Exports\AuditLogExport;
 use Modules\Core\Application\Exports\PersonalDataExport;
 use Modules\Core\Application\Links\ContractRecords;
 use Modules\Core\Application\PersonalData\CorePersonalData;
+use Modules\Core\Application\Retention\ApplyRetention;
 use Modules\Core\Application\Risks\ContractRiskSignals;
 use Modules\Core\Application\Sso\DnsHostResolver;
 use Modules\Core\Application\Sso\HostResolver;
@@ -79,12 +81,14 @@ use Modules\Core\Domain\Models\Department;
 use Modules\Core\Domain\Models\Export;
 use Modules\Core\Domain\Models\Location;
 use Modules\Core\Domain\Models\Organization;
+use Modules\Core\Domain\Models\RetentionSettings;
 use Modules\Core\Domain\Models\SecuritySettings;
 use Modules\Core\Domain\Models\Supplier;
 use Modules\Core\Domain\Models\SupplierContact;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalData;
+use Modules\Core\Domain\Retention\DataRetention;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Domain\Sso\SsoGroupMapping;
 use Modules\Core\Domain\Sso\SsoProvider;
@@ -95,6 +99,7 @@ use Modules\Core\Http\Middleware\RequireTwoFactor;
 use Modules\Core\Http\Middleware\SecurityHeaders;
 use Modules\Core\Http\Middleware\SetCurrentOrganization;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Core\Infrastructure\Console\ApplyRetentionCommand;
 use Modules\Core\Infrastructure\Console\IssueApiTokenCommand;
 use Modules\Core\Infrastructure\Console\PruneExportsCommand;
 use Modules\Core\Infrastructure\Console\SendContractRemindersCommand;
@@ -134,6 +139,11 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->extend(UncompromisedVerifier::class, fn (UncompromisedVerifier $verifier, Application $app): NotPwnedVerifier => new NotPwnedVerifier($app->make(HttpFactory::class), config()->integer('core.authentication.breached_passwords_timeout')));
         $this->app->singleton(ExportRegistry::class);
         $this->app->singleton(PersonalData::class);
+        $this->app->singleton(DataRetention::class);
+        $this->callAfterResolving(DataRetention::class, fn (DataRetention $retention) => $retention->register(
+            ApplyRetention::AUDIT_POLICY, 'core::retention.policies.audit_log', 'core::retention.policies.audit_log_help', 5,
+            fn (string $organizationId, CarbonImmutable $before): int => app(ApplyRetention::class)->purgeAuditLog($organizationId, $before),
+        ));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(AuditLogExport::TYPE, AuditLogExport::class, 'core.audit.view'));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PersonalDataExport::TYPE, PersonalDataExport::class, 'core.personal_data.manage'));
         $this->app->singleton(LinkedRecords::class);
@@ -243,6 +253,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.supplier_contact' => SupplierContact::class,
             'core.contract' => Contract::class,
             'core.security_settings' => SecuritySettings::class,
+            'core.retention_settings' => RetentionSettings::class,
         ]);
 
         Event::listen(
@@ -254,6 +265,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(PruneExportsCommand::class)->hourly()->onOneServer();
+            $schedule->command(ApplyRetentionCommand::class)->dailyAt('03:30')->withoutOverlapping()->onOneServer();
             $schedule->command(SendContractRemindersCommand::class)->dailyAt('07:00')->withoutOverlapping()->onOneServer();
             $config = $this->app->make('config');
 
@@ -277,7 +289,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         });
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class, IssueApiTokenCommand::class, PruneExportsCommand::class, SetupCommand::class, SendContractRemindersCommand::class]);
+            $this->commands([SyncPermissionsCommand::class, TestDirectoryCommand::class, SyncDirectoryCommand::class, IssueApiTokenCommand::class, PruneExportsCommand::class, SetupCommand::class, SendContractRemindersCommand::class, ApplyRetentionCommand::class]);
         }
     }
 

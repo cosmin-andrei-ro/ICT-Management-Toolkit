@@ -45,6 +45,17 @@ The foundation every other module builds on. Code: `modules/Core/`.
   5. The `person_anonymized` event is recorded, without the old name.
 - The audit trigger lets UPDATE through only while that function runs (`core.audit_redaction` set locally), and only for `old_values`, `new_values`, `ip_address` and `user_agent`.
 
+## Data retention (ADR 0060)
+
+- `DataRetention` (Core registry): modules register a policy. A policy has a key, a label, a help text, default years, and `fn (string $organizationId, CarbonImmutable $before): int`.
+- `core_retention_settings.periods` stores years per policy for each organization. `null` keeps forever; a missing key takes the default. They are set under Administration → Access → Data retention (`core.personal_data.manage`).
+- `core:retention` runs every night at 03:30 (`ApplyRetention`). It applies every policy in every organization and records `retention_applied` with the counts.
+- Audit entries of no organization are purged after the longest audit period among organizations, and never while one keeps its log forever.
+- Policies:
+  - `core.audit_log` (5 years) deletes old entries through `core_purge_audit_log()`;
+  - `ticketing.closed_tickets` (3 years) anonymizes closed tickets.
+- The audit trigger lets a DELETE through only while that function runs (`core.audit_retention`). `AuditRedaction::removeFields()` (`core_redact_record_in_audit_log()`) takes a record's removed fields out of its entries.
+
 ## Authorization (ADR 0004)
 
 - Permissions are named `<module>.<entity>.<action>`. Modules register them, and their grants to the default roles, in `PermissionRegistry` from their service provider.

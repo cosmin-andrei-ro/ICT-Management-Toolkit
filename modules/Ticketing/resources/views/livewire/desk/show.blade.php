@@ -6,7 +6,7 @@
             <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
                 <x-ticketing::badges :ticket="$ticket" />
                 <span>{{ $ticket->type->label() }} · {{ $ticket->channel->label() }}</span>
-                <span>· {{ __('ticketing::ui.requested_by', ['name' => $ticket->requester->name]) }}</span>
+                <span>· {{ __('ticketing::ui.requested_by', ['name' => $ticket->requester->name ?? __('ticketing::retention.requester')]) }}</span>
             </div>
         </header>
 

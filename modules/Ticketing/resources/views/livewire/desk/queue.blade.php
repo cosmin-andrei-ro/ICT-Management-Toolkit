@@ -72,7 +72,7 @@
                         <td class="px-4 py-2 font-mono"><a href="{{ route('ticketing.desk.show', $ticket) }}" class="text-blue-700 underline">{{ $ticket->number }}</a></td>
                         <td class="px-4 py-2">{{ $ticket->title }}</td>
                         <td class="px-4 py-2"><x-ticketing::badges :ticket="$ticket" /></td>
-                        <td class="px-4 py-2">{{ $ticket->requester->name }}</td>
+                        <td class="px-4 py-2">{{ $ticket->requester->name ?? __('ticketing::retention.requester') }}</td>
                         <td class="px-4 py-2">{{ $ticket->queue?->name ?? '—' }}</td>
                         <td class="px-4 py-2">{{ $ticket->assignee?->name ?? __('ticketing::ui.filters.unassigned') }}</td>
                         <td class="px-4 py-2">
