@@ -11,7 +11,12 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Modules\Core\Application\Exports\RequestExport;
+use Modules\Core\Domain\Exports\ExportFormat;
+use Modules\Core\Domain\Exports\ExportStatus;
+use Modules\Core\Domain\Models\Export;
 use Modules\Core\Domain\Models\User;
+use Modules\Projects\Application\Exports\PortfolioExport;
 use Modules\Projects\Domain\Enums\ProjectStatus;
 use Modules\Projects\Domain\Enums\Rag;
 use Modules\Projects\Domain\Models\Project;
@@ -30,6 +35,19 @@ final class Portfolio extends Component
         abort_unless($user instanceof User && ($user->can('projects.project.view') || $user->can('projects.project.manage')), 403);
     }
 
+    public function export(string $format, RequestExport $request): void
+    {
+        $user = auth()->user();
+        $format = ExportFormat::tryFrom($format);
+
+        if (! $user instanceof User || $format === null) {
+            return;
+        }
+
+        // RequestExport checks the permission and records the export in the audit trail.
+        $request->handle($user, PortfolioExport::TYPE, $format, []);
+    }
+
     public function render(): View
     {
         $projects = Project::query()->with(['manager', 'sponsor', 'phases'])
@@ -41,7 +59,12 @@ final class Portfolio extends Component
             ->orderByDesc('reported_on')->get()->unique('project_id')->keyBy('project_id');
         $every = config()->integer('projects.reports.every_days', 14);
 
+        $exports = Export::query()->where('user_id', auth()->id())->where('type', PortfolioExport::TYPE)->latest()->limit(3)->get();
+
         return view('projects::livewire.portfolio', [
+            'exports' => $exports,
+            'preparing' => $exports->contains(fn (Export $export): bool => $export->status === ExportStatus::Pending),
+            'timezone' => config()->string('app.display_timezone'),
             'projects' => $projects,
             'latest' => $latest,
             'every' => $every,

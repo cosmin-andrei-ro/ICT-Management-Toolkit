@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Projects\Http\Controllers\ProjectReportController;
 use Modules\Projects\Http\Livewire\MyTasks;
 use Modules\Projects\Http\Livewire\Portfolio;
 use Modules\Projects\Http\Livewire\ProjectForm;
@@ -19,4 +20,6 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
     Route::livewire('/projects/portfolio', Portfolio::class)->name('projects.portfolio');
     Route::livewire('/projects/{project}', ShowProject::class)->whereUuid('project')->name('projects.show');
     Route::livewire('/projects/{project}/edit', ProjectForm::class)->whereUuid('project')->name('projects.edit');
+    Route::get('/projects/{project}/report', [ProjectReportController::class, 'show'])->whereUuid('project')->name('projects.report');
+    Route::get('/projects/{project}/report/pdf', [ProjectReportController::class, 'pdf'])->whereUuid('project')->middleware('throttle:10,1')->name('projects.report.pdf');
 });

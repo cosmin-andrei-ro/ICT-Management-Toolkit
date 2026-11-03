@@ -10,9 +10,12 @@
                 @if ($project->planned_start || $project->planned_end) · {{ $project->planned_start?->toDateString() ?? '…' }} → {{ $project->planned_end?->toDateString() ?? '…' }} @endif
             </p>
         </div>
+        <div class="flex gap-2">
+            <a href="{{ route('projects.report', $project) }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('projects::reports.print') }}</a>
         @if ($canManage)
             <a href="{{ route('projects.edit', $project) }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('projects::projects.edit') }}</a>
         @endif
+        </div>
     </header>
     @if ($project->description) <p class="whitespace-pre-line text-sm text-gray-700">{{ $project->description }}</p> @endif
 
@@ -44,6 +47,8 @@
     @livewire(\Modules\Projects\Http\Livewire\ProjectGovernance::class, ['project' => $project], key('governance-'.$project->id))
 
     @livewire(\Modules\Projects\Http\Livewire\ProjectDeliverables::class, ['project' => $project], key('deliverables-'.$project->id))
+
+    @livewire(\Modules\Projects\Http\Livewire\ProjectBudget::class, ['project' => $project], key('budget-'.$project->id))
 
     <section aria-labelledby="tasks-heading" class="space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">

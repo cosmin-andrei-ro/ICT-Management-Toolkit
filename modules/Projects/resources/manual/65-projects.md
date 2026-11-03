@@ -78,6 +78,22 @@ The page keeps every report. A report older than two weeks is due again, and the
 - any gate waiting for its sponsor;
 - its manager and sponsor, and its planned end.
 
+## Budget
+
+Under **Budget**, the project manager clicks **Set the budget** to record the approved amount and its currency. Then, for each invoice or expense, they add a cost with:
+
+- its description and category (external labour, licences, hardware, services, other);
+- the amount, which is negative for a credit note;
+- the date, and optionally the supplier and the invoice number.
+
+The section shows what was spent, what is left and the share used, by category. A project that spends more than its budget is marked **over budget**. Once costs are recorded, the currency stays as it is.
+
+## Reports
+
+- **Print the status report** gives one page on the project: its phases, the latest status, the budget, the deliverables and what blocks closure, overdue tasks and the sponsor's decisions. Print it, or **Download PDF** where the PDF service is installed.
+- **Export to Excel** on the Portfolio page gives every project, its costs, deliverables and status reports.
+- The dashboard's **Projects** group shows open projects reported red, projects over budget, overdue tasks and gates waiting for a sponsor. These figures also appear in the monthly management report.
+
 ## Closed projects
 
 Closed and cancelled projects stay as they ended and can no longer be changed.

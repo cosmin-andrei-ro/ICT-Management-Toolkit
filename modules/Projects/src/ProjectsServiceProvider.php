@@ -12,9 +12,14 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Manual\Manual;
+use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Http\Navigation\Navigation;
+use Modules\Projects\Application\Exports\PortfolioExport;
+use Modules\Projects\Application\Metrics\ProjectMetrics;
+use Modules\Projects\Domain\Models\Cost;
 use Modules\Projects\Domain\Models\Deliverable;
 use Modules\Projects\Domain\Models\GateRequest;
 use Modules\Projects\Domain\Models\Phase;
@@ -35,6 +40,8 @@ final class ProjectsServiceProvider extends ModuleServiceProvider
         parent::register();
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ProjectMetrics::source()));
+        $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PortfolioExport::TYPE, PortfolioExport::class, 'projects.project.view'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
     }
 
@@ -49,6 +56,7 @@ final class ProjectsServiceProvider extends ModuleServiceProvider
             'projects.gate_request' => GateRequest::class,
             'projects.status_report' => StatusReport::class,
             'projects.deliverable' => Deliverable::class,
+            'projects.cost' => Cost::class,
         ]);
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {

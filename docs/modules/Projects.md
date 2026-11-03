@@ -1,6 +1,6 @@
 # Projects module
 
-IT projects: phases, team and tasks; then gates, status reports, deliverables and budget. Code: `modules/Projects/`. Decisions: [ADR 0052](../adr/0052-projects-phases-and-tasks.md), [ADR 0053](../adr/0053-project-gates-and-status-reports.md), [ADR 0054](../adr/0054-project-deliverables-and-closure-checklist.md).
+IT projects: phases, team and tasks; then gates, status reports, deliverables and budget. Code: `modules/Projects/`. Decisions: [ADR 0052](../adr/0052-projects-phases-and-tasks.md), [ADR 0053](../adr/0053-project-gates-and-status-reports.md), [ADR 0054](../adr/0054-project-deliverables-and-closure-checklist.md), [ADR 0055](../adr/0055-project-budget-indicators-and-report.md).
 
 ## Concepts
 
@@ -12,6 +12,7 @@ IT projects: phases, team and tasks; then gates, status reports, deliverables an
 - **Deliverable** (`projects_deliverables`): phase, title, required to close, linked record (`linked_type` / `linked_id` through Core `LinkedRecords`, title kept), delivered by and when.
 - **Application** of a new-application project (`projects_projects.application_id`, through Core `Applications`).
 - **Closure checklist** (`ClosureReadiness`, computed, not stored): application chosen, documentation approved, CMDB item, assessed risks, BIA processes with RTO. With the required deliverables, it blocks the closing gate.
+- **Budget** (`projects_projects.budget_amount`, `currency`) and **costs** (`projects_costs`): category (`external_labour`, `licences`, `hardware`, `services`, `other`), description, amount (non-zero, negative for credits), date, supplier, invoice number. `BudgetFigures` gives spent, remaining, share and spending by category.
 - **Task** (`projects_tasks`): phase, title, description, assignee, due date, status (`todo`, `in_progress`, `blocked`, `done`), position on the board, completion time.
 
 ## Screens
@@ -22,6 +23,7 @@ IT projects: phases, team and tasks; then gates, status reports, deliverables an
 - `/projects/my-tasks`: a person's unfinished tasks in open projects, and the gates waiting for them as sponsor.
 - The project page has the **stage gate** (ask, approve, send back, history) and the **status reports** (write, history, due).
 - The project page has **Deliverables** (add, link a record, mark delivered) and, for a new application, the **checklist** with the application chooser and what still blocks closure.
+- The project page has the **Budget** (approved amount, costs, what is left) and **Print the status report** (`/projects/{id}/report`, `/pdf`).
 - `/projects/portfolio`: open projects with phase, latest RAG, waiting gates and planned end.
 
 ## For other modules
@@ -46,4 +48,8 @@ A project's manager changes it and asks for gates; its sponsor decides on them; 
 1. Projects, phases, team and tasks on a board — **done**.
 2. Stage gates approved by the sponsor; RAG status reports; the portfolio — **done**.
 3. Deliverables linked to other modules; the new-application checklist blocking closure — **done**.
-4. Budget against actual costs; indicators, export, status report PDF.
+4. Budget against actual costs; indicators, export, status report PDF — **done**.
+
+## Indicators
+
+Source `projects` in Core `Metrics`: `projects.red`, `projects.over_budget`, `projects.overdue_tasks`, `projects.gates_waiting`. Export type `projects.portfolio` (Portfolio page).

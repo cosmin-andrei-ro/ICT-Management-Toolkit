@@ -44,6 +44,8 @@ use Modules\Projects\Domain\Enums\ProjectStatus;
  * @property ?string $manager_id
  * @property ?Carbon $planned_start
  * @property ?Carbon $planned_end
+ * @property ?string $budget_amount
+ * @property ?string $currency
  * @property ?Carbon $closed_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -110,6 +112,22 @@ final class Project extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+
+    /**
+     * @return HasMany<Cost, $this>
+     */
+    public function costs(): HasMany
+    {
+        return $this->hasMany(Cost::class);
+    }
+
+    /**
+     * What has been spent so far, in the project's currency.
+     */
+    public function spent(): float
+    {
+        return (float) $this->costs()->sum('amount');
     }
 
     /**
