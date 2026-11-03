@@ -8,39 +8,56 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Notification;
+use Modules\Cmdb\Database\Seeders\CmdbDemoSeeder;
 use Modules\Core\Application\Authorization\SyncPermissions;
-use Modules\Core\Domain\Authorization\DefaultRole;
+use Modules\Core\Database\Seeders\CoreDemoSeeder;
+use Modules\Core\Database\Seeders\DemoClock;
+use Modules\Core\Database\Seeders\DemoCompany;
 use Modules\Core\Domain\Models\Organization;
-use Modules\Core\Domain\Models\User;
-use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Itam\Database\Seeders\ItamDemoSeeder;
 use Modules\Ticketing\Database\Seeders\TicketingDemoSeeder;
 use RuntimeException;
 
 final class DatabaseSeeder extends Seeder
 {
     /**
-     * Demo data for local development only: the demo account has a well-known password.
+     * The modules' demo seeders, in order: each builds on what the previous
+     * ones created.
+     *
+     * @var list<class-string<Seeder>>
      */
-    public function run(SyncPermissions $syncPermissions, OrganizationContext $context): void
+    private const array MODULES = [
+        TicketingDemoSeeder::class,
+        CmdbDemoSeeder::class,
+        ItamDemoSeeder::class,
+    ];
+
+    /**
+     * Demo data for local development only: every demo account has a
+     * well-known password and two-factor secret (README, "Demo data").
+     */
+    public function run(SyncPermissions $syncPermissions): void
     {
         if (! app()->environment(['local', 'testing'])) {
             throw new RuntimeException('Demo data may only be seeded in the local or testing environment.');
         }
 
         $syncPermissions->handle();
+        // Nobody should receive e-mails about three months of invented history.
+        Notification::fake();
 
         $organization = Organization::factory()->create([
-            'name' => 'Demo Organization',
+            'name' => 'Demo Logistics',
             'slug' => 'demo',
         ]);
 
-        $admin = User::factory()->memberOf($organization)->create([
-            'name' => 'Demo Administrator',
-            'email' => 'admin@example.com',
-        ]);
+        /** @var DemoCompany $company */
+        $company = app()->call([app(CoreDemoSeeder::class), 'run'], ['organization' => $organization]);
 
-        $context->runAs($organization, fn () => $admin->assignRole(DefaultRole::Administrator->value));
-
-        $this->callWith(TicketingDemoSeeder::class, ['organization' => $organization, 'agent' => $admin]);
+        foreach (self::MODULES as $seeder) {
+            app()->call([app($seeder), 'run'], ['company' => $company]);
+            DemoClock::reset();
+        }
     }
 }
