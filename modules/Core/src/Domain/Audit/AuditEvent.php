@@ -42,6 +42,7 @@ enum AuditEvent: string
     case SecurityKeyRemoved = 'security_key_removed';
     case AccountLocked = 'account_locked';
     case AccountUnlocked = 'account_unlocked';
+    case PersonAnonymized = 'person_anonymized';
 
     public function label(): string
     {

@@ -19,6 +19,15 @@ use Modules\Reporting\Domain\Models\ReportSubscription;
 final readonly class ReportingPersonalData
 {
     /**
+     * Preferences and subscriptions only matter to the person: they go.
+     */
+    public static function erase(User $person, string $email): void
+    {
+        ReportSubscription::query()->where('user_id', $person->id)->delete();
+        DashboardPreference::query()->where('user_id', $person->id)->delete();
+    }
+
+    /**
      * @return Generator<PersonalDataEntry>
      */
     public function __invoke(User $person): Generator

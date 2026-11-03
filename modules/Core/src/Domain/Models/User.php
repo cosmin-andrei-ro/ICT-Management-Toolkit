@@ -56,6 +56,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property ?int $two_factor_last_used_step
  * @property int $failed_logins Consecutive failed sign-ins (AccountLockout).
  * @property ?Carbon $locked_at
+ * @property ?Carbon $anonymized_at GDPR Art. 17 (AnonymizePerson).
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -151,7 +152,7 @@ final class User extends Authenticatable implements FilamentUser
     {
         // Two-factor changes have their own audit events (mfa_*).
         // Locks and unlocks too (account_locked, account_unlocked).
-        return ['last_login_at', 'directory_synced_at', 'two_factor_confirmed_at', 'two_factor_last_used_step', 'failed_logins', 'locked_at'];
+        return ['last_login_at', 'directory_synced_at', 'two_factor_confirmed_at', 'two_factor_last_used_step', 'failed_logins', 'locked_at', 'anonymized_at'];
     }
 
     /**
@@ -178,6 +179,7 @@ final class User extends Authenticatable implements FilamentUser
             'two_factor_last_used_step' => 'integer',
             'failed_logins' => 'integer',
             'locked_at' => 'datetime',
+            'anonymized_at' => 'datetime',
         ];
     }
 }

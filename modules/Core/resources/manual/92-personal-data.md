@@ -24,3 +24,26 @@ The workbook contains:
 - The workbook contains personal data: give it only to the person, through a safe channel. Do not keep copies.
 - Each organization answers for its own data. If the person also belongs to another organization in the toolkit, that organization's administrator exports its part.
 - Preparing and downloading the export are both recorded in the audit log.
+
+## Anonymizing a person
+
+When someone asks to be forgotten and the organization no longer has to keep their data, use **Anonymize…** on the same page.
+
+1. Export their data first if they asked for it: afterwards it cannot be told apart.
+2. Choose the person, type their e-mail address, and enter a code from your authenticator app.
+3. Select **Anonymize**.
+
+What happens:
+
+- **The account:** the name becomes "Former user #…", the e-mail address is removed, and every way to sign in ends. That covers the password, two-factor authentication, passkeys, single sign-on, API tokens and open sessions. The person leaves the organization and their teams.
+- **Records:** tickets, risks, audits, projects and the rest stay, with "Former user" where the name was, so their history remains complete. The text the person wrote in them stays, as part of the organization's records.
+- **Purely personal data goes:** the sender address of the e-mails they sent to the service desk, the IP address of their equipment handover acknowledgements, and their dashboard preferences and report subscription.
+- **The audit log** keeps who did what and when, but their name, e-mail address, IP addresses and browser are removed from it.
+
+Anonymization cannot be undone. It is not possible for:
+
+- yourself;
+- the last administrator;
+- someone who also belongs to another organization in the toolkit. Each organization must remove them first, because the account is shared.
+
+The anonymization itself is recorded in the audit log, without the old name.

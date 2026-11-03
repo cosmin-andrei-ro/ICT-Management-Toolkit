@@ -29,6 +29,22 @@ The foundation every other module builds on. Code: `modules/Core/`.
 - Administration → Access → **Personal data** prepares it (queued, audited like every export) and lists the administrator's recent exports.
 - New modules that store people in their records register a collector.
 
+## Anonymization (ADR 0059)
+
+- `AnonymizePerson` (Personal data page, `core.personal_data.manage`) needs the person's e-mail typed out and a fresh authenticator code from the administrator.
+- It refuses:
+  - the administrator themselves;
+  - a person who also belongs to another organization;
+  - the last administrator;
+  - an account already anonymized.
+- What it does:
+  1. The modules' erasers run (`PersonalData::registerEraser`): Ticketing received e-mails, ITAM handover IP addresses, Reporting preferences and subscription.
+  2. Sessions, API tokens, security keys, SSO identities, reset tokens, team memberships, roles and the membership end.
+  3. The audit log is redacted through `core_redact_person_in_audit_log()`.
+  4. The account becomes "Former user #…" with an `@anonymized.invalid` address, no credentials, and `users.anonymized_at` set.
+  5. The `person_anonymized` event is recorded, without the old name.
+- The audit trigger lets UPDATE through only while that function runs (`core.audit_redaction` set locally), and only for `old_values`, `new_values`, `ip_address` and `user_agent`.
+
 ## Authorization (ADR 0004)
 
 - Permissions are named `<module>.<entity>.<action>`. Modules register them, and their grants to the default roles, in `PermissionRegistry` from their service provider.

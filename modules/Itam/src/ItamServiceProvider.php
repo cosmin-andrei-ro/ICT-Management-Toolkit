@@ -54,6 +54,7 @@ final class ItamServiceProvider extends ModuleServiceProvider
     {
         parent::register();
         $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('itam::personal_data.sheet', fn (User $person): iterable => app(ItamPersonalData::class)($person)));
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->registerEraser(ItamPersonalData::erase(...)));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(AssetMetrics::source()));
 

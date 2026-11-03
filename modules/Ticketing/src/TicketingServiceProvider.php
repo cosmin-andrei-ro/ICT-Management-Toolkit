@@ -71,6 +71,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
     {
         parent::register();
         $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->register('ticketing::personal_data.sheet', fn (User $person): iterable => app(TicketingPersonalData::class)($person)));
+        $this->callAfterResolving(PersonalData::class, fn (PersonalData $data) => $data->registerEraser(TicketingPersonalData::erase(...)));
 
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ServiceDeskMetrics::source()));
 

@@ -82,5 +82,6 @@ return [
         'security_key_removed' => 'Passkey removed',
         'account_locked' => 'Account locked',
         'account_unlocked' => 'Account unlocked',
+        'person_anonymized' => 'Person anonymized',
     ],
 ];

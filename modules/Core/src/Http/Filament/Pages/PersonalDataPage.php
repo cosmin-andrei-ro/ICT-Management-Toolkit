@@ -10,6 +10,7 @@ namespace Modules\Core\Http\Filament\Pages;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
@@ -25,8 +26,10 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Modules\Core\Application\Exports\PersonalDataExport;
 use Modules\Core\Application\Exports\RequestExport;
+use Modules\Core\Application\PersonalData\AnonymizePerson;
 use Modules\Core\Domain\Exports\ExportFormat;
 use Modules\Core\Domain\Exports\ExportStatus;
 use Modules\Core\Domain\Models\Export;
@@ -81,12 +84,7 @@ final class PersonalDataPage extends Page
     {
         return $schema->components([
             Text::make(__('core::personal_data.intro')),
-            Select::make('person_id')->label(__('core::personal_data.person'))->helperText(__('core::personal_data.person_help'))
-                ->searchable()->required()
-                ->getSearchResultsUsing(fn (string $search): array => self::members()->where(fn (Builder $query) => $query->where('name', 'ilike', '%'.self::escape($search).'%')->orWhere('email', 'ilike', '%'.self::escape($search).'%'))
-                    ->orderBy('name')->limit(20)->get(['id', 'name', 'email'])->mapWithKeys(fn (User $user): array => [$user->id => $user->name.' <'.$user->email.'>'])->all())
-                ->getOptionLabelUsing(fn (mixed $value): ?string => is_string($value) ? self::members()->whereKey($value)->first(['name', 'email'])?->name : null)
-                ->in(fn (): Collection => self::members()->pluck('id')),
+            self::personSelect('person_id')->helperText(__('core::personal_data.person_help')),
         ])->statePath('data');
     }
 
@@ -102,7 +100,41 @@ final class PersonalDataPage extends Page
                         ->action(fn (RequestExport $request) => $this->prepare($request))]),
                 ]),
             Section::make(__('core::personal_data.recent'))->schema(fn (): array => $this->exportComponents()),
+            Section::make(__('core::personal_data.anonymize.title'))->schema([
+                Text::make(__('core::personal_data.anonymize.intro')),
+                Actions::make([$this->anonymizeAction()]),
+            ]),
         ]);
+    }
+
+    private function anonymizeAction(): Action
+    {
+        return Action::make('anonymize')->label(__('core::personal_data.anonymize.action'))->color('danger')
+            ->modalHeading(__('core::personal_data.anonymize.title'))->modalDescription(__('core::personal_data.anonymize.description'))
+            ->modalSubmitActionLabel(__('core::personal_data.anonymize.submit'))
+            ->schema([
+                self::personSelect('person_id'),
+                TextInput::make('confirmation')->label(__('core::personal_data.anonymize.confirmation'))->required()->maxLength(320),
+                TextInput::make('code')->label(__('core::personal_data.anonymize.code'))->required()->maxLength(10)->autocomplete('one-time-code'),
+            ])
+            ->action(function (array $data, Action $action, AnonymizePerson $anonymize): void {
+                abort_unless(self::canAccess(), 403);
+                $administrator = Auth::user();
+                $person = is_string($data['person_id'] ?? null) ? self::members()->whereKey($data['person_id'])->first() : null;
+
+                if (! $administrator instanceof User || $person === null) {
+                    return;
+                }
+
+                try {
+                    $anonymize->handle($person, is_string($data['confirmation'] ?? null) ? $data['confirmation'] : '', is_string($data['code'] ?? null) ? $data['code'] : '', $administrator);
+                } catch (ValidationException $exception) {
+                    Notification::make()->danger()->title($exception->validator->errors()->first())->send();
+                    $action->halt();
+                }
+
+                Notification::make()->success()->title(__('core::personal_data.anonymize.done'))->send();
+            });
     }
 
     public function prepare(RequestExport $request): void
@@ -158,6 +190,16 @@ final class PersonalDataPage extends Page
         }
 
         return $components;
+    }
+
+    private static function personSelect(string $name): Select
+    {
+        return Select::make($name)->label(__('core::personal_data.person'))
+            ->searchable()->required()
+            ->getSearchResultsUsing(fn (string $search): array => self::members()->where(fn (Builder $query) => $query->where('name', 'ilike', '%'.self::escape($search).'%')->orWhere('email', 'ilike', '%'.self::escape($search).'%'))
+                ->orderBy('name')->limit(20)->get(['id', 'name', 'email'])->mapWithKeys(fn (User $user): array => [$user->id => $user->name.' <'.$user->email.'>'])->all())
+            ->getOptionLabelUsing(fn (mixed $value): ?string => is_string($value) ? self::members()->whereKey($value)->first(['name', 'email'])?->name : null)
+            ->in(fn (): Collection => self::members()->pluck('id'));
     }
 
     /**
