@@ -17,6 +17,7 @@ use Modules\Core\Application\Authentication\ConfirmSecondFactor;
 use Modules\Core\Application\Authentication\SecurityKeys;
 use Modules\Core\Application\Authentication\SetPassword;
 use Modules\Core\Application\Authentication\TwoFactorAuthentication;
+use Modules\Core\Domain\Models\OrganizationInvitation;
 use Modules\Core\Domain\Models\SecurityKey;
 use Modules\Core\Domain\Models\User;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -203,6 +204,7 @@ final class AccountSecurity extends Component
             'remaining' => $twoFactor->remainingRecoveryCodes($user),
             'secret' => is_string($secret) ? $secret : null,
             'qrCode' => is_string($secret) ? $twoFactor->qrCode($user, $secret) : null,
+            'pendingInvitations' => OrganizationInvitation::pendingFor($user)->count(),
             'securityKeys' => SecurityKey::query()->where('user_id', $user->id)->orderBy('created_at')->get(),
         ])->title(__('core::security.title'));
     }

@@ -25,7 +25,7 @@ From then on, after your password, the sign-in asks for the code from your app. 
 
 On the code page, enter one of your **recovery codes** instead of the app code. Each recovery code works once. Then, on **Account security**, enter another recovery code and click **Turn off** (IT staff: **Move to a new phone**), and set it up again on your new phone. IT staff are taken straight to the setup.
 
-Without your phone and without recovery codes, ask an administrator to **reset** your two-factor authentication. They check who is asking first. You set it up again at your next sign-in.
+Without your phone and without recovery codes, ask an administrator to **reset** your two-factor authentication. They check who is asking first. You set it up again at your next sign-in. If your account belongs to several organizations, the operator of the installation does this instead.
 
 **Make new recovery codes** replaces all of them, for example when you have used several.
 
@@ -56,7 +56,7 @@ If you did not cause the failures yourself, someone may be trying to guess your 
 
 ## Invitations from other organizations
 
-If another organization using this toolkit invites you, you receive an email. Sign in and open **Invitations** (the link in the email, or `/account/invitations`): you see who invited you and with which roles. **Join** adds that organization to your account; **Decline** discards the invitation. Nothing changes until you accept, and an invitation expires after 14 days. Accept only invitations you expected.
+If another organization using this toolkit invites you, you receive an email. Sign in and open **Invitations** (the link in the email, or at the bottom of this page while one is waiting): you see who invited you and with which roles. **Join** adds that organization to your account; **Decline** discards the invitation. Nothing changes until you accept, and an invitation expires after 14 days. Accept only invitations you expected.
 
 ## API tokens
 

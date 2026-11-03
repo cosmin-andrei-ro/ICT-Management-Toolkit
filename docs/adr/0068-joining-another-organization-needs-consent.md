@@ -19,7 +19,7 @@ Single sign-on made this worse. An identity provider of B with a broad allowed d
 
 The owner chose explicit acceptance (2026-11-03).
 
-- **Invitation instead of membership:** inviting an email that already has an account creates a pending invitation (`core_organization_invitations`: organization, person, roles, inviter, expiry after 14 days) and emails the person. The administrator sees "Invitation sent." whether or not the account exists. A new email still gets a new local account and a password link (ADR 0017).
+- **Invitation instead of membership:** inviting an email that already has an account creates a pending invitation (`core_organization_invitations`: organization, person, roles, inviter, expiry after 14 days) and emails the person. The administrator sees "Invitation sent." whether or not the account exists. This hides the answer in the moment only: a new account appears in People at once, and an existing one appears under Pending invitations, so someone allowed to invite can still tell them apart. Hiding that would need new accounts to wait for acceptance too, and allowed inviters are few and audited, so it stays. A new email still gets a new local account and a password link (ADR 0017).
 - **Consent:** the person, signed in, joins or declines at `/account/invitations`. Every action looks the invitation up among their own pending ones.
 - **Single sign-on boundary:**
   - An account with an identity at another organization's provider cannot accept.
@@ -35,6 +35,6 @@ The owner chose explicit acceptance (2026-11-03).
 
 ## Consequences
 
-- Shared accounts cannot be unlocked or have their second factor reset by any organization's administrator. The person resets their password, or uses a recovery code. An operator can still act in the database if needed.
-- Administrators do not see pending invitations in People yet. Inviting again renews an invitation.
+- Shared accounts cannot be unlocked or have their second factor reset by any organization's administrator. The person resets their password, or uses a recovery code. An operator on the server can do both: `core:account:reset-mfa` and `core:account:unlock`, recorded in the audit trail with `by: operator`.
+- Administrators see their organization's invitations under Pending invitations, by the address they typed, and can cancel them. Inviting again renews an invitation.
 - An SSO account that needs a second organization needs a separate account.

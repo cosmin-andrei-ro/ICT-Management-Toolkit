@@ -125,6 +125,14 @@
         @endif
     </section>
 
+    @if ($pendingInvitations > 0)
+        <section class="space-y-2 rounded-lg bg-white p-5 ring-1 ring-gray-200">
+            <h2 class="font-semibold">{{ __('core::invitations.title') }}</h2>
+            <p class="text-sm text-gray-600">{{ trans_choice('core::invitations.waiting', $pendingInvitations, ['count' => $pendingInvitations]) }}</p>
+            <a href="{{ route('account.invitations') }}" class="inline-block rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('core::invitations.see') }}</a>
+        </section>
+    @endif
+
     @can('core.api.use')
         <section class="space-y-2 rounded-lg bg-white p-5 ring-1 ring-gray-200">
             <h2 class="font-semibold">{{ __('core::api_tokens.title') }}</h2>

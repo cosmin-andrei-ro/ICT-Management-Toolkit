@@ -22,7 +22,9 @@ use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Sso\SsoIdentity;
 use Modules\Core\Domain\Sso\SsoProvider;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Core\Http\Filament\Resources\OrganizationInvitations\Pages\ListOrganizationInvitations;
 use Modules\Core\Http\Filament\Resources\Users\Pages\ManageUsers;
+use Modules\Core\Http\Livewire\Account\AccountSecurity;
 use Modules\Core\Http\Livewire\Account\Invitations;
 use Modules\Core\Http\Livewire\Auth\ResetPassword;
 
@@ -187,6 +189,59 @@ it('resets two-factor authentication of someone else, audited', function (): voi
         ->and(AuditLog::query()->where('event', AuditEvent::MfaReset)->where('auditable_id', $agent->id)->where('user_id', $this->admin->id)->exists())->toBeTrue();
 
     Livewire::test(ManageUsers::class)->assertTableActionHidden('reset_mfa', $this->admin);
+});
+
+it('lists this organization\'s pending invitations by address only, and cancels them', function (): void {
+    $other = Organization::factory()->create();
+    $existing = app(OrganizationContext::class)->runAs($other, fn () => User::factory()->create(['email' => 'bob@example.com', 'name' => 'Private Name']));
+    Livewire::test(ManageUsers::class)->callAction('invite', data: ['name' => 'Typed', 'email' => 'bob@example.com', 'role_ids' => [roleId(DefaultRole::Agent)]]);
+    $theirs = app(OrganizationContext::class)->runAs($other, function () use ($other) {
+        $stranger = User::factory()->create(['email' => 'theirs@example.com']);
+
+        return (new OrganizationInvitation)->forceFill(['organization_id' => $other->id, 'user_id' => $stranger->id, 'role_ids' => [], 'expires_at' => now()->addDay()]);
+    });
+    $theirs->save();
+    $invitation = OrganizationInvitation::query()->where('organization_id', $this->organization->id)->sole();
+
+    Livewire::test(ListOrganizationInvitations::class)
+        ->assertSee('bob@example.com')->assertDontSee('Private Name')->assertDontSee('theirs@example.com')
+        ->callTableAction('cancel', $invitation);
+
+    expect(OrganizationInvitation::query()->pluck('id')->all())->toBe([$theirs->id])
+        ->and(AuditLog::query()->where('event', AuditEvent::Invited)->where('auditable_id', $existing->id)->get()->contains(fn (AuditLog $log): bool => ($log->new_values['cancelled'] ?? false) === true))->toBeTrue();
+
+    $this->actingAs(User::factory()->memberOf($this->organization)->withTwoFactor()->create());
+    $this->get('/admin/invitations')->assertForbidden();
+});
+
+it('tells the person about waiting invitations on their account page', function (): void {
+    $other = Organization::factory()->create();
+    $existing = app(OrganizationContext::class)->runAs($other, fn () => User::factory()->create(['email' => 'bob@example.com']));
+    Livewire::test(ManageUsers::class)->callAction('invite', data: ['name' => 'Bob', 'email' => 'bob@example.com', 'role_ids' => [roleId(DefaultRole::Agent)]]);
+
+    app(OrganizationContext::class)->set($other);
+    $this->actingAs($existing);
+    Livewire::test(AccountSecurity::class)->assertSee('An organization asked you to join it.')->assertSeeHtml(route('account.invitations'));
+});
+
+it('lets an operator reset and unlock a shared account from the server, audited', function (): void {
+    $shared = User::factory()->memberOf($this->organization)->withTwoFactor()->create(['email' => 'shared@example.com', 'locked_at' => now(), 'failed_logins' => 10]);
+    $shared->organizations()->attach(Organization::factory()->create());
+    auth()->logout();
+    app(OrganizationContext::class)->clear();
+
+    $this->artisan('core:account:reset-mfa', ['email' => 'nobody@example.com', '--force' => true])->assertFailed();
+    $this->artisan('core:account:reset-mfa', ['email' => 'shared@example.com'])->expectsConfirmation('Reset the second factor of shared@example.com? Check first that the request really comes from them.', 'no')->assertFailed();
+    expect($shared->fresh()->two_factor_confirmed_at)->not->toBeNull();
+
+    $this->artisan('core:account:reset-mfa', ['email' => 'SHARED@example.com', '--force' => true])->assertSuccessful();
+    $this->artisan('core:account:unlock', ['email' => 'shared@example.com'])->assertSuccessful();
+
+    expect($shared->fresh())->two_factor_confirmed_at->toBeNull()->locked_at->toBeNull()->failed_logins->toBe(0);
+    $reset = AuditLog::query()->where('event', AuditEvent::MfaReset)->where('auditable_id', $shared->id)->sole();
+    $unlocked = AuditLog::query()->where('event', AuditEvent::AccountUnlocked)->where('auditable_id', $shared->id)->sole();
+    expect($reset->new_values['by'])->toBe('operator')->and($reset->user_id)->toBeNull()
+        ->and($unlocked->new_values['by'])->toBe('operator')->and($unlocked->user_id)->toBeNull();
 });
 
 it('leaves the name, second factor and lock of a shared account alone', function (): void {

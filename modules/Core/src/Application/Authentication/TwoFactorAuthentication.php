@@ -196,6 +196,24 @@ final readonly class TwoFactorAuthentication
     }
 
     /**
+     * For an operator on the server, when no administrator may do it: the account
+     * belongs to several organizations, and the person lost both phone and codes.
+     */
+    public function resetByOperator(User $user): void
+    {
+        $this->keys->removeAll($user, $user);
+
+        $user->forceFill([
+            'two_factor_secret' => null,
+            'two_factor_confirmed_at' => null,
+            'two_factor_recovery_codes' => null,
+            'two_factor_last_used_step' => null,
+        ])->save();
+
+        $this->trail->record(AuditEvent::MfaReset, $user, null, ['by' => 'operator']);
+    }
+
+    /**
      * @return list<string>
      */
     private static function newRecoveryCodes(): array
