@@ -91,6 +91,16 @@ it('locks out after five failed attempts and records the lockout', function (): 
     expect(AuditLog::query()->where('event', AuditEvent::Lockout)->exists())->toBeTrue();
 });
 
+it('stops one address trying many accounts', function (): void {
+    foreach (range(1, 30) as $attempt) {
+        attemptLogin("person{$attempt}@example.com", 'Summer2026!');
+    }
+
+    // Each account was tried once, yet the address is now held back, even for a real account.
+    attemptLogin('jane@example.com', 'correct-horse-battery')->assertHasErrors(['login']);
+    $this->assertGuest();
+});
+
 it('validates the input', function (): void {
     Livewire::test(Login::class)
         ->set('login', '')

@@ -13,6 +13,7 @@ use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Modules\Core\Application\Authentication\ConfirmSecondFactor;
 use Modules\Core\Application\Authentication\SecurityKeys;
 use Modules\Core\Application\Authentication\SetPassword;
 use Modules\Core\Application\Authentication\TwoFactorAuthentication;
@@ -85,9 +86,9 @@ final class AccountSecurity extends Component
         $this->recoveryCodes = $codes;
     }
 
-    public function regenerateRecoveryCodes(TwoFactorAuthentication $twoFactor): void
+    public function regenerateRecoveryCodes(TwoFactorAuthentication $twoFactor, ConfirmSecondFactor $confirm): void
     {
-        $this->confirmWithCode($twoFactor);
+        $this->confirmWithCode($confirm, 'regenerate_recovery_codes');
         $this->recoveryCodes = $twoFactor->regenerateRecoveryCodes($this->user());
     }
 
@@ -117,9 +118,9 @@ final class AccountSecurity extends Component
      * Also how staff move to a new phone: they prove a second factor (app or
      * recovery code), and RequireTwoFactor then has them set it up again.
      */
-    public function disable(TwoFactorAuthentication $twoFactor): void
+    public function disable(TwoFactorAuthentication $twoFactor, ConfirmSecondFactor $confirm): void
     {
-        $this->confirmWithCode($twoFactor);
+        $this->confirmWithCode($confirm, 'disable_mfa');
         $twoFactor->disable($this->user());
         $this->recoveryCodes = [];
     }
@@ -127,7 +128,7 @@ final class AccountSecurity extends Component
     /**
      * @return ?array<string, mixed> The options for the browser, once the person proved their second factor.
      */
-    public function keyOptions(TwoFactorAuthentication $twoFactor, SecurityKeys $keys): ?array
+    public function keyOptions(TwoFactorAuthentication $twoFactor, ConfirmSecondFactor $confirm, SecurityKeys $keys): ?array
     {
         $this->keyAdded = false;
         $this->validate(['keyName' => ['required', 'string', 'max:100'], 'keyCode' => ['required', 'string', 'max:32']]);
@@ -136,7 +137,7 @@ final class AccountSecurity extends Component
             return null;
         }
 
-        $this->confirmKeyCode($twoFactor);
+        $this->confirmKeyCode($confirm, 'add_security_key');
         session()->put(self::KEY_ALLOWED_UNTIL, now()->addMinutes(5)->getTimestamp());
 
         return $keys->creationOptions($this->user());
@@ -164,9 +165,9 @@ final class AccountSecurity extends Component
         $this->keyAdded = true;
     }
 
-    public function removeKey(string $keyId, TwoFactorAuthentication $twoFactor, SecurityKeys $keys): void
+    public function removeKey(string $keyId, ConfirmSecondFactor $confirm, SecurityKeys $keys): void
     {
-        $this->confirmKeyCode($twoFactor);
+        $this->confirmKeyCode($confirm, 'remove_security_key');
         $keys->remove(SecurityKey::query()->with('user')->where('user_id', $this->user()->id)->findOrFail($keyId), $this->user());
     }
 
@@ -206,26 +207,20 @@ final class AccountSecurity extends Component
         ])->title(__('core::security.title'));
     }
 
-    private function confirmWithCode(TwoFactorAuthentication $twoFactor): void
+    private function confirmWithCode(ConfirmSecondFactor $confirm, string $purpose): void
     {
         $this->validate(['code' => ['required', 'string', 'max:32']]);
-        $valid = $twoFactor->verify($this->user(), $this->code);
+        $code = $this->code;
         $this->reset('code');
-
-        if (! $valid) {
-            throw ValidationException::withMessages(['code' => __('core::security.challenge.invalid')]);
-        }
+        $confirm->confirm($this->user(), $code, $purpose, 'code');
     }
 
-    private function confirmKeyCode(TwoFactorAuthentication $twoFactor): void
+    private function confirmKeyCode(ConfirmSecondFactor $confirm, string $purpose): void
     {
         $this->validate(['keyCode' => ['required', 'string', 'max:32']]);
-        $valid = $twoFactor->verify($this->user(), $this->keyCode);
+        $code = $this->keyCode;
         $this->reset('keyCode');
-
-        if (! $valid) {
-            throw ValidationException::withMessages(['keyCode' => __('core::security.challenge.invalid')]);
-        }
+        $confirm->confirm($this->user(), $code, $purpose, 'keyCode');
     }
 
     private function user(): User

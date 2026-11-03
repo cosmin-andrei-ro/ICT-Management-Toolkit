@@ -45,7 +45,7 @@ final class FakeSamlIdentityProvider
      * A base64 SAMLResponse for the given request, as posted to the consumer.
      *
      * @param  array<string, list<string>>  $attributes
-     * @param  array{audience?: string, destination?: string, issuer?: string, notOnOrAfter?: int, authnContext?: string, sign?: bool, signingKey?: string}  $overrides
+     * @param  array{audience?: string, destination?: string, issuer?: string, notOnOrAfter?: int, authnContext?: string, sign?: bool, signingKey?: string, extensions?: string}  $overrides
      */
     public function response(string $requestId, string $acsUrl, string $audience, string $nameId, array $attributes, array $overrides = []): string
     {
@@ -57,6 +57,8 @@ final class FakeSamlIdentityProvider
         $audience = htmlspecialchars($overrides['audience'] ?? $audience, ENT_XML1);
         $context = htmlspecialchars($overrides['authnContext'] ?? 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport', ENT_XML1);
         $assertionId = '_a'.bin2hex(random_bytes(16));
+        // Raw XML placed in the unsigned response, outside the assertion.
+        $extensions = $overrides['extensions'] ?? '';
         $statements = '';
 
         foreach ($attributes as $name => $values) {
@@ -72,6 +74,7 @@ final class FakeSamlIdentityProvider
         $xml = <<<XML
             <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_r{$assertionId}" Version="2.0" IssueInstant="{$issueInstant}" Destination="{$destination}" InResponseTo="{$requestId}">
               <saml:Issuer>{$issuer}</saml:Issuer>
+              {$extensions}
               <samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>
               <saml:Assertion ID="{$assertionId}" Version="2.0" IssueInstant="{$issueInstant}">
                 <saml:Issuer>{$issuer}</saml:Issuer>

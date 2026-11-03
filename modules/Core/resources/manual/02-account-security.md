@@ -47,7 +47,7 @@ Active Directory accounts change their password in Windows.
 
 ## Locked account
 
-After 10 failed sign-ins in a row (wrong password or wrong code), your account is locked and you receive an e-mail. While it is locked, even the right password is refused.
+After 10 failed sign-ins in a row (wrong password or wrong code, including codes and current passwords typed on this page), your account is locked and you receive an e-mail. While it is locked, even the right password is refused.
 
 - To unlock it yourself, use **Forgot your password?** on the sign-in page and choose a new password.
 - Or ask an administrator to unlock it.
@@ -62,5 +62,5 @@ If you work in IT, **API tokens** (link at the bottom of this page) lets you cre
 2. Choose only the abilities it needs, and how many days it stays valid.
 3. Enter a code from your authenticator app.
 
-Copy the token at once: it is shown only that time. Keep it in a password manager or in the secret store of the system that uses it. Revoke it as soon as it is no longer needed, or if it may have leaked.
+Copy the token at once: it is shown only that time. Keep it in a password manager or in the secret store of the system that uses it. Revoke it as soon as it is no longer needed, or if it may have leaked. Resetting your password with **Forgot your password?** also revokes all your tokens.
 

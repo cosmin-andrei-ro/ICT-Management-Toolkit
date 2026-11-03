@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Modules\Core\Application\Sso;
 
-use DOMXPath;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Modules\Core\Domain\Sso\SsoProvider;
 use OneLogin\Saml2\AuthnRequest;
@@ -88,7 +87,7 @@ final readonly class Saml
     public function claims(SsoProvider $provider, string $samlResponse): array
     {
         try {
-            $response = new Response($this->settings($provider), $samlResponse);
+            $response = new SamlResponse($this->settings($provider), $samlResponse);
         } catch (Throwable) {
             throw SsoFailed::because('saml_response');
         }
@@ -117,7 +116,7 @@ final readonly class Saml
             'email' => $this->attribute($attributes, $provider->email_attribute, self::EMAIL_ATTRIBUTES) ?? (filter_var($nameId, FILTER_VALIDATE_EMAIL) !== false ? $nameId : null),
             'name' => $this->attribute($attributes, $provider->name_attribute, self::NAME_ATTRIBUTES),
             $provider->groups_claim => $attributes[$provider->groups_claim] ?? [],
-            'amr' => array_intersect($this->contexts($response), self::MFA_CONTEXTS) !== [] ? ['mfa'] : [],
+            'amr' => array_intersect($response->authnContexts(), self::MFA_CONTEXTS) !== [] ? ['mfa'] : [],
         ];
     }
 
@@ -203,22 +202,6 @@ final readonly class Saml
                 }
             }
         }
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function contexts(Response $response): array
-    {
-        $xpath = new DOMXPath($response->getXMLDocument());
-        $xpath->registerNamespace('saml', Constants::NS_SAML);
-        $contexts = [];
-
-        foreach ($xpath->query('//saml:AuthnStatement/saml:AuthnContext/saml:AuthnContextClassRef') ?: [] as $node) {
-            $contexts[] = trim((string) $node->nodeValue);
-        }
-
-        return $contexts;
     }
 
     /**

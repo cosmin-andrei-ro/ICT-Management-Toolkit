@@ -110,6 +110,19 @@ it('refuses replayed, unsolicited, unsigned, forged and mis-addressed answers', 
     'expired' => [fn ($test, $id, $attributes) => samlAnswer($test, $id, $attributes, ['notOnOrAfter' => time() - 600])],
 ]);
 
+it('takes the provider\'s second factor only from the signed assertion', function (): void {
+    $injected = '<samlp:Extensions><saml:AuthnStatement AuthnInstant="'.gmdate('Y-m-d\\TH:i:s\\Z').'"><saml:AuthnContext>'
+        .'<saml:AuthnContextClassRef>http://schemas.microsoft.com/claims/multipleauthn</saml:AuthnContextClassRef></saml:AuthnContext></saml:AuthnStatement></samlp:Extensions>';
+    $answer = samlAnswer($this, samlRequestId($this), [
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress' => ['ana@company.test'],
+        'http://schemas.microsoft.com/ws/2008/06/identity/claims/groups' => ['IT Staff'],
+    ], ['extensions' => $injected]);
+
+    // A password-only sign-in at the provider: the toolkit still asks for its own second factor.
+    $this->post(route('login.saml.acs', $this->provider->id), ['SAMLResponse' => $answer])->assertRedirect();
+    $this->get(route('home'))->assertRedirect();
+});
+
 it('refuses an assertion altered after signing', function (): void {
     $xml = base64_decode(samlAnswer($this, samlRequestId($this), ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress' => ['ana@company.test']]));
     $forged = base64_encode(str_replace('ana@company.test', 'boss@company.test', (string) $xml));
