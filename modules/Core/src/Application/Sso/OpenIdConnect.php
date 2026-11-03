@@ -10,6 +10,7 @@ namespace Modules\Core\Application\Sso;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Client\Factory as Http;
+use Illuminate\Http\Client\PendingRequest;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWKSet;
 use Jose\Component\Signature\Algorithm\ES256;
@@ -102,7 +103,7 @@ final readonly class OpenIdConnect
         $configuration = $this->configuration($provider);
 
         try {
-            $response = $this->http->asForm()->acceptJson()->timeout(self::TIMEOUT)->withoutRedirecting()->post($configuration['token_endpoint'], [
+            $response = $this->pinnedTo($configuration['token_endpoint'])->asForm()->acceptJson()->timeout(self::TIMEOUT)->withoutRedirecting()->post($configuration['token_endpoint'], [
                 'grant_type' => 'authorization_code',
                 'code' => $code,
                 'redirect_uri' => $pending['redirect_uri'] ?? '',
@@ -273,7 +274,7 @@ final readonly class OpenIdConnect
     private function fetchJson(string $url): ?array
     {
         try {
-            $response = $this->http->acceptJson()->timeout(self::TIMEOUT)->withoutRedirecting()->get($url);
+            $response = $this->pinnedTo($url)->acceptJson()->timeout(self::TIMEOUT)->withoutRedirecting()->get($url);
         } catch (Throwable) {
             return null;
         }
@@ -281,6 +282,21 @@ final readonly class OpenIdConnect
         $json = $response->successful() ? $response->json() : null;
 
         return is_array($json) ? $json : null;
+    }
+
+    /**
+     * A client that connects to the address just checked, not to a fresh DNS answer:
+     * the discovery document's URLs come from the provider, and the flow is started
+     * by anonymous visitors.
+     *
+     * @throws SsoFailed
+     */
+    private function pinnedTo(string $url): PendingRequest
+    {
+        $target = $this->guard->target($url) ?? throw SsoFailed::because('issuer_not_allowed');
+        $address = str_contains($target['address'], ':') ? '['.$target['address'].']' : $target['address'];
+
+        return $this->http->withOptions(['curl' => [CURLOPT_RESOLVE => [$target['host'].':'.$target['port'].':'.$address]]]);
     }
 
     /**

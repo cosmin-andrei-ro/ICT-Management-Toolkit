@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 return [
     'sign_in_with' => 'Sign in with :provider',
+    'find_label' => 'Your organization uses single sign-on? Enter your work email',
+    'find' => 'Continue with single sign-on',
+    'no_provider' => 'No single sign-on is set up for this address. Sign in with your password, or ask your administrator.',
     'failed' => 'Single sign-on did not work. Try again, or ask your administrator whether your account may sign in this way.',
     'protocols' => [
         'oidc' => 'OpenID Connect',

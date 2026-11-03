@@ -8,6 +8,8 @@ declare(strict_types=1);
 namespace Modules\Core\Application\Sso;
 
 use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Contracts\Cookie\QueueingFactory as CookieJar;
+use Illuminate\Http\Request;
 use Modules\Core\Domain\Sso\SsoProvider;
 use OneLogin\Saml2\AuthnRequest;
 use OneLogin\Saml2\Constants;
@@ -55,14 +57,28 @@ final readonly class Saml
         'name',
     ];
 
-    public function __construct(private Cache $cache) {}
+    public function __construct(
+        private Cache $cache,
+        private CookieJar $cookies,
+    ) {}
+
+    /**
+     * The cookie marking the browser that started a sign-in. The session cookie
+     * (SameSite=Lax) does not come with the provider's POST, so without this a page
+     * could post an attacker's valid answer and sign a victim in to the attacker's
+     * account (login CSRF), and what the victim then types would be the attacker's.
+     */
+    public static function browserCookie(string $requestId): string
+    {
+        return 'saml_request_'.sha1($requestId);
+    }
 
     /**
      * Where to send the browser to sign in at the provider (HTTP-Redirect binding).
      *
      * @throws SsoFailed
      */
-    public function loginUrl(SsoProvider $provider): string
+    public function loginUrl(SsoProvider $provider, Request $browser): string
     {
         try {
             $request = new AuthnRequest($this->settings($provider));
@@ -71,6 +87,9 @@ final readonly class Saml
         }
 
         $this->cache->put('sso.saml.request.'.$request->getId(), $provider->id, self::PENDING_SECONDS);
+        // SameSite=None must come with Secure: without HTTPS (development) the provider has to share the site.
+        $secure = $browser->isSecure();
+        $this->cookies->queue($this->cookies->make(self::browserCookie($request->getId()), '1', (int) ceil(self::PENDING_SECONDS / 60), '/', null, $secure, true, false, $secure ? 'none' : 'lax'));
         $url = (string) $provider->sso_url;
 
         return $url.(str_contains($url, '?') ? '&' : '?').http_build_query(['SAMLRequest' => $request->getRequest()]);
@@ -84,7 +103,7 @@ final readonly class Saml
      *
      * @throws SsoFailed
      */
-    public function claims(SsoProvider $provider, string $samlResponse): array
+    public function claims(SsoProvider $provider, string $samlResponse, Request $browser): array
     {
         try {
             $response = new SamlResponse($this->settings($provider), $samlResponse);
@@ -94,8 +113,14 @@ final readonly class Saml
 
         $requestId = $response->getXMLDocument()->documentElement?->getAttribute('InResponseTo') ?? '';
 
+        if ($requestId === '' || ! $browser->hasCookie(self::browserCookie($requestId))) {
+            throw SsoFailed::because('saml_other_browser');
+        }
+
+        $this->cookies->queue($this->cookies->forget(self::browserCookie($requestId)));
+
         // Unsolicited answers, answers to another provider's request and replays are refused.
-        if ($requestId === '' || $this->cache->pull('sso.saml.request.'.$requestId) !== $provider->id) {
+        if ($this->cache->pull('sso.saml.request.'.$requestId) !== $provider->id) {
             throw SsoFailed::because('saml_in_response_to');
         }
 

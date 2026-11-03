@@ -31,10 +31,10 @@ final readonly class SamlController
         private ExceptionHandler $exceptions,
     ) {}
 
-    public function redirect(string $provider): RedirectResponse
+    public function redirect(string $provider, Request $request): RedirectResponse
     {
         try {
-            return redirect()->away($this->saml->loginUrl($this->provider($provider)));
+            return redirect()->away($this->saml->loginUrl($this->provider($provider), $request));
         } catch (SsoFailed $failure) {
             return $this->failed($failure);
         }
@@ -42,8 +42,8 @@ final readonly class SamlController
 
     /**
      * The provider posts its answer here from its own site: no CSRF token, no
-     * session cookie; the signed assertion and the single-use request ID stand
-     * in for them.
+     * session cookie; the signed assertion, the single-use request ID and the
+     * cookie of the browser that asked stand in for them.
      */
     public function consume(string $provider, Request $request, SignInWithSso $signIn, CompleteLogin $completeLogin): RedirectResponse
     {
@@ -55,7 +55,7 @@ final readonly class SamlController
         }
 
         try {
-            $claims = $this->saml->claims($ssoProvider, $answer);
+            $claims = $this->saml->claims($ssoProvider, $answer, $request);
             $user = $signIn->handle($ssoProvider, $claims);
         } catch (SsoFailed $failure) {
             return $this->failed($failure);

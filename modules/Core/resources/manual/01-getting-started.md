@@ -10,7 +10,7 @@ ICT Management Toolkit brings your organization's IT information together in one
 Open the application and enter your credentials on the sign-in page.
 
 - **Company (Active Directory) account:** use your usual Windows username, for example `jdoe`, `CORP\jdoe` or `jdoe@corp.example`, and your Windows password. Your account is created automatically the first time you sign in, as long as IT has given your group access.
-- **Company single sign-on:** when your organization connected its identity provider (Microsoft, Google, Okta, Keycloak…), click **Sign in with** and its name, under the sign-in form, and sign in there as you do for your other company applications. Your account is created the first time.
+- **Company single sign-on:** when your organization connected its identity provider (Microsoft, Google, Okta, Keycloak…), click **Sign in with** and its name, under the sign-in form, and sign in there as you do for your other company applications. If the page asks for your work email instead, enter it and click **Continue with single sign-on**. Your account is created the first time.
 - **Local account:** use your email address and your password. You choose it yourself, from the invitation email you receive when your account is created.
 
 You cannot use your Windows password on a local account, or a local password on an Active Directory account. Each account has exactly one way of signing in.
