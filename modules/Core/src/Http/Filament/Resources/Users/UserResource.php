@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Modules\Core\Application\Authentication\AccountLockout;
 use Modules\Core\Application\Authentication\TwoFactorAuthentication;
 use Modules\Core\Application\Users\InviteUser;
 use Modules\Core\Application\Users\RemoveFromOrganization;
@@ -96,6 +97,7 @@ final class UserResource extends Resource
                 TextColumn::make('roles.name')->label(__('core::users.roles'))->badge(),
                 IconColumn::make('two_factor_confirmed_at')->label(__('core::users.mfa'))->boolean()->getStateUsing(fn (User $record): bool => $record->two_factor_confirmed_at !== null),
                 IconColumn::make('is_active')->label(__('core::users.active'))->boolean(),
+                TextColumn::make('locked_at')->label(__('core::users.locked'))->since()->placeholder('—')->color('danger'),
                 TextColumn::make('last_login_at')->label(__('core::users.last_login'))->since()->placeholder(__('core::users.never')),
             ])
             ->defaultSort('name')
@@ -115,6 +117,18 @@ final class UserResource extends Resource
                         $actor = Auth::user();
                         app(TwoFactorAuthentication::class)->disable($record, $actor instanceof User ? $actor : null);
                         Notification::make()->title(__('core::users.mfa_reset_done'))->success()->send();
+                    }),
+                Action::make('unlock')->label(__('core::users.unlock'))->icon(Heroicon::OutlinedLockOpen)
+                    ->requiresConfirmation()->modalDescription(__('core::users.unlock_help'))
+                    ->visible(fn (User $record): bool => $record->locked_at !== null)
+                    ->authorize(fn (User $record): bool => Auth::user()?->can('manageAccess', $record) ?? false)
+                    ->action(function (User $record): void {
+                        $actor = Auth::user();
+
+                        if ($actor instanceof User) {
+                            app(AccountLockout::class)->unlock($record, $actor);
+                            Notification::make()->title(__('core::users.unlocked'))->success()->send();
+                        }
                     }),
                 Action::make('resend_invitation')->label(__('core::users.resend_invitation'))->icon(Heroicon::OutlinedEnvelope)
                     ->visible(fn (User $record): bool => ! $record->isDirectoryAccount() && $record->last_login_at === null)

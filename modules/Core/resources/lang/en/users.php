@@ -31,6 +31,10 @@ return [
     'reset_mfa' => 'Reset two-factor',
     'reset_mfa_help' => 'For someone who lost their phone and their recovery codes. Check who is asking first. They set it up again at their next sign-in.',
     'mfa_reset_done' => 'Two-factor authentication reset.',
+    'locked' => 'Locked',
+    'unlock' => 'Unlock',
+    'unlock_help' => 'The account was locked after too many failed sign-ins in a row. Check who is asking first: the failures may have been someone guessing the password.',
+    'unlocked' => 'Account unlocked.',
     'remove' => 'Remove from organization',
     'remove_help' => 'Their roles in this organization are removed. Their account and history stay.',
 ];

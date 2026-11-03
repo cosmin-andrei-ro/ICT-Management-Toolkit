@@ -24,7 +24,7 @@ Open-source platform (AGPL-3.0-or-later) that centralizes a company's IT informa
 |---|---|---|
 | OWASP ASVS 4.0 | Partial (design target) | Level 2 as the minimum, level 3 for authentication, authorization and secrets. Not formally verified. |
 | OWASP Top 10 | Yes | Authorization on every action and deny by default, query binding only (no SQL concatenation), escaped output, CSRF protection, strict Content Security Policy without `unsafe-eval` outside the admin panel, SSRF guard on mail servers, upload checks by content (not by name), CSV/formula injection neutralized in exports |
-| NIST SP 800-63B (passwords and authenticators) | Yes | Passwords of 12–128 characters without composition rules; rate limiting and lockout; time-based one-time codes from an authenticator app, each accepted once; recovery codes stored as hashes; all other sessions end on a password change |
+| NIST SP 800-63B (passwords and authenticators) | Yes | Passwords of 12–128 characters without composition rules, passwords known from breaches refused (Have I Been Pwned, k-anonymity); rate limiting, and account lockout after consecutive failures, lifted by a password reset or an administrator; time-based one-time codes from an authenticator app, each accepted once; recovery codes stored as hashes; all other sessions end on a password change |
 | RFC 6238 (TOTP) | Yes | Two-factor authentication, required for IT staff |
 | RFC 3834 (automatic responses) | Yes | Email-to-ticket ignores auto-replies and bounces; outgoing emails are marked as automatic, to prevent mail loops |
 | HTTP security headers | Yes | HSTS, CSP with nonces, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Secure/HttpOnly/SameSite cookies |
@@ -264,7 +264,7 @@ The commands below run on the server, in the application directory, as the web s
    php artisan core:setup
    ```
 
-   At the first sign-in, the administrator sets up two-factor authentication with an authenticator app (required for every role other than *Requester*). They then invite people under **Administration → Access → People**, or map Active Directory groups (see below).
+   At the first sign-in, the administrator sets up two-factor authentication with an authenticator app (required for every role other than *Requester* until the organization chooses otherwise under **Administration → Access → Security settings**). They then invite people under **Administration → Access → People**, or map Active Directory groups (see below).
 
 5. **Optimize** for production.
 

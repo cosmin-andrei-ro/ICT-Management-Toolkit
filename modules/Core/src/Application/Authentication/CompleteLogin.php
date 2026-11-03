@@ -48,6 +48,7 @@ final readonly class CompleteLogin
         private SecurityKeys $keys,
         private RateLimiter $limiter,
         private AuditTrail $trail,
+        private AccountLockout $lockout,
     ) {}
 
     /**
@@ -99,7 +100,8 @@ final readonly class CompleteLogin
 
         $user = User::query()->find($pending['user_id']);
 
-        return $user !== null && $user->is_active && $user->canSignIn() ? $user : null;
+        // Locked by wrong codes while the sign-in was pending: it has to start again, and fails.
+        return $user !== null && $user->is_active && $user->canSignIn() && ! $this->lockout->isLocked($user) ? $user : null;
     }
 
     /**
@@ -117,6 +119,7 @@ final readonly class CompleteLogin
         if (! $this->twoFactor->verify($user, $code)) {
             $this->limiter->hit($key, 60);
             $this->trail->record(AuditEvent::MfaFailed, $user, null, null, $user->id);
+            $this->lockout->recordFailure($user);
 
             throw ValidationException::withMessages(['code' => __('core::security.challenge.invalid')]);
         }
@@ -148,6 +151,7 @@ final readonly class CompleteLogin
         } catch (InvalidArgumentException) {
             $this->limiter->hit($key, 60);
             $this->trail->record(AuditEvent::MfaFailed, $user, null, ['method' => 'security_key'], $user->id);
+            $this->lockout->recordFailure($user);
 
             throw ValidationException::withMessages(['code' => __('core::security.keys.failed')]);
         }
@@ -188,8 +192,18 @@ final readonly class CompleteLogin
         return $user;
     }
 
+    /**
+     * @throws ValidationException keyed to "login" for a locked account, whatever the method.
+     */
     private function signIn(User $user, bool $remember): void
     {
+        if ($this->lockout->isLocked($user)) {
+            $this->trail->record(AuditEvent::LoginFailed, $user, null, ['reason' => 'locked'], $user->id);
+
+            throw ValidationException::withMessages(['login' => __('auth.failed')]);
+        }
+
+        $this->lockout->recordSuccess($user);
         $this->guard()->login($user, $remember);
         $user->forceFill(['last_login_at' => now()])->save();
     }

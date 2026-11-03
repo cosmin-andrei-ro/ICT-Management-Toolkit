@@ -41,6 +41,15 @@ Your authenticator app and recovery codes stay as a fallback. Turning two-factor
 
 ## Password
 
-Local accounts change their password here: enter the current one and the new one twice. Passwords have at least 12 characters; a sentence of several words is easy to remember and hard to guess. Changing it signs you out everywhere else, for example on a computer where you forgot to sign out.
+Local accounts change their password here: enter the current one and the new one twice. Passwords have at least 12 characters; a sentence of several words is easy to remember and hard to guess. Passwords that appeared in known data breaches are refused, even if they look strong: attackers try those first. Changing it signs you out everywhere else, for example on a computer where you forgot to sign out.
 
 Active Directory accounts change their password in Windows.
+
+## Locked account
+
+After 10 failed sign-ins in a row (wrong password or wrong code), your account is locked and you receive an e-mail. While it is locked, even the right password is refused.
+
+- To unlock it yourself, use **Forgot your password?** on the sign-in page and choose a new password.
+- Or ask an administrator to unlock it.
+
+If you did not cause the failures yourself, someone may be trying to guess your password: choose a new one and tell the IT department. Active Directory accounts follow the lockout rules of Windows instead.

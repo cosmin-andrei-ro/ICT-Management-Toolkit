@@ -53,6 +53,7 @@ final readonly class AttemptLogin
         private AuditTrail $trail,
         private ExceptionHandler $exceptions,
         private CompleteLogin $completeLogin,
+        private AccountLockout $lockout,
     ) {}
 
     /**
@@ -112,6 +113,14 @@ final readonly class AttemptLogin
         // not reveal which accounts exist or are disabled.
         $credentials = ['email' => $email, 'password' => $password, 'is_active' => true, 'auth_source' => AuthSource::Local->value];
         $guard = $this->guard();
+        $account = User::query()->where('email', $email)->where('auth_source', AuthSource::Local)->first();
+
+        // A locked account fails like a wrong password, without checking it: the e-mail sent at locking says why.
+        if ($account !== null && $this->lockout->isLocked($account)) {
+            $this->trail->record(AuditEvent::LoginFailed, $account, null, ['email' => $email, 'reason' => 'locked'], $account->id);
+
+            return null;
+        }
 
         if (! $guard instanceof SessionGuard) {
             throw new LogicException('The web guard must be session based.');
@@ -120,6 +129,10 @@ final readonly class AttemptLogin
         if (! $guard->validate($credentials)) {
             $attempted = $guard->getLastAttempted();
             $this->events->dispatch(new Failed('web', $attempted instanceof User ? $attempted : null, ['email' => $email]));
+
+            if ($account !== null) {
+                $this->lockout->recordFailure($account);
+            }
 
             return null;
         }

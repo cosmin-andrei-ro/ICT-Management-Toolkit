@@ -54,6 +54,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property ?Carbon $two_factor_confirmed_at
  * @property ?list<string> $two_factor_recovery_codes
  * @property ?int $two_factor_last_used_step
+ * @property int $failed_logins Consecutive failed sign-ins (AccountLockout).
+ * @property ?Carbon $locked_at
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -148,7 +150,8 @@ final class User extends Authenticatable implements FilamentUser
     public function auditExclude(): array
     {
         // Two-factor changes have their own audit events (mfa_*).
-        return ['last_login_at', 'directory_synced_at', 'two_factor_confirmed_at', 'two_factor_last_used_step'];
+        // Locks and unlocks too (account_locked, account_unlocked).
+        return ['last_login_at', 'directory_synced_at', 'two_factor_confirmed_at', 'two_factor_last_used_step', 'failed_logins', 'locked_at'];
     }
 
     /**
@@ -173,6 +176,8 @@ final class User extends Authenticatable implements FilamentUser
             'two_factor_confirmed_at' => 'datetime',
             'two_factor_recovery_codes' => 'array',
             'two_factor_last_used_step' => 'integer',
+            'failed_logins' => 'integer',
+            'locked_at' => 'datetime',
         ];
     }
 }

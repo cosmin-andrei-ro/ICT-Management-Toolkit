@@ -11,15 +11,16 @@ use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Database\ConnectionInterface;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
-use Modules\Core\Domain\Authorization\DefaultRole;
+use Modules\Core\Domain\Models\SecuritySettings;
 use Modules\Core\Domain\Models\User;
 use PragmaRX\Google2FAQRCode\Google2FA;
 use SensitiveParameter;
 
 /**
  * Authenticator-app codes (TOTP, RFC 6238) and single-use recovery codes.
- * Owner's decision: required for everyone holding a role other than Requester,
- * in any organization, AD accounts included; optional for the others.
+ * Required, AD accounts included, for whoever holds a role its organization
+ * requires it for - by default every role but Requester (ADR 0057); optional
+ * for the others.
  */
 final readonly class TwoFactorAuthentication
 {
@@ -41,6 +42,10 @@ final readonly class TwoFactorAuthentication
         return $user->two_factor_confirmed_at !== null && $user->two_factor_secret !== null;
     }
 
+    /**
+     * Whether any of the person's roles, in any organization, must use it there
+     * (ADR 0057: each organization chooses; administrators always must).
+     */
     public function isRequiredFor(User $user): bool
     {
         $tables = $this->config->get('permission.table_names');
@@ -48,12 +53,24 @@ final readonly class TwoFactorAuthentication
         $roles = is_array($tables) && is_string($tables['roles'] ?? null) ? $tables['roles'] : 'roles';
 
         // Across all organizations (teams), not only the current one.
-        return $this->db->table($modelRoles)
+        $held = $this->db->table($modelRoles)
             ->join($roles, "{$roles}.id", '=', "{$modelRoles}.role_id")
             ->where("{$modelRoles}.model_id", $user->id)
             ->where("{$modelRoles}.model_type", $user->getMorphClass())
-            ->where("{$roles}.name", '!=', DefaultRole::Requester->value)
-            ->exists();
+            ->get(["{$roles}.name", "{$modelRoles}.organization_id"]);
+
+        if ($held->isEmpty()) {
+            return false;
+        }
+
+        $settings = SecuritySettings::query()->withoutGlobalScopes()->whereIn('organization_id', $held->pluck('organization_id')->filter()->unique()->all())->get()->keyBy('organization_id');
+
+        return $held->contains(function (object $row) use ($settings): bool {
+            $name = is_string($row->name ?? null) ? $row->name : '';
+            $organizationId = is_string($row->organization_id ?? null) ? $row->organization_id : '';
+
+            return ($settings->get($organizationId) ?? new SecuritySettings)->requiresMfa($name);
+        });
     }
 
     public function newSecret(): string
