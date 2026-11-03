@@ -88,12 +88,15 @@ use Modules\Core\Domain\Models\Supplier;
 use Modules\Core\Domain\Models\SupplierContact;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Models\Webhook;
+use Modules\Core\Domain\Models\WebhookDelivery;
 use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Domain\Retention\DataRetention;
 use Modules\Core\Domain\Risks\RiskSignals;
 use Modules\Core\Domain\Sso\SsoGroupMapping;
 use Modules\Core\Domain\Sso\SsoProvider;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Core\Domain\Webhooks\WebhookEvents;
 use Modules\Core\Http\Home\HomePanels;
 use Modules\Core\Http\Middleware\CaptureRequestContext;
 use Modules\Core\Http\Middleware\RequireTwoFactor;
@@ -147,6 +150,12 @@ final class CoreServiceProvider extends ModuleServiceProvider
         ));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(AuditLogExport::TYPE, AuditLogExport::class, 'core.audit.view'));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PersonalDataExport::TYPE, PersonalDataExport::class, 'core.personal_data.manage'));
+        $this->app->singleton(WebhookEvents::class);
+        // Deliveries copy titles of records into their payload: they are kept no longer than the policy says.
+        $this->callAfterResolving(DataRetention::class, fn (DataRetention $retention) => $retention->register(
+            'core.webhook_deliveries', 'core::retention.policies.webhook_deliveries', 'core::retention.policies.webhook_deliveries_help', 1,
+            fn (string $organizationId, CarbonImmutable $before): int => WebhookDelivery::query()->withoutGlobalScopes()->where('organization_id', $organizationId)->where('status', '!=', 'pending')->where('created_at', '<', $before)->toBase()->delete(),
+        ));
         $this->app->singleton(LinkedRecords::class);
         $this->app->singleton(ContractDependents::class);
         $this->app->singleton(RiskSignals::class);
@@ -258,6 +267,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.contract' => Contract::class,
             'core.security_settings' => SecuritySettings::class,
             'core.retention_settings' => RetentionSettings::class,
+            'core.webhook' => Webhook::class,
         ]);
 
         Event::listen(
@@ -319,6 +329,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
             // Personal API tokens (ADR 0061): issue your own; see and revoke everyone's.
             'core.api.use',
             'core.api.manage',
+            // Outbound webhooks (ADR 0066): where the organization's events go. Administrators only.
+            'core.webhooks.manage',
             'core.directory.manage',
             'core.team.view',
             'core.team.manage',

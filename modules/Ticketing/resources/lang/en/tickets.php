@@ -56,4 +56,15 @@ return [
         'implemented' => 'Change implemented',
         'rolled_back' => 'Change rolled back',
     ],
+    'webhooks' => [
+        'created' => 'Ticket created',
+        'assigned' => 'Ticket assigned',
+        'status_changed' => 'Ticket status changed',
+        'resolved' => 'Ticket resolved',
+        'sla_warning' => 'Ticket close to its SLA target',
+        'sla_breached' => 'Ticket SLA breached',
+        'change_submitted' => 'Change submitted for approval',
+        'change_approved' => 'Change approved',
+        'change_rejected' => 'Change rejected',
+    ],
 ];

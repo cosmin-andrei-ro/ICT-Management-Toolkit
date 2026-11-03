@@ -24,6 +24,7 @@ use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Domain\Retention\DataRetention;
 use Modules\Core\Domain\Risks\RiskSignals;
+use Modules\Core\Domain\Webhooks\WebhookEvents;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Ticketing\Application\Email\MailboxReader;
 use Modules\Ticketing\Application\Email\ReplyAddress;
@@ -37,6 +38,7 @@ use Modules\Ticketing\Application\PersonalData\TicketingPersonalData;
 use Modules\Ticketing\Application\Reports\TicketExport;
 use Modules\Ticketing\Application\Retention\AnonymizeClosedTickets;
 use Modules\Ticketing\Application\Risks\IncidentRiskSignals;
+use Modules\Ticketing\Application\Webhooks\PublishTicketWebhooks;
 use Modules\Ticketing\Domain\Events\ChangeApproved;
 use Modules\Ticketing\Domain\Events\ChangeRejected;
 use Modules\Ticketing\Domain\Events\ChangeSubmitted;
@@ -46,6 +48,7 @@ use Modules\Ticketing\Domain\Events\TicketAssigned;
 use Modules\Ticketing\Domain\Events\TicketCommentAdded;
 use Modules\Ticketing\Domain\Events\TicketCreated;
 use Modules\Ticketing\Domain\Events\TicketResolved;
+use Modules\Ticketing\Domain\Events\TicketStatusChanged;
 use Modules\Ticketing\Domain\Models\CabBoard;
 use Modules\Ticketing\Domain\Models\Category;
 use Modules\Ticketing\Domain\Models\ChangeApproval;
@@ -98,6 +101,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
 
         ApiAbility::register('tickets:read', 'ticketing::api.abilities.read');
         ApiAbility::register('tickets:write', 'ticketing::api.abilities.write');
+        $this->callAfterResolving(WebhookEvents::class, PublishTicketWebhooks::register(...));
     }
 
     public function boot(): void
@@ -132,6 +136,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         Event::listen([TicketCreated::class, TicketAssigned::class, TicketResolved::class, TicketCommentAdded::class], SendTicketNotifications::class);
         Event::listen([SlaWarning::class, SlaBreached::class], SendSlaNotifications::class);
         Event::listen([ChangeSubmitted::class, ChangeApproved::class, ChangeRejected::class], SendChangeNotifications::class);
+        Event::listen([TicketCreated::class, TicketAssigned::class, TicketStatusChanged::class, TicketResolved::class, SlaWarning::class, SlaBreached::class, ChangeSubmitted::class, ChangeApproved::class, ChangeRejected::class], PublishTicketWebhooks::class);
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(AutoCloseTicketsCommand::class)->hourly()->withoutOverlapping()->onOneServer();

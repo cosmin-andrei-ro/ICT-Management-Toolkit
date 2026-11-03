@@ -144,8 +144,24 @@ A strict CSP with a per-request nonce, plus the standard hardening headers on ev
 | `core.location.manage` | Locations |
 | `core.supplier.view` / `.manage` | Suppliers and their contacts |
 | `core.contract.view` / `.manage` | Contracts, their values and documents |
+| `core.webhooks.manage` | Outbound webhooks and their deliveries (administrators) |
 
 ## Read-only API (ADR 0065)
 
 - `directory:read`: `GET /api/v1/directory/people` (name, e-mail and active only; `core.user.view`), `/directory/teams` (`core.team.view`), `/directory/departments`, `/directory/locations` (their policies).
 - `suppliers:read`: `GET /api/v1/suppliers`, `/suppliers/{id}` (with contacts), `/contracts`. Filters include `supplier_id`, `type` and `ends_before`.
+
+## Outbound webhooks (ADR 0066)
+
+- Administration → Integrations → Webhooks (`core.webhooks.manage`, administrators): name, HTTPS address, events, active.
+  - The signing secret is generated and shown once; **New secret** rotates it.
+  - **Send a test** sends a `webhook.test` event.
+- Administration → Integrations → Webhook deliveries: every delivery, with its status, attempts and the receiver's answer. A failed delivery can be sent again.
+- Modules register event types in `WebhookEvents` and publish with `PublishWebhookEvent::handle($type, ['id', 'reference', 'title', 'url', 'changes'], $organizationId)`.
+- Payload: `id`, `event`, `occurred_at`, `organization_id`, `data`. Header `X-Webhook-Signature: t=<time>,v1=<HMAC-SHA256 of "<time>.<body>">`.
+- Retries: after 1 min, 5 min, 30 min, 2 h and 12 h, then failed.
+- `WebhookUrlGuard` refuses plain HTTP and internal addresses, at save time and at every delivery. The connection is pinned to the checked address and redirects are not followed.
+- Configuration:
+  - `WEBHOOKS_ALLOW_PRIVATE_NETWORKS` and `WEBHOOKS_ALLOW_HTTP` (both `false`).
+  - `WEBHOOKS_TIMEOUT` (`10` seconds).
+- Retention policy `core.webhook_deliveries`, one year by default.

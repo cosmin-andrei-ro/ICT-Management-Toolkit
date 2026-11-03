@@ -15,5 +15,7 @@ return [
     'policies' => [
         'audit_log' => 'Audit log',
         'audit_log_help' => 'Older entries are deleted. Sign-ins outside any organization are kept as long as the organization that keeps its log longest.',
+        'webhook_deliveries' => 'Webhook deliveries',
+        'webhook_deliveries_help' => 'Sent and failed deliveries older than this are deleted, with the record titles their payload carries.',
     ],
 ];
