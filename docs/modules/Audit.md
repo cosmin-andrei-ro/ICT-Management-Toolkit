@@ -61,3 +61,26 @@ A control's owner updates its status and implementation notes, adds evidence and
 2. Evidence: links to toolkit records, uploaded documents, periodic control tests with reminders to owners — **done**.
 3. Audits (internal and external), findings, corrective action plans (optionally service desk tickets), closure verified by someone other than the owner — **done**.
 4. Reporting: Statement of Applicability in Excel and PDF, compliance report, weekly digest, compliance gaps as risk signals — **done**.
+
+## API (ADR 0063)
+
+Abilities: `compliance:read`, `compliance:write`. Permissions are the screens':
+
+- compliance managers create, change and map controls, and raise and change findings;
+- a control's owner records implementation, evidence and tests;
+- a finding's owner works on its actions.
+
+| Method | Path | |
+|---|---|---|
+| GET | `/api/v1/compliance/frameworks` | With `requirements_count` |
+| GET | `/api/v1/compliance/frameworks/{id}/requirements` | Applicability, `state`, mapped controls; filters `group`, `search` |
+| GET | `/api/v1/compliance/audits` | Read-only |
+| GET / POST / PATCH | `/api/v1/compliance/controls`, `.../{id}` | Filters `status`, `owner_id`, `framework`, `test_overdue`, `search` |
+| PUT | `.../controls/{id}/implementation` | Status and notes (owner) |
+| POST / DELETE | `.../controls/{id}/requirements`, `.../requirements/{requirement}` | Mapping |
+| POST / DELETE | `.../controls/{id}/evidence`, `.../evidence/{evidence}` | Links to toolkit records (`type`, `id`); files are uploaded on screen |
+| POST | `.../controls/{id}/tests` | Done tests only; schedules the next |
+| GET / POST / PATCH | `/api/v1/compliance/findings`, `.../{id}` | `audit_id` at creation; `root_cause` |
+| POST / PATCH | `.../findings/{id}/actions`, `.../actions/{action}` | Corrective actions |
+
+Submitting a finding for verification and verifying it, audits' lifecycle and the statement of applicability stay on screen.

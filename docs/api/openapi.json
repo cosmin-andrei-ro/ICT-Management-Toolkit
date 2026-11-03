@@ -554,6 +554,75 @@
                 }
             }
         },
+        "/risks/catalog": {
+            "get": {
+                "operationId": "v1.risks.catalog",
+                "summary": "List the threats and vulnerabilities a risk can name in its assessment",
+                "tags": [
+                    "Catalog"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "kind": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "threat",
+                                                            "vulnerability"
+                                                        ]
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "is_active": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "kind",
+                                                    "name",
+                                                    "description",
+                                                    "is_active"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/cmdb/types": {
             "get": {
                 "operationId": "v1.cmdb.types.index",
@@ -970,6 +1039,1631 @@
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/compliance/controls": {
+            "get": {
+                "operationId": "v1.compliance.controls.index",
+                "description": "Filters: `filter[status]`, `filter[owner_id]`, `filter[framework]` (key: controls mapped to it),\n`filter[test_overdue]` (true), `filter[search]` (name). Sorts: `reference`, `name`,\n`next_test_on`, `updated_at`; by reference by default.",
+                "summary": "List controls",
+                "tags": [
+                    "Control"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `ControlResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ControlResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1.compliance.controls.store",
+                "summary": "Create a control",
+                "tags": [
+                    "Control"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveControlRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ControlResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ControlResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "requirements",
+                                                        "evidence",
+                                                        "tests"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/compliance/controls/{control}": {
+            "get": {
+                "operationId": "v1.compliance.controls.show",
+                "summary": "Show a control, the requirements it meets, its evidence and its tests",
+                "tags": [
+                    "Control"
+                ],
+                "parameters": [
+                    {
+                        "name": "control",
+                        "in": "path",
+                        "required": true,
+                        "description": "The control ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ControlResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ControlResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "requirements",
+                                                        "evidence",
+                                                        "tests"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "v1.compliance.controls.update",
+                "summary": "Change a control: only the fields sent",
+                "tags": [
+                    "Control"
+                ],
+                "parameters": [
+                    {
+                        "name": "control",
+                        "in": "path",
+                        "required": true,
+                        "description": "The control ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveControlRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ControlResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ControlResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "requirements",
+                                                        "evidence",
+                                                        "tests"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/compliance/controls/{control}/implementation": {
+            "put": {
+                "operationId": "v1.compliance.controls.implementation",
+                "summary": "Record how far the control is implemented (its owner may)",
+                "tags": [
+                    "Control"
+                ],
+                "parameters": [
+                    {
+                        "name": "control",
+                        "in": "path",
+                        "required": true,
+                        "description": "The control ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ControlImplementationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ControlResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ControlResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "requirements",
+                                                        "evidence",
+                                                        "tests"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/compliance/controls/{control}/requirements": {
+            "post": {
+                "operationId": "v1.compliance.controls.requirements.store",
+                "summary": "Map the control to a requirement it meets",
+                "tags": [
+                    "Control"
+                ],
+                "parameters": [
+                    {
+                        "name": "control",
+                        "in": "path",
+                        "required": true,
+                        "description": "The control ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "requirement_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "required": [
+                                    "requirement_id"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ControlResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ControlResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "requirements",
+                                                        "evidence",
+                                                        "tests"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/compliance/controls/{control}/requirements/{requirement}": {
+            "delete": {
+                "operationId": "v1.compliance.controls.requirements.destroy",
+                "summary": "Unmap a requirement",
+                "tags": [
+                    "Control"
+                ],
+                "parameters": [
+                    {
+                        "name": "control",
+                        "in": "path",
+                        "required": true,
+                        "description": "The control ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "requirement",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/compliance/controls/{control}/evidence": {
+            "post": {
+                "operationId": "v1.compliance.controls.evidence.store",
+                "summary": "Link a record of the toolkit as evidence (files are uploaded on screen)",
+                "tags": [
+                    "Control"
+                ],
+                "parameters": [
+                    {
+                        "name": "control",
+                        "in": "path",
+                        "required": true,
+                        "description": "The control ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ControlEvidenceRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ControlResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ControlResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "requirements",
+                                                        "evidence",
+                                                        "tests"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/compliance/controls/{control}/evidence/{evidence}": {
+            "delete": {
+                "operationId": "v1.compliance.controls.evidence.destroy",
+                "summary": "Remove a piece of evidence (kept in the history)",
+                "tags": [
+                    "Control"
+                ],
+                "parameters": [
+                    {
+                        "name": "control",
+                        "in": "path",
+                        "required": true,
+                        "description": "The control ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "evidence",
+                        "in": "path",
+                        "required": true,
+                        "description": "The evidence ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/compliance/controls/{control}/tests": {
+            "post": {
+                "operationId": "v1.compliance.controls.tests.store",
+                "summary": "Record a test of the control, once done; the next one is scheduled from it",
+                "tags": [
+                    "Control"
+                ],
+                "parameters": [
+                    {
+                        "name": "control",
+                        "in": "path",
+                        "required": true,
+                        "description": "The control ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ControlTestRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ControlResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ControlResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "requirements",
+                                                        "evidence",
+                                                        "tests"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/compliance/findings": {
+            "get": {
+                "operationId": "v1.compliance.findings.index",
+                "description": "Filters: `filter[status]`, `filter[severity]`, `filter[owner_id]`, `filter[audit_id]`,\n`filter[control_id]`, `filter[search]` (title). Sorts: `reference`, `due_on`, `created_at`,\n`updated_at`; newest first by default.",
+                "summary": "List findings",
+                "tags": [
+                    "Finding"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `FindingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FindingResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1.compliance.findings.store",
+                "summary": "Raise a finding, from an audit or on its own",
+                "tags": [
+                    "Finding"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveFindingRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`FindingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/FindingResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/compliance/findings/{finding}": {
+            "get": {
+                "operationId": "v1.compliance.findings.show",
+                "summary": "Show a finding and its corrective actions",
+                "tags": [
+                    "Finding"
+                ],
+                "parameters": [
+                    {
+                        "name": "finding",
+                        "in": "path",
+                        "required": true,
+                        "description": "The finding ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`FindingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/FindingResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "v1.compliance.findings.update",
+                "summary": "Change a finding while it is open: only the fields sent",
+                "tags": [
+                    "Finding"
+                ],
+                "parameters": [
+                    {
+                        "name": "finding",
+                        "in": "path",
+                        "required": true,
+                        "description": "The finding ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveFindingRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`FindingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/FindingResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/compliance/findings/{finding}/actions": {
+            "post": {
+                "operationId": "v1.compliance.findings.actions.store",
+                "summary": "Add a corrective action",
+                "tags": [
+                    "Finding"
+                ],
+                "parameters": [
+                    {
+                        "name": "finding",
+                        "in": "path",
+                        "required": true,
+                        "description": "The finding ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FindingActionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`FindingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/FindingResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/compliance/findings/{finding}/actions/{action}": {
+            "patch": {
+                "operationId": "v1.compliance.findings.actions.update",
+                "summary": "Move a corrective action on: planned, in progress, done or cancelled",
+                "tags": [
+                    "Finding"
+                ],
+                "parameters": [
+                    {
+                        "name": "finding",
+                        "in": "path",
+                        "required": true,
+                        "description": "The finding ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "path",
+                        "required": true,
+                        "description": "The action ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FindingActionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`FindingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/FindingResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/compliance/frameworks": {
+            "get": {
+                "operationId": "v1.compliance.frameworks.index",
+                "summary": "List the frameworks the organization follows",
+                "tags": [
+                    "Framework"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `FrameworkResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FrameworkResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/compliance/frameworks/{framework}/requirements": {
+            "get": {
+                "operationId": "v1.compliance.frameworks.requirements",
+                "description": "Filters: `filter[state]`, `filter[group]`, `filter[search]` (reference or title). Sort: `position` (default), `reference`.",
+                "summary": "List a framework's requirements, with applicability, state and the controls meeting them",
+                "tags": [
+                    "Framework"
+                ],
+                "parameters": [
+                    {
+                        "name": "framework",
+                        "in": "path",
+                        "required": true,
+                        "description": "The framework ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `RequirementResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/RequirementResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/compliance/audits": {
+            "get": {
+                "operationId": "v1.compliance.audits.index",
+                "summary": "List audits. Filters: `filter[status]`, `filter[kind]`. Sorts: `starts_on` (newest first by default), `reference`",
+                "tags": [
+                    "Framework"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `AuditResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AuditResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -1515,6 +3209,765 @@
                 }
             }
         },
+        "/risks": {
+            "get": {
+                "operationId": "v1.risks.index",
+                "description": "Filters: `filter[status]`, `filter[category]`, `filter[owner_id]`, `filter[treatment]`,\n`filter[search]` (title). Sorts: `reference`, `title`, `next_review_on`, `created_at`,\n`updated_at`; by reference by default.",
+                "summary": "List risks",
+                "tags": [
+                    "Risk"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `RiskResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/RiskResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1.risks.store",
+                "summary": "Register a risk",
+                "tags": [
+                    "Risk"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveRiskRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`RiskResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/RiskResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "catalog_entries",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/risks/{risk}": {
+            "get": {
+                "operationId": "v1.risks.show",
+                "summary": "Show a risk, with what it concerns, its threats and vulnerabilities and its actions",
+                "tags": [
+                    "Risk"
+                ],
+                "parameters": [
+                    {
+                        "name": "risk",
+                        "in": "path",
+                        "required": true,
+                        "description": "The risk ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`RiskResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/RiskResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "catalog_entries",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "v1.risks.update",
+                "summary": "Change a risk's title, description, category, owner or status: only the fields sent",
+                "tags": [
+                    "Risk"
+                ],
+                "parameters": [
+                    {
+                        "name": "risk",
+                        "in": "path",
+                        "required": true,
+                        "description": "The risk ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveRiskRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`RiskResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/RiskResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "catalog_entries",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/risks/{risk}/assessment": {
+            "put": {
+                "operationId": "v1.risks.assessment",
+                "summary": "Assess the risk before treatment: likelihood and impact, threats and vulnerabilities, controls in place",
+                "tags": [
+                    "Risk"
+                ],
+                "parameters": [
+                    {
+                        "name": "risk",
+                        "in": "path",
+                        "required": true,
+                        "description": "The risk ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AssessRiskRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`RiskResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/RiskResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "catalog_entries",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/risks/{risk}/treatment": {
+            "put": {
+                "operationId": "v1.risks.treatment",
+                "summary": "Decide the treatment and the residual risk expected once it is in place",
+                "tags": [
+                    "Risk"
+                ],
+                "parameters": [
+                    {
+                        "name": "risk",
+                        "in": "path",
+                        "required": true,
+                        "description": "The risk ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TreatRiskRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`RiskResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/RiskResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "catalog_entries",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/risks/{risk}/assets": {
+            "post": {
+                "operationId": "v1.risks.assets.store",
+                "summary": "Link what the risk concerns: an application, a configuration item, a process or a supplier",
+                "tags": [
+                    "Risk"
+                ],
+                "parameters": [
+                    {
+                        "name": "risk",
+                        "in": "path",
+                        "required": true,
+                        "description": "The risk ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RiskAssetRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/risks/{risk}/assets/{type}/{asset}": {
+            "delete": {
+                "operationId": "v1.risks.assets.destroy",
+                "summary": "Unlink what the risk concerns",
+                "tags": [
+                    "Risk"
+                ],
+                "parameters": [
+                    {
+                        "name": "risk",
+                        "in": "path",
+                        "required": true,
+                        "description": "The risk ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "asset",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/risks/{risk}/actions": {
+            "post": {
+                "operationId": "v1.risks.actions.store",
+                "summary": "Add a treatment action",
+                "tags": [
+                    "Risk"
+                ],
+                "parameters": [
+                    {
+                        "name": "risk",
+                        "in": "path",
+                        "required": true,
+                        "description": "The risk ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RiskActionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`RiskResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/RiskResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "catalog_entries",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/risks/{risk}/actions/{action}": {
+            "patch": {
+                "operationId": "v1.risks.actions.update",
+                "summary": "Move a treatment action on: planned, in progress, done or cancelled",
+                "tags": [
+                    "Risk"
+                ],
+                "parameters": [
+                    {
+                        "name": "risk",
+                        "in": "path",
+                        "required": true,
+                        "description": "The risk ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "path",
+                        "required": true,
+                        "description": "The action ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RiskActionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`RiskResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/RiskResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "owner",
+                                                        "catalog_entries",
+                                                        "actions"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/tickets": {
             "get": {
                 "operationId": "v1.tickets.index",
@@ -1921,6 +4374,59 @@
             }
         },
         "schemas": {
+            "ActionStatus": {
+                "type": "string",
+                "description": "Mirrored by risk_actions_status_check.\n",
+                "enum": [
+                    "planned",
+                    "in_progress",
+                    "done",
+                    "cancelled"
+                ],
+                "title": "ActionStatus"
+            },
+            "AssessRiskRequest": {
+                "type": "object",
+                "properties": {
+                    "likelihood": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "1\u20135 on the organization's scale, with impact; both null clears the assessment.",
+                        "minimum": 1,
+                        "maximum": 5
+                    },
+                    "impact": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 5
+                    },
+                    "catalog_entry_ids": {
+                        "type": "array",
+                        "description": "Threats and vulnerabilities from the catalog.",
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    "existing_controls": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    }
+                },
+                "required": [
+                    "likelihood",
+                    "impact"
+                ],
+                "title": "AssessRiskRequest"
+            },
             "AssetCategoryResource": {
                 "type": "object",
                 "properties": {
@@ -2160,6 +4666,17 @@
                 ],
                 "title": "AssetResource"
             },
+            "AssetType": {
+                "type": "string",
+                "description": "What a risk can concern. Mirrored by risk_risk_assets_type_check.\n",
+                "enum": [
+                    "application",
+                    "configuration_item",
+                    "process",
+                    "supplier"
+                ],
+                "title": "AssetType"
+            },
             "AssignAssetRequest": {
                 "type": "object",
                 "properties": {
@@ -2190,6 +4707,83 @@
                     "user_id"
                 ],
                 "title": "AssignAssetRequest"
+            },
+            "AuditResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "reference": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "kind": {
+                        "type": "string",
+                        "enum": [
+                            "internal",
+                            "external"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "planned",
+                            "in_progress",
+                            "completed",
+                            "cancelled"
+                        ]
+                    },
+                    "scope": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lead_auditor_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "audit_body": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "starts_on": {
+                        "type": "string"
+                    },
+                    "ends_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "conclusion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "reference",
+                    "title",
+                    "kind",
+                    "status",
+                    "scope",
+                    "lead_auditor_id",
+                    "audit_body",
+                    "starts_on",
+                    "ends_on",
+                    "conclusion"
+                ],
+                "title": "AuditResource"
             },
             "ChangeAssetStatusRequest": {
                 "type": "object",
@@ -2556,6 +5150,304 @@
                 ],
                 "title": "ConfigurationItemResource"
             },
+            "ControlEvidenceRequest": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "A record of the toolkit, e.g. \"risk.risk\", \"bcm.plan\", \"ticketing.ticket\", \"documentation.page\".",
+                        "maxLength": 64
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 1000
+                    }
+                },
+                "required": [
+                    "type",
+                    "id"
+                ],
+                "title": "ControlEvidenceRequest"
+            },
+            "ControlImplementationRequest": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/ControlStatus"
+                    },
+                    "implementation_notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    }
+                },
+                "required": [
+                    "status"
+                ],
+                "title": "ControlImplementationRequest"
+            },
+            "ControlResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "reference": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "owner": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "planned",
+                            "partial",
+                            "implemented",
+                            "retired"
+                        ]
+                    },
+                    "implementation_notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "test_interval_months": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "last_tested_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "next_test_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "test_overdue": {
+                        "type": "boolean"
+                    },
+                    "requirements": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "framework": {
+                                    "type": "string"
+                                },
+                                "reference": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "framework",
+                                "reference",
+                                "title"
+                            ]
+                        }
+                    },
+                    "evidence": {
+                        "type": "array",
+                        "description": "Links to records of the toolkit, and uploaded files (listed, downloaded on screen).",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "kind": {
+                                    "type": "string",
+                                    "enum": [
+                                        "link",
+                                        "file"
+                                    ]
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "linked_type": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "linked_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "valid_until": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "kind",
+                                "title",
+                                "linked_type",
+                                "linked_id",
+                                "valid_until"
+                            ]
+                        }
+                    },
+                    "tests": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "tested_on": {
+                                    "type": "string"
+                                },
+                                "result": {
+                                    "type": "string",
+                                    "enum": [
+                                        "effective",
+                                        "partially_effective",
+                                        "ineffective"
+                                    ]
+                                },
+                                "method": {
+                                    "type": "string"
+                                },
+                                "notes": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "tested_on",
+                                "result",
+                                "method",
+                                "notes"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "reference",
+                    "name",
+                    "description",
+                    "status",
+                    "implementation_notes",
+                    "test_interval_months",
+                    "last_tested_on",
+                    "next_test_on",
+                    "test_overdue",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ControlResource"
+            },
+            "ControlStatus": {
+                "type": "string",
+                "description": "How far a control is implemented. Mirrored by audit_controls_status_check.\n",
+                "enum": [
+                    "planned",
+                    "partial",
+                    "implemented",
+                    "retired"
+                ],
+                "title": "ControlStatus"
+            },
+            "ControlTestRequest": {
+                "type": "object",
+                "properties": {
+                    "tested_on": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/TestResult"
+                    },
+                    "method": {
+                        "type": "string",
+                        "maxLength": 2000
+                    },
+                    "notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    }
+                },
+                "required": [
+                    "tested_on",
+                    "result",
+                    "method"
+                ],
+                "title": "ControlTestRequest"
+            },
             "Criticality": {
                 "type": "string",
                 "enum": [
@@ -2575,6 +5467,253 @@
                     "disaster_recovery"
                 ],
                 "title": "Environment"
+            },
+            "FindingActionRequest": {
+                "type": "object",
+                "description": "Adding a corrective action (POST) or moving it on (PATCH: status only).",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "owner_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "due_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    }
+                },
+                "required": [
+                    "title"
+                ],
+                "title": "FindingActionRequest"
+            },
+            "FindingResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "reference": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "severity": {
+                        "type": "string",
+                        "enum": [
+                            "major_nonconformity",
+                            "minor_nonconformity",
+                            "observation",
+                            "opportunity"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "open",
+                            "verification",
+                            "closed"
+                        ]
+                    },
+                    "owner": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "due_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "overdue": {
+                        "type": "boolean"
+                    },
+                    "audit_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "control_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "requirement_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "root_cause": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "closed_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "owner_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "due_on": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "enum": [
+                                        "planned",
+                                        "in_progress",
+                                        "done",
+                                        "cancelled"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "title",
+                                "owner_id",
+                                "due_on",
+                                "status"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "reference",
+                    "title",
+                    "description",
+                    "severity",
+                    "status",
+                    "due_on",
+                    "overdue",
+                    "audit_id",
+                    "control_id",
+                    "requirement_id",
+                    "root_cause",
+                    "closed_at",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "FindingResource"
+            },
+            "FindingSeverity": {
+                "type": "string",
+                "description": "ISO/IEC 27001 practice (clause 10.2): nonconformities need a root cause and corrective action; observations and opportunities for improvement do not. Mirrored by audit_findings_severity_check.\n",
+                "enum": [
+                    "major_nonconformity",
+                    "minor_nonconformity",
+                    "observation",
+                    "opportunity"
+                ],
+                "title": "FindingSeverity"
+            },
+            "FrameworkResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "key": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "has_soa": {
+                        "type": "boolean"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "requirements_count": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "key",
+                    "name",
+                    "version",
+                    "description",
+                    "has_soa",
+                    "is_active"
+                ],
+                "title": "FrameworkResource"
             },
             "Impact": {
                 "type": "string",
@@ -2792,6 +5931,17 @@
                 },
                 "title": "LicenseSeatRequest"
             },
+            "Modules.Audit.Domain.Enums.ActionStatus": {
+                "type": "string",
+                "description": "Status of a corrective action. Mirrored by audit_finding_actions_status_check.\n",
+                "enum": [
+                    "planned",
+                    "in_progress",
+                    "done",
+                    "cancelled"
+                ],
+                "title": "Modules.Audit.Domain.Enums.ActionStatus"
+            },
             "RelationshipResource": {
                 "type": "object",
                 "properties": {
@@ -2841,6 +5991,443 @@
                     "connects_to"
                 ],
                 "title": "RelationshipType"
+            },
+            "RequirementResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "reference": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "group": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_applicable": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "justification": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "undecided, not_applicable, not_covered, planned, partial or implemented.",
+                        "enum": [
+                            "undecided",
+                            "not_applicable",
+                            "not_covered",
+                            "planned",
+                            "partial",
+                            "implemented"
+                        ]
+                    },
+                    "controls": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "reference": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "reference",
+                                "name"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "reference",
+                    "title",
+                    "group",
+                    "description",
+                    "is_applicable",
+                    "justification",
+                    "state"
+                ],
+                "title": "RequirementResource"
+            },
+            "RiskActionRequest": {
+                "type": "object",
+                "description": "Adding a treatment action (POST) or moving it on (PATCH: status only).",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "owner_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "due_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    }
+                },
+                "required": [
+                    "title"
+                ],
+                "title": "RiskActionRequest"
+            },
+            "RiskAssetRequest": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "description": "application, configuration_item, process or supplier.",
+                        "$ref": "#/components/schemas/AssetType"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "type",
+                    "id"
+                ],
+                "title": "RiskAssetRequest"
+            },
+            "RiskCategory": {
+                "type": "string",
+                "description": "Mirrored by risk_risks_category_check.\n",
+                "enum": [
+                    "information_security",
+                    "availability",
+                    "compliance",
+                    "supplier",
+                    "operational",
+                    "project"
+                ],
+                "title": "RiskCategory"
+            },
+            "RiskResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "reference": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "information_security",
+                            "availability",
+                            "compliance",
+                            "supplier",
+                            "operational",
+                            "project"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "open",
+                            "closed"
+                        ]
+                    },
+                    "owner": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "inherent": {
+                        "type": "object",
+                        "properties": {
+                            "likelihood": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "impact": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "score": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "level": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "enum": [
+                                    "critical",
+                                    "high",
+                                    "medium",
+                                    "low",
+                                    null
+                                ]
+                            }
+                        },
+                        "required": [
+                            "likelihood",
+                            "impact",
+                            "score",
+                            "level"
+                        ]
+                    },
+                    "existing_controls": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "treatment": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "mitigate",
+                            "transfer",
+                            "avoid",
+                            "accept",
+                            null
+                        ]
+                    },
+                    "treatment_plan": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "residual": {
+                        "type": "object",
+                        "properties": {
+                            "likelihood": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "impact": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "score": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "level": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "enum": [
+                                    "critical",
+                                    "high",
+                                    "medium",
+                                    "low",
+                                    null
+                                ]
+                            }
+                        },
+                        "required": [
+                            "likelihood",
+                            "impact",
+                            "score",
+                            "level"
+                        ]
+                    },
+                    "accepted_until": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "assessed_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "next_review_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "catalog_entries": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "kind": {
+                                    "type": "string",
+                                    "enum": [
+                                        "threat",
+                                        "vulnerability"
+                                    ]
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "kind",
+                                "name"
+                            ]
+                        }
+                    },
+                    "assets": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "owner_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "due_on": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "enum": [
+                                        "planned",
+                                        "in_progress",
+                                        "done",
+                                        "cancelled"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "title",
+                                "owner_id",
+                                "due_on",
+                                "status"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "reference",
+                    "title",
+                    "description",
+                    "category",
+                    "status",
+                    "inherent",
+                    "existing_controls",
+                    "treatment",
+                    "treatment_plan",
+                    "residual",
+                    "accepted_until",
+                    "assessed_at",
+                    "next_review_on",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "RiskResource"
+            },
+            "RiskStatus": {
+                "type": "string",
+                "description": "Mirrored by risk_risks_status_check. Treatment states come with treatment plans.\n",
+                "enum": [
+                    "open",
+                    "closed"
+                ],
+                "title": "RiskStatus"
             },
             "SaveAssetRequest": {
                 "type": "object",
@@ -3068,6 +6655,118 @@
                 ],
                 "title": "SaveConfigurationItemRequest"
             },
+            "SaveControlRequest": {
+                "type": "object",
+                "description": "Creating (POST) or changing (PATCH: only the fields sent) a control.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "owner_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ControlStatus"
+                    },
+                    "implementation_notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "test_interval_months": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 60
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "SaveControlRequest"
+            },
+            "SaveFindingRequest": {
+                "type": "object",
+                "description": "Raising (POST) or changing (PATCH: only the fields sent) a finding. Submitting\nit for verification and verifying it stay on screen.",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 10000
+                    },
+                    "severity": {
+                        "$ref": "#/components/schemas/FindingSeverity"
+                    },
+                    "owner_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "due_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    },
+                    "control_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "requirement_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "audit_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid",
+                        "description": "The audit it was found in; set at creation only."
+                    },
+                    "root_cause": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    }
+                },
+                "required": [
+                    "title",
+                    "description",
+                    "severity"
+                ],
+                "title": "SaveFindingRequest"
+            },
             "SaveLicenseRequest": {
                 "type": "object",
                 "description": "Creating (POST) or changing (PATCH: only the fields sent) a licence. The key\ncan be set or removed, never read.",
@@ -3177,6 +6876,39 @@
                 ],
                 "title": "SaveLicenseRequest"
             },
+            "SaveRiskRequest": {
+                "type": "object",
+                "description": "Registering (POST) or changing (PATCH: only the fields sent) a risk. Its\nassessment and treatment have their own endpoints, open to the risk's owner.",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "category": {
+                        "$ref": "#/components/schemas/RiskCategory"
+                    },
+                    "owner_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/RiskStatus"
+                    }
+                },
+                "required": [
+                    "title",
+                    "category",
+                    "owner_id"
+                ],
+                "title": "SaveRiskRequest"
+            },
             "StoreRelationshipRequest": {
                 "type": "object",
                 "properties": {
@@ -3262,6 +6994,16 @@
                     "description"
                 ],
                 "title": "StoreTicketRequest"
+            },
+            "TestResult": {
+                "type": "string",
+                "description": "What a control test found. Mirrored by audit_control_tests_result_check.\n",
+                "enum": [
+                    "effective",
+                    "partially_effective",
+                    "ineffective"
+                ],
+                "title": "TestResult"
             },
             "TicketResource": {
                 "type": "object",
@@ -3523,6 +7265,61 @@
                     "updated_at"
                 ],
                 "title": "TicketResource"
+            },
+            "TreatRiskRequest": {
+                "type": "object",
+                "properties": {
+                    "treatment": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Treatment"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "treatment_plan": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "residual_likelihood": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 5
+                    },
+                    "residual_impact": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 5
+                    }
+                },
+                "required": [
+                    "treatment",
+                    "residual_likelihood",
+                    "residual_impact"
+                ],
+                "title": "TreatRiskRequest"
+            },
+            "Treatment": {
+                "type": "string",
+                "description": "ISO/IEC 27005 risk treatment options. Mirrored by risk_risks_treatment_check.\n",
+                "enum": [
+                    "mitigate",
+                    "transfer",
+                    "avoid",
+                    "accept"
+                ],
+                "title": "Treatment"
             },
             "Urgency": {
                 "type": "string",
