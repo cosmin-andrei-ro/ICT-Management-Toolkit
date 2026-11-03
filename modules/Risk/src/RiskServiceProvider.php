@@ -11,6 +11,7 @@ use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Events\RiskSignalsChanged;
@@ -64,6 +65,9 @@ final class RiskServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('risks:read', 'risk::api.abilities.read');
+        ApiAbility::register('risks:write', 'risk::api.abilities.write');
 
         Event::listen(RiskSignalsChanged::class, RefreshSuggestionsOnSignal::class);
 

@@ -50,3 +50,19 @@ A risk's owner assesses it without a permission.
 2. Treatment: options, actions (optionally service desk tickets), residual risk, acceptance with risk manager approval above the threshold, score history, reassessment reminders — **done**.
 3. Suggestions from the other modules (applications, continuity, operations, suppliers, and later compliance), including initial risks when an application's documentation is approved — **done**.
 4. Reporting: inherent vs residual heat maps, risks on application pages, Excel register, PDF report, weekly digest — **done**.
+
+## API (ADR 0063)
+
+Abilities: `risks:read`, `risks:write`. Permissions are the screens': risk managers (`risk.risk.manage`) register and change risks; a risk's owner, or a risk manager, assesses and treats it (`assess`).
+
+| Method | Path | |
+|---|---|---|
+| GET | `/api/v1/risks/catalog` | Threats and vulnerabilities |
+| GET | `/api/v1/risks` | Filters `status`, `category`, `treatment`, `owner_id`, `search`; sorts `reference`, `title`, `next_review_on`, `created_at`, `updated_at` |
+| POST / GET / PATCH | `/api/v1/risks`, `/api/v1/risks/{id}` | Title, description, category, owner (an active member), status. The show view includes assets, catalog entries, actions, scores and levels |
+| PUT | `/api/v1/risks/{id}/assessment` | `likelihood`, `impact`, `catalog_entry_ids`, `existing_controls` (`AssessRisk`) |
+| PUT | `/api/v1/risks/{id}/treatment` | `treatment`, `treatment_plan`, `residual_likelihood`, `residual_impact` (`SaveTreatment`) |
+| POST / DELETE | `/api/v1/risks/{id}/assets`, `.../assets/{type}/{id}` | Application, configuration item, process or supplier |
+| POST / PATCH | `/api/v1/risks/{id}/actions`, `.../actions/{action}` | Add a treatment action; change its status |
+
+Acceptances (request and decision) and suggestions stay on screen.

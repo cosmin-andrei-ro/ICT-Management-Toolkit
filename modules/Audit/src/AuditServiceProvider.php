@@ -24,6 +24,7 @@ use Modules\Audit\Domain\Models\Requirement;
 use Modules\Audit\Http\Livewire\MyControls;
 use Modules\Audit\Infrastructure\Console\SendComplianceDigestCommand;
 use Modules\Audit\Infrastructure\Console\SendTestRemindersCommand;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
@@ -57,6 +58,9 @@ final class AuditServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('compliance:read', 'audit::api.abilities.read');
+        ApiAbility::register('compliance:write', 'audit::api.abilities.write');
 
         Relation::morphMap([
             'audit.framework' => Framework::class,
