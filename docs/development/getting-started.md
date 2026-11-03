@@ -1,6 +1,6 @@
 # Development setup
 
-PHP and Composer run inside the Laravel Sail containers; only Docker is needed on the host.
+[PHP](https://www.php.net) and [Composer](https://getcomposer.org) run inside the [Laravel Sail](https://laravel.com/docs/sail) containers; only [Docker](https://www.docker.com) is needed on the host.
 
 ```bash
 cp .env.example .env
@@ -11,7 +11,7 @@ docker run --rm -v "$(pwd)":/var/www/html -w /var/www/html laravelsail/php84-com
 ./vendor/bin/sail npm install && ./vendor/bin/sail npm run build
 ```
 
-Open http://localhost and sign in with one of the demo accounts below. Email sent by the application lands in Mailpit at http://localhost:8025.
+Open http://localhost and sign in with one of the demo accounts below. Email sent by the application lands in [Mailpit](https://mailpit.axllent.org) at http://localhost:8025.
 
 ## Demo data
 
@@ -39,8 +39,8 @@ Never seed demo data on a server people can reach: the passwords and the two-fac
 
 ## Optional containers
 
-- **Active Directory** (Samba): `COMPOSE_PROFILES=ad ./vendor/bin/sail up -d` — see [active-directory.md](active-directory.md).
-- **Mail server** (GreenMail, SMTP and IMAP): `COMPOSE_PROFILES=mail ./vendor/bin/sail up -d` — see [email-to-ticket.md](email-to-ticket.md).
+- **Active Directory** ([Samba](https://www.samba.org)): `COMPOSE_PROFILES=ad ./vendor/bin/sail up -d` — see [active-directory.md](active-directory.md).
+- **Mail server** ([GreenMail](https://greenmail-mail-test.github.io/greenmail/), SMTP and IMAP): `COMPOSE_PROFILES=mail ./vendor/bin/sail up -d` — see [email-to-ticket.md](email-to-ticket.md).
 
 ## Background work
 

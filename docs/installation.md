@@ -6,11 +6,11 @@ For whoever installs and runs the toolkit on a server. To try it on your own mac
 
 | Component | Version | Notes |
 |---|---|---|
-| PHP | 8.3 or later (developed and tested on 8.5) | Extensions: `pdo_pgsql`, `redis`, `ctype`, `dom`, `fileinfo`, `filter`, `iconv`, `intl`, `ldap`, `mbstring`, `openssl`, `session`, `tokenizer`, `xmlreader`, `zip` |
-| PostgreSQL | 18 | PostgreSQL-specific features are used (`jsonb`, full-text search, partial indexes, triggers); other databases are not supported. |
-| Redis | 7 or later | Cache, sessions and the queue. |
-| Web server | nginx or Apache, with PHP-FPM | Document root: `public/`. HTTPS required. |
-| Node.js | 20 or later | Only to build the front-end assets. |
+| [PHP](https://www.php.net) | 8.3 or later (developed and tested on 8.5) | Extensions: `pdo_pgsql`, `redis`, `ctype`, `dom`, `fileinfo`, `filter`, `iconv`, `intl`, `ldap`, `mbstring`, `openssl`, `session`, `tokenizer`, `xmlreader`, `zip` |
+| [PostgreSQL](https://www.postgresql.org) | 18 | PostgreSQL-specific features are used (`jsonb`, full-text search, partial indexes, triggers); other databases are not supported. |
+| [Redis](https://redis.io) | 7 or later | Cache, sessions and the queue. |
+| Web server | [nginx](https://nginx.org) or [Apache](https://httpd.apache.org), with [PHP-FPM](https://www.php.net/manual/en/install.fpm.php) | Document root: `public/`. HTTPS required. |
+| [Node.js](https://nodejs.org) | 20 or later | Only to build the front-end assets. |
 | Mail server | SMTP for outgoing email; IMAP for email-to-ticket (optional) | |
 | Active Directory | Optional | Reachable over LDAPS (port 636). |
 
@@ -133,7 +133,7 @@ Two processes must run all the time.
 | `reporting:monthly-report` | 1st of the month at 07:00 | Emails the monthly management report |
 | `core:directory:sync` | every 15 minutes, when AD is enabled | Blocks disabled AD accounts, refreshes roles |
 
-**The queue worker** sends email, reads mailboxes and generates exports. Run it under a process supervisor, for example systemd (`/etc/systemd/system/ictmt-queue.service`):
+**The queue worker** sends email, reads mailboxes and generates exports. Run it under a process supervisor, for example [systemd](https://systemd.io) (`/etc/systemd/system/ictmt-queue.service`):
 
 ```ini
 [Unit]
@@ -156,7 +156,7 @@ systemctl enable --now ictmt-queue
 
 ## PDF documents
 
-PDFs (application documentation, BIA sheets, continuity plans and exercise reports, the risk and compliance reports, Statements of Applicability) are made by [Gotenberg](https://gotenberg.dev), an optional service running headless Chrome (ADR 0030). Without it, the **Print** button and the browser's *Save as PDF* do the same job.
+PDFs (application documentation, BIA sheets, continuity plans and exercise reports, the risk and compliance reports, Statements of Applicability) are made by [Gotenberg](https://gotenberg.dev), an optional service running [headless Chrome](https://www.chromium.org) (ADR 0030). Without it, the **Print** button and the browser's *Save as PDF* do the same job.
 
 Run it on the internal network only, with JavaScript off and no network access for the documents:
 

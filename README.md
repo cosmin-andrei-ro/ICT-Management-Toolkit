@@ -27,7 +27,7 @@ The full list is in [Features](docs/features.md).
 
 ## Try it
 
-You need only Docker. PHP, Composer and Node run inside the containers.
+You need only [Docker](https://www.docker.com). [PHP](https://www.php.net), [Composer](https://getcomposer.org) and [Node](https://nodejs.org) run inside the containers.
 
 ```bash
 git clone https://github.com/cosmin-andrei-ro/ICT-Management-Toolkit.git
@@ -49,7 +49,7 @@ The other roles and the development tools are in [Development setup](docs/develo
 
 ## Run it
 
-The toolkit needs PHP 8.3 or later, PostgreSQL 18 (no other database is supported), Redis, a web server with HTTPS, and two background processes: the scheduler and the queue worker. PDF generation through Gotenberg is optional.
+The toolkit needs PHP 8.3 or later, [PostgreSQL](https://www.postgresql.org) 18 (no other database is supported), [Redis](https://redis.io), a web server with HTTPS, and two background processes: the scheduler and the queue worker. PDF generation through [Gotenberg](https://gotenberg.dev) is optional.
 
 [Installation and operation](docs/installation.md) covers installing, Active Directory, email, settings, updating and backups.
 
@@ -64,6 +64,14 @@ The toolkit is **not certified** and has not been audited by a third party. It g
 - **Modules:** [how each one is built](docs/modules/)
 - **Decisions:** [architecture decision records](docs/adr/)
 - **Contributing:** [the guide for people and AI agents](CLAUDE.md), and [development setup](docs/development/getting-started.md)
+
+## Built with
+
+- **Application:** [Laravel](https://laravel.com), [Livewire](https://livewire.laravel.com), [Filament](https://filamentphp.com), [Alpine.js](https://alpinejs.dev), [Tailwind CSS](https://tailwindcss.com), [Vite](https://vite.dev), [Cytoscape.js](https://js.cytoscape.org)
+- **Data:** [PostgreSQL](https://www.postgresql.org), [Redis](https://redis.io)
+- **Sign-in and API:** [Sanctum](https://laravel.com/docs/sanctum), [laravel-permission](https://spatie.be/docs/laravel-permission), [LdapRecord](https://ldaprecord.com), [php-saml](https://github.com/SAML-Toolkits/php-saml), [WebAuthn Framework](https://github.com/web-auth/webauthn-framework), [JWT Framework](https://web-token.spomky-labs.com), [Scramble](https://scramble.dedoc.co)
+- **Documents and mail:** [Gotenberg](https://gotenberg.dev), [OpenSpout](https://github.com/openspout/openspout), [php-qrcode](https://github.com/chillerlan/php-qrcode), [ImapEngine](https://github.com/Directorytree/ImapEngine)
+- **Development:** [Laravel Sail](https://laravel.com/docs/sail), [Pest](https://pestphp.com), [PHPUnit](https://phpunit.de), [Mockery](https://github.com/mockery/mockery), [Faker](https://fakerphp.org), [PHPStan](https://phpstan.org), [Larastan](https://github.com/larastan/larastan), [Laravel Pint](https://laravel.com/docs/pint), [Laravel Boost](https://laravel.com/docs/boost), [Pail](https://github.com/laravel/pail), [Pao](https://github.com/laravel/pao), [Tinker](https://github.com/laravel/tinker), [Collision](https://github.com/nunomaduro/collision), [concurrently](https://github.com/open-cli-tools/concurrently)
 
 ## License
 

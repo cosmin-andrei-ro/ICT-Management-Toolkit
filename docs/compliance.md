@@ -8,9 +8,9 @@ How the toolkit relates to the standards and regulations people ask about, for I
 
 | Standard or practice | Status | How |
 |---|---|---|
-| PSR-12 coding style, PSR-4 autoloading | Yes | Laravel Pint (Laravel preset, strict types and strict comparisons), checked in CI |
-| Static analysis | Yes | PHPStan / Larastan at the highest level, checked in CI |
-| Automated tests | Yes | Pest on PostgreSQL: every action, authorization (including the "no permission" case), validation, and isolation between organizations |
+| PSR-12 coding style, PSR-4 autoloading | Yes | [Laravel Pint](https://laravel.com/docs/pint) ([Laravel](https://laravel.com) preset, strict types and strict comparisons), checked in CI |
+| Static analysis | Yes | [PHPStan](https://phpstan.org) / [Larastan](https://github.com/larastan/larastan) at the highest level, checked in CI |
+| Automated tests | Yes | [Pest](https://pestphp.com) on [PostgreSQL](https://www.postgresql.org): every action, authorization (including the "no permission" case), validation, and isolation between organizations |
 | Dependency vulnerabilities | Yes | `composer audit` and `npm audit` in CI; only licenses compatible with AGPLv3 |
 | Architecture decisions | Yes | Recorded as ADRs in [docs/adr](adr/) |
 | Licensing | Yes | AGPL-3.0-or-later, SPDX header in every source file, link to the source code in the interface (AGPL §13) |
@@ -29,14 +29,8 @@ How the toolkit relates to the standards and regulations people ask about, for I
 | Secrets at rest | Yes | Mailbox passwords, two-factor secrets, licence keys, single sign-on client secrets and webhook secrets are encrypted with the application key, never logged or audited; licence keys are shown only after an authenticator code, the others never again |
 | Audit trail | Yes | Append-only (enforced by a database trigger): every change to business data with old and new values, sign-ins, failed sign-ins, role changes, two-factor events, exports and downloads |
 | W3C WebAuthn Level 2 (FIDO2) | Yes | Security keys and passkeys as a second factor, and passkeys to sign in without a password; phishing resistant (bound to the site's domain); attestation not requested |
-| OpenID Connect 1.0 (single sign-on) | Yes | Per-organization identity providers (Entra ID, Google, Okta, Keycloak…): authorization code with PKCE, ID tokens verified against the provider's keys (asymmetric algorithms only), accounts created with roles from group mappings, the provider's second factor trusted when asserted |
-| SAML 2.0 Web Browser SSO | Yes | Per-organization identity providers (ADFS, Entra ID, Shibboleth…), signed assertions required (SHA-256 and up), strict validation, each request answered once and only in the browser that made it; single logout not implemented |
-
-## Service management
-
-| Framework | Status | What is covered |
-|---|---|---|
-| ITIL 4 | Partial | Incident management, service request management with a service catalog, problem management with a known error database, change enablement with CAB and emergency CAB, service level management (SLA clocks in working time), service configuration management (CMDB with relationships and impact analysis), service desk reporting, IT asset management (hardware and software licences), service continuity management (BIA and continuity plans). |
+| OpenID Connect 1.0 (single sign-on) | Yes | Per-organization identity providers (Entra ID, Google, Okta, [Keycloak](https://www.keycloak.org)…): authorization code with PKCE, ID tokens verified against the provider's keys (asymmetric algorithms only), accounts created with roles from group mappings, the provider's second factor trusted when asserted |
+| SAML 2.0 Web Browser SSO | Yes | Per-organization identity providers (ADFS, Entra ID, [Shibboleth](https://www.shibboleth.net)…), signed assertions required (SHA-256 and up), strict validation, each request answered once and only in the browser that made it; single logout not implemented |
 
 ## Regulations and information security frameworks
 
