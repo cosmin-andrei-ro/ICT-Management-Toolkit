@@ -40,55 +40,103 @@ The full list is in [Features](docs/features.md).
 - **Monitoring alerts** that open and resolve incidents, in the toolkit's own format or from [Prometheus Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/)
 - **Email to ticket** from IMAP mailboxes, and **imports** from CSV or Excel
 
-## Try it
+## Try it on your computer
 
-You need only [Docker](https://www.docker.com). [PHP](https://www.php.net), [Composer](https://getcomposer.org) and [Node](https://nodejs.org) run inside the containers.
+This installs a demo with made-up data, so you can look around. It takes one command at a time, and you can copy and paste each one. Nothing here needs PHP or a database on your computer: they all run inside Docker, a program that keeps them in their own containers.
+
+### 1. Get the tools
+
+- **Windows:** open PowerShell as administrator, run `wsl --install`, and restart. This gives you **Ubuntu**, a Linux terminal. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), and in its settings turn on the integration with Ubuntu (Settings → Resources → WSL integration). Type all the commands below in the Ubuntu window.
+- **Mac:** install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and open it. Type the commands in the Terminal app.
+- **Linux:** install [Docker Engine](https://docs.docker.com/engine/install/) and [Git](https://git-scm.com/downloads).
+
+To check that everything is ready, run these. Each should print a version number:
+
+```bash
+docker --version
+git --version
+```
+
+### 2. Download the toolkit
 
 ```bash
 git clone https://github.com/cosmin-andrei-ro/ICT-Management-Toolkit.git
 cd ICT-Management-Toolkit
 cp .env.example .env
-docker run --rm -v "$(pwd)":/var/www/html -w /var/www/html laravelsail/php84-composer:latest composer install --ignore-platform-reqs
+```
+
+This makes a folder with the code, moves you into it, and creates `.env`, the file that holds the settings. The defaults are fine for a demo.
+
+### 3. Install and start it
+
+Run these one at a time, and wait for each to finish:
+
+```bash
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/var/www/html -w /var/www/html laravelsail/php84-composer:latest composer install --ignore-platform-reqs
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan key:generate
 ./vendor/bin/sail artisan migrate --seed
-./vendor/bin/sail npm install && ./vendor/bin/sail npm run build
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run build
 ```
 
-Open http://localhost. The demo data is a fictional company with three months of history. Every account has the password `password`:
+In order, they download the libraries, start the containers, create a secret key, create the database with the demo data, and build the pages' styles and scripts. The first `sail up -d` can take many minutes, because it downloads and builds everything. Later starts take seconds.
 
-- `employee@example.com` sees what an employee sees, and signs in directly.
-- `admin@example.com` sees everything, and needs a code from an authenticator app: add the demo key `JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP` manually (time-based, 6 digits).
+### 4. Open it
 
-The other roles and the development tools are in [Development setup](docs/development/getting-started.md). These passwords and that key are public, so never seed demo data on a server people can reach.
+Go to **http://localhost** in your browser. Every demo account has the password `password`:
 
-## Run it
+- **`employee@example.com`** sees what an employee sees. It signs in with just the password, so start here.
+- **`admin@example.com`** sees everything, and also asks for a six-digit code. In an authenticator app on your phone (Google Authenticator, for example), add an account by entering a key manually, and type `JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP`, time-based. The app then shows the code.
 
-| Needs | Version |
-|---|---|
-| [PHP](https://www.php.net) | 8.3 or later |
-| [PostgreSQL](https://www.postgresql.org) | 18 (no other database is supported) |
-| [Redis](https://redis.io) | 7 or later |
-| [nginx](https://nginx.org) or [Apache](https://httpd.apache.org) with [PHP-FPM](https://www.php.net/manual/en/install.fpm.php) | HTTPS required |
-| [Node.js](https://nodejs.org) | 20 or later, only to build the assets |
-| Mail server | SMTP; IMAP only for email to ticket |
-| Optional | Active Directory, [Gotenberg](https://gotenberg.dev) for PDFs |
+Emails the toolkit sends do not really go out: you can read them at http://localhost:8025. To have emails and exports processed, keep this running in a second terminal, in the same folder: `./vendor/bin/sail artisan queue:work`.
 
-In short, after setting `.env`:
+The other demo accounts are in [Development setup](docs/development/getting-started.md).
+
+### Stop and start it again
 
 ```bash
-composer install --no-dev --optimize-autoloader
-npm ci && npm run build
-php artisan key:generate
-php artisan migrate --force
-php artisan core:permissions:sync
-php artisan core:setup      # the first organization and administrator
-php artisan optimize
+./vendor/bin/sail stop     # stops it; your data stays
+./vendor/bin/sail up -d    # starts it again, from the same folder
 ```
 
-Two processes must also run all the time: the scheduler and the queue worker. Without them no email is sent and exports are never generated.
+### If something goes wrong
 
-[Installation and operation](docs/installation.md) has every step, plus Active Directory, email, settings, updating and backups.
+| What you see | What to do |
+|---|---|
+| `Cannot connect to the Docker daemon` | Docker is not running. Open Docker Desktop, or on Linux run `sudo systemctl start docker`. |
+| `permission denied` when running `docker` (Linux) | Run `sudo usermod -aG docker $USER`, then log out and back in. |
+| `port is already allocated` or `address already in use` | Another program uses that port, often port 80. Add `APP_PORT=8080` to the end of `.env`, set `APP_URL=http://localhost:8080` in it, run `./vendor/bin/sail up -d` again, and open http://localhost:8080. |
+| `Connection refused` during `migrate` | The database is still starting. Wait 30 seconds and run the command again. |
+| `Unable to locate file in Vite manifest` | Run `./vendor/bin/sail npm run build` again. |
+| `No such file or directory` for `./vendor/bin/sail` | You are in the wrong folder, or the first command in step 3 failed. Run `cd ICT-Management-Toolkit`, then that command again. |
+
+## Install it on a server
+
+This is for real use, so people in your company can reach it. **Do not use the steps above for this:** the demo passwords are public. You need someone comfortable with a Linux server, because a badly set up server puts your company's data at risk.
+
+**You need:**
+
+- a Linux server with [PHP](https://www.php.net) 8.3 or later, [Composer](https://getcomposer.org), [PostgreSQL](https://www.postgresql.org) 18 (no other database works), [Redis](https://redis.io) 7 or later, [Node.js](https://nodejs.org) 20 or later, and [nginx](https://nginx.org) or [Apache](https://httpd.apache.org) with [PHP-FPM](https://www.php.net/manual/en/install.fpm.php);
+- a name such as `ictmt.example.com` that points to the server, with an HTTPS certificate;
+- an email account the toolkit can send from (SMTP).
+
+Optional: Active Directory, a mailbox for tickets by email (IMAP), and [Gotenberg](https://gotenberg.dev) for PDFs.
+
+**The steps, in short:**
+
+1. Create an empty PostgreSQL database and a user for it.
+2. Download the code and build it: `composer install --no-dev --optimize-autoloader`, then `npm ci && npm run build`.
+3. Copy `.env.example` to `.env`, and fill in the address, database, Redis and email settings.
+4. Set up the application: `php artisan key:generate`, `php artisan migrate --force`, `php artisan core:permissions:sync`.
+5. Create the first administrator by answering the questions of `php artisan core:setup`.
+6. Run `php artisan optimize`, and point the web server to the `public/` folder.
+7. Start the two background processes, the scheduler and the queue worker. Without them no email goes out and no export is ready.
+8. Sign in. The toolkit asks the administrator to set up two-factor authentication.
+
+**Back up `.env`** together with the database: stored secrets cannot be read without the key in it.
+
+[Installation and operation](docs/installation.md) explains each step, with every command and setting, and covers Active Directory, email, updating and backups.
 
 ## Standards
 
@@ -112,4 +160,20 @@ The toolkit is **not certified** and has not been audited by a third party. It g
 
 ## License
 
-[GNU Affero General Public License v3.0 or later](LICENSE). If you run a modified version as a network service, you must offer its source code to its users.
+The toolkit is free software under the [GNU Affero General Public License, version 3 or later](LICENSE) (AGPL). The AGPL is the GNU GPL version 3 with one rule added, for software people use over a network.
+
+**You may**, free of charge and for any purpose, including commercial use:
+
+- use the toolkit;
+- read and change its code;
+- share copies, changed or not.
+
+**In return:**
+
+- **If you give someone a copy** (same as the GPL), give them the source code too, under this same license, and keep the copyright and license notices.
+- **If you changed the code and people use your version over a network** (the rule the AGPL adds, section 13), offer those people its source code. This includes your own employees using a changed version on your internal network. The interface already shows a link to the source: point it to your version with the `APP_SOURCE_URL` setting.
+- **If you run it unchanged**, you owe nothing more.
+
+**There is no warranty:** you use it at your own risk.
+
+This is a summary to help you, not legal advice, and only the [license text](LICENSE) is binding.

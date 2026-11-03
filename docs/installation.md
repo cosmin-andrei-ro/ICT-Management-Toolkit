@@ -18,7 +18,14 @@ For whoever installs and runs the toolkit on a server. To try it on your own mac
 
 The commands below run on the server, in the application directory, as the web server's user (for example `www-data`).
 
-1. **Get the code and its dependencies.**
+1. **Create the database.** On the database server, create a user (it asks for a password) and an empty database it owns:
+
+   ```bash
+   sudo -u postgres createuser --pwprompt ictmt
+   sudo -u postgres createdb --owner=ictmt ictmt
+   ```
+
+2. **Get the code and its dependencies.**
 
    ```bash
    git clone https://github.com/cosmin-andrei-ro/ICT-Management-Toolkit.git /var/www/ictmt
@@ -27,7 +34,7 @@ The commands below run on the server, in the application directory, as the web s
    npm ci && npm run build
    ```
 
-2. **Configure** — copy `.env.example` to `.env` and set at least:
+3. **Configure** — copy `.env.example` to `.env` and set at least:
 
    ```dotenv
    APP_ENV=production
@@ -61,14 +68,14 @@ The commands below run on the server, in the application directory, as the web s
    php artisan key:generate
    ```
 
-3. **Create the database schema and permissions.**
+4. **Create the database schema and permissions.**
 
    ```bash
    php artisan migrate --force
    php artisan core:permissions:sync
    ```
 
-4. **Create the first organization and administrator.** The command asks for the organization's name, the administrator's name, email and password (at least 12 characters). It works only once, on a new installation.
+5. **Create the first organization and administrator.** The command asks for the organization's name, the administrator's name, email and password (at least 12 characters). It works only once, on a new installation.
 
    ```bash
    php artisan core:setup
@@ -76,13 +83,48 @@ The commands below run on the server, in the application directory, as the web s
 
    At the first sign-in, the administrator sets up two-factor authentication with an authenticator app (required for every role other than *Requester* until the organization chooses otherwise under **Administration → Access → Security settings**). They then invite people under **Administration → Access → People**, or map Active Directory groups (see below).
 
-5. **Optimize** for production.
+6. **Optimize** for production.
 
    ```bash
    php artisan optimize
    ```
 
-6. **Web server.** Point the document root to `public/` and serve the site over HTTPS only. The application sends strict security headers (CSP, HSTS). `storage/` and `bootstrap/cache/` must be writable by the web server's user.
+7. **Web server.** Point the document root to `public/` and serve the site over HTTPS only. For nginx, a site could look like this; change the name, the folder and the PHP socket to match your server, and get the certificate from your provider or with [Certbot](https://certbot.eff.org):
+
+   ```nginx
+   server {
+       listen 443 ssl;
+       server_name ictmt.example.com;
+       root /var/www/ictmt/public;
+       index index.php;
+
+       ssl_certificate     /etc/letsencrypt/live/ictmt.example.com/fullchain.pem;
+       ssl_certificate_key /etc/letsencrypt/live/ictmt.example.com/privkey.pem;
+
+       location / {
+           try_files $uri $uri/ /index.php?$query_string;
+       }
+
+       location ~ ^/index\.php(/|$) {
+           fastcgi_pass unix:/run/php/php8.5-fpm.sock;
+           fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+           include fastcgi_params;
+           fastcgi_hide_header X-Powered-By;
+       }
+
+       location ~ /\.(?!well-known).* {
+           deny all;
+       }
+   }
+
+   server {
+       listen 80;
+       server_name ictmt.example.com;
+       return 301 https://$host$request_uri;
+   }
+   ```
+
+   The application sends strict security headers (CSP, HSTS). `storage/` and `bootstrap/cache/` must be writable by the web server's user.
 
    Behind a reverse proxy or load balancer that terminates TLS, list it in `.env`, otherwise the application sees every visitor with the proxy's address and believes the connection is plain HTTP:
 
@@ -92,7 +134,7 @@ The commands below run on the server, in the application directory, as the web s
 
    Never list addresses that are not your proxies: anyone sending requests from them could fake their IP address. Sign-in limits count per address, so behind an unlisted proxy all visitors share one limit.
 
-7. **Background work** — see [the next section](#background-work-scheduler-and-queue). Without it, no email is sent or read (invitations and password resets included), SLA clocks do not warn, and exports are never generated.
+8. **Background work** — see [the next section](#background-work-scheduler-and-queue). Without it, no email is sent or read (invitations and password resets included), SLA clocks do not warn, and exports are never generated.
 
 ## Background work: scheduler and queue
 
