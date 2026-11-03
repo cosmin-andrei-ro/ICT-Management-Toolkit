@@ -62,3 +62,15 @@ Owners and deputies write their applications' sheets without a permission. Nobod
 ## Documentation page
 
 When a version comes into force, Applications dispatches Core's `ApplicationDocumented` with the summary (owners, support, components, processes with RTO and RPO). The Documentation module writes the application's page in its *Applications* space from it ([ADR 0043](../adr/0043-generated-application-pages.md)); the application page lists its documentation pages.
+
+## API (ADR 0064)
+
+Abilities: `applications:read`, `applications:write`. Permissions are the screens': `applications.application.view` / `.manage`, and an application's owners and deputy read it.
+
+| Method | Path | |
+|---|---|---|
+| GET | `/api/v1/applications` | Filters `status`, `criticality`, `owner_id` (business, technical or deputy), `department_id`, `documented`, `search` |
+| POST / GET / PATCH | `/api/v1/applications`, `.../{id}` | Code (unique, upper case), name, department, department e-mail, owners (active members) |
+| GET | `/api/v1/applications/{id}/sheet` | The approved documentation sheet in force, as stored by chapter; 404 when none |
+
+Sheets are written, submitted and approved on screen.

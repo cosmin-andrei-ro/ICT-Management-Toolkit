@@ -25,6 +25,7 @@ use Modules\Applications\Domain\Models\Sheet;
 use Modules\Applications\Infrastructure\Console\SendCertificateRemindersCommand;
 use Modules\Applications\Infrastructure\Console\SendPortfolioDigestCommand;
 use Modules\Applications\Infrastructure\Console\SendReviewRemindersCommand;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
@@ -70,6 +71,9 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('applications:read', 'applications::api.abilities.read');
+        ApiAbility::register('applications:write', 'applications::api.abilities.write');
 
         Relation::morphMap([
             'applications.application' => Application::class,

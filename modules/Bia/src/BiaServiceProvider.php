@@ -25,6 +25,7 @@ use Modules\Bia\Domain\Models\ImpactCategory;
 use Modules\Bia\Domain\Models\TimeHorizon;
 use Modules\Bia\Infrastructure\Console\SendCoordinatorDigestCommand;
 use Modules\Bia\Infrastructure\Console\SendReviewRemindersCommand;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
@@ -70,6 +71,9 @@ final class BiaServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('bia:read', 'bia::api.abilities.read');
+        ApiAbility::register('bia:write', 'bia::api.abilities.write');
 
         Relation::morphMap([
             'bia.settings' => BiaSettings::class,

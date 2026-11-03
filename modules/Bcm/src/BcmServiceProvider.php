@@ -24,6 +24,7 @@ use Modules\Bcm\Domain\Models\Plan;
 use Modules\Bcm\Domain\Models\PlanVersion;
 use Modules\Bcm\Infrastructure\Console\SendContinuityDigestCommand;
 use Modules\Bcm\Infrastructure\Console\SendPlanRemindersCommand;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
@@ -67,6 +68,9 @@ final class BcmServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('continuity:read', 'bcm::api.abilities.read');
+        ApiAbility::register('continuity:write', 'bcm::api.abilities.write');
 
         Relation::morphMap([
             'bcm.plan' => Plan::class,

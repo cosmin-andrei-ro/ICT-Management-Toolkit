@@ -42,3 +42,16 @@ Business continuity plans (BCP) and IT disaster recovery plans (DRP). Code: `mod
 | `bcm.plan.approve` | continuity-coordinator | Approve or return submitted versions (never one's own) |
 
 Owners and deputies edit and exercise their plans without a permission; whoever may edit a plan runs its exercises. Administrators have every permission.
+
+## API (ADR 0064)
+
+Abilities: `continuity:read`, `continuity:write`. Permissions are the screens': `bcm.plan.view`, `bcm.plan.manage` (any plan), `bcm.drp.manage` (recovery plans only).
+
+| Method | Path | |
+|---|---|---|
+| GET | `/api/v1/continuity/plans` | Filters `type`, `status`, `owner_id`, `approved`, `search` |
+| GET | `/api/v1/continuity/plans/{id}` | With `in_force`: the approved version's objective, scenarios, activation, communication, strategy, processes, team and steps |
+| POST / PATCH | `/api/v1/continuity/plans`, `.../{id}` | Type, name, description, owner, deputy, status |
+| GET | `/api/v1/continuity/exercises`, `/api/v1/continuity/activations` | Read-only |
+
+Versions are written, submitted and approved on screen; exercises and activations are run there too.
