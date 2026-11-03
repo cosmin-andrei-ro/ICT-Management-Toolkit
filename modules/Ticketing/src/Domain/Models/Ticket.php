@@ -51,7 +51,8 @@ use Modules\Ticketing\Domain\Enums\Urgency;
  * @property Urgency $urgency
  * @property Priority $priority
  * @property TicketChannel $channel
- * @property string $requester_id
+ * @property ?string $requester_id Null once anonymized (retention, ADR 0060).
+ * @property ?Carbon $anonymized_at
  * @property ?string $assignee_id
  * @property ?string $queue_id
  * @property ?string $category_id
@@ -69,7 +70,7 @@ use Modules\Ticketing\Domain\Enums\Urgency;
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
- * @property-read User $requester
+ * @property-read ?User $requester
  * @property-read ?User $assignee
  * @property-read ?Queue $queue
  * @property-read ?Category $category
@@ -292,6 +293,7 @@ final class Ticket extends Model
             'first_responded_at' => 'datetime',
             'resolved_at' => 'datetime',
             'closed_at' => 'datetime',
+            'anonymized_at' => 'datetime',
             'reopened_count' => 'integer',
             'custom_fields' => 'array',
         ];

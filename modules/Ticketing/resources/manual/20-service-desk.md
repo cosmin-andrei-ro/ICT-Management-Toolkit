@@ -71,3 +71,8 @@ When the CMDB is in use, the **Configuration items** panel on the right links th
 ## Phone and walk-in requests
 
 For now, ask the person to raise the ticket themselves in **My tickets**, or create it as yourself and mention them in the details. Logging a ticket on behalf of someone else is planned.
+
+## Old tickets
+
+To protect people's data, closed tickets are anonymized after the period your organization chose (3 years by default). They still appear in lists and reports with their number, category and dates, as **Anonymized ticket**, but without the requester, the text, the comments or the files.
+

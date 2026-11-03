@@ -83,5 +83,6 @@ return [
         'account_locked' => 'Account locked',
         'account_unlocked' => 'Account unlocked',
         'person_anonymized' => 'Person anonymized',
+        'retention_applied' => 'Retention applied',
     ],
 ];

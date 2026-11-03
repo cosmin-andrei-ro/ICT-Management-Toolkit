@@ -47,3 +47,15 @@ Anonymization cannot be undone. It is not possible for:
 - someone who also belongs to another organization in the toolkit. Each organization must remove them first, because the account is shared.
 
 The anonymization itself is recorded in the audit log, without the old name.
+
+## Data retention
+
+**Administration → Access → Data retention** sets how long the organization keeps each kind of data. Every night, what is older is handled:
+
+- **Audit log:** older entries are deleted. The default is 5 years.
+- **Closed tickets:** counted from closing. Older tickets are anonymized. The default is 3 years.
+  - They keep their number, category, service, dates and SLA, so reports and statistics stay right.
+  - They lose the requester, the title and description, the comments and the files.
+
+Leave a period empty to keep that data forever. Choose periods that match your legal obligations: audits under ISO 27001 or NIS2 usually ask for evidence of the last few years. What each nightly run removed is recorded in the audit log as **Retention applied**.
+
