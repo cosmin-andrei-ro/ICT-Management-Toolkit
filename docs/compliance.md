@@ -1,0 +1,49 @@
+# Standards and compliance
+
+How the toolkit relates to the standards and regulations people ask about, for IT managers, security officers and auditors assessing it.
+
+> The application is **not certified** and has not been audited by a third party. Regulations such as NIS2, DORA and GDPR apply to **organizations**, not to software: the toolkit gives you the records, workflows and evidence these regulations ask for, but compliance also depends on your own processes. The tables say what is in place today (**Yes**), partly (**Partial**), not yet (**Planned**), or left out on purpose (**Not planned**).
+
+## How the software is built
+
+| Standard or practice | Status | How |
+|---|---|---|
+| PSR-12 coding style, PSR-4 autoloading | Yes | Laravel Pint (Laravel preset, strict types and strict comparisons), checked in CI |
+| Static analysis | Yes | PHPStan / Larastan at the highest level, checked in CI |
+| Automated tests | Yes | Pest on PostgreSQL: every action, authorization (including the "no permission" case), validation, and isolation between organizations |
+| Dependency vulnerabilities | Yes | `composer audit` and `npm audit` in CI; only licenses compatible with AGPLv3 |
+| Architecture decisions | Yes | Recorded as ADRs in [docs/adr](adr/) |
+| Licensing | Yes | AGPL-3.0-or-later, SPDX header in every source file, link to the source code in the interface (AGPL §13) |
+| Commit history | Yes | Conventional Commits |
+
+## Security
+
+| Standard | Status | What is covered |
+|---|---|---|
+| OWASP ASVS 4.0 | Partial (design target) | Level 2 as the minimum, level 3 for authentication, authorization and secrets. Not formally verified. |
+| OWASP Top 10 | Yes | Authorization on every action and deny by default, query binding only (no SQL concatenation), escaped output, CSRF protection, strict Content Security Policy without `unsafe-eval` outside the admin panel, SSRF guards on mail servers, single sign-on providers and webhooks, upload checks by content (not by name), CSV/formula injection neutralized in exports |
+| NIST SP 800-63B (passwords and authenticators) | Yes | Passwords of 12–128 characters without composition rules, passwords known from breaches refused (Have I Been Pwned, k-anonymity); rate limiting, and account lockout after consecutive failures, lifted by a password reset or an administrator; time-based one-time codes from an authenticator app, each accepted once; recovery codes stored as hashes; all other sessions end on a password change |
+| RFC 6238 (TOTP) | Yes | Two-factor authentication, required for IT staff |
+| RFC 3834 (automatic responses) | Yes | Email-to-ticket ignores auto-replies and bounces; outgoing emails are marked as automatic, to prevent mail loops |
+| HTTP security headers | Yes | HSTS, CSP with nonces, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Secure/HttpOnly/SameSite cookies |
+| Secrets at rest | Yes | Mailbox passwords, two-factor secrets, licence keys, single sign-on client secrets and webhook secrets are encrypted with the application key, never logged or audited; licence keys are shown only after an authenticator code, the others never again |
+| Audit trail | Yes | Append-only (enforced by a database trigger): every change to business data with old and new values, sign-ins, failed sign-ins, role changes, two-factor events, exports and downloads |
+| W3C WebAuthn Level 2 (FIDO2) | Yes | Security keys and passkeys as a second factor, and passkeys to sign in without a password; phishing resistant (bound to the site's domain); attestation not requested |
+| OpenID Connect 1.0 (single sign-on) | Yes | Per-organization identity providers (Entra ID, Google, Okta, Keycloak…): authorization code with PKCE, ID tokens verified against the provider's keys (asymmetric algorithms only), accounts created with roles from group mappings, the provider's second factor trusted when asserted |
+| SAML 2.0 Web Browser SSO | Yes | Per-organization identity providers (ADFS, Entra ID, Shibboleth…), signed assertions required (SHA-256 and up), strict validation, each request answered once and only in the browser that made it; single logout not implemented |
+
+## Service management
+
+| Framework | Status | What is covered |
+|---|---|---|
+| ITIL 4 | Partial | Incident management, service request management with a service catalog, problem management with a known error database, change enablement with CAB and emergency CAB, service level management (SLA clocks in working time), service configuration management (CMDB with relationships and impact analysis), service desk reporting, IT asset management (hardware and software licences), service continuity management (BIA and continuity plans). |
+
+## Regulations and information security frameworks
+
+| Requirement | Status | How the toolkit helps |
+|---|---|---|
+| **NIS2** (Directive (EU) 2022/2555), Art. 21 risk-management measures | Partial | Incident handling (21(2)(b)): ticketing with priorities, SLAs, problem management. Access control, multi-factor authentication and asset management (21(2)(i)(j)): the CMDB records what you run and what depends on what. Logging through the audit trail. Change management for secure maintenance (21(2)(e)). Business continuity (21(2)(c)): business impact analysis, approved continuity and recovery plans, and their exercises and recovery tests. Risk analysis (21(2)(a)): risk register with a defined method, treatment and approved acceptance of residual risks. Assessing the effectiveness of the measures (21(2)(f)): controls mapped to each Art. 21 measure, with evidence and periodic tests. **Planned:** supply chain (21(2)(d)). **Not planned:** the notifications to authorities of Art. 23, which you send outside the toolkit. |
+| **DORA** (Regulation (EU) 2022/2554), financial entities | Partial | Identification of ICT assets and their dependencies (Art. 8): the CMDB. ICT-related incident management process (Art. 17): detection, logging, follow-up and root cause. ICT change management (Art. 9(4)(e)): approved, planned, reversible changes with post-implementation review of emergency changes. Strong authentication (Art. 9(4)(d)). ICT business continuity policy and response and recovery plans (Art. 11): BIA with RTO/RPO and approved plans; testing of plans and backup restores with measured recovery time (Art. 11(6), 12(2)); supplier and contract register. **Planned:** digital operational resilience testing programme (Art. 24–25), register of information on ICT third-party arrangements in the regulatory format (Art. 28). **Not planned:** classification and reporting of major incidents to authorities (Art. 18–19). |
+| **ISO 22301:2019** business continuity | Partial | 8.2.2 business impact analysis (impact over time, MTPD, RTO, RPO, dependencies, approval, review), 8.3 strategies and 8.4 plans (scope, activation, crisis team, communication, runbook), 8.4.4 recovery against requirements, 8.5 exercises with results per step, measured recovery time and lessons learned, 10.1 findings tracked as problems, 8.5 exercise programme with due dates and reminders, 9.1 coverage monitoring, post-incident review of real activations. |
+| **ISO/IEC 27001:2022**, clauses 6.1.2–6.1.3, 8.2–8.3 and Annex A | Partial | Information security risk assessment and treatment with defined criteria, risk owners, approved acceptance of residual risks and reassessment (risk register). 5.9 inventory of information and other associated assets (CMDB, asset register), 5.11 return of assets, 5.29–5.30 information security during disruption and ICT readiness for business continuity (BIA, continuity plans), 5.15–5.18 access control and identities, 5.24–5.27 incident management and learning from incidents, 8.5 secure authentication, 8.15 logging, 8.32 change management, 5.37 documented operating procedures and 7.5 control of documented information (documentation spaces with versions, approval and review). Statement of Applicability (6.1.3 d): every Annex A control with its applicability, justification and the organization's controls meeting it. Evidence of controls in operation and periodic control tests (7.5, 9.1), internal audit programme (9.2), nonconformity and corrective action with root cause and verified effectiveness (10.2). |
+| **GDPR** (Regulation (EU) 2016/679) | Partial | Data minimization (exports leave requesters out, comment text is never emailed), storage limitation (retention periods per organization, applied every night: closed tickets anonymized after 3 years and audit entries deleted after 5 by default; the incoming email log is kept 90 days, exports 7 days), security of processing (Art. 32: encryption of secrets, access control, audit trail), separation of organizations. Right of access and data portability (Art. 15, 20): administrators export, per organization, everything held about a person into a workbook (account, every record they are named in, what they wrote and uploaded, their activity). Right to erasure (Art. 17): a person can be anonymized; the records they took part in keep their history under "Former user", and their name, address and IP addresses leave the audit log too. Accountability (Art. 5(2)), records of processing (Art. 30), DPIA (Art. 35) and the other obligations IT evidences can be tracked as a framework, with controls, evidence and audits. |
