@@ -12,4 +12,8 @@ return [
     'unknown_sort' => 'Unknown sort ":name". Allowed: :allowed.',
     'per_page' => 'per_page is a whole number from 1 to :max.',
     'active_member' => 'Choose an active member of the organization.',
+    'abilities' => [
+        'directory' => 'Read people (name and e-mail), teams, departments and locations',
+        'suppliers' => 'Read suppliers, their contacts and contracts',
+    ],
 ];

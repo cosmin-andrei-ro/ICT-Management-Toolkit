@@ -10,6 +10,7 @@ namespace Modules\Projects;
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
@@ -51,6 +52,8 @@ final class ProjectsServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('projects:read', 'projects::api.abilities.read');
 
         Relation::morphMap([
             'projects.project' => Project::class,

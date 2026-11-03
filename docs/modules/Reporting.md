@@ -45,3 +45,10 @@ Each indicator on the personal dashboard follows the permission of its module.
 1. Indicators registry, initial indicators of each module, personal dashboard on the home page — **done**.
 2. Daily snapshots, SVG trend charts over 30, 90 and 365 days, a page per indicator — **done**.
 3. Management overview and the monthly management report as PDF, sent to subscribers — **done**.
+
+## API (ADR 0065)
+
+`metrics:read`, read-only.
+
+- `GET /api/v1/metrics`: the indicators the user's permissions show (`Metrics::visibleTo`), with value, unit and status.
+- `/metrics/{key}/history?days=1..730`: daily snapshots. Answers 404 for an indicator the user may not see.

@@ -10,6 +10,7 @@ namespace Modules\Reporting;
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
@@ -51,6 +52,8 @@ final class ReportingServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        ApiAbility::register('metrics:read', 'reporting::api.abilities.read');
 
         Relation::morphMap([
             'reporting.report_subscription' => ReportSubscription::class,

@@ -53,3 +53,10 @@ A project's manager changes it and asks for gates; its sponsor decides on them; 
 ## Indicators
 
 Source `projects` in Core `Metrics`: `projects.red`, `projects.over_budget`, `projects.overdue_tasks`, `projects.gates_waiting`. Export type `projects.portfolio` (Portfolio page).
+
+## API (ADR 0065)
+
+`projects:read`, read-only.
+
+- `GET /api/v1/projects`: all projects with portfolio access, otherwise the ones the user sponsors, manages or works in.
+- `/projects/{id}`: phases, tasks, latest RAG report and `BudgetFigures`, including whether the project is over budget.

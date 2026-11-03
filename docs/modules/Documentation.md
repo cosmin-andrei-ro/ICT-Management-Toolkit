@@ -53,3 +53,7 @@ Owners change their space's settings and write in it; members of a space's editi
 2. Drafts and approval in controlled spaces, review dates with reminders, page PDF — **done**.
 3. Articles for employees in the portal, suggested when raising a ticket; links with tickets and known errors — **done**.
 4. Pages generated for applications when their documentation comes into force (CLAUDE.md §9), with free notes — **done**.
+
+## API (ADR 0065)
+
+`documentation:read`, read-only. `GET /api/v1/documentation/spaces` lists the spaces the user may read (`SpaceAccess::readable`). `/documentation/pages` and `/pages/{id}` give published versions only, with the Markdown body on show. Drafts and pages waiting for approval are never returned.

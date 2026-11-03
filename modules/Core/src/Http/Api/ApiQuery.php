@@ -12,6 +12,9 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -80,5 +83,30 @@ final class ApiQuery
 
         // A stable order across pages, even when the sort column has ties.
         return $query->orderBy($query->getModel()->getQualifiedKeyName())->paginate((int) $perPage)->withQueryString();
+    }
+
+    /**
+     * A page of records as JSON, each mapped to an array, with the same
+     * `data` / `links` / `meta` shape as API resources: for read-only lists
+     * that need no resource class.
+     *
+     * @template TModel of Model
+     *
+     * @param  LengthAwarePaginator<int, TModel>  $page
+     * @param  Closure(TModel): array<string, mixed>  $map
+     */
+    public static function collection(LengthAwarePaginator $page, Closure $map): AnonymousResourceCollection
+    {
+        if ($page instanceof AbstractPaginator) {
+            $items = [];
+
+            foreach ($page->items() as $model) {
+                $items[] = $map($model);
+            }
+
+            $page->setCollection(collect($items));
+        }
+
+        return JsonResource::collection($page);
     }
 }

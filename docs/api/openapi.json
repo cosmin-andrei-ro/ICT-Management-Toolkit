@@ -2233,6 +2233,320 @@
                 }
             }
         },
+        "/directory/people": {
+            "get": {
+                "operationId": "v1.directory.people",
+                "summary": "List the organization's people. Filters: `filter[search]` (name or e-mail), `filter[team_id]`, `filter[active]` (true/false). Sort: `name`",
+                "tags": [
+                    "Directory"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/directory/teams": {
+            "get": {
+                "operationId": "v1.directory.teams",
+                "summary": "List teams, with their lead and members' ids",
+                "tags": [
+                    "Directory"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/directory/departments": {
+            "get": {
+                "operationId": "v1.directory.departments",
+                "summary": "List departments",
+                "tags": [
+                    "Directory"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/directory/locations": {
+            "get": {
+                "operationId": "v1.directory.locations",
+                "summary": "List locations: sites, buildings, floors and rooms",
+                "tags": [
+                    "Directory"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/documentation/spaces": {
+            "get": {
+                "operationId": "v1.documentation.spaces.index",
+                "summary": "List the spaces the user may read",
+                "tags": [
+                    "Documentation"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/documentation/pages": {
+            "get": {
+                "operationId": "v1.documentation.pages.index",
+                "summary": "List published pages of readable spaces. Filters: `filter[space_id]`, `filter[search]` (title). Sorts: `title`, `published_at`",
+                "tags": [
+                    "Documentation"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/documentation/pages/{page}": {
+            "get": {
+                "operationId": "v1.documentation.pages.show",
+                "summary": "Show a published page, its Markdown body included",
+                "tags": [
+                    "Documentation"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "path",
+                        "required": true,
+                        "description": "The page ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "space_id": {
+                                                    "type": "string"
+                                                },
+                                                "parent_id": {
+                                                    "type": "string"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "body": {
+                                                    "type": "string"
+                                                },
+                                                "version": {
+                                                    "type": "string"
+                                                },
+                                                "published_at": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "review_on": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "space_id",
+                                                "parent_id",
+                                                "title",
+                                                "body",
+                                                "version",
+                                                "published_at",
+                                                "review_on"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/compliance/findings": {
             "get": {
                 "operationId": "v1.compliance.findings.index",
@@ -3104,6 +3418,333 @@
                 }
             }
         },
+        "/dcim/racks": {
+            "get": {
+                "operationId": "v1.dcim.racks.index",
+                "summary": "List racks. Filters: `filter[location_id]`, `filter[search]` (name). Sort: `name`",
+                "tags": [
+                    "Infrastructure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/dcim/racks/{rack}": {
+            "get": {
+                "operationId": "v1.dcim.racks.show",
+                "summary": "Show a rack and its equipment, top to bottom",
+                "tags": [
+                    "Infrastructure"
+                ],
+                "parameters": [
+                    {
+                        "name": "rack",
+                        "in": "path",
+                        "required": true,
+                        "description": "The rack ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "location_id": {
+                                                    "type": "string"
+                                                },
+                                                "height_u": {
+                                                    "type": "integer"
+                                                },
+                                                "used_u": {
+                                                    "type": "integer"
+                                                },
+                                                "max_power_watts": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "equipment": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string"
+                                                            },
+                                                            "asset": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "tag": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "name": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "id",
+                                                                            "tag",
+                                                                            "name"
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "id"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "position_u": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "height_u": {
+                                                                "type": "integer"
+                                                            },
+                                                            "units": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "0U (side)"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "face": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "front",
+                                                                    "rear"
+                                                                ]
+                                                            },
+                                                            "full_depth": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "power_watts": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "asset",
+                                                            "position_u",
+                                                            "height_u",
+                                                            "units",
+                                                            "face",
+                                                            "full_depth",
+                                                            "power_watts"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "name",
+                                                "location_id",
+                                                "height_u",
+                                                "used_u",
+                                                "max_power_watts",
+                                                "equipment"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/dcim/power": {
+            "get": {
+                "operationId": "v1.dcim.power.index",
+                "summary": "List power sources with their load (normal: shared across supplies; worst: if the other side fails)",
+                "tags": [
+                    "Infrastructure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/dcim/subnets": {
+            "get": {
+                "operationId": "v1.dcim.subnets.index",
+                "summary": "List subnets. Filters: `filter[location_id]`, `filter[vlan_id]`. Sort: `network`",
+                "tags": [
+                    "Infrastructure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/dcim/addresses": {
+            "get": {
+                "operationId": "v1.dcim.addresses.index",
+                "summary": "List IP addresses. Filters: `filter[subnet_id]`, `filter[status]`, `filter[search]` (address or DNS name). Sort: `address`",
+                "tags": [
+                    "Infrastructure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/licenses": {
             "get": {
                 "operationId": "v1.licenses.index",
@@ -3560,6 +4201,144 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/metrics": {
+            "get": {
+                "operationId": "v1.metrics.index",
+                "summary": "The indicators the user may see, by module, with their current value and status (good, warning, alert, neutral)",
+                "tags": [
+                    "Metric"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "key": {
+                                                        "type": "string"
+                                                    },
+                                                    "label": {
+                                                        "type": "string"
+                                                    },
+                                                    "unit": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "lower_is_better": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "key",
+                                                    "label",
+                                                    "unit",
+                                                    "value",
+                                                    "status",
+                                                    "lower_is_better"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/metrics/{key}/history": {
+            "get": {
+                "operationId": "v1.metrics.history",
+                "summary": "An indicator's daily values. `?days=` from 1 to 730 (90 by default)",
+                "tags": [
+                    "Metric"
+                ],
+                "parameters": [
+                    {
+                        "name": "key",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "days",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 730
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "date": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": [
+                                                            "number",
+                                                            "null"
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "date",
+                                                    "value"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -4576,6 +5355,399 @@
                 }
             }
         },
+        "/projects": {
+            "get": {
+                "operationId": "v1.projects.index",
+                "summary": "List the projects the user may see (all with portfolio access, otherwise those they take part in).\nFilters: `filter[status]`, `filter[kind]`. Sorts: `code`, `planned_end`, `updated_at`",
+                "tags": [
+                    "Project"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/projects/{project}": {
+            "get": {
+                "operationId": "v1.projects.show",
+                "summary": "Show a project with its phases, tasks and budget",
+                "tags": [
+                    "Project"
+                ],
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "description": "The project ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "code": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "kind": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "general",
+                                                        "application",
+                                                        "infrastructure"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "active",
+                                                        "on_hold",
+                                                        "closed",
+                                                        "cancelled"
+                                                    ]
+                                                },
+                                                "sponsor_id": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "manager_id": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "application_id": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "phase": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "enum": [
+                                                        "initiation",
+                                                        "planning",
+                                                        "execution",
+                                                        "closure",
+                                                        null
+                                                    ]
+                                                },
+                                                "planned_start": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "planned_end": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "latest_report": {
+                                                    "type": [
+                                                        "object",
+                                                        "null"
+                                                    ],
+                                                    "properties": {
+                                                        "reported_on": {
+                                                            "type": "string"
+                                                        },
+                                                        "overall": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "green",
+                                                                "amber",
+                                                                "red"
+                                                            ]
+                                                        },
+                                                        "schedule": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "green",
+                                                                "amber",
+                                                                "red"
+                                                            ]
+                                                        },
+                                                        "budget": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "green",
+                                                                "amber",
+                                                                "red"
+                                                            ]
+                                                        },
+                                                        "scope": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "green",
+                                                                "amber",
+                                                                "red"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "reported_on",
+                                                        "overall",
+                                                        "schedule",
+                                                        "budget",
+                                                        "scope"
+                                                    ]
+                                                },
+                                                "closed_at": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "description": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "phases": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "key": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "initiation",
+                                                                    "planning",
+                                                                    "execution",
+                                                                    "closure"
+                                                                ]
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "pending",
+                                                                    "active",
+                                                                    "done"
+                                                                ]
+                                                            },
+                                                            "planned_start": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "planned_end": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "started_at": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "completed_at": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "key",
+                                                            "status",
+                                                            "planned_start",
+                                                            "planned_end",
+                                                            "started_at",
+                                                            "completed_at"
+                                                        ]
+                                                    }
+                                                },
+                                                "tasks": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string"
+                                                            },
+                                                            "phase_id": {
+                                                                "type": "string"
+                                                            },
+                                                            "title": {
+                                                                "type": "string"
+                                                            },
+                                                            "assignee_id": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "due_on": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "todo",
+                                                                    "in_progress",
+                                                                    "blocked",
+                                                                    "done"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "phase_id",
+                                                            "title",
+                                                            "assignee_id",
+                                                            "due_on",
+                                                            "status"
+                                                        ]
+                                                    }
+                                                },
+                                                "budget": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "amount": {
+                                                            "type": [
+                                                                "number",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "spent": {
+                                                            "type": "number"
+                                                        },
+                                                        "remaining": {
+                                                            "type": [
+                                                                "number",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "percent": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "currency": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "over": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "by_category": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "type": "number"
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "amount",
+                                                        "spent",
+                                                        "remaining",
+                                                        "percent",
+                                                        "currency",
+                                                        "over",
+                                                        "by_category"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "code",
+                                                "name",
+                                                "kind",
+                                                "status",
+                                                "sponsor_id",
+                                                "manager_id",
+                                                "application_id",
+                                                "phase",
+                                                "planned_start",
+                                                "planned_end",
+                                                "latest_report",
+                                                "closed_at",
+                                                "description",
+                                                "phases",
+                                                "tasks",
+                                                "budget"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/cmdb/relationships": {
             "post": {
                 "operationId": "v1.cmdb.relationships.store",
@@ -5406,6 +6578,216 @@
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/suppliers": {
+            "get": {
+                "operationId": "v1.suppliers.index",
+                "summary": "List suppliers. Filters: `filter[search]`, `filter[active]` (true/false). Sort: `name`",
+                "tags": [
+                    "Supplier"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/suppliers/{supplier}": {
+            "get": {
+                "operationId": "v1.suppliers.show",
+                "summary": "Show a supplier and its contacts",
+                "tags": [
+                    "Supplier"
+                ],
+                "parameters": [
+                    {
+                        "name": "supplier",
+                        "in": "path",
+                        "required": true,
+                        "description": "The supplier ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "legal_name": {
+                                                    "type": "string"
+                                                },
+                                                "tax_id": {
+                                                    "type": "string"
+                                                },
+                                                "customer_number": {
+                                                    "type": "string"
+                                                },
+                                                "website": {
+                                                    "type": "string"
+                                                },
+                                                "support_email": {
+                                                    "type": "string"
+                                                },
+                                                "support_phone": {
+                                                    "type": "string"
+                                                },
+                                                "support_hours": {
+                                                    "type": "string"
+                                                },
+                                                "is_active": {
+                                                    "type": "string"
+                                                },
+                                                "contacts": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "role": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "email": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "phone": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "name",
+                                                            "role",
+                                                            "email",
+                                                            "phone"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "name",
+                                                "legal_name",
+                                                "tax_id",
+                                                "customer_number",
+                                                "website",
+                                                "support_email",
+                                                "support_phone",
+                                                "support_hours",
+                                                "is_active",
+                                                "contacts"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/contracts": {
+            "get": {
+                "operationId": "v1.contracts.index",
+                "summary": "List contracts. Filters: `filter[supplier_id]`, `filter[type]`, `filter[ends_before]` (Y-m-d), `filter[search]` (title or reference).\nSorts: `end_date`, `title`, `start_date`; by end date by default",
+                "tags": [
+                    "Supplier"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -9729,36 +11111,6 @@
             }
         },
         "responses": {
-            "ValidationException": {
-                "description": "Validation error",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "message": {
-                                    "type": "string",
-                                    "description": "Errors overview."
-                                },
-                                "errors": {
-                                    "type": "object",
-                                    "description": "A detailed description of each field that failed validation.",
-                                    "additionalProperties": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            },
-                            "required": [
-                                "message",
-                                "errors"
-                            ]
-                        }
-                    }
-                }
-            },
             "AuthorizationException": {
                 "description": "Authorization error",
                 "content": {
@@ -9811,6 +11163,36 @@
                             },
                             "required": [
                                 "message"
+                            ]
+                        }
+                    }
+                }
+            },
+            "ValidationException": {
+                "description": "Validation error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Errors overview."
+                                },
+                                "errors": {
+                                    "type": "object",
+                                    "description": "A detailed description of each field that failed validation.",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "message",
+                                "errors"
                             ]
                         }
                     }
