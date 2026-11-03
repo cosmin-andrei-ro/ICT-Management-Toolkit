@@ -11,6 +11,7 @@ return [
     'attachments_only' => '(attachments sent by email)',
     'attachments_refused' => 'Attachments not accepted (type or size not allowed): :files',
     'follow_up' => 'Follow-up of :number, which is closed.',
+    'unverified_staff' => 'Unverified email: the mail server did not confirm that :email sent it (no SPF or DMARC pass). It was kept as an internal note; check with the sender before acting on it.',
     'encryption' => [
         'ssl' => 'SSL/TLS (port 993)',
         'starttls' => 'STARTTLS (port 143)',
@@ -21,7 +22,7 @@ return [
         'commented' => 'Added to ticket',
         'ignored_unknown_sender' => 'Ignored: unknown sender',
         'ignored_automatic' => 'Ignored: automatic message',
-        'ignored_spoofed' => 'Ignored: sender failed verification',
+        'ignored_spoofed' => 'Ignored: sender failed or lacked verification',
         'ignored_rate_limited' => 'Ignored: too many messages from sender',
         'ignored_too_large' => 'Ignored: message too large',
         'failed' => 'Failed',
@@ -60,6 +61,8 @@ return [
         'test_ok' => 'Connected and signed in; the folders exist.',
         'test_failed' => 'Connection test failed',
         'test_throttled' => 'Too many tests. Wait a minute.',
+        'require_verified' => 'Only verified senders',
+        'require_verified_help' => 'Accept only messages the mail server verified (SPF or DMARC pass in Authentication-Results). Messages from IT staff are always held to this: unverified ones become internal notes.',
     ],
     'log' => [
         'label' => 'Incoming email',

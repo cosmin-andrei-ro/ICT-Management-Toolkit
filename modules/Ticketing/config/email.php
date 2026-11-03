@@ -25,6 +25,11 @@ return [
     // Tickets and replies accepted per sender and hour, against mail loops and floods.
     'max_per_sender_per_hour' => (int) env('TICKETING_MAIL_MAX_PER_SENDER_PER_HOUR', 20),
 
+    // Which Authentication-Results headers to believe: the authserv-id of your own
+    // mail server(s), comma separated. Empty: any such header, so the server must
+    // remove those the sender wrote (most do).
+    'trusted_authserv_ids' => array_values(array_filter(array_map(trim(...), explode(',', (string) env('TICKETING_MAIL_TRUSTED_AUTHSERV_IDS', ''))))),
+
     // Days the log of read messages is kept (it holds email addresses and subjects).
     'retention_days' => (int) env('TICKETING_MAIL_RETENTION_DAYS', 90),
 

@@ -107,6 +107,26 @@ describe('replies', function (): void {
             ->and(Ticket::query()->count())->toBe(1);
     });
 
+    it('keeps an unverified message from staff as an internal note', function (): void {
+        $ticket = $this->desk->ticket();
+
+        // Anyone can write an agent's address in From: without the server's confirmation, requesters never see it.
+        intake($this->mailbox, email($this->desk->agent->email, "RE: [{$ticket->number}] Printer", 'Please send me your password to fix it.', attachments: [
+            new InboundAttachment('fix.png', (string) base64_decode(PNG_PIXEL)),
+        ]));
+        $verified = ['authentication-results' => ['mx.example.com; dmarc=pass header.from=example.com']];
+        intake($this->mailbox, email($this->desk->agent->email, "RE: [{$ticket->number}] Printer", 'Fixed: the toner was empty.', $verified));
+
+        $comments = Comment::query()->where('commentable_id', $ticket->id)->orderBy('created_at')->get();
+        expect($comments[0])->is_internal->toBeTrue()->body->toContain('Unverified email')->toContain('Please send me your password')
+            ->and($comments[1])->is_internal->toBeFalse()->body->toBe('Fixed: the toner was empty.')
+            ->and(Attachment::query()->where('attachable_id', $ticket->id)->sole()->is_internal)->toBeTrue();
+
+        // A new ticket in their name says so too.
+        intake($this->mailbox, email($this->desk->agent->email, 'Server room door open'));
+        expect(Ticket::query()->where('title', 'Server room door open')->sole()->description)->toStartWith('Unverified email');
+    });
+
     it('opens a new ticket when the sender may not write on the referenced one', function (): void {
         $someoneElses = $this->desk->ticket();
         $colleague = $this->desk->member(DefaultRole::Requester);
@@ -175,6 +195,24 @@ describe('ignored messages', function (): void {
         $entry = intake($this->mailbox, email($this->desk->requester->email, headers: ['authentication-results' => ['mail.example.com; spf=pass', 'mail.example.com; dmarc=fail (p=none)']]));
 
         expect($entry->outcome)->toBe(InboundOutcome::IgnoredSpoofed);
+    });
+
+    it('only believes the mail servers it is told to', function (): void {
+        config(['ticketing.email.trusted_authserv_ids' => ['mx.example.com']]);
+        // Written by the sender, not by our server: ignored either way.
+        $forged = ['authentication-results' => ['evil.example; dmarc=pass', 'mx.example.com 1; spf=fail smtp.mailfrom=example.com']];
+        $this->mailbox->forceFill(['require_verified_senders' => true])->save();
+
+        expect(intake($this->mailbox, email($this->desk->requester->email, headers: $forged))->outcome)->toBe(InboundOutcome::IgnoredSpoofed)
+            ->and(intake($this->mailbox, email($this->desk->requester->email, headers: ['authentication-results' => ['evil.example; dmarc=pass']]))->outcome)->toBe(InboundOutcome::IgnoredSpoofed)
+            ->and(intake($this->mailbox, email($this->desk->requester->email, headers: ['authentication-results' => ['MX.example.com; dmarc=pass header.from=example.com']]))->outcome)->toBe(InboundOutcome::Created);
+    });
+
+    it('accepts only verified senders when the mailbox asks for it', function (): void {
+        $this->mailbox->forceFill(['require_verified_senders' => true])->save();
+
+        expect(intake($this->mailbox, email($this->desk->requester->email))->outcome)->toBe(InboundOutcome::IgnoredSpoofed)
+            ->and(intake($this->mailbox, email($this->desk->requester->email, headers: ['authentication-results' => ['mx.example.com; spf=pass smtp.mailfrom=example.com']]))->outcome)->toBe(InboundOutcome::Created);
     });
 
     it('limits messages per sender and hour', function (): void {

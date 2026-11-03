@@ -29,6 +29,11 @@ use Modules\Ticketing\Domain\Models\Ticket;
  * mailbox's organization. Only people with an account in that organization reach
  * a ticket (owner's decision: unknown senders are ignored, never answered, so
  * spammers get no confirmation). Automatic mail is ignored to prevent loops.
+ *
+ * The From address is only as good as the mail server's checks: a message
+ * from IT staff that the server did not verify (SPF or DMARC pass) becomes an
+ * internal note, so nobody can comment publicly in an agent's name by
+ * forging their address. A mailbox may require verification of everyone.
  */
 final readonly class ProcessInboundEmail
 {
@@ -58,17 +63,18 @@ final readonly class ProcessInboundEmail
         }
 
         $sender = $this->sender($mailbox, $message);
+        $verified = $this->verifiedSender($message);
 
         // All or nothing: a failure halfway (e.g. storing an attachment) leaves no
         // half-made ticket, and ticket events are only dispatched after commit.
-        return $this->db->transaction(function () use ($mailbox, $message, $sender): InboundEmail {
+        return $this->db->transaction(function () use ($mailbox, $message, $sender, $verified): InboundEmail {
             [$outcome, $ticket, $detail] = match (true) {
                 $message->size > $this->maxBytes() => [InboundOutcome::IgnoredTooLarge, null, null],
                 $this->isAutomatic($mailbox, $message) => [InboundOutcome::IgnoredAutomatic, null, null],
-                $this->failedAuthentication($message) => [InboundOutcome::IgnoredSpoofed, null, null],
+                $this->failedAuthentication($message), $mailbox->require_verified_senders && ! $verified => [InboundOutcome::IgnoredSpoofed, null, null],
                 $sender === null => [InboundOutcome::IgnoredUnknownSender, null, null],
                 $this->overRateLimit($mailbox, $message) => [InboundOutcome::IgnoredRateLimited, null, null],
-                default => $this->deliver($mailbox, $message, $sender),
+                default => $this->deliver($mailbox, $message, $sender, $verified),
             };
 
             return $this->log($mailbox, $message, $outcome, $ticket, $detail);
@@ -83,7 +89,7 @@ final readonly class ProcessInboundEmail
     /**
      * @return array{InboundOutcome, Ticket, ?string}
      */
-    private function deliver(Mailbox $mailbox, InboundMessage $message, User $sender): array
+    private function deliver(Mailbox $mailbox, InboundMessage $message, User $sender, bool $verified): array
     {
         [$files, $refused] = $this->acceptedAttachments($message);
         $body = EmailBody::newPart($message->text);
@@ -95,8 +101,16 @@ final readonly class ProcessInboundEmail
         $referenced = $this->referencedTicket($message);
 
         if ($referenced !== null && $this->gate->forUser($sender)->allows('comment', $referenced)) {
-            $this->addComment->handle($referenced, $sender, $body !== '' ? $body : __('ticketing::email.attachments_only'), false);
-            $this->attach($referenced, $sender, $files);
+            $body = $body !== '' ? $body : __('ticketing::email.attachments_only');
+            // Staff write to requesters: unverified, it stays among staff.
+            $unverifiedStaff = ! $verified && $this->gate->forUser($sender)->allows('work', $referenced);
+
+            if ($unverifiedStaff) {
+                $body = __('ticketing::email.unverified_staff', ['email' => $sender->email])."\n\n".$body;
+            }
+
+            $this->addComment->handle($referenced, $sender, $body, $unverifiedStaff);
+            $this->attach($referenced, $sender, $files, $unverifiedStaff);
 
             return [InboundOutcome::Commented, $referenced, $this->refusedDetail($refused)];
         }
@@ -104,6 +118,10 @@ final readonly class ProcessInboundEmail
         // A reply to a closed ticket, or to one the sender cannot see, starts a new one.
         if ($referenced !== null && $this->gate->forUser($sender)->allows('view', $referenced)) {
             $body = trim(__('ticketing::email.follow_up', ['number' => $referenced->number])."\n\n".$body);
+        }
+
+        if (! $verified && $sender->can('ticketing.ticket.work')) {
+            $body = trim(__('ticketing::email.unverified_staff', ['email' => $sender->email])."\n\n".$body);
         }
 
         $queue = $mailbox->queue;
@@ -169,13 +187,52 @@ final readonly class ProcessInboundEmail
      */
     private function failedAuthentication(InboundMessage $message): bool
     {
-        foreach ($message->headers['authentication-results'] ?? [] as $result) {
+        foreach ($this->authenticationResults($message) as $result) {
             if (preg_match('/\b(spf|dmarc)=fail\b/i', $result) === 1) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Whether the receiving server confirmed the sender: a DMARC pass, or an
+     * SPF pass (the envelope sender's domain; most servers then also align it).
+     */
+    private function verifiedSender(InboundMessage $message): bool
+    {
+        foreach ($this->authenticationResults($message) as $result) {
+            if (preg_match('/\b(spf|dmarc)=pass\b/i', $result) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * The Authentication-Results headers written by the servers named in
+     * ticketing.email.trusted_authserv_ids (all of them when none is named).
+     *
+     * @return list<string>
+     */
+    private function authenticationResults(InboundMessage $message): array
+    {
+        $trusted = $this->config->get('ticketing.email.trusted_authserv_ids');
+        $trusted = is_array($trusted) ? array_map(fn (mixed $id): string => mb_strtolower(is_string($id) ? $id : ''), $trusted) : [];
+        $results = [];
+
+        foreach ($message->headers['authentication-results'] ?? [] as $result) {
+            // "mx.example.com 1; spf=pass ...": the authserv-id comes first, maybe with a version.
+            $authservId = mb_strtolower((string) strtok(trim(strstr($result, ';', true) ?: $result), " \t"));
+
+            if ($trusted === [] || in_array($authservId, $trusted, true)) {
+                $results[] = $result;
+            }
+        }
+
+        return $results;
     }
 
     private function overRateLimit(Mailbox $mailbox, InboundMessage $message): bool
@@ -252,11 +309,11 @@ final readonly class ProcessInboundEmail
     /**
      * @param  list<UploadedFile>  $files
      */
-    private function attach(Ticket $ticket, User $sender, array $files): void
+    private function attach(Ticket $ticket, User $sender, array $files, bool $internal = false): void
     {
         foreach ($files as $file) {
             try {
-                $this->addAttachment->handle($ticket, $sender, $file, false);
+                $this->addAttachment->handle($ticket, $sender, $file, $internal);
             } finally {
                 @unlink($file->getRealPath() ?: $file->getPathname());
             }

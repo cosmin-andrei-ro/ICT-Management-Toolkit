@@ -45,6 +45,7 @@ use Modules\Ticketing\Domain\Enums\TicketType;
  * @property ?string $queue_id
  * @property TicketType $ticket_type
  * @property bool $is_active
+ * @property bool $require_verified_senders
  * @property ?Carbon $last_checked_at
  * @property ?string $last_error
  * @property ?Carbon $created_at
@@ -56,7 +57,7 @@ use Modules\Ticketing\Domain\Enums\TicketType;
 #[UseFactory(MailboxFactory::class)]
 #[UsePolicy(MailboxPolicy::class)]
 #[Hidden(['password'])]
-#[Fillable(['name', 'address', 'host', 'port', 'encryption', 'username', 'password', 'folder', 'processed_folder', 'queue_id', 'ticket_type', 'is_active'])]
+#[Fillable(['name', 'address', 'host', 'port', 'encryption', 'username', 'password', 'folder', 'processed_folder', 'queue_id', 'ticket_type', 'is_active', 'require_verified_senders'])]
 final class Mailbox extends Model
 {
     use Auditable;
@@ -116,6 +117,7 @@ final class Mailbox extends Model
             'credentials_updated_at' => 'datetime',
             'ticket_type' => TicketType::class,
             'is_active' => 'boolean',
+            'require_verified_senders' => 'boolean',
             'last_checked_at' => 'datetime',
         ];
     }
