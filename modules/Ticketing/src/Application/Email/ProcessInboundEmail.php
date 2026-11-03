@@ -31,9 +31,9 @@ use Modules\Ticketing\Domain\Models\Ticket;
  * spammers get no confirmation). Automatic mail is ignored to prevent loops.
  *
  * The From address is only as good as the mail server's checks: a message
- * from IT staff that the server did not verify (SPF or DMARC pass) becomes an
- * internal note, so nobody can comment publicly in an agent's name by
- * forging their address. A mailbox may require verification of everyone.
+ * from IT staff that the server did not verify (DMARC pass, or SPF pass for the
+ * From domain) becomes an internal note, so nobody can comment publicly in an
+ * agent's name by forging their address. A mailbox may require verification of everyone.
  */
 final readonly class ProcessInboundEmail
 {
@@ -187,8 +187,8 @@ final readonly class ProcessInboundEmail
      */
     private function failedAuthentication(InboundMessage $message): bool
     {
-        foreach ($this->authenticationResults($message) as $result) {
-            if (preg_match('/\b(spf|dmarc)=fail\b/i', $result) === 1) {
+        foreach ($this->authenticationResults($message) as $results) {
+            if ($results->failed()) {
                 return true;
             }
         }
@@ -197,13 +197,19 @@ final readonly class ProcessInboundEmail
     }
 
     /**
-     * Whether the receiving server confirmed the sender: a DMARC pass, or an
-     * SPF pass (the envelope sender's domain; most servers then also align it).
+     * Whether the receiving server confirmed the domain of the From address.
      */
     private function verifiedSender(InboundMessage $message): bool
     {
-        foreach ($this->authenticationResults($message) as $result) {
-            if (preg_match('/\b(spf|dmarc)=pass\b/i', $result) === 1) {
+        $address = mb_strtolower(trim($message->fromAddress));
+        $at = strrpos($address, '@');
+
+        if ($at === false) {
+            return false;
+        }
+
+        foreach ($this->authenticationResults($message) as $results) {
+            if ($results->confirms(substr($address, $at + 1))) {
                 return true;
             }
         }
@@ -215,24 +221,15 @@ final readonly class ProcessInboundEmail
      * The Authentication-Results headers written by the servers named in
      * ticketing.email.trusted_authserv_ids (all of them when none is named).
      *
-     * @return list<string>
+     * @return list<AuthenticationResults>
      */
     private function authenticationResults(InboundMessage $message): array
     {
         $trusted = $this->config->get('ticketing.email.trusted_authserv_ids');
         $trusted = is_array($trusted) ? array_map(fn (mixed $id): string => mb_strtolower(is_string($id) ? $id : ''), $trusted) : [];
-        $results = [];
+        $all = array_map(AuthenticationResults::parse(...), $message->headers['authentication-results'] ?? []);
 
-        foreach ($message->headers['authentication-results'] ?? [] as $result) {
-            // "mx.example.com 1; spf=pass ...": the authserv-id comes first, maybe with a version.
-            $authservId = mb_strtolower((string) strtok(trim(strstr($result, ';', true) ?: $result), " \t"));
-
-            if ($trusted === [] || in_array($authservId, $trusted, true)) {
-                $results[] = $result;
-            }
-        }
-
-        return $results;
+        return array_values(array_filter($all, fn (AuthenticationResults $results): bool => $trusted === [] || in_array($results->authservId, $trusted, true)));
     }
 
     private function overRateLimit(Mailbox $mailbox, InboundMessage $message): bool

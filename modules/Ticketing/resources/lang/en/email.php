@@ -11,7 +11,7 @@ return [
     'attachments_only' => '(attachments sent by email)',
     'attachments_refused' => 'Attachments not accepted (type or size not allowed): :files',
     'follow_up' => 'Follow-up of :number, which is closed.',
-    'unverified_staff' => 'Unverified email: the mail server did not confirm that :email sent it (no SPF or DMARC pass). It was kept as an internal note; check with the sender before acting on it.',
+    'unverified_staff' => 'Unverified email: the mail server did not confirm that :email sent it (no DMARC pass, nor SPF pass for that domain). It was kept as an internal note; check with the sender before acting on it.',
     'encryption' => [
         'ssl' => 'SSL/TLS (port 993)',
         'starttls' => 'STARTTLS (port 143)',
@@ -62,7 +62,7 @@ return [
         'test_failed' => 'Connection test failed',
         'test_throttled' => 'Too many tests. Wait a minute.',
         'require_verified' => 'Only verified senders',
-        'require_verified_help' => 'Accept only messages the mail server verified (SPF or DMARC pass in Authentication-Results). Messages from IT staff are always held to this: unverified ones become internal notes.',
+        'require_verified_help' => 'Accept only messages the mail server verified (in Authentication-Results: DMARC pass, or SPF pass for the domain of the sender address). Messages from IT staff are always held to this: unverified ones become internal notes.',
     ],
     'log' => [
         'label' => 'Incoming email',
