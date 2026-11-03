@@ -124,4 +124,12 @@
             </form>
         @endif
     </section>
+
+    @can('core.api.use')
+        <section class="space-y-2 rounded-lg bg-white p-5 ring-1 ring-gray-200">
+            <h2 class="font-semibold">{{ __('core::api_tokens.title') }}</h2>
+            <p class="text-sm text-gray-600">{{ __('core::api_tokens.intro') }}</p>
+            <a href="{{ route('account.api-tokens') }}" class="inline-block rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('core::api_tokens.menu') }}</a>
+        </section>
+    @endcan
 </div>

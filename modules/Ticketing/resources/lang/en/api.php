@@ -10,4 +10,5 @@ return [
         'read' => 'Read tickets visible to the user',
         'write' => 'Create tickets and add comments as the user',
     ],
+    'invalid_filter' => 'No ticket can match ":value".',
 ];

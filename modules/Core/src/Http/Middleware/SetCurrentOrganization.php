@@ -9,6 +9,7 @@ namespace Modules\Core\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
@@ -39,7 +40,12 @@ final readonly class SetCurrentOrganization
         // Deactivation takes effect on the next request, not at the next login.
         abort_unless($user->canSignIn(), Response::HTTP_FORBIDDEN, __('core::errors.account_inactive'));
 
-        $organization = $this->resolveOrganization($user);
+        // An API token works in the organization it was issued for (ADR 0061).
+        $token = $guard === 'sanctum' ? $user->currentAccessToken() : null;
+        $bound = $token instanceof PersonalAccessToken && is_string($token->getAttribute('organization_id')) ? $token->getAttribute('organization_id') : null;
+        $organization = $bound !== null
+            ? $user->organizations()->where('is_active', true)->whereKey($bound)->first()
+            : $this->resolveOrganization($user);
 
         abort_if($organization === null, Response::HTTP_FORBIDDEN, __('core::errors.no_organization'));
 

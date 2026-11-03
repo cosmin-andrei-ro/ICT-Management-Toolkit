@@ -53,3 +53,14 @@ After 10 failed sign-ins in a row (wrong password or wrong code), your account i
 - Or ask an administrator to unlock it.
 
 If you did not cause the failures yourself, someone may be trying to guess your password: choose a new one and tell the IT department. Active Directory accounts follow the lockout rules of Windows instead.
+
+## API tokens
+
+If you work in IT, **API tokens** (link at the bottom of this page) lets you create a token for a script or another system that uses the toolkit's API as you:
+
+1. Give it a name that says where it is used.
+2. Choose only the abilities it needs, and how many days it stays valid.
+3. Enter a code from your authenticator app.
+
+Copy the token at once: it is shown only that time. Keep it in a password manager or in the secret store of the system that uses it. Revoke it as soon as it is no longer needed, or if it may have leaked.
+

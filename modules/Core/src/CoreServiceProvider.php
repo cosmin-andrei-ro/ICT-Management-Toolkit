@@ -312,6 +312,9 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.audit.view',
             // Export (and anonymize) a person's data on request (GDPR Art. 15–17, 20): administrators.
             'core.personal_data.manage',
+            // Personal API tokens (ADR 0061): issue your own; see and revoke everyone's.
+            'core.api.use',
+            'core.api.manage',
             'core.directory.manage',
             'core.team.view',
             'core.team.manage',
@@ -341,6 +344,12 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $registry->grantToDefaultRole(DefaultRole::ComplianceManager, [...$directory, 'core.supplier.view', 'core.contract.view', 'core.audit.view']);
         $registry->grantToDefaultRole(DefaultRole::Auditor, [...$directory, 'core.supplier.view', 'core.contract.view', 'core.audit.view']);
         $registry->grantToDefaultRole(DefaultRole::Agent, [...$directory, 'core.supplier.view']);
+        // Every IT role may issue its own API tokens; requesters may not (ADR 0061).
+        foreach (DefaultRole::cases() as $role) {
+            if (! in_array($role, [DefaultRole::Administrator, DefaultRole::Requester], true)) {
+                $registry->grantToDefaultRole($role, ['core.api.use']);
+            }
+        }
         $registry->grantToDefaultRole(DefaultRole::CabMember, $directory);
         // Project managers pick sponsors and teams from the directory.
         $registry->grantToDefaultRole(DefaultRole::ProjectManager, $directory);

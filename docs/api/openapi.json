@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000/api/v1"
+            "url": "http://localhost/api/v1"
         }
     ],
     "security": [
@@ -19,6 +19,7 @@
         "/tickets": {
             "get": {
                 "operationId": "v1.tickets.index",
+                "description": "Filters: `filter[status]` (open, closed or a status), `filter[type]`, `filter[priority]`,\n`filter[queue_id]`, `filter[assignee_id]`, `filter[search]`. Sorts: `created_at`,\n`updated_at`, `number`, `priority`; newest first by default. The `status` and\n`search` parameters of the first version still work.",
                 "summary": "List tickets visible to the token's user: all tickets of the organization for\nservice desk staff, otherwise the user's own and watched tickets",
                 "tags": [
                     "Ticket"
@@ -49,15 +50,6 @@
                             "type": "string",
                             "maxLength": 200
                         }
-                    },
-                    {
-                        "name": "per_page",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "maximum": 100
-                        }
                     }
                 ],
                 "responses": {
@@ -71,20 +63,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "allOf": [
-                                                    {
-                                                        "$ref": "#/components/schemas/TicketResource"
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "required": [
-                                                            "requester",
-                                                            "assignee",
-                                                            "queue",
-                                                            "category"
-                                                        ]
-                                                    }
-                                                ]
+                                                "$ref": "#/components/schemas/TicketResource"
                                             }
                                         },
                                         "links": {
@@ -323,6 +302,7 @@
                                                         "assignee",
                                                         "queue",
                                                         "category",
+                                                        "service",
                                                         "comments"
                                                     ]
                                                 }
@@ -518,7 +498,12 @@
                 "type": "object",
                 "properties": {
                     "type": {
-                        "$ref": "#/components/schemas/TicketType"
+                        "type": "string",
+                        "description": "Mirrored by ticketing_tickets_type_check.\n",
+                        "enum": [
+                            "incident",
+                            "service_request"
+                        ]
                     },
                     "title": {
                         "type": "string",
@@ -563,7 +548,9 @@
                         "type": "string",
                         "enum": [
                             "incident",
-                            "service_request"
+                            "service_request",
+                            "problem",
+                            "change"
                         ]
                     },
                     "title": {
@@ -620,7 +607,10 @@
                         ]
                     },
                     "requester": {
-                        "type": "object",
+                        "type": [
+                            "object",
+                            "null"
+                        ],
                         "properties": {
                             "id": {
                                 "type": "string"
@@ -688,6 +678,48 @@
                             "name"
                         ]
                     },
+                    "service": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "service_answers": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "key": {
+                                    "type": "string"
+                                },
+                                "label": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "value": {}
+                            },
+                            "required": [
+                                "key",
+                                "label",
+                                "type",
+                                "value"
+                            ]
+                        }
+                    },
                     "resolution_code": {
                         "type": [
                             "string",
@@ -701,6 +733,8 @@
                             "duplicate",
                             "user_error",
                             "no_action_needed",
+                            "implemented",
+                            "rolled_back",
                             null
                         ]
                     },
@@ -752,6 +786,7 @@
                     "urgency",
                     "priority",
                     "channel",
+                    "service_answers",
                     "resolution_code",
                     "first_responded_at",
                     "resolved_at",
@@ -760,15 +795,6 @@
                     "updated_at"
                 ],
                 "title": "TicketResource"
-            },
-            "TicketType": {
-                "type": "string",
-                "description": "Mirrored by ticketing_tickets_type_check. Problems and changes arrive with their own workflows in later stages.\n",
-                "enum": [
-                    "incident",
-                    "service_request"
-                ],
-                "title": "TicketType"
             },
             "Urgency": {
                 "type": "string",
