@@ -195,7 +195,7 @@ Then set `GOTENBERG_URL=http://127.0.0.1:3000` in `.env`. In development: `COMPO
    php artisan core:directory:test jdoe
    ```
 
-5. Sign in as the administrator and map AD groups to roles under **Administration → Access → AD group mappings**. People without a mapped group cannot sign in; a good default is `Domain Users` → *Requester*. Details: user manual, *Access and roles*, and [ADR 0007](docs/adr/0007-active-directory-authentication.md).
+5. Sign in as the administrator and map AD groups to roles under **Administration → Access → AD group mappings**. People without a mapped group cannot sign in; a good default is `Domain Users` → *Requester*. Details: user manual, *Access and roles*, and [ADR 0007](adr/0007-active-directory-authentication.md).
 
 ## Single sign-on
 
@@ -211,7 +211,7 @@ Providers are set up per organization in the application: user manual, *Access a
 2. Sign in as the administrator, open **Administration → Service desk → Mailboxes**, add the mailbox (usually port 993 with SSL/TLS), and click **Test connection**.
 3. Make sure the scheduler and the queue worker run.
 
-Only people with an account in the organization can raise tickets by email; other senders are ignored. Ticket emails then use the mailbox as their reply address, so replies come back to the ticket. Details: user manual, *Tickets by email* and *Service desk setup*, and [ADR 0015](docs/adr/0015-email-to-ticket.md).
+Only people with an account in the organization can raise tickets by email; other senders are ignored. Ticket emails then use the mailbox as their reply address, so replies come back to the ticket. Details: user manual, *Tickets by email* and *Service desk setup*, and [ADR 0015](adr/0015-email-to-ticket.md).
 
 Staff messages by email count as verified only with a DMARC pass, or an SPF pass for the domain of the sender's address; otherwise they stay internal notes. Check a real message's `Authentication-Results` header before relying on this.
 
