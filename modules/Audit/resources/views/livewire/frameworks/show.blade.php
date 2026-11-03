@@ -137,4 +137,6 @@
             <button type="submit" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('audit::compliance.ui.add_requirement_button') }}</button>
         </form>
     @endcan
+
+    <x-core::record-history :record="$framework" :can-change="auth()->user()->can('update', $framework)" />
 </div>

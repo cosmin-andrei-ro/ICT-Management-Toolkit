@@ -248,4 +248,6 @@
             </tbody>
         </table>
     </section>
+
+    <x-core::record-history :record="$risk" :can-change="auth()->user()->can('update', $risk)" />
 </div>

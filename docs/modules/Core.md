@@ -15,6 +15,7 @@ The foundation every other module builds on. Code: `modules/Core/`.
 - The table is append-only, enforced by a database trigger.
 - Authentication events (login, failed login, logout, lockout) are recorded too, as are role and permission changes.
 - Each entry carries the IP address, user agent and request id of the HTTP request (`X-Request-Id`, echoed in the response).
+- Shown in the application (ADR 0056): a **History** section on record pages (`<x-core::record-history :record :can-change />`, for those who may change the record or hold `core.audit.view`) and the **Audit log** page `/audit-log` (security events by default, filters, Excel export `core.audit_log`), scoped to the organization by `AuditLogQuery`.
 
 ## Authorization (ADR 0004)
 

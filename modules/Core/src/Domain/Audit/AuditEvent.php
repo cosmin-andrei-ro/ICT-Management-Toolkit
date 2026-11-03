@@ -40,4 +40,26 @@ enum AuditEvent: string
     case SecretRevealed = 'secret_revealed';
     case SecurityKeyAdded = 'security_key_added';
     case SecurityKeyRemoved = 'security_key_removed';
+
+    public function label(): string
+    {
+        return __('core::audit.events.'.$this->value);
+    }
+
+    /**
+     * Sign-ins, rights, second factors, secrets and exports - the security log
+     * - as opposed to the changes made to records.
+     */
+    public function isSecurity(): bool
+    {
+        return ! in_array($this, [self::Created, self::Updated, self::Deleted, self::Restored, self::ForceDeleted], true);
+    }
+
+    /**
+     * @return list<self>
+     */
+    public static function security(): array
+    {
+        return array_values(array_filter(self::cases(), fn (self $event): bool => $event->isSecurity()));
+    }
 }

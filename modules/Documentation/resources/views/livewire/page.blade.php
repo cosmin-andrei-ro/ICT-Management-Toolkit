@@ -156,4 +156,6 @@
             @endif
         </section>
     </aside>
+
+    <x-core::record-history :record="$page" :can-change="auth()->user()->can('update', $page)" />
 </div>

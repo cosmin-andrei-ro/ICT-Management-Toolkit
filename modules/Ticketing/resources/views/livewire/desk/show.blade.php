@@ -388,4 +388,6 @@
             </form>
         @endcan
     </aside>
+
+    <x-core::record-history :record="$ticket" :can-change="auth()->user()->can('work', $ticket)" />
 </div>

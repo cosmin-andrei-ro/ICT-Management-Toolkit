@@ -115,4 +115,6 @@
             </ul>
         </section>
     @endif
+
+    <x-core::record-history :record="$application" :can-change="auth()->user()->can('update', $application)" />
 </div>

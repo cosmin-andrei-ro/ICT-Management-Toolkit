@@ -130,4 +130,6 @@
             @endif
         </div>
     </div>
+
+    <x-core::record-history :record="$rack" :can-change="auth()->user()->can('update', $rack)" />
 </div>

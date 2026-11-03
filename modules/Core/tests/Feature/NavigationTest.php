@@ -36,6 +36,7 @@ it('groups the menu of IT staff, in a fixed order whatever the module order', fu
         'Projects',
         ['Configuration & assets' => ['CMDB', 'Assets', 'Licences', 'Application portfolio', 'Racks', 'Power', 'IP addresses', 'Cables']],
         ['Risk & continuity' => ['Business impact analysis', 'Recovery gaps', 'Continuity plans', 'Continuity coverage', 'Risk register']],
+        'Audit log',
         ['Suppliers & contracts' => ['Suppliers', 'Contracts']],
         'Administration',
     ]);

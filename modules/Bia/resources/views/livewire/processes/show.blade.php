@@ -76,4 +76,6 @@
             @endforelse
         </ul>
     </section>
+
+    <x-core::record-history :record="$process" :can-change="auth()->user()->can('update', $process)" />
 </div>

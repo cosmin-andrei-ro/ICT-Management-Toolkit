@@ -137,4 +137,6 @@
     @endif
 
     @if ($subnet->notes) <p class="whitespace-pre-line text-sm text-gray-700">{{ $subnet->notes }}</p> @endif
+
+    <x-core::record-history :record="$subnet" :can-change="auth()->user()->can('create', \Modules\Dcim\Domain\Models\Rack::class)" />
 </div>

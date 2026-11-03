@@ -120,4 +120,6 @@
             @endif
         @endif
     </section>
+
+    <x-core::record-history :record="$finding" :can-change="auth()->user()->can('update', $finding)" />
 </div>

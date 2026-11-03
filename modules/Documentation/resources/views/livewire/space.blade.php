@@ -69,4 +69,6 @@
             </ul>
         </nav>
     @endif
+
+    <x-core::record-history :record="$space" :can-change="auth()->user()->can('update', $space)" />
 </div>
