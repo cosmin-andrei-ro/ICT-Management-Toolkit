@@ -37,6 +37,9 @@ final class ItamDemoSeeder extends Seeder
         'firewall' => ['network_device', 'fw-01', 'Acme', 'FW-400', 'network', 20, ['device_type' => 'Firewall', 'ip_address' => '10.10.0.1', 'firmware' => '7.4']],
         'wh_ap_1' => ['network_device', 'wh-ap-01', 'Acme', 'AP-6', 'network', 14, ['device_type' => 'Access point', 'ip_address' => '10.20.0.11']],
         'wh_ap_2' => ['network_device', 'wh-ap-02', 'Acme', 'AP-6', 'network', 14, ['device_type' => 'Access point', 'ip_address' => '10.20.0.12']],
+        'patch_panel' => ['network_device', 'pp-r02-01', 'Acme', 'PP-24', 'network', 58, ['device_type' => 'Other']],
+        'wh_switch' => ['network_device', 'wh-sw-01', 'Acme', 'CX-24', 'network', 14, ['device_type' => 'Switch', 'ip_address' => '10.20.0.2', 'firmware' => '9.3']],
+        'wh_patch_panel' => ['network_device', 'pp-clj-01', 'Acme', 'PP-24', 'network', 14, ['device_type' => 'Other']],
         'nas' => ['storage', 'nas-01', 'Northwind', 'NS-96', 'hardware', 34, ['capacity_tb' => 96]],
         'floor2_printer' => ['printer', 'Floor 2 printer', 'Northwind', 'MF-500', 'hardware', 40, ['printer_type' => 'Multifunction', 'ip_address' => '10.30.0.50']],
     ];

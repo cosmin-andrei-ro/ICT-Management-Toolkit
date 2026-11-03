@@ -23,11 +23,19 @@ use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Dcim\Domain\Models\Cable;
+use Modules\Dcim\Domain\Models\Rack;
+use Modules\Dcim\Domain\Models\Subnet;
 use Modules\Documentation\Domain\Enums\SpaceVisibility;
 use Modules\Documentation\Domain\Models\Page;
 use Modules\Documentation\Domain\Models\Space;
 use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Domain\Models\License;
+use Modules\Projects\Domain\Enums\ProjectStatus;
+use Modules\Projects\Domain\Models\GateRequest;
+use Modules\Projects\Domain\Models\Project;
+use Modules\Reporting\Domain\Models\MetricSnapshot;
+use Modules\Reporting\Domain\Models\ReportSubscription;
 use Modules\Risk\Domain\Enums\AcceptanceStatus;
 use Modules\Risk\Domain\Models\Acceptance;
 use Modules\Risk\Domain\Models\Risk;
@@ -95,6 +103,22 @@ it('builds the demo company with an account per role and three months of history
     expect(Space::query()->where('visibility', SpaceVisibility::Everyone)->count())->toBe(1)
         ->and(Page::query()->count())->toBe(17)
         ->and(Page::query()->whereNotNull('pending_version')->count())->toBe(1);
+
+    // Infrastructure: racks with cabled equipment, A/B power with one device fed from one side, the address plan.
+    expect(Rack::query()->count())->toBe(6)
+        ->and(Cable::query()->count())->toBe(14)
+        ->and(Subnet::query()->count())->toBe(4);
+
+    // Projects at every stage: one over budget, one waiting at a gate, one closed.
+    expect(Project::query()->count())->toBe(4)
+        ->and(Project::query()->where('status', ProjectStatus::Closed)->count())->toBe(1)
+        ->and(GateRequest::query()->where('status', 'pending')->count())->toBe(1);
+
+    // Ninety days of indicators for the trends, and someone who receives the monthly report.
+    expect(MetricSnapshot::query()->distinct()->count('taken_on'))->toBe(90)
+        ->and(MetricSnapshot::query()->where('metric_key', 'dcim.single_fed')->where('taken_on', today()->toDateString())->value('value'))->toEqual(1)
+        ->and(MetricSnapshot::query()->where('metric_key', 'projects.over_budget')->where('taken_on', today()->toDateString())->value('value'))->toEqual(1)
+        ->and(ReportSubscription::query()->count())->toBe(1);
 });
 
 it('refuses to seed demo data outside local and testing', function (): void {

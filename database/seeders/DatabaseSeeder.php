@@ -19,8 +19,11 @@ use Modules\Core\Database\Seeders\CoreDemoSeeder;
 use Modules\Core\Database\Seeders\DemoClock;
 use Modules\Core\Database\Seeders\DemoCompany;
 use Modules\Core\Domain\Models\Organization;
+use Modules\Dcim\Database\Seeders\DcimDemoSeeder;
 use Modules\Documentation\Database\Seeders\DocumentationDemoSeeder;
 use Modules\Itam\Database\Seeders\ItamDemoSeeder;
+use Modules\Projects\Database\Seeders\ProjectsDemoSeeder;
+use Modules\Reporting\Database\Seeders\ReportingDemoSeeder;
 use Modules\Risk\Database\Seeders\RiskDemoSeeder;
 use Modules\Risk\Database\Seeders\RiskSuggestionsDemoSeeder;
 use Modules\Ticketing\Database\Seeders\TicketingDemoSeeder;
@@ -44,7 +47,10 @@ final class DatabaseSeeder extends Seeder
         RiskDemoSeeder::class,
         AuditDemoSeeder::class,
         DocumentationDemoSeeder::class,
+        DcimDemoSeeder::class,
+        ProjectsDemoSeeder::class,
         RiskSuggestionsDemoSeeder::class,
+        ReportingDemoSeeder::class,
     ];
 
     /**
