@@ -31,10 +31,11 @@ The default roles are defined by the application and restored on every update. I
 
 **Administration → Access → People** lists the people of your organization: their account type, roles, whether they use two-factor authentication, and their last sign-in.
 
-- **Invite** adds someone. A new person receives an email with a link, valid for 3 days, to choose their own password: you never know it. Someone who already has an account (in another organization, or through Active Directory) is added to yours without an email. **Send the invitation again** if the link expired.
+- **Invite** adds someone. A new person receives an email with a link, valid for 3 days, to choose their own password: you never know it. Someone who already has an account (in another organization, or through Active Directory) receives an email asking them to join yours, and joins only when they accept, signed in, within 14 days. The message you see is the same in both cases. Someone who signs in through another organization's single sign-on cannot join: they need a separate account. **Send the invitation again** if the link expired.
 - **Edit** changes the name and roles of local accounts. Roles of Active Directory accounts come from the AD group mappings, so they cannot be changed here.
 - **Active** turns an account off: the person cannot sign in anymore. It is offered only for people who belong to your organization alone; otherwise **remove** them from it.
 - **Remove from organization** takes away their roles and their access to your organization. Their account and their history stay.
+- An account that also belongs to another organization is shared with it: you cannot rename it, reset its two-factor authentication or unlock it here. The person unlocks it themselves by resetting their password, and uses a recovery code if they lose their phone.
 - **Reset two-factor** is for someone who lost their phone and their recovery codes. Make sure the request really comes from them, for example by calling them. They set it up again at their next sign-in.
 - **Locked** shows since when an account has been locked after too many failed sign-ins in a row. **Unlock** lifts the lock. The person can also unlock it themselves by resetting their password. Make sure the request comes from them: the failures may have been someone guessing the password.
 
@@ -101,7 +102,7 @@ Signing out of the toolkit does not sign out of the identity provider.
 
 - **The first time** someone signs in, their account is created in your organization. If an account with their email already exists and belongs to your organization only, it is linked instead. An account shared with another organization is refused - its owner keeps signing in as before.
 - **Roles** of accounts created this way come from **Single sign-on group mappings**: *members of this group of the provider get this role*. Enter the group as the provider sends it (an Entra ID group object id, a Keycloak group name…). They are refreshed at every sign-in; without a matching group the person is a *Requester*.
-- **Two-factor authentication:** with **Trust the provider's two-factor authentication** on, people the provider asked for a second factor (it says so in the `amr` claim) are not asked again by the toolkit. Otherwise those who use the toolkit's two-factor authentication give their code as usual.
+- **Two-factor authentication:** with **Trust the provider's two-factor authentication** on, people the provider asked for a second factor (it says so in the `amr` claim) are not asked again by the toolkit. This applies only to accounts the provider created: an existing account linked by its email keeps its own two-factor authentication. Otherwise those who use the toolkit's two-factor authentication give their code as usual.
 - Refused sign-ins - another domain, an account of another organization - are recorded in the audit trail with the reason.
 
 ## Business calendars

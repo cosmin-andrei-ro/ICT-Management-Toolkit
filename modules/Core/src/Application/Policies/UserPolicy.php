@@ -44,6 +44,15 @@ final readonly class UserPolicy
         return $user->id !== $model->id && $this->update($user, $model);
     }
 
+    /**
+     * Changes to the account itself (name, second factor, lock), which every
+     * organization it belongs to relies on: only when it belongs to this one alone.
+     */
+    public function manageAccount(User $user, User $model): bool
+    {
+        return $this->manageAccess($user, $model) && $model->organizations()->count() === 1;
+    }
+
     public function deactivate(User $user, User $model): bool
     {
         // The account is shared by every organization it belongs to.

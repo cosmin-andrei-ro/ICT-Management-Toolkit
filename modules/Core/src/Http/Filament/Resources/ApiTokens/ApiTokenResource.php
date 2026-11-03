@@ -58,7 +58,9 @@ final class ApiTokenResource extends Resource
     }
 
     /**
-     * Tokens bound to this organization, and older unbound tokens of its members.
+     * Tokens bound to this organization, and older unbound tokens of members who
+     * belong to it alone: an unbound token of a shared account may be used in
+     * another organization, which this one must not list or revoke.
      *
      * @return Builder<PersonalAccessToken>
      */
@@ -68,7 +70,10 @@ final class ApiTokenResource extends Resource
 
         return PersonalAccessToken::query()->with('tokenable')->where('tokenable_type', 'core.user')->where(fn (Builder $query) => $query
             ->where('organization_id', $organizationId)
-            ->orWhere(fn (Builder $query) => $query->whereNull('organization_id')->whereIn('tokenable_id', fn (QueryBuilder $members) => $members->select('user_id')->from('core_organization_user')->where('organization_id', $organizationId))));
+            ->orWhere(fn (Builder $query) => $query->whereNull('organization_id')->whereIn('tokenable_id', fn (QueryBuilder $members) => $members->select('user_id')->from('core_organization_user')
+                ->groupBy('user_id')
+                ->havingRaw('count(*) = 1')
+                ->havingRaw('bool_and(organization_id = ?)', [$organizationId]))));
     }
 
     public static function table(Table $table): Table

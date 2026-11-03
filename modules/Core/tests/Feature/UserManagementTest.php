@@ -9,15 +9,21 @@ use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 use Modules\Core\Application\Authorization\SyncPermissions;
+use Modules\Core\Application\Notifications\OrganizationInvitationReceived;
 use Modules\Core\Application\Notifications\PasswordLink;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditLog;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\Role;
+use Modules\Core\Domain\Directory\AuthSource;
 use Modules\Core\Domain\Models\Organization;
+use Modules\Core\Domain\Models\OrganizationInvitation;
 use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Sso\SsoIdentity;
+use Modules\Core\Domain\Sso\SsoProvider;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Filament\Resources\Users\Pages\ManageUsers;
+use Modules\Core\Http\Livewire\Account\Invitations;
 use Modules\Core\Http\Livewire\Auth\ResetPassword;
 
 beforeEach(function (): void {
@@ -70,14 +76,66 @@ it('invites a new person, who chooses their own password from the link', functio
         ->assertHasNoErrors();
 });
 
-it('adds someone who already has an account, without inviting them again', function (): void {
-    $existing = app(OrganizationContext::class)->runAs(Organization::factory()->create(), fn () => User::factory()->create(['email' => 'bob@example.com']));
+it('asks someone who already has an account, who joins only by accepting', function (): void {
+    $other = Organization::factory()->create();
+    $existing = app(OrganizationContext::class)->runAs($other, fn () => User::factory()->create(['email' => 'bob@example.com']));
 
     Livewire::test(ManageUsers::class)
-        ->callAction('invite', data: ['name' => 'Bob', 'email' => 'bob@example.com', 'role_ids' => [roleId(DefaultRole::Requester)]]);
+        ->callAction('invite', data: ['name' => 'Bob', 'email' => 'bob@example.com', 'role_ids' => [roleId(DefaultRole::Agent)]])
+        // The same answer as for a new person: inviting does not reveal who has an account.
+        ->assertNotified(__('core::users.invitation_sent'));
 
-    expect($existing->fresh()->isMemberOf($this->organization->id))->toBeTrue();
+    expect($existing->fresh()->isMemberOf($this->organization->id))->toBeFalse();
     Notification::assertNotSentTo($existing, PasswordLink::class);
+    Notification::assertSentTo($existing, OrganizationInvitationReceived::class, fn (OrganizationInvitationReceived $mail): bool => $mail->organization === $this->organization->name);
+
+    // Nobody else can answer for Bob.
+    $invitation = OrganizationInvitation::query()->sole();
+    $this->actingAs(User::factory()->memberOf($this->organization)->create());
+    Livewire::test(Invitations::class)->assertSee(__('core::invitations.none'))->call('accept', $invitation->id)->assertNotFound();
+
+    app(OrganizationContext::class)->set($other);
+    $this->actingAs($existing);
+    Livewire::test(Invitations::class)->assertSee($this->organization->name)->call('accept', $invitation->id)->assertSee('You joined');
+
+    expect($existing->fresh()->isMemberOf($this->organization->id))->toBeTrue()
+        ->and(app(OrganizationContext::class)->runAs($this->organization, fn () => $existing->fresh()?->hasRole(DefaultRole::Agent->value)))->toBeTrue()
+        ->and(OrganizationInvitation::query()->count())->toBe(0);
+});
+
+it('leaves the account as it was when the invitation is declined or expired', function (): void {
+    $other = Organization::factory()->create();
+    $existing = app(OrganizationContext::class)->runAs($other, fn () => User::factory()->create(['email' => 'bob@example.com']));
+    Livewire::test(ManageUsers::class)->callAction('invite', data: ['name' => 'Bob', 'email' => 'bob@example.com', 'role_ids' => [roleId(DefaultRole::Agent)]]);
+    $invitation = OrganizationInvitation::query()->sole();
+
+    app(OrganizationContext::class)->set($other);
+    $this->actingAs($existing);
+    $this->travel(OrganizationInvitation::DAYS_VALID + 1)->days();
+    Livewire::test(Invitations::class)->assertSee(__('core::invitations.none'))->call('accept', $invitation->id)->assertNotFound();
+    $this->travelBack();
+    Livewire::test(Invitations::class)->call('decline', $invitation->id);
+
+    expect($existing->fresh()->isMemberOf($this->organization->id))->toBeFalse()
+        ->and(OrganizationInvitation::query()->count())->toBe(0);
+});
+
+it('does not let an account of another organization\'s single sign-on join', function (): void {
+    $other = Organization::factory()->create();
+    $existing = app(OrganizationContext::class)->runAs($other, function () {
+        $user = User::factory()->create(['email' => 'bob@example.com', 'auth_source' => AuthSource::Sso, 'password' => null]);
+        $provider = SsoProvider::query()->create(['protocol' => 'oidc', 'name' => 'Their IdP', 'issuer' => 'https://idp.example.test', 'client_id' => 'x', 'client_secret' => 'y', 'allowed_domains' => ['example.com']]);
+        (new SsoIdentity)->forceFill(['provider_id' => $provider->id, 'subject' => 'bob', 'user_id' => $user->id])->save();
+
+        return $user;
+    });
+    Livewire::test(ManageUsers::class)->callAction('invite', data: ['name' => 'Bob', 'email' => 'bob@example.com', 'role_ids' => [roleId(DefaultRole::Agent)]]);
+
+    app(OrganizationContext::class)->set($other);
+    $this->actingAs($existing);
+    Livewire::test(Invitations::class)->call('accept', OrganizationInvitation::query()->sole()->id)->assertSee(__('core::invitations.refused_sso'));
+
+    expect($existing->fresh()->isMemberOf($this->organization->id))->toBeFalse();
 });
 
 it('refuses roles of another organization', function (): void {
@@ -129,6 +187,18 @@ it('resets two-factor authentication of someone else, audited', function (): voi
         ->and(AuditLog::query()->where('event', AuditEvent::MfaReset)->where('auditable_id', $agent->id)->where('user_id', $this->admin->id)->exists())->toBeTrue();
 
     Livewire::test(ManageUsers::class)->assertTableActionHidden('reset_mfa', $this->admin);
+});
+
+it('leaves the name, second factor and lock of a shared account alone', function (): void {
+    $shared = User::factory()->memberOf($this->organization)->withTwoFactor()->create(['name' => 'Bob Shared', 'locked_at' => now()]);
+    $shared->organizations()->attach(Organization::factory()->create());
+
+    Livewire::test(ManageUsers::class)
+        ->assertTableActionHidden('reset_mfa', $shared)
+        ->assertTableActionHidden('unlock', $shared)
+        ->callTableAction('edit', $shared, data: ['name' => 'Renamed by another organization']);
+
+    expect($shared->fresh())->name->toBe('Bob Shared')->two_factor_confirmed_at->not->toBeNull()->locked_at->not->toBeNull();
 });
 
 it('removes someone from the organization and lists only its people', function (): void {

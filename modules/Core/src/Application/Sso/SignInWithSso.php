@@ -86,6 +86,11 @@ final readonly class SignInWithSso
                 throw SsoFailed::because('inactive', $user);
             }
 
+            // A provider only reaches accounts of its own organization, at every sign-in, not only at linking.
+            if ($user->organizations()->whereKeyNot($provider->organization_id)->exists()) {
+                throw SsoFailed::because('other_organizations', $user);
+            }
+
             if ($identity === null) {
                 $identity = new SsoIdentity;
                 $identity->forceFill(['provider_id' => $provider->id, 'subject' => $subject, 'user_id' => $user->id]);

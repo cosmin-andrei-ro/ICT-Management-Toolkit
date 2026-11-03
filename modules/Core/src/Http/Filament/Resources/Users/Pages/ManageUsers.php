@@ -40,14 +40,15 @@ final class ManageUsers extends ManageRecords
                     abort_unless($actor instanceof User, 403);
 
                     try {
-                        $invited = app(InviteUser::class)->handle(is_string($data['name'] ?? null) ? $data['name'] : '', is_string($data['email'] ?? null) ? $data['email'] : '', UserResource::roleIds($data), $actor);
+                        app(InviteUser::class)->handle(is_string($data['name'] ?? null) ? $data['name'] : '', is_string($data['email'] ?? null) ? $data['email'] : '', UserResource::roleIds($data), $actor);
                     } catch (InvalidArgumentException) {
                         Notification::make()->title(__('core::users.invite_failed'))->danger()->send();
 
                         return;
                     }
 
-                    Notification::make()->title(__($invited ? 'core::users.invitation_sent' : 'core::users.added_existing'))->success()->send();
+                    // The same answer whether or not the person already has an account.
+                    Notification::make()->title(__('core::users.invitation_sent'))->success()->send();
                 }),
         ];
     }

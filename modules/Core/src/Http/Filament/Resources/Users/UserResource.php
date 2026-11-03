@@ -74,7 +74,8 @@ final class UserResource extends Resource
     {
         return $schema->components([
             TextInput::make('name')->label(__('core::users.name'))->required()->maxLength(200)
-                ->disabled(fn (?User $record): bool => $record?->isDirectoryAccount() ?? false),
+                ->disabled(fn (?User $record): bool => $record !== null && ! self::mayRename($record))
+                ->helperText(fn (?User $record) => $record !== null && ! $record->isDirectoryAccount() && ! self::mayRename($record) ? __('core::users.shared_account') : null),
             Select::make('role_ids')->label(__('core::users.roles'))->multiple()
                 ->options(fn (): array => self::roleOptions())
                 ->in(fn (): array => array_keys(self::roleOptions()))
@@ -112,7 +113,7 @@ final class UserResource extends Resource
                 Action::make('reset_mfa')->label(__('core::users.reset_mfa'))->icon(Heroicon::OutlinedKey)->color('danger')
                     ->requiresConfirmation()->modalDescription(__('core::users.reset_mfa_help'))
                     ->visible(fn (User $record): bool => $record->two_factor_confirmed_at !== null)
-                    ->authorize(fn (User $record): bool => Auth::user()?->can('manageAccess', $record) ?? false)
+                    ->authorize(fn (User $record): bool => Auth::user()?->can('manageAccount', $record) ?? false)
                     ->action(function (User $record): void {
                         $actor = Auth::user();
                         app(TwoFactorAuthentication::class)->disable($record, $actor instanceof User ? $actor : null);
@@ -121,7 +122,7 @@ final class UserResource extends Resource
                 Action::make('unlock')->label(__('core::users.unlock'))->icon(Heroicon::OutlinedLockOpen)
                     ->requiresConfirmation()->modalDescription(__('core::users.unlock_help'))
                     ->visible(fn (User $record): bool => $record->locked_at !== null)
-                    ->authorize(fn (User $record): bool => Auth::user()?->can('manageAccess', $record) ?? false)
+                    ->authorize(fn (User $record): bool => Auth::user()?->can('manageAccount', $record) ?? false)
                     ->action(function (User $record): void {
                         $actor = Auth::user();
 
@@ -161,7 +162,7 @@ final class UserResource extends Resource
         $actor = Auth::user();
         abort_unless($actor instanceof User && $actor->can('update', $record), 403);
 
-        if (! $record->isDirectoryAccount() && is_string($data['name'] ?? null)) {
+        if (self::mayRename($record) && is_string($data['name'] ?? null)) {
             $record->forceFill(['name' => trim($data['name'])]);
         }
 
@@ -176,6 +177,17 @@ final class UserResource extends Resource
         }
 
         return $record;
+    }
+
+    /**
+     * The name is the account's, shared with every organization it belongs to.
+     */
+    private static function mayRename(User $record): bool
+    {
+        $actor = Auth::user();
+
+        return ! $record->isDirectoryAccount() && $actor instanceof User
+            && ($actor->id === $record->id || $actor->can('manageAccount', $record));
     }
 
     /**

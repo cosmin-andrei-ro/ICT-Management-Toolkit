@@ -86,8 +86,15 @@ it('lets administrators see and revoke the tokens of their organization only', f
 
     $this->actingAs($this->agent)->get('/admin/api-tokens')->assertForbidden();
     $this->actingAs($admin);
-    Livewire::test(ManageApiTokens::class)->assertSee('Our integration')->assertDontSee('Their integration')
+    // An older token bound to no organization, of someone who also belongs to another one, may be used there.
+    $shared = User::factory()->memberOf($this->organization)->create();
+    $shared->organizations()->attach($other->id);
+    $shared->createToken('Shared integration');
+    $this->agent->createToken('Our older integration');
+
+    Livewire::test(ManageApiTokens::class)->assertSee('Our integration')->assertSee('Our older integration')
+        ->assertDontSee('Their integration')->assertDontSee('Shared integration')
         ->callTableAction('revoke', $ours->accessToken);
 
-    expect(PersonalAccessToken::query()->pluck('name')->all())->toBe(['Their integration']);
+    expect(PersonalAccessToken::query()->orderBy('name')->pluck('name')->all())->toBe(['Our older integration', 'Shared integration', 'Their integration']);
 });
