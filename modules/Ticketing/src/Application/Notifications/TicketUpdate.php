@@ -11,6 +11,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Core\Application\Notifications\PlainTextMailMessage;
 use Modules\Ticketing\Application\Email\EmailBody;
 use Symfony\Component\Mime\Email;
 
@@ -41,7 +42,7 @@ final class TicketUpdate extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $message = (new MailMessage)
+        $message = (new PlainTextMailMessage)
             ->subject(__("ticketing::notifications.{$this->kind}.subject", ['number' => $this->number]))
             // Out-of-office replies and other robots must not answer (RFC 3834, Exchange).
             ->withSymfonyMessage(function (Email $email): void {

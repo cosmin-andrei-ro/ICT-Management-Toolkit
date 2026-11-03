@@ -237,6 +237,7 @@ The commands below run on the server, in the application directory, as the web s
    REDIS_PASSWORD=…
 
    SESSION_SECURE_COOKIE=true
+   LOG_LEVEL=warning
 
    MAIL_HOST=smtp.example.com
    MAIL_PORT=587
@@ -348,7 +349,7 @@ Run it on the internal network only, with JavaScript off and no network access f
 docker run -d --name gotenberg --restart unless-stopped -p 127.0.0.1:3000:3000 gotenberg/gotenberg:8.39.0 \
   gotenberg --chromium-disable-javascript \
   '--chromium-deny-list=^file:(?!//\/tmp/).*' '--chromium-deny-list=^(https?|ftp|wss?):.*' \
-  --libreoffice-disable-routes
+  --chromium-deny-private-ips --libreoffice-disable-routes --api-disable-download-from --webhook-disable
 ```
 
 Then set `GOTENBERG_URL=http://127.0.0.1:3000` in `.env`. In development: `COMPOSE_PROFILES=pdf ./vendor/bin/sail up -d` and `GOTENBERG_URL=http://gotenberg:3000`.

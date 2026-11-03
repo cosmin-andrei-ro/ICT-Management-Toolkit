@@ -11,6 +11,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Core\Application\Notifications\PlainTextMailMessage;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -38,7 +39,7 @@ final class ReviewDue extends Notification implements ShouldQueue
     {
         $replace = ['process' => $this->process, 'date' => $this->dueOn];
 
-        return (new MailMessage)
+        return (new PlainTextMailMessage)
             ->subject(__('bia::reviews.mail.due.subject', $replace))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');

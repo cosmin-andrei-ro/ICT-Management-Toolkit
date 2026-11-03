@@ -34,6 +34,8 @@ it('lists items with filters and keeps requesters out', function (): void {
         ->assertSee('payroll-db')->assertSee('payroll-test')->assertDontSee('their-db')
         ->set('environment', 'production')
         ->assertSee('payroll-db')->assertDontSee('payroll-test');
+    // A type from a hand-edited address that is not an ID is ignored, not a database error.
+    Livewire::withQueryParams(['type' => 'x'])->test(ItemIndex::class)->assertOk()->assertSee('payroll-db');
 
     $this->actingAs($this->cmdb->requester)->get(route('cmdb.items.index'))->assertForbidden();
     $this->actingAs($this->cmdb->agent)->get(route('cmdb.items.show', $foreign))->assertNotFound();

@@ -11,6 +11,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Core\Application\Notifications\PlainTextMailMessage;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -45,7 +46,7 @@ final class PageUpdate extends Notification implements ShouldQueue
     {
         $replace = ['page' => $this->page, 'detail' => $this->detail ?? '—'];
 
-        return (new MailMessage)
+        return (new PlainTextMailMessage)
             ->subject(__("documentation::docs.mail.{$this->kind}.subject", $replace))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');

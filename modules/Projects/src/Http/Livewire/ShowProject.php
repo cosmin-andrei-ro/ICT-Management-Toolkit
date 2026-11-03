@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Projects\Http\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
@@ -195,7 +196,7 @@ final class ShowProject extends Component
         $project = $this->project;
         $user = $this->actor();
         $tasks = $project->tasks()->with(['assignee', 'phase'])
-            ->when($this->phase !== '', fn ($query) => $query->where('phase_id', $this->phase))
+            ->when(Str::isUuid($this->phase), fn ($query) => $query->where('phase_id', $this->phase))
             ->orderBy('position')->get()
             ->each(fn (Task $task) => $task->setRelation('project', $project));
         $team = collect([$project->manager, $project->sponsor, ...$project->members])->filter()->unique('id')->sortBy('name')->values();

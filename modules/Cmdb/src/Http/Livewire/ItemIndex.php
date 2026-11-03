@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Cmdb\Http\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -59,7 +60,7 @@ final class ItemIndex extends Component
         $items = ConfigurationItem::query()
             ->with(['type', 'owner', 'team'])
             ->search(mb_substr($this->search, 0, 200))
-            ->when($this->type !== '', fn ($query) => $query->where('type_id', $this->type))
+            ->when(Str::isUuid($this->type), fn ($query) => $query->where('type_id', $this->type))
             ->when(CiStatus::tryFrom($this->status) !== null, fn ($query) => $query->where('status', $this->status))
             ->when(Environment::tryFrom($this->environment) !== null, fn ($query) => $query->where('environment', $this->environment))
             ->when(Criticality::tryFrom($this->criticality) !== null, fn ($query) => $query->where('criticality', $this->criticality))

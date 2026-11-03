@@ -42,7 +42,7 @@ final class PasswordLink extends Notification implements ShouldQueue
         $url = route($this->invitation ? 'invitation.accept' : 'password.reset', ['token' => $this->token, 'email' => $email]);
         $name = config('app.name');
 
-        return (new MailMessage)
+        return (new PlainTextMailMessage)
             ->subject(__("core::security.mail.{$kind}.subject", ['app' => is_string($name) ? $name : '']))
             ->line(__("core::security.mail.{$kind}.line", ['app' => is_string($name) ? $name : '']))
             ->action(__("core::security.mail.{$kind}.action"), $url)

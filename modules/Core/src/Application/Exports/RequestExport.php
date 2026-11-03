@@ -8,7 +8,9 @@ declare(strict_types=1);
 namespace Modules\Core\Application\Exports;
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Cache\RateLimiter;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
 use Modules\Core\Domain\Exports\ExportFormat;
@@ -19,15 +21,20 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 use stdClass;
 
 /**
- * Records an export request (audited) and queues its generation.
+ * Records an export request (audited) and queues its generation. Requests are
+ * limited per person: each one queues a full-table job, and a script calling
+ * the page could otherwise fill the queue and the export disk.
  */
 final readonly class RequestExport
 {
+    public const int PER_MINUTE = 10;
+
     public function __construct(
         private ConnectionInterface $db,
         private OrganizationContext $context,
         private ExportRegistry $registry,
         private AuditTrail $trail,
+        private RateLimiter $limiter,
     ) {}
 
     /**
@@ -38,6 +45,14 @@ final readonly class RequestExport
         if (! $user->can($this->registry->permission($type))) {
             throw new AuthorizationException;
         }
+
+        $throttle = 'export:'.$user->id;
+
+        if ($this->limiter->tooManyAttempts($throttle, self::PER_MINUTE)) {
+            throw new ThrottleRequestsException;
+        }
+
+        $this->limiter->hit($throttle, 60);
 
         return $this->db->transaction(function () use ($user, $type, $format, $parameters): Export {
             $export = new Export;

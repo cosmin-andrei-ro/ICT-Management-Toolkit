@@ -9,6 +9,7 @@ namespace Modules\Ticketing\Http\Livewire\Desk;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -73,7 +74,7 @@ final class TicketQueue extends Component
             ->search(mb_substr($this->search, 0, 200))
             ->when($this->status === 'open', fn ($query) => $query->whereIn('status', TicketStatus::open()))
             ->when(in_array($this->status, $statuses, true), fn ($query) => $query->where('status', $this->status))
-            ->when($this->queue !== '', fn ($query) => $query->where('queue_id', $this->queue))
+            ->when(Str::isUuid($this->queue), fn ($query) => $query->where('queue_id', $this->queue))
             ->when(TicketType::tryFrom($this->type) !== null, fn ($query) => $query->where('type', $this->type))
             ->when(in_array($this->priority, $priorities, true), fn ($query) => $query->where('priority', $this->priority))
             ->when($this->assignee === 'me', fn ($query) => $query->where('assignee_id', $this->user()->id))

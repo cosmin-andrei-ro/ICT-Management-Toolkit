@@ -11,6 +11,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Core\Application\Notifications\PlainTextMailMessage;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -37,7 +38,7 @@ final class CoordinatorDigest extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new PlainTextMailMessage)
             ->subject(__('bia::reviews.mail.digest.subject'))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');

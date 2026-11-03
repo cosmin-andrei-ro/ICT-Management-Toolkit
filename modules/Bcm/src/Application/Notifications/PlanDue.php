@@ -11,6 +11,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Core\Application\Notifications\PlainTextMailMessage;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -42,7 +43,7 @@ final class PlanDue extends Notification implements ShouldQueue
     {
         $replace = ['plan' => $this->plan, 'date' => $this->dueOn];
 
-        return (new MailMessage)
+        return (new PlainTextMailMessage)
             ->subject(__("bcm::reminders.mail.{$this->kind}.subject", $replace))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');

@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Modules\Core\Domain\Models\User;
@@ -47,9 +48,9 @@ final readonly class LicenseController
         $this->gate->authorize('viewAny', License::class);
 
         $licenses = ApiQuery::paginate($request, License::query()->with('product')->withCount('assignments'), [
-            'product_id' => fn (Builder $query, string $value) => $query->where('product_id', $value),
+            'product_id' => fn (Builder $query, string $value) => Str::isUuid($value) ? $query->where('product_id', $value) : $query->whereRaw('false'),
             'model' => fn (Builder $query, string $value) => $query->where('model', $value),
-            'expires_before' => fn (Builder $query, string $value) => preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) === 1
+            'expires_before' => fn (Builder $query, string $value) => preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $value, $date) === 1 && checkdate((int) $date[2], (int) $date[3], (int) $date[1])
                 ? $query->whereNotNull('expires_on')->where('expires_on', '<', $value)
                 : throw ValidationException::withMessages(['filter' => __('itam::api.date')]),
             'search' => fn (Builder $query, string $value) => $query->where('name', 'ilike', '%'.str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value).'%'),

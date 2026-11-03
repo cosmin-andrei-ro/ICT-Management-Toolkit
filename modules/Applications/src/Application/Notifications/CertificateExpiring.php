@@ -11,6 +11,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Core\Application\Notifications\PlainTextMailMessage;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -39,7 +40,7 @@ final class CertificateExpiring extends Notification implements ShouldQueue
     {
         $replace = ['application' => $this->application, 'certificate' => $this->certificate, 'date' => $this->expiresOn];
 
-        return (new MailMessage)
+        return (new PlainTextMailMessage)
             ->subject(__('applications::applications.mail.certificate.subject', $replace))
             ->withSymfonyMessage(function (Email $email): void {
                 $email->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');
