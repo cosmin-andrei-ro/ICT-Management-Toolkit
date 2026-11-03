@@ -36,9 +36,10 @@ final readonly class Search
             // websearch_to_tsquery accepts what people type ("quoted phrases", -excluded) without syntax errors.
             ->whereRaw("search_vector @@ websearch_to_tsquery('simple', ?)", [$terms])
             ->select('documentation_pages.*')
-            ->selectRaw("ts_headline('simple', body, websearch_to_tsquery('simple', ?), 'MaxFragments=2, MaxWords=25, MinWords=8, StartSel=[[, StopSel=]]') AS extract", [$terms])
+            // The extract comes from the published text, as the search does: drafts awaiting approval stay unseen.
+            ->selectRaw("ts_headline('simple', coalesce(published_body, ''), websearch_to_tsquery('simple', ?), 'MaxFragments=2, MaxWords=25, MinWords=8, StartSel=[[, StopSel=]]') AS extract", [$terms])
             ->orderByRaw("ts_rank(search_vector, websearch_to_tsquery('simple', ?)) DESC", [$terms])
-            ->orderBy('title')
+            ->orderBy('published_title')
             ->paginate($perPage);
     }
 }

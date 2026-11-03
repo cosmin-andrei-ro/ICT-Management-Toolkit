@@ -164,8 +164,8 @@ it('links pages to records the editor may open, and keeps files for readers only
 
     $this->actingAs($this->docs->agent);
     $this->get(route('core.attachments.download', $attachment))->assertOk();
-    // The agent may not open contracts: the link shows by its title only.
-    Livewire::test(ShowPage::class, ['page' => $page])->assertSee('Fibre link contract')->assertDontSeeHtml(route('core.contracts.show', $contract));
+    // The agent may not open contracts: neither the link nor the title it was given shows.
+    Livewire::test(ShowPage::class, ['page' => $page])->assertDontSee('Fibre link contract')->assertSee('A record you cannot open')->assertDontSeeHtml(route('core.contracts.show', $contract));
     $this->actingAs($this->docs->employee);
     $this->get(route('core.attachments.download', $attachment))->assertForbidden();
 });

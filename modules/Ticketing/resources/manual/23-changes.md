@@ -30,7 +30,7 @@ The plans and the window can be completed later, on the change page. A normal or
 
 On the change page, in the **Change** panel, choose the board and click **Submit for approval**. You need the implementation plan, the rollback plan and the window first. Normal changes go to a regular CAB, and emergency changes go to an ECAB.
 
-Every member of the board must approve, except you: nobody approves their own change. Members get an email with a link. The panel shows each decision as it comes in. You get an email when the change is **Authorized**, or **Rejected** with the reason.
+Every member of the board must approve, except you: nobody approves their own change. The person who sends a change to the board and the last person who edited its plan do not approve it either, so a board needs at least one other member who may approve. Members get an email with a link. The panel shows each decision as it comes in. You get an email when the change is **Authorized**, or **Rejected** with the reason.
 
 If it is rejected, adjust the plan and submit it again: a new round starts, and everyone decides again.
 

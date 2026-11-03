@@ -20,7 +20,7 @@ The **Due** column shows the next service-level deadline: the first-response dea
 
 ## Working a ticket
 
-Open a ticket to see everything about it: details, service request answers, the full conversation including internal notes, attachments, SLA clocks and status history.
+Open a ticket to see everything about it: details, service request answers, the full conversation including internal notes (if your role lets you read them), attachments, SLA clocks and status history.
 
 ### Taking a ticket
 

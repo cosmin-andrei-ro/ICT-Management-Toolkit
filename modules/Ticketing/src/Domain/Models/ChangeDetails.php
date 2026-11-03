@@ -36,6 +36,8 @@ use Modules\Ticketing\Domain\Changes\ChangeType;
  * @property ?CarbonInterface $approved_at
  * @property ?string $review
  * @property ?CarbonInterface $reviewed_at
+ * @property ?string $submitted_by
+ * @property ?string $planned_by
  * @property-read ?CabBoard $cabBoard
  * @property-read ?ChangeTemplate $template
  */

@@ -74,6 +74,21 @@ describe('portal', function (): void {
             ->assertDontSee('Internal: user has admin rights');
     });
 
+    it('shows internal notes on the desk only to people who may read them', function (): void {
+        $ticket = $this->desk->ticket();
+        app(AddTicketComment::class)->handle($ticket, $this->desk->agent, 'Public: we are on it', internal: false);
+        app(AddTicketComment::class)->handle($ticket, $this->desk->agent, 'Internal: user has admin rights, careful', internal: true);
+        // A custom role that may work tickets but not read everything about them.
+        $technician = $this->desk->member(DefaultRole::Requester);
+        app(OrganizationContext::class)->runAs($this->desk->organization, fn () => $technician->givePermissionTo('ticketing.ticket.work'));
+
+        $this->actingAs($technician);
+        Livewire::test(DeskShowTicket::class, ['ticket' => $ticket])->assertSee('Public: we are on it')->assertDontSee('Internal: user has admin rights');
+
+        $this->actingAs($this->desk->agent);
+        Livewire::test(DeskShowTicket::class, ['ticket' => $ticket])->assertSee('Internal: user has admin rights');
+    });
+
     it('hides tickets of other requesters and other organizations', function (): void {
         $mine = $this->desk->ticket();
         $colleague = $this->desk->member(DefaultRole::Requester);

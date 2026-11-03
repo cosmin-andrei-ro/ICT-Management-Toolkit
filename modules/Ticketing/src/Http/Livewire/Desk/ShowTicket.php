@@ -9,6 +9,7 @@ namespace Modules\Ticketing\Http\Livewire\Desk;
 
 use DomainException;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -287,7 +288,7 @@ final class ShowTicket extends Component
         $this->validate($this->planRules());
 
         $saved = $this->attempt(function () use ($update): void {
-            if ($update->handle($this->ticket, $this->toPlan())) {
+            if ($update->handle($this->ticket, $this->toPlan(), $this->user())) {
                 session()->flash('change_notice', __('ticketing::changes.ui.approvals_withdrawn'));
             }
         }, 'plannedStart');
@@ -333,12 +334,15 @@ final class ShowTicket extends Component
         $linkedArticles = $viewer instanceof User ? $articles->about($ticket->getMorphClass(), $ticket->id, $viewer) : [];
         $linkedIds = array_map(fn (LinkedRecord $article): string => $article->id, $linkedArticles);
         $queue = $this->queueId !== '' ? Queue::query()->with('team.members')->find($this->queueId) : null;
+        // Working a ticket and reading its internal notes are separate permissions, as in the API.
+        $showInternal = $viewer instanceof User && $viewer->can('viewInternal', $ticket);
 
         return view('ticketing::livewire.desk.show', [
             'ticket' => $ticket,
+            'showInternal' => $showInternal,
             'configurationItems' => $this->configurationItemData($configurationItems, $ticket),
-            'comments' => $ticket->comments()->with('author')->get(),
-            'attachments' => $ticket->attachments()->get(),
+            'comments' => $ticket->comments()->when(! $showInternal, fn (Builder $query) => $query->where('is_internal', false))->with('author')->get(),
+            'attachments' => $ticket->attachments()->when(! $showInternal, fn (Builder $query) => $query->where('is_internal', false))->get(),
             'transitions' => $ticket->statusTransitions()->with('user')->get(),
             'slaTimers' => $ticket->slaTimers()->orderBy('metric', 'desc')->get(),
             'monitoringAlerts' => MonitoringAlert::query()->where('ticket_id', $ticket->id)->orderByDesc('first_seen_at')->get(),
