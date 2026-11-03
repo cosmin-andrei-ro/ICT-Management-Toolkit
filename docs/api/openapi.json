@@ -877,7 +877,7 @@
         "/assets/{asset}/status": {
             "post": {
                 "operationId": "v1.assets.status",
-                "summary": "Change the status: back in stock (returned), in or out of repair, retired, lost",
+                "summary": "Change the status: back in stock (returned), in or out of repair, retired, lost.\n`deployed` without a holder puts infrastructure in service at `location_id` (or where it is)",
                 "tags": [
                     "Asset"
                 ],

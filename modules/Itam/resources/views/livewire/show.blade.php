@@ -88,7 +88,7 @@
                         <div class="flex flex-wrap gap-2">
                             @foreach ($moves as $move)
                                 @if ($move->value !== 'retired' && $move->value !== 'lost' || auth()->user()->can('update', $asset))
-                                    <button type="button" wire:key="move-{{ $move->value }}" wire:click="changeStatus('{{ $move->value }}')" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('itam::assets.moves.'.$move->value) }}</button>
+                                    <button type="button" wire:key="move-{{ $move->value }}" wire:click="changeStatus('{{ $move->value }}')" class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-gray-300">{{ __('itam::assets.moves.'.($move->value === 'deployed' && $asset->assigned_to_id === null ? 'in_service' : $move->value)) }}</button>
                                 @endif
                             @endforeach
                         </div>

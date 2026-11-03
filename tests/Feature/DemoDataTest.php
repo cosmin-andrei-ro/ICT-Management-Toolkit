@@ -31,6 +31,7 @@ use Modules\Dcim\Domain\Models\Subnet;
 use Modules\Documentation\Domain\Enums\SpaceVisibility;
 use Modules\Documentation\Domain\Models\Page;
 use Modules\Documentation\Domain\Models\Space;
+use Modules\Itam\Domain\Enums\AssetStatus;
 use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Domain\Models\License;
 use Modules\Projects\Domain\Enums\ProjectStatus;
@@ -76,6 +77,8 @@ it('builds the demo company with an account per role and three months of history
         ->and(Relationship::query()->count())->toBe(20)
         ->and(Asset::query()->count())->toBeGreaterThan(30)
         ->and(app(ConfigurationItems::class)->linkedTo(Asset::query()->where('name', 'hv-01')->sole()))->toHaveCount(1)
+        // Infrastructure is in service where it stands, with no holder.
+        ->and(Asset::query()->where('name', 'hv-01')->sole())->status->toBe(AssetStatus::Deployed)->assigned_to_id->toBeNull()
         ->and(License::query()->where('expires_on', '<=', today()->addDays(60))->exists())->toBeTrue();
 
     // Resilience: analysed processes, documented applications, approved plans, exercised and activated.

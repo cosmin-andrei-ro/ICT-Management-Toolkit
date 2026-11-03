@@ -240,7 +240,8 @@ final class ShowAsset extends Component
             'asset' => $asset,
             'fields' => $asset->category->schema()->fields,
             // Handing out and disposal have their own forms.
-            'moves' => array_values(array_filter($asset->status->next(), fn (AssetStatus $status): bool => $status !== AssetStatus::Disposed && ($status !== AssetStatus::Deployed || $asset->assigned_to_id !== null))),
+            // Deployed without a holder is putting it in service at a location; with one, back from repair.
+            'moves' => array_values(array_filter($asset->status->next(), fn (AssetStatus $status): bool => $status !== AssetStatus::Disposed)),
             'canDispose' => $asset->status->canBecome(AssetStatus::Disposed),
             'heldSince' => $asset->assigned_to_id !== null ? $asset->assignments()->whereNull('returned_at')->first()?->assigned_at : null,
             'disposalMethods' => DisposalMethod::cases(),

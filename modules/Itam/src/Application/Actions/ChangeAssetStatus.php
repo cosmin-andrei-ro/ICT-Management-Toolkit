@@ -17,8 +17,9 @@ use Modules\Itam\Domain\Models\Asset;
 use Modules\Itam\Domain\Models\AssetAssignment;
 
 /**
- * Moves an asset along its life cycle: received, returned to stock, sent for
- * repair and back, retired, lost or found. Handing out is AssignAsset and
+ * Moves an asset along its life cycle: received, put in service at a location
+ * (infrastructure, with no holder), returned to stock, sent for repair and
+ * back, retired, lost or found. Handing out is AssignAsset and
  * disposal is DisposeAsset. An asset away for repair stays with its holder;
  * any other move ends the current assignment.
  */
@@ -47,9 +48,10 @@ final readonly class ChangeAssetStatus
                 throw AssetTransitionNotAllowed::between($asset->status, $target);
             }
 
-            // Back from repair to its holder; without one, it is handed out with AssignAsset.
-            if ($target === AssetStatus::Deployed && $asset->assigned_to_id === null) {
-                throw AssetTransitionNotAllowed::because('Choose who receives the asset.');
+            // Without a holder, "in use" means put in service at a location (a server in its
+            // rack, a switch in the comms room); for a person, it is handed out with AssignAsset.
+            if ($target === AssetStatus::Deployed && $asset->assigned_to_id === null && ($locationId ?? $asset->location_id) === null) {
+                throw AssetTransitionNotAllowed::because('Choose who receives the asset, or the location where it is put in service.');
             }
 
             if (! in_array($target, [AssetStatus::InRepair, AssetStatus::Deployed], true) && $asset->assigned_to_id !== null) {

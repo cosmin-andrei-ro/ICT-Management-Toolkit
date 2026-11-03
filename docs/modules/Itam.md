@@ -39,7 +39,7 @@ Hardware assets (who has them, where they are, their warranty and how they left 
 | Permission | Default roles | Purpose |
 |---|---|---|
 | `itam.asset.view` | agent, team-lead, asset-manager | See assets |
-| `itam.asset.assign` | agent, team-lead, asset-manager | Hand out, take back, send for repair |
+| `itam.asset.assign` | agent, team-lead, asset-manager | Hand out, put in service, take back, send for repair |
 | `itam.asset.manage` | team-lead, asset-manager | Create and edit, retire, report lost, dispose, delete, link to the CMDB, documents, import, export, labels |
 | `itam.category.manage` | team-lead, asset-manager | Asset categories and their attributes |
 | `itam.license.view` | agent, team-lead, asset-manager | See licences, seats and compliance |
@@ -60,7 +60,7 @@ Abilities: `assets:read`, `assets:write`. Permissions are the screens' (`itam.as
 | POST | `/api/v1/assets` | Through `SaveAsset`; status `ordered` or `in_stock` only |
 | GET / PATCH | `/api/v1/assets/{id}` | PATCH changes only the fields sent; `status` is refused there |
 | POST | `/api/v1/assets/{id}/assign` | `user_id`, `location_id`, `notes`, `notify` (`AssignAsset`, keeps the history) |
-| POST | `/api/v1/assets/{id}/status` | `in_stock` (returned), `deployed` (back from repair), `in_repair`, `retired`, `lost` (`ChangeAssetStatus`); disposal stays on screen |
+| POST | `/api/v1/assets/{id}/status` | `in_stock` (returned), `deployed` (back from repair; without a holder, put in service at `location_id` or the asset's own location), `in_repair`, `retired`, `lost` (`ChangeAssetStatus`); disposal stays on screen |
 | GET / POST | `/api/v1/licenses` | Filters `product_id`, `model`, `expires_before`, `search`; `seats_used` counted |
 | GET / PATCH | `/api/v1/licenses/{id}` | `license_key` and `remove_key` are write-only: the key is never returned (`has_key`) |
 | POST | `/api/v1/licenses/{id}/seats` | `user_id` (per-user) or `asset_id` (per-device) |

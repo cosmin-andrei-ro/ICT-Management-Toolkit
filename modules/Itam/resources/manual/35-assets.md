@@ -24,6 +24,13 @@ The person receives an email and confirms in the portal, on **My equipment**, th
 
 **Back in stock** takes it back. **Send for repair** keeps it with its holder; **Back from repair** returns it to them. The page keeps the full **history** of who had the asset, from when to when, and who handed it out.
 
+## Putting infrastructure in service
+
+Servers, switches, UPS units and printers work where they stand, not with a person. Under **Life cycle**, choose the location (for example the server room) and click **Put in service at the location**. The asset is then **in use** with no holder. If its location is already recorded, you can skip choosing it.
+
+- It can go for repair and come back the same way.
+- It can also be handed to a person later.
+
 ## Retiring, losing and disposing
 
 - **Retire**: the asset is no longer used. Take it back first.

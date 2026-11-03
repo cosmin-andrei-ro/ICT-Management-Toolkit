@@ -15,6 +15,7 @@ use Modules\Cmdb\Domain\Models\ConfigurationItem;
 use Modules\Cmdb\Http\Livewire\ShowItem;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Models\Contract;
+use Modules\Core\Domain\Models\Location;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\Supplier;
 use Modules\Core\Domain\Models\User;
@@ -108,6 +109,20 @@ it('lets agents hand out and take back equipment, but not change the register', 
 
     $this->get(route('itam.assets.edit', $laptop))->assertForbidden();
     Livewire::test(ShowAsset::class, ['asset' => $laptop])->call('delete')->assertForbidden();
+});
+
+it('puts an asset in service at a location from its page', function (): void {
+    $switch = $this->itam->laptop(['location_id' => null]);
+    $room = Location::factory()->create(['name' => 'Comms room']);
+    $this->actingAs($this->itam->agent);
+
+    Livewire::test(ShowAsset::class, ['asset' => $switch])
+        ->assertSee('Put in service at the location')
+        ->call('changeStatus', 'deployed')->assertHasErrors('status')
+        ->set('statusLocationId', $room->id)->call('changeStatus', 'deployed')->assertHasNoErrors()
+        ->assertSee('In use');
+
+    expect($switch->fresh())->status->toBe(AssetStatus::Deployed)->assigned_to_id->toBeNull()->location_id->toBe($room->id);
 });
 
 it('does not hand an asset to someone outside the organization', function (): void {
