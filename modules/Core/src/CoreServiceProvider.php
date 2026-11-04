@@ -71,10 +71,12 @@ use Modules\Core\Domain\Links\NoPhysicalAssets;
 use Modules\Core\Domain\Links\NoProblemTickets;
 use Modules\Core\Domain\Links\NoRackPlacements;
 use Modules\Core\Domain\Links\NoRisks;
+use Modules\Core\Domain\Links\NoSoftwareLicences;
 use Modules\Core\Domain\Links\PhysicalAssets;
 use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Links\RackPlacements;
 use Modules\Core\Domain\Links\Risks;
+use Modules\Core\Domain\Links\SoftwareLicences;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\Attachment;
@@ -181,6 +183,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         // Replaced by the Documentation module when it is enabled.
         $this->app->bindIf(KnowledgeArticles::class, NoKnowledgeArticles::class);
         $this->app->bindIf(PhysicalAssets::class, NoPhysicalAssets::class);
+        $this->app->bindIf(SoftwareLicences::class, NoSoftwareLicences::class);
         $this->app->bindIf(RackPlacements::class, NoRackPlacements::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {

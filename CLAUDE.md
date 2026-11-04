@@ -235,7 +235,7 @@ Orice aplicație nouă adusă în companie trebuie să aibă completată fișa d
 Comportament cerut:
 
 - Câmpurile obligatorii blochează trecerea în starea „Aprobat”.
-- La aprobare se generează/leagă automat: CI-uri în CMDB, intrare în BIA, riscuri inițiale, licențe în ITAM, pagină în Documentation.
+- La aprobare se generează/leagă automat CI-uri în CMDB și pagina în Documentation; riscurile inițiale apar ca sugestii, iar intrarea în BIA și licențele în ITAM se propun și le confirmă un om (ADR 0076, decizia owner-ului).
 - Fișa e versionată; orice modificare după aprobare trece prin flux de schimbare.
 - Revizuire periodică (ex. anuală) cu notificări către owneri.
 - Export PDF al fișei complete pentru audit.

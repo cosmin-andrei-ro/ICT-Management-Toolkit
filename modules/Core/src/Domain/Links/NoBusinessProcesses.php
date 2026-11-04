@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Modules\Core\Domain\Links;
 
+use Modules\Core\Domain\Models\User;
+
 /**
  * Used when the BIA module is disabled.
  */
@@ -30,5 +32,10 @@ final class NoBusinessProcesses implements BusinessProcesses
     public function assessed(): array
     {
         return [];
+    }
+
+    public function newProcessUrl(string $name, User $viewer): ?string
+    {
+        return null;
     }
 }
