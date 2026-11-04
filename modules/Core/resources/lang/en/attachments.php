@@ -9,4 +9,6 @@ return [
     'invalid' => 'The file could not be uploaded.',
     'too_large' => 'The file is larger than :max MB.',
     'type_not_allowed' => 'This type of file is not allowed.',
+    'infected' => 'The antivirus found a threat in this file, so it was not uploaded.',
+    'scan_unavailable' => 'The antivirus could not check this file, so it was not uploaded. Try again later, or tell your administrator.',
 ];

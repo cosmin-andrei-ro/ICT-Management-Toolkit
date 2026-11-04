@@ -36,7 +36,7 @@ An attacker who controls the server, the database or the application key is outs
 | Script injection (XSS) | Escaped output, sanitized Markdown, strict Content Security Policy with nonces. The admin panel's framework needs a looser policy than the rest of the application |
 | Forged requests (CSRF) | Tokens on every form, `SameSite` cookies; the API accepts tokens only |
 | SQL injection | Query binding only |
-| Malicious uploads | Type checked from the content, size limits, new file names, storage outside the web root, download only through an authorized request |
+| Malicious uploads | Type checked from the content, size limits, new file names, storage outside the web root, download only through an authorized request; optional antivirus scan, refusing files it cannot check |
 | Server-side requests to internal systems (SSRF) | Webhook and single sign-on addresses checked, and the connection held to the checked address; internal and special ranges refused; the PDF service refuses private addresses |
 | Spoofed email | Staff replies count only when the mail provider's authentication passes for that exact domain; otherwise they are stored as a marked internal note. A mailbox can require this for everyone |
 | Mail loops and floods | Automatic replies ignored, limits per sender |
@@ -47,7 +47,7 @@ An attacker who controls the server, the database or the application key is outs
 
 ## Known limits
 
-- **Antivirus scanning of uploads** does not exist yet. Files are checked by type and size only.
+- **Antivirus scanning of uploads** is optional and off by default; without it, files are checked by type and size only. Files read by imports are not stored or scanned. Scanning cannot catch what the signatures do not know.
 - **Single sign-on logout:** single logout exists for SAML, when the provider's address is set. For OpenID Connect, a session already open here survives the end of the provider's session.
 - **Real identity providers:** automated tests use simulated providers. OpenID Connect and SAML, including encrypted assertions and single logout, were also tried by hand against one open-source identity provider in a local setup (2026-11-04); other providers are untested.
 - **Older passwords:** passwords shorter than the current minimum stay valid until changed. Someone who stops using a second factor keeps a password that was only allowed with one.

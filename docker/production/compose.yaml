@@ -147,6 +147,16 @@ services:
         networks: [inside]
         restart: unless-stopped
 
+    # Optional scan of uploads: start with --profile antivirus and set ATTACHMENTS_CLAMD_ADDRESS=tcp://clamav:3310.
+    # Needs about 2 GB of memory, and the internet to update its signatures. Takes minutes to start.
+    clamav:
+        image: 'clamav/clamav:1.5'
+        profiles: [antivirus]
+        volumes:
+            - clamav:/var/lib/clamav
+        networks: [outside, inside]
+        restart: unless-stopped
+
 networks:
     outside:
     # No way out to the internet, and no published ports: only the containers reach these services
@@ -154,6 +164,7 @@ networks:
         internal: true
 
 volumes:
+    clamav:
     storage:
     pgsql:
     redis:
