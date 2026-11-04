@@ -58,13 +58,16 @@ export default () => ({
             ],
             // Drawn left to right: node names sit under the nodes, where a top-to-bottom
             // edge and its label would run through them. Scaled so the turned layout
-            // still fills the canvas, which is wider than it is tall.
+            // still fills the canvas. A phone's canvas is taller than it is wide, and its
+            // columns would be too narrow for the names, so it stays top to bottom.
             layout: {
                 name: 'breadthfirst',
                 directed: true,
                 padding: 20,
                 spacingFactor: 1.1,
-                transform: (node, position) => ({ x: (position.y * width) / height, y: (position.x * height) / width }),
+                transform: (node, position) => (width > height
+                    ? { x: (position.y * width) / height, y: (position.x * height) / width }
+                    : position),
             },
         });
 
