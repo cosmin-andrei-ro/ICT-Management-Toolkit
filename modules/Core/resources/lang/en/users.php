@@ -14,6 +14,7 @@ return [
     'sources' => [
         'local' => 'Local',
         'ldap' => 'Active Directory',
+        'sso' => 'Single sign-on',
     ],
     'roles' => 'Roles in this organization',
     'roles_from_directory' => 'Set by the AD group mappings.',

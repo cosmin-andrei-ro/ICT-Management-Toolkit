@@ -49,7 +49,7 @@ An attacker who controls the server, the database or the application key is outs
 
 - **Antivirus scanning of uploads** does not exist yet. Files are checked by type and size only.
 - **SAML:** no single logout, so a session already open here survives the end of the provider's session. Encrypted assertions are not supported.
-- **Real identity providers:** single sign-on is tested against simulated providers only.
+- **Real identity providers:** automated tests use simulated providers. OpenID Connect and SAML were also tried by hand against one open-source identity provider in a local setup (2026-11-04); other providers are untested.
 - **Older passwords:** passwords shorter than the current minimum stay valid until changed. Someone who stops using a second factor keeps a password that was only allowed with one.
 - **Who has an account:** someone allowed to invite people can tell from the lists whether an email already has an account.
 - **Item search:** the configuration item pickers in other modules search item names even for people without the right to view the CMDB, because owners must be able to pick items.

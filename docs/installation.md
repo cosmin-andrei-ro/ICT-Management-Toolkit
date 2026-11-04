@@ -49,17 +49,26 @@ docker compose -f docker/production/compose.yaml exec -T pgsql pg_dump -U toolki
 docker compose -f docker/production/compose.yaml exec -T app tar -C storage/app -cf - . > toolkit-files.tar
 ```
 
+**Restore** on empty volumes, with the same `.env`: start only the database, load it, start the rest, then load the files.
+
+```bash
+docker compose -f docker/production/compose.yaml up -d pgsql
+docker compose -f docker/production/compose.yaml exec -T pgsql psql -q -U toolkit -d toolkit < toolkit.sql
+docker compose -f docker/production/compose.yaml up -d
+docker compose -f docker/production/compose.yaml exec -T app tar -C storage/app -xf - < toolkit-files.tar
+```
+
 **Check** that sign-ins in the audit log show people's real addresses. If they all show one address, the sign-in limits treat everyone as one person; see [ADR 0070](adr/0070-production-docker-images.md).
 
 ## Requirements
 
 | Component | Version | Notes |
 |---|---|---|
-| [PHP](https://www.php.net) | 8.3 or later (developed and tested on 8.5) | Extensions: `pdo_pgsql`, `redis`, `ctype`, `dom`, `fileinfo`, `filter`, `iconv`, `intl`, `ldap`, `mbstring`, `openssl`, `session`, `tokenizer`, `xmlreader`, `zip` |
+| [PHP](https://www.php.net) | 8.4 or later (tested on 8.4 and 8.5). Debian 13 includes 8.4; Ubuntu 24.04 includes only 8.3, so it needs a newer package source. | Extensions: `pdo_pgsql`, `redis`, `ctype`, `dom`, `fileinfo`, `filter`, `iconv`, `intl`, `ldap`, `mbstring`, `openssl`, `session`, `tokenizer`, `xmlreader`, `zip` |
 | [PostgreSQL](https://www.postgresql.org) | 18 | PostgreSQL-specific features are used (`jsonb`, full-text search, partial indexes, triggers); other databases are not supported. |
 | [Redis](https://redis.io) | 7 or later | Cache, sessions and the queue. |
 | Web server | [nginx](https://nginx.org) or [Apache](https://httpd.apache.org), with [PHP-FPM](https://www.php.net/manual/en/install.fpm.php) | Document root: `public/`. HTTPS required. |
-| [Node.js](https://nodejs.org) | 20 or later | Only to build the front-end assets. |
+| [Node.js](https://nodejs.org) | 20.19 or later, or 22.12 or later | Only to build the front-end assets. |
 | Mail server | SMTP for outgoing email; IMAP for email-to-ticket (optional) | |
 | Active Directory | Optional | Reachable over LDAPS (port 636). |
 
