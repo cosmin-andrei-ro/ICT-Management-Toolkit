@@ -97,6 +97,16 @@ final class LinkedRecords
     }
 
     /**
+     * What the kind of record is called, or its type if it has no search.
+     */
+    public function kindLabel(string $morphType): string
+    {
+        $label = $this->searches[$morphType]['label'] ?? $this->globalOnly[$morphType]['label'] ?? null;
+
+        return $label !== null ? __($label) : $morphType;
+    }
+
+    /**
      * @return list<LinkedRecord>
      */
     public function search(string $morphType, string $term, User $viewer): array

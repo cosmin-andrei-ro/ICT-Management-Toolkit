@@ -18,6 +18,20 @@ use Modules\Core\Domain\Models\User;
 final class CmdbSearchRecords
 {
     /**
+     * @param  list<string>  $ids
+     * @return list<LinkedRecord>
+     */
+    public static function resolve(array $ids, User $viewer): array
+    {
+        $gate = Gate::forUser($viewer);
+
+        return array_values(ConfigurationItem::query()->whereKey($ids)->limit(100)->get()
+            ->filter(fn (ConfigurationItem $record): bool => $gate->allows('view', $record))
+            ->map(fn (ConfigurationItem $record): LinkedRecord => new LinkedRecord($record->id, $record->name, route('cmdb.items.show', $record)))
+            ->all());
+    }
+
+    /**
      * @return list<LinkedRecord>
      */
     public static function items(string $term, User $viewer): array

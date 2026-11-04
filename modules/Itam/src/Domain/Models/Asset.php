@@ -23,6 +23,8 @@ use Illuminate\Support\Carbon;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\HasAttachments;
+use Modules\Core\Domain\Concerns\HasTags;
+use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 use Modules\Core\Domain\Models\Contract;
 use Modules\Core\Domain\Models\Location;
@@ -78,7 +80,7 @@ use Modules\Itam\Domain\Enums\DisposalMethod;
 #[UseFactory(AssetFactory::class)]
 #[UsePolicy(AssetPolicy::class)]
 #[Fillable(['category_id', 'asset_tag', 'name', 'manufacturer', 'model', 'serial_number', 'location_id', 'supplier_id', 'contract_id', 'purchase_date', 'purchase_cost', 'currency', 'order_number', 'invoice_number', 'warranty_ends_on', 'replace_on', 'notes'])]
-final class Asset extends Model
+final class Asset extends Model implements Taggable
 {
     use Auditable;
     use BelongsToOrganization;
@@ -87,6 +89,7 @@ final class Asset extends Model
     /** @use HasFactory<AssetFactory> */
     use HasFactory;
 
+    use HasTags;
     use HasUuids;
     use SoftDeletes;
     use TracksAuthors;

@@ -189,5 +189,7 @@
         @endif
     </section>
 
+    <x-core::record-tags :record="$project" />
+
     <x-core::record-history :record="$project" :can-change="auth()->user()->can('update', $project)" />
 </div>

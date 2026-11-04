@@ -59,6 +59,10 @@ When only one entry of a group is yours, it appears on its own, without the **â–
 
 The **Search** box at the top of every page looks through tickets, configuration items, assets, licences, applications, business processes, continuity plans and exercises, risks, controls, findings, contracts, suppliers, racks, projects and documentation. Type at least two letters and press Enter. You only see what you are allowed to open, and each kind shows its first results; to narrow them down, use more words or that module's own list.
 
+## Tags
+
+IT staff can label tickets, configuration items, assets, applications, risks, projects and suppliers with free **tags**, such as `audit-2026` or `end of support`, in the **Tags** box on the record's page, if they may change that record. Click a tag to see everything carrying it that you may open. Tags also show up in the search. Each change is kept in the record's history. Administrators rename or delete tags in **Administration â†’ Tags**.
+
 ## Notifications
 
 You receive an email when your ticket is registered, when IT replies, and when it is resolved. Emails contain the ticket number, its title and a link, but never the text of the conversation. Sign in to read it.

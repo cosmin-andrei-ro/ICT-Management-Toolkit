@@ -49,6 +49,7 @@ final class ProjectsServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ProjectMetrics::source()));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PortfolioExport::TYPE, PortfolioExport::class, 'projects.project.view'));
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->register('projects.project', ProjectsSearchRecords::resolve(...));
             $records->registerGlobalSearch('projects.project', 'projects::projects.linked_kind', ProjectsSearchRecords::projects(...));
         });
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));

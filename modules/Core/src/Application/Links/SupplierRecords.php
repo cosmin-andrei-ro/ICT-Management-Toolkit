@@ -18,6 +18,20 @@ use Modules\Core\Domain\Models\User;
 final class SupplierRecords
 {
     /**
+     * @param  list<string>  $ids
+     * @return list<LinkedRecord>
+     */
+    public static function resolve(array $ids, User $viewer): array
+    {
+        $gate = Gate::forUser($viewer);
+
+        return array_values(Supplier::query()->whereKey($ids)->limit(100)->get()
+            ->filter(fn (Supplier $record): bool => $gate->allows('view', $record))
+            ->map(fn (Supplier $record): LinkedRecord => new LinkedRecord($record->id, $record->name, route('core.suppliers.show', $record)))
+            ->all());
+    }
+
+    /**
      * @return list<LinkedRecord>
      */
     public static function search(string $term, User $viewer): array

@@ -174,3 +174,7 @@ A strict CSP with a per-request nonce, plus the standard hardening headers on ev
 ## Global search
 
 `/search` (`SearchController`) asks `LinkedRecords::searchEverywhere()`: every kind registered with `registerSearch` (also offered as evidence or deliverables) or `registerGlobalSearch` (search only). Each module returns only what the viewer may see, using its own policies; terms of fewer than two characters find nothing. The terms are not logged. It searches names and identifiers with `LIKE`, or the full-text index where a module has one, and licence keys are never searched.
+
+## Tags
+
+A record uses `HasTags` and implements `Taggable`, and its page includes `<x-core::record-tags :record />` ([ADR 0072](../adr/0072-tags.md)). To tag another kind of record, also register a resolver in `LinkedRecords`, so the tag's page can list it.
