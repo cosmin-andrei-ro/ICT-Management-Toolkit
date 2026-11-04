@@ -22,6 +22,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Core\Domain\Models\Team;
+use Modules\Core\Domain\Models\User;
+use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Http\Filament\Resources\Queues\Pages\ManageQueues;
 
@@ -61,6 +63,16 @@ final class QueueResource extends Resource
                 ->in(fn (): array => array_keys(self::teamOptions()))
                 ->required(),
             Textarea::make('description')->label(__('ticketing::admin.description'))->maxLength(1000)->columnSpanFull(),
+            Select::make('escalation_user_id')
+                ->label(__('ticketing::admin.queues.escalation_user'))
+                ->helperText(__('ticketing::admin.queues.escalation_user_help'))
+                ->options(fn (): array => self::escalationOptions())
+                ->in(fn (): array => array_keys(self::escalationOptions()))
+                ->searchable(),
+            TextInput::make('escalate_after_minutes')
+                ->label(__('ticketing::admin.queues.escalate_after'))
+                ->integer()->minValue(1)->maxValue(525600)->default(60)->required()
+                ->suffix(__('ticketing::sla.minutes_suffix')),
             Toggle::make('is_default')->label(__('ticketing::admin.queues.default'))->helperText(__('ticketing::admin.queues.default_help')),
             Toggle::make('is_active')->label(__('ticketing::admin.active'))->default(true),
         ]);
@@ -83,6 +95,18 @@ final class QueueResource extends Resource
     public static function getPages(): array
     {
         return ['index' => ManageQueues::route('/')];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function escalationOptions(): array
+    {
+        /** @var array<string, string> $options */
+        $options = User::query()->whereHas('organizations', fn (Builder $query) => $query->whereKey(app(OrganizationContext::class)->requireId()))
+            ->where('is_active', true)->orderBy('name')->pluck('name', 'id')->all();
+
+        return $options;
     }
 
     /**

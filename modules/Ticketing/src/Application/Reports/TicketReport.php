@@ -14,6 +14,7 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Enums\TicketType;
 use Modules\Ticketing\Domain\Models\Category;
+use Modules\Ticketing\Domain\Models\OlaTimer;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\SlaTimer;
 use Modules\Ticketing\Domain\Models\StatusTransition;
@@ -61,6 +62,37 @@ final readonly class TicketReport
             'reopened' => $reopened,
             'reopen_rate' => $resolvedInPeriod > 0 ? round(100 * $reopened / $resolvedInPeriod, 1) : null,
         ];
+    }
+
+    /**
+     * Team clocks that completed in the period, per team; cancelled ones are not counted.
+     *
+     * @return list<array{team: string, met: int, breached: int, compliance: ?float}>
+     */
+    public function ola(ReportPeriod $period): array
+    {
+        $timers = OlaTimer::query()->with('team')
+            ->where('completed_at', '>=', $period->start)
+            ->where('completed_at', '<', $period->end)
+            ->whereIn('outcome', [SlaOutcome::Met, SlaOutcome::Breached])
+            ->get();
+
+        $rows = [];
+
+        foreach ($timers->groupBy('team_id') as $group) {
+            $met = $group->where('outcome', SlaOutcome::Met)->count();
+            $breached = $group->count() - $met;
+            $rows[] = [
+                'team' => $group->first()?->team->name ?? '—',
+                'met' => $met,
+                'breached' => $breached,
+                'compliance' => round(100 * $met / ($met + $breached), 1),
+            ];
+        }
+
+        usort($rows, fn (array $left, array $right): int => $left['team'] <=> $right['team']);
+
+        return $rows;
     }
 
     /**

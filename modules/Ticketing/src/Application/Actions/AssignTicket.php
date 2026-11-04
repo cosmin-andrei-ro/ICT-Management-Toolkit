@@ -12,6 +12,7 @@ use Illuminate\Database\ConnectionInterface;
 use InvalidArgumentException;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Ticketing\Application\Sla\OlaClock;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Events\TicketAssigned;
 use Modules\Ticketing\Domain\Models\Queue;
@@ -29,6 +30,7 @@ final readonly class AssignTicket
         private OrganizationContext $context,
         private TicketLifecycle $lifecycle,
         private Dispatcher $events,
+        private OlaClock $ola,
     ) {}
 
     public function handle(Ticket $ticket, ?User $assignee, ?Queue $queue, User $actor): Ticket
@@ -58,6 +60,7 @@ final readonly class AssignTicket
             };
 
             $target !== null ? $this->lifecycle->transition($ticket, $target, $actor) : $ticket->save();
+            $this->ola->queueChanged($ticket);
         });
 
         if ($assignee !== null && $assignee->id !== $previous?->id) {

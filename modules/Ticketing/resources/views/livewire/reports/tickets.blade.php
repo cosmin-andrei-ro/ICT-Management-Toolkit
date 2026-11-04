@@ -43,6 +43,26 @@
             </dl>
             <p class="text-xs text-gray-500">{{ __('ticketing::reports.kpi_help') }}</p>
         </section>
+
+        @if ($ola !== [])
+            <section aria-labelledby="ola-heading" class="rounded-lg bg-white p-4 ring-1 ring-gray-200">
+                <h2 id="ola-heading" class="mb-2 text-sm font-semibold">{{ __('ticketing::reports.ola_title') }}</h2>
+                <table class="w-full text-sm">
+                    <thead class="text-left text-xs text-gray-500">
+                        <tr><th class="py-1">{{ __('ticketing::reports.ola_team') }}</th><th class="py-1 text-right">{{ __('ticketing::reports.ola_compliance') }}</th><th class="py-1 text-right">{{ __('ticketing::reports.ola_counts') }}</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($ola as $row)
+                            <tr wire:key="ola-{{ $loop->index }}" class="border-t border-gray-100">
+                                <td class="py-1">{{ $row['team'] }}</td>
+                                <td class="py-1 text-right">{{ $row['compliance'] }} %</td>
+                                <td class="py-1 text-right text-gray-600">{{ __('ticketing::reports.sla_counts', ['met' => $row['met'], 'breached' => $row['breached']]) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </section>
+        @endif
     @endif
 
     <div class="grid gap-6 lg:grid-cols-2">

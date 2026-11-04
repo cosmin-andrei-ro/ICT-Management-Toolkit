@@ -32,6 +32,7 @@ use Modules\Ticketing\Domain\Sla\SlaOutcome;
  * @property ?CarbonInterface $breached_at
  * @property ?CarbonInterface $completed_at
  * @property ?SlaOutcome $outcome
+ * @property ?CarbonInterface $escalated_at
  * @property-read Ticket $ticket
  */
 #[Table('ticketing_sla_timers')]
@@ -76,6 +77,7 @@ final class SlaTimer extends Model
             'warned_at' => 'datetime',
             'breached_at' => 'datetime',
             'completed_at' => 'datetime',
+            'escalated_at' => 'datetime',
         ];
     }
 }

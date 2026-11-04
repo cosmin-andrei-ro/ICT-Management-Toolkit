@@ -41,3 +41,14 @@ Administrators can change these targets for your organization.
 - If nobody is assigned, the whole queue team is warned.
 
 Each warning is sent once per clock. Use the **SLA** filter on the **All tickets** page to see what needs attention now.
+
+## Team targets (OLA)
+
+An **OLA** is a target inside IT: how long a ticket may stay with one team, whatever the priority. When a team has one, the ticket's **Service levels** box shows it next to the SLA clocks. It runs in working time and stops while waiting for the requester. It ends when the ticket moves to another team or is resolved, and the next team's clock starts.
+
+When the target is missed, the team's lead gets an email. **Reports** shows how often each team met its target.
+
+## Escalation
+
+A queue can name an **escalation contact**. If an SLA or team target was missed and the ticket is still open after the queue's delay, that person gets one email per missed target. Nothing moves: the ticket keeps its queue and its assignee, so it stays clear who owns it.
+

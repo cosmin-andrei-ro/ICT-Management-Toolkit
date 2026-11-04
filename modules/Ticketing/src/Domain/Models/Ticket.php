@@ -234,6 +234,14 @@ final class Ticket extends Model implements Taggable
     }
 
     /**
+     * @return HasMany<OlaTimer, $this>
+     */
+    public function olaTimers(): HasMany
+    {
+        return $this->hasMany(OlaTimer::class);
+    }
+
+    /**
      * @return HasMany<StatusTransition, $this>
      */
     public function statusTransitions(): HasMany

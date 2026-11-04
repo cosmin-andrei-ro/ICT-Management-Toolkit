@@ -32,6 +32,7 @@ use Modules\Ticketing\Application\Links\TicketingProblemTickets;
 use Modules\Ticketing\Application\Links\TicketRecords;
 use Modules\Ticketing\Application\Metrics\TicketingMetrics;
 use Modules\Ticketing\Application\Notifications\SendChangeNotifications;
+use Modules\Ticketing\Application\Notifications\SendOlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
 use Modules\Ticketing\Application\PersonalData\TicketingPersonalData;
@@ -42,11 +43,13 @@ use Modules\Ticketing\Application\Webhooks\PublishTicketWebhooks;
 use Modules\Ticketing\Domain\Events\ChangeApproved;
 use Modules\Ticketing\Domain\Events\ChangeRejected;
 use Modules\Ticketing\Domain\Events\ChangeSubmitted;
+use Modules\Ticketing\Domain\Events\OlaBreached;
 use Modules\Ticketing\Domain\Events\SlaBreached;
 use Modules\Ticketing\Domain\Events\SlaWarning;
 use Modules\Ticketing\Domain\Events\TicketAssigned;
 use Modules\Ticketing\Domain\Events\TicketCommentAdded;
 use Modules\Ticketing\Domain\Events\TicketCreated;
+use Modules\Ticketing\Domain\Events\TicketEscalated;
 use Modules\Ticketing\Domain\Events\TicketResolved;
 use Modules\Ticketing\Domain\Events\TicketStatusChanged;
 use Modules\Ticketing\Domain\Models\CabBoard;
@@ -60,6 +63,7 @@ use Modules\Ticketing\Domain\Models\ProblemDetails;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Service;
 use Modules\Ticketing\Domain\Models\SlaTimer;
+use Modules\Ticketing\Domain\Models\TeamOla;
 use Modules\Ticketing\Domain\Models\Ticket;
 use Modules\Ticketing\Infrastructure\Console\AutoCloseTicketsCommand;
 use Modules\Ticketing\Infrastructure\Console\CheckSlaCommand;
@@ -115,6 +119,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             'ticketing.ticket' => Ticket::class,
             'ticketing.category' => Category::class,
             'ticketing.queue' => Queue::class,
+            'ticketing.team_ola' => TeamOla::class,
             'ticketing.service' => Service::class,
             'ticketing.problem_details' => ProblemDetails::class,
             'ticketing.change_details' => ChangeDetails::class,
@@ -138,6 +143,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
 
         Event::listen([TicketCreated::class, TicketAssigned::class, TicketResolved::class, TicketCommentAdded::class], SendTicketNotifications::class);
         Event::listen([SlaWarning::class, SlaBreached::class], SendSlaNotifications::class);
+        Event::listen([OlaBreached::class, TicketEscalated::class], SendOlaNotifications::class);
         Event::listen([ChangeSubmitted::class, ChangeApproved::class, ChangeRejected::class], SendChangeNotifications::class);
         Event::listen([TicketCreated::class, TicketAssigned::class, TicketStatusChanged::class, TicketResolved::class, SlaWarning::class, SlaBreached::class, ChangeSubmitted::class, ChangeApproved::class, ChangeRejected::class], PublishTicketWebhooks::class);
 

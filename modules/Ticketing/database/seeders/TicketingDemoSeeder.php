@@ -41,6 +41,7 @@ use Modules\Ticketing\Domain\Models\CabBoard;
 use Modules\Ticketing\Domain\Models\Category;
 use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Service;
+use Modules\Ticketing\Domain\Models\TeamOla;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
@@ -74,6 +75,8 @@ final class TicketingDemoSeeder extends Seeder
         $context->runAs($company->organization, function () use ($company): void {
             $queue = Queue::query()->create(['team_id' => $company->teams['desk']->id, 'name' => 'First line', 'is_default' => true]);
             Queue::query()->create(['team_id' => $company->teams['infrastructure']->id, 'name' => 'Infrastructure']);
+            TeamOla::query()->create(['team_id' => $company->teams['desk']->id, 'minutes' => 240]);
+            TeamOla::query()->create(['team_id' => $company->teams['infrastructure']->id, 'minutes' => 960]);
 
             $hardware = Category::query()->create(['name' => 'Hardware', 'sort_order' => 1]);
             $categories = [

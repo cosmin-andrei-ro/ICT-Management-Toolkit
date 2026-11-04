@@ -40,6 +40,7 @@ final readonly class SlaClock
         private BusinessCalendars $calendars,
         private BusinessTimeCalculator $calculator,
         private Dispatcher $events,
+        private OlaClock $ola,
     ) {}
 
     public function start(Ticket $ticket): void
@@ -48,6 +49,8 @@ final readonly class SlaClock
         if (! $ticket->type->hasSla()) {
             return;
         }
+
+        $this->ola->start($ticket);
 
         $now = $this->now();
         $target = $this->targets->resolve($ticket->organization_id, $ticket->priority);
@@ -73,6 +76,15 @@ final readonly class SlaClock
      */
     public function onTransition(Ticket $ticket, TicketStatus $from, TicketStatus $to): void
     {
+        match (true) {
+            $to === TicketStatus::Cancelled => $this->ola->complete($ticket, SlaOutcome::Cancelled),
+            $to === TicketStatus::Resolved => $this->ola->complete($ticket, null),
+            $to === TicketStatus::Pending => $this->ola->pause($ticket),
+            $from === TicketStatus::Pending => $this->ola->resume($ticket),
+            $from === TicketStatus::Resolved && $to !== TicketStatus::Closed => $this->ola->start($ticket),
+            default => null,
+        };
+
         match (true) {
             $to === TicketStatus::Cancelled => $this->completeOpen($ticket, SlaOutcome::Cancelled),
             $to === TicketStatus::Resolved => $this->completeOpen($ticket, null),

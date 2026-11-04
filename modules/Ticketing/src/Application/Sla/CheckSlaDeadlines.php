@@ -10,6 +10,7 @@ namespace Modules\Ticketing\Application\Sla;
 use Carbon\CarbonImmutable;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Domain\Tenancy\OrganizationScope;
+use Modules\Ticketing\Domain\Models\OlaTimer;
 use Modules\Ticketing\Domain\Models\SlaTimer;
 
 /**
@@ -20,6 +21,8 @@ final readonly class CheckSlaDeadlines
 {
     public function __construct(
         private SlaClock $clock,
+        private OlaClock $ola,
+        private EscalateOverdueTickets $escalate,
         private OrganizationContext $context,
     ) {}
 
@@ -40,6 +43,17 @@ final readonly class CheckSlaDeadlines
                 $checked++;
             });
 
-        return $checked;
+        OlaTimer::query()
+            ->withoutGlobalScope(OrganizationScope::class)
+            ->whereNotNull('running_since')
+            ->whereNull('breached_at')
+            ->where('due_at', '<=', $now)
+            ->orderBy('id')
+            ->each(function (OlaTimer $timer) use (&$checked): void {
+                $this->context->runAs($timer->organization_id, fn () => $this->ola->checkDeadline($timer));
+                $checked++;
+            });
+
+        return $checked + $this->escalate->handle();
     }
 }

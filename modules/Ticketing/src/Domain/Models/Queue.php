@@ -22,6 +22,7 @@ use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 use Modules\Core\Domain\Models\Team;
+use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Application\Policies\TicketingSettingsPolicy;
 use Modules\Ticketing\Database\Factories\QueueFactory;
 
@@ -32,6 +33,8 @@ use Modules\Ticketing\Database\Factories\QueueFactory;
  * @property string $id
  * @property string $organization_id
  * @property string $team_id
+ * @property ?string $escalation_user_id
+ * @property int $escalate_after_minutes
  * @property string $name
  * @property ?string $description
  * @property bool $is_default
@@ -44,7 +47,7 @@ use Modules\Ticketing\Database\Factories\QueueFactory;
 #[Table('ticketing_queues')]
 #[UseFactory(QueueFactory::class)]
 #[UsePolicy(TicketingSettingsPolicy::class)]
-#[Fillable(['team_id', 'name', 'description', 'is_default', 'is_active'])]
+#[Fillable(['team_id', 'name', 'description', 'is_default', 'is_active', 'escalation_user_id', 'escalate_after_minutes'])]
 final class Queue extends Model
 {
     use Auditable;
@@ -82,6 +85,14 @@ final class Queue extends Model
                 throw new InvalidArgumentException('The queue\'s team must belong to the current organization.');
             }
         });
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function escalationUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'escalation_user_id');
     }
 
     /**
