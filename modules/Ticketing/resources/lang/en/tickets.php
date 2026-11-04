@@ -14,6 +14,7 @@ return [
         'change' => 'Change',
     ],
     'statuses' => [
+        'awaiting_approval' => 'Waiting for approval',
         'new' => 'New',
         'assigned' => 'Assigned',
         'in_progress' => 'In progress',

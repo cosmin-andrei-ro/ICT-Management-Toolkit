@@ -64,6 +64,8 @@ Editing a form never changes requests already made: each request keeps the quest
 
 Deactivate a service to remove it from the catalog without losing its history.
 
+On a service, **Approvers** names who must approve its requests. Leave it empty and IT starts at once. If an approver has left, team leads and administrators can decide too, in **Requests to approve**.
+
 ## Change advisory boards
 
 Under **CAB boards**, create the boards that authorize changes, and choose their members.

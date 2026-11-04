@@ -19,6 +19,8 @@ use Modules\Ticketing\Http\Livewire\Portal\CreateTicket;
 use Modules\Ticketing\Http\Livewire\Portal\ShowTicket as PortalShowTicket;
 use Modules\Ticketing\Http\Livewire\Portal\TicketIndex;
 use Modules\Ticketing\Http\Livewire\Reports\TicketReports;
+use Modules\Ticketing\Http\Livewire\RequestApprovals\RequestApprovalInbox;
+use Modules\Ticketing\Http\Livewire\RequestApprovals\ReviewServiceRequest;
 
 // URLs carry the ticket UUID, never its sequential number (no enumeration).
 Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(function (): void {
@@ -35,6 +37,8 @@ Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(functi
     Route::livewire('/desk/changes', ChangeCalendarView::class)->name('ticketing.changes.calendar');
     Route::livewire('/desk/changes/new', CreateChange::class)->name('ticketing.changes.create');
 
+    Route::livewire('/request-approvals', RequestApprovalInbox::class)->name('ticketing.request-approvals');
+    Route::livewire('/request-approvals/{ticket}', ReviewServiceRequest::class)->whereUuid('ticket')->name('ticketing.request-approvals.show');
     Route::livewire('/approvals', Approvals::class)->name('ticketing.changes.approvals');
     Route::livewire('/approvals/{ticket}', ReviewChange::class)->whereUuid('ticket')->name('ticketing.changes.approvals.review');
     Route::livewire('/desk/tickets/{ticket}', DeskShowTicket::class)->whereUuid('ticket')->name('ticketing.desk.show');

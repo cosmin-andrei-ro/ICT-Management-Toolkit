@@ -13,6 +13,7 @@ use Modules\Ticketing\Application\Changes\CabApprovers;
 use Modules\Ticketing\Domain\Changes\ApprovalStatus;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Enums\TicketType;
+use Modules\Ticketing\Domain\Models\Service;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
@@ -39,6 +40,20 @@ final readonly class TicketPolicy
             || $ticket->isRequester($user)
             || $ticket->isWatchedBy($user)
             || $this->sitsOnBoardOf($user, $ticket);
+    }
+
+    /**
+     * The service's approvers, and those who configure Ticketing so that a request
+     * is never stuck. Nobody approves their own request.
+     */
+    public function decideRequest(User $user, Ticket $ticket): bool
+    {
+        if ($ticket->status !== TicketStatus::AwaitingApproval || ! $this->inCurrentOrganization($ticket) || $ticket->isRequester($user)) {
+            return false;
+        }
+
+        return $user->can('ticketing.settings.manage')
+            || ($ticket->service_id !== null && Service::query()->whereKey($ticket->service_id)->whereHas('approvers', fn ($approvers) => $approvers->whereKey($user->id))->exists());
     }
 
     public function viewInternal(User $user, Ticket $ticket): bool
@@ -79,7 +94,7 @@ final readonly class TicketPolicy
 
     public function assign(User $user, Ticket $ticket): bool
     {
-        return $ticket->status->isOpen() && $this->inCurrentOrganization($ticket) && $user->can('ticketing.ticket.assign');
+        return $ticket->status->isOpen() && $ticket->status !== TicketStatus::AwaitingApproval && $this->inCurrentOrganization($ticket) && $user->can('ticketing.ticket.assign');
     }
 
     public function reopen(User $user, Ticket $ticket): bool
@@ -106,7 +121,7 @@ final readonly class TicketPolicy
         }
 
         return $this->work($user, $ticket)
-            || ($this->inCurrentOrganization($ticket) && $ticket->isRequester($user) && $ticket->status === TicketStatus::New);
+            || ($this->inCurrentOrganization($ticket) && $ticket->isRequester($user) && in_array($ticket->status, [TicketStatus::New, TicketStatus::AwaitingApproval], true));
     }
 
     public function createProblem(User $user): bool

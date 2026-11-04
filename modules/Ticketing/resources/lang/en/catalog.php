@@ -6,6 +6,18 @@
 declare(strict_types=1);
 
 return [
+    'approval' => [
+        'title' => 'Requests to approve',
+        'intro' => 'Catalog requests waiting for a decision before IT starts on them.',
+        'nothing' => 'Nothing is waiting for you.',
+        'requested_by' => 'Requested by :name, :when',
+        'comment' => 'Comment',
+        'comment_help' => 'The requester sees it. Needed when you reject.',
+        'approve' => 'Approve',
+        'reject' => 'Reject',
+        'approved' => 'Approved. The request has gone to IT.',
+        'rejected' => 'Rejected. The requester has been told.',
+    ],
     'title' => 'Request a service',
     'intro' => 'Choose what you need; the right team receives your request.',
     'search_placeholder' => 'Search services…',

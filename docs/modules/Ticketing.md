@@ -63,7 +63,7 @@ Support mailboxes are read over IMAP every minute ([ADR 0015](../adr/0015-email-
 - **Portal** (`/catalog`): people pick a service (new laptop, VPN access, …), answer its form and send a **service request**. Title, queue, category, impact and urgency come from the service. If the service's queue was deactivated, the request goes to the default queue.
 - **Forms** are built per service in Administration → Ticketing → Service catalog, with short text, long text, number, date, choice and checkbox fields ([ADR 0011](../adr/0011-form-schemas.md)).
 - Answers are stored with the ticket together with the field labels of that moment, so editing a form never changes past requests. They are shown on the ticket in the portal, the desk and the API (`service_answers`).
-- Approval workflows for services are not implemented yet.
+- **Approval** ([ADR 0075](../adr/0075-service-request-approval.md)): a service can name approvers. Its requests start as *Waiting for approval* with their clocks paused; one approval sends them to IT, and a rejection cancels them.
 
 ## Service levels (SLA)
 
