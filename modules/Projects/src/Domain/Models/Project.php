@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
+use Modules\Core\Domain\Concerns\HasTags;
+use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 use Modules\Core\Domain\Models\User;
 use Modules\Projects\Application\Policies\ProjectPolicy;
@@ -57,7 +59,7 @@ use Modules\Projects\Domain\Enums\ProjectStatus;
 #[Table('projects_projects')]
 #[UseFactory(ProjectFactory::class)]
 #[UsePolicy(ProjectPolicy::class)]
-final class Project extends Model
+final class Project extends Model implements Taggable
 {
     use Auditable;
     use BelongsToOrganization;
@@ -65,6 +67,7 @@ final class Project extends Model
     /** @use HasFactory<ProjectFactory> */
     use HasFactory;
 
+    use HasTags;
     use HasUuids;
     use SoftDeletes;
     use TracksAuthors;

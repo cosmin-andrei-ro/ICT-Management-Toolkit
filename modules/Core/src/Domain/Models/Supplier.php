@@ -22,6 +22,8 @@ use Modules\Core\Application\Policies\SupplierPolicy;
 use Modules\Core\Database\Factories\SupplierFactory;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
+use Modules\Core\Domain\Concerns\HasTags;
+use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 
 /**
@@ -47,7 +49,7 @@ use Modules\Core\Domain\Concerns\TracksAuthors;
 #[UseFactory(SupplierFactory::class)]
 #[UsePolicy(SupplierPolicy::class)]
 #[Fillable(['name', 'legal_name', 'tax_id', 'customer_number', 'website', 'support_email', 'support_phone', 'support_hours', 'notes', 'is_active'])]
-final class Supplier extends Model
+final class Supplier extends Model implements Taggable
 {
     use Auditable;
     use BelongsToOrganization;
@@ -55,6 +57,7 @@ final class Supplier extends Model
     /** @use HasFactory<SupplierFactory> */
     use HasFactory;
 
+    use HasTags;
     use HasUuids;
     use SoftDeletes;
     use TracksAuthors;

@@ -44,7 +44,8 @@ final class CmdbServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
-            $records->registerGlobalSearch('cmdb.item', 'cmdb::items.linked_kind', CmdbSearchRecords::items(...));
+            $records->register('cmdb.configuration_item', CmdbSearchRecords::resolve(...));
+            $records->registerGlobalSearch('cmdb.configuration_item', 'cmdb::items.linked_kind', CmdbSearchRecords::items(...));
         });
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
     }

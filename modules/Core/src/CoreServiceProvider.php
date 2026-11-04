@@ -43,6 +43,7 @@ use Modules\Core\Application\Exports\AuditLogExport;
 use Modules\Core\Application\Exports\PersonalDataExport;
 use Modules\Core\Application\Links\ContractRecords;
 use Modules\Core\Application\Links\SupplierRecords;
+use Modules\Core\Application\Links\TagRecords;
 use Modules\Core\Application\PersonalData\CorePersonalData;
 use Modules\Core\Application\Retention\ApplyRetention;
 use Modules\Core\Application\Risks\ContractRiskSignals;
@@ -88,6 +89,7 @@ use Modules\Core\Domain\Models\RetentionSettings;
 use Modules\Core\Domain\Models\SecuritySettings;
 use Modules\Core\Domain\Models\Supplier;
 use Modules\Core\Domain\Models\SupplierContact;
+use Modules\Core\Domain\Models\Tag;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Models\Webhook;
@@ -185,6 +187,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
             $records->register('core.contract', ContractRecords::resolve(...));
             $records->registerSearch('core.contract', 'core::contracts.linked_kind', ContractRecords::search(...));
             $records->registerGlobalSearch('core.supplier', 'core::suppliers.linked_kind', SupplierRecords::search(...));
+            $records->register('core.supplier', SupplierRecords::resolve(...));
+            $records->registerGlobalSearch('core.tag', 'core::tags.linked_kind', TagRecords::search(...));
         });
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */
@@ -267,6 +271,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.export' => Export::class,
             'core.location' => Location::class,
             'core.supplier' => Supplier::class,
+            'core.tag' => Tag::class,
             'core.supplier_contact' => SupplierContact::class,
             'core.contract' => Contract::class,
             'core.security_settings' => SecuritySettings::class,
@@ -350,9 +355,12 @@ final class CoreServiceProvider extends ModuleServiceProvider
             // Contracts show values and terms: not every agent sees them (owner's decision).
             'core.contract.view',
             'core.contract.manage',
+            // Tags: IT staff see them and put them on what they may change; administrators tidy the list.
+            'core.tag.view',
+            'core.tag.manage',
         ]);
 
-        $directory = ['core.user.view', 'core.department.view', 'core.team.view'];
+        $directory = ['core.user.view', 'core.department.view', 'core.team.view', 'core.tag.view'];
         $contracts = ['core.location.manage', 'core.supplier.view', 'core.supplier.manage', 'core.contract.view', 'core.contract.manage'];
 
         // Panel access only opens the door: every page and resource in it checks its own permission.

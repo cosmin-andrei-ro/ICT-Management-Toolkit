@@ -20,6 +20,20 @@ use Modules\Projects\Domain\Models\Project;
 final class ProjectsSearchRecords
 {
     /**
+     * @param  list<string>  $ids
+     * @return list<LinkedRecord>
+     */
+    public static function resolve(array $ids, User $viewer): array
+    {
+        $gate = Gate::forUser($viewer);
+
+        return array_values(Project::query()->whereKey($ids)->limit(100)->get()
+            ->filter(fn (Project $record): bool => $gate->allows('view', $record))
+            ->map(fn (Project $record): LinkedRecord => new LinkedRecord($record->id, $record->code.' '.$record->name, route('projects.show', $record)))
+            ->all());
+    }
+
+    /**
      * @return list<LinkedRecord>
      */
     public static function projects(string $term, User $viewer): array

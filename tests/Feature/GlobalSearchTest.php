@@ -81,5 +81,5 @@ it('never finds a licence by its key', function (): void {
 it('does not add the new kinds to what can be picked as evidence', function (): void {
     $kinds = app(Modules\Core\Domain\Links\LinkedRecords::class)->searchable();
 
-    expect($kinds)->not->toHaveKey('cmdb.item')->not->toHaveKey('itam.asset')->not->toHaveKey('core.supplier');
+    expect($kinds)->not->toHaveKey('cmdb.configuration_item')->not->toHaveKey('itam.asset')->not->toHaveKey('core.supplier');
 });

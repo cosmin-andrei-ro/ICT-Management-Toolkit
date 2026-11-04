@@ -13,6 +13,7 @@ What each module does today.
 - Append-only **audit trail**: who changed what, when, with old and new values; sign-ins, role changes, exports.
 - Administration panel at `/admin`, a REST API at `/api/v1` for tickets, the CMDB, assets and licences, risks, controls and findings, business processes, continuity plans and applications, a monitoring endpoint (own format and [Prometheus Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/)) that opens and resolves incidents linked to CMDB items, plus read-only access to the directory, suppliers and contracts, the data centre, documentation, projects and indicators (OpenAPI in [docs/api/openapi.json](api/openapi.json)), and the **user manual** at `/manual`.
 - **Search** in the page header, across every module, showing only what the person may open.
+- **Tags** on tickets, configuration items, assets, applications, risks, projects and suppliers, with a page listing what carries each one.
 
 ## Ticketing
 - **Incidents and service requests**: self-service portal, service catalog with request forms, agent desk with queues, assignment, internal notes, attachments and full-text search.

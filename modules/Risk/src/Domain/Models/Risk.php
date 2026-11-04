@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
+use Modules\Core\Domain\Concerns\HasTags;
+use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 use Modules\Core\Domain\Models\User;
 use Modules\Risk\Application\Policies\RiskPolicy;
@@ -61,7 +63,7 @@ use Modules\Risk\Domain\Enums\Treatment;
 #[Table('risk_risks')]
 #[UseFactory(RiskFactory::class)]
 #[UsePolicy(RiskPolicy::class)]
-final class Risk extends Model
+final class Risk extends Model implements Taggable
 {
     use Auditable;
     use BelongsToOrganization;
@@ -69,6 +71,7 @@ final class Risk extends Model
     /** @use HasFactory<RiskFactory> */
     use HasFactory;
 
+    use HasTags;
     use HasUuids;
     use SoftDeletes;
     use TracksAuthors;

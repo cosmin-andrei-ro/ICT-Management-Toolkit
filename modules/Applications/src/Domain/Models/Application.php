@@ -24,6 +24,8 @@ use Modules\Applications\Application\Policies\ApplicationPolicy;
 use Modules\Applications\Database\Factories\ApplicationFactory;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
+use Modules\Core\Domain\Concerns\HasTags;
+use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 use Modules\Core\Domain\Models\Department;
 use Modules\Core\Domain\Models\User;
@@ -60,7 +62,7 @@ use Modules\Core\Domain\Models\User;
 #[UseFactory(ApplicationFactory::class)]
 #[UsePolicy(ApplicationPolicy::class)]
 #[Fillable(['code', 'name', 'department_id', 'department_email', 'business_owner_id', 'technical_owner_id', 'deputy_id'])]
-final class Application extends Model
+final class Application extends Model implements Taggable
 {
     use Auditable;
     use BelongsToOrganization;
@@ -68,6 +70,7 @@ final class Application extends Model
     /** @use HasFactory<ApplicationFactory> */
     use HasFactory;
 
+    use HasTags;
     use HasUuids;
     use SoftDeletes;
     use TracksAuthors;

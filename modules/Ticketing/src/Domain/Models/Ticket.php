@@ -24,6 +24,8 @@ use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\HasAttachments;
 use Modules\Core\Domain\Concerns\HasComments;
+use Modules\Core\Domain\Concerns\HasTags;
+use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Application\Policies\TicketPolicy;
@@ -82,7 +84,7 @@ use Modules\Ticketing\Domain\Enums\Urgency;
 #[Table('ticketing_tickets')]
 #[UseFactory(TicketFactory::class)]
 #[UsePolicy(TicketPolicy::class)]
-final class Ticket extends Model
+final class Ticket extends Model implements Taggable
 {
     use Auditable;
     use BelongsToOrganization;
@@ -92,6 +94,7 @@ final class Ticket extends Model
     /** @use HasFactory<TicketFactory> */
     use HasFactory;
 
+    use HasTags;
     use HasUuids;
     use SoftDeletes;
     use TracksAuthors;

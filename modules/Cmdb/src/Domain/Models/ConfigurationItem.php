@@ -27,6 +27,8 @@ use Modules\Cmdb\Domain\Enums\Criticality;
 use Modules\Cmdb\Domain\Enums\Environment;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
+use Modules\Core\Domain\Concerns\HasTags;
+use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 use Modules\Core\Domain\Models\Team;
 use Modules\Core\Domain\Models\User;
@@ -64,7 +66,7 @@ use Modules\Core\Domain\Models\User;
 #[UseFactory(ConfigurationItemFactory::class)]
 #[UsePolicy(CmdbPolicy::class)]
 #[Fillable(['type_id', 'name', 'identifier', 'status', 'environment', 'criticality', 'owner_id', 'team_id', 'description', 'recovery_time_minutes', 'recovery_point_minutes'])]
-final class ConfigurationItem extends Model
+final class ConfigurationItem extends Model implements Taggable
 {
     use Auditable;
     use BelongsToOrganization;
@@ -72,6 +74,7 @@ final class ConfigurationItem extends Model
     /** @use HasFactory<ConfigurationItemFactory> */
     use HasFactory;
 
+    use HasTags;
     use HasUuids;
     use SoftDeletes;
     use TracksAuthors;
