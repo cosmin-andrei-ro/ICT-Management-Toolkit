@@ -2,6 +2,55 @@
 
 For whoever installs and runs the toolkit on a server. To try it on your own machine, see [Development setup](development/getting-started.md).
 
+## Install with Docker
+
+The simplest way on a server: only [Docker Engine](https://docs.docker.com/engine/install/) with Compose is needed, and the certificate for HTTPS comes by itself. It needs a domain name pointing to the server, and ports 80 and 443 open. To install by hand instead, follow [Requirements](#requirements) and [Installation](#installation).
+
+1. **Get the code and create the settings file.**
+
+   ```bash
+   git clone https://github.com/cosmin-andrei-ro/ICT-Management-Toolkit.git
+   cd ICT-Management-Toolkit
+   cp docker/production/.env.example docker/production/.env
+   chmod 600 docker/production/.env
+   ```
+
+   Open `docker/production/.env` and fill in the domain, two long random passwords, and your mail server. `openssl rand -hex 32` makes a good password. Leave `APP_KEY` for the next step.
+
+2. **Build the images and create the application key.** The build takes several minutes.
+
+   ```bash
+   docker compose -f docker/production/compose.yaml build
+   docker compose -f docker/production/compose.yaml run --rm --no-deps app php artisan key:generate --show
+   ```
+
+   Copy the line it prints into `APP_KEY=` in `docker/production/.env`.
+
+3. **Start everything.** The database is prepared automatically.
+
+   ```bash
+   docker compose -f docker/production/compose.yaml up -d
+   ```
+
+4. **Create the first administrator,** answering the questions, then open your domain in a browser and sign in.
+
+   ```bash
+   docker compose -f docker/production/compose.yaml exec app php artisan core:setup
+   ```
+
+**Other settings** from this page go in the same `.env` file; then run `up -d` again. For PDF documents, set `GOTENBERG_URL=http://gotenberg:3000` and add `--profile pdf` to the `up -d` command. For Active Directory, also mount the CA certificate into the `app`, `worker` and `scheduler` services.
+
+**Update:** run `git pull`, then `build`, then `up -d`. Migrations run by themselves. Back up first.
+
+**Back up** the database, the uploaded files and `docker/production/.env`:
+
+```bash
+docker compose -f docker/production/compose.yaml exec -T pgsql pg_dump -U toolkit toolkit > toolkit.sql
+docker compose -f docker/production/compose.yaml exec -T app tar -C storage/app -cf - . > toolkit-files.tar
+```
+
+**Check** that sign-ins in the audit log show people's real addresses. If they all show one address, the sign-in limits treat everyone as one person; see [ADR 0070](adr/0070-production-docker-images.md).
+
 ## Requirements
 
 | Component | Version | Notes |

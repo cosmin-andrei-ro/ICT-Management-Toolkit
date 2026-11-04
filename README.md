@@ -162,7 +162,9 @@ This is for real use, so people in your company can reach it. **Do not use the s
 
 Optional: Active Directory, a mailbox for tickets by email (IMAP), and [Gotenberg](https://gotenberg.dev) for PDFs.
 
-**The steps, in short:**
+**The easiest way is Docker:** the server needs only Docker and a domain name, and the HTTPS certificate comes by itself. See [Install with Docker](docs/installation.md#install-with-docker).
+
+**The steps by hand, in short:**
 
 1. Create an empty PostgreSQL database and a user for it.
 2. Download the code and build it: `composer install --no-dev --optimize-autoloader`, then `npm ci && npm run build`.
@@ -193,6 +195,7 @@ The toolkit is **not certified** and has not been audited by a third party. It g
 
 - **Application:** [Laravel](https://laravel.com), [Livewire](https://livewire.laravel.com), [Filament](https://filamentphp.com), [Alpine.js](https://alpinejs.dev), [Tailwind CSS](https://tailwindcss.com), [Vite](https://vite.dev), [Cytoscape.js](https://js.cytoscape.org)
 - **Data:** [PostgreSQL](https://www.postgresql.org), [Redis](https://redis.io)
+- **Server:** [Caddy](https://caddyserver.com), in the Docker installation
 - **Sign-in and API:** [Sanctum](https://laravel.com/docs/sanctum), [laravel-permission](https://spatie.be/docs/laravel-permission), [LdapRecord](https://ldaprecord.com), [php-saml](https://github.com/SAML-Toolkits/php-saml), [WebAuthn Framework](https://github.com/web-auth/webauthn-framework), [JWT Framework](https://web-token.spomky-labs.com), [Scramble](https://scramble.dedoc.co)
 - **Documents and mail:** [Gotenberg](https://gotenberg.dev), [OpenSpout](https://github.com/openspout/openspout), [php-qrcode](https://github.com/chillerlan/php-qrcode), [ImapEngine](https://github.com/Directorytree/ImapEngine)
 - **Development:** [Laravel Sail](https://laravel.com/docs/sail), [Pest](https://pestphp.com), [PHPUnit](https://phpunit.de), [Mockery](https://github.com/mockery/mockery), [Faker](https://fakerphp.org), [PHPStan](https://phpstan.org), [Larastan](https://github.com/larastan/larastan), [Laravel Pint](https://laravel.com/docs/pint), [Laravel Boost](https://laravel.com/docs/boost), [Pail](https://github.com/laravel/pail), [Pao](https://github.com/laravel/pao), [Tinker](https://github.com/laravel/tinker), [Collision](https://github.com/nunomaduro/collision), [concurrently](https://github.com/open-cli-tools/concurrently)

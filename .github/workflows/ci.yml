@@ -92,3 +92,19 @@ jobs:
 
       - name: Pest
         run: composer test
+
+  production-images:
+    name: Production images build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Check the Compose file
+        run: |
+          cp docker/production/.env.example docker/production/.env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=ci/; s/^REDIS_PASSWORD=.*/REDIS_PASSWORD=ci/' docker/production/.env
+          docker compose -f docker/production/compose.yaml config --quiet
+
+      - name: Build
+        run: docker compose -f docker/production/compose.yaml build

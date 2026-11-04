@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 ICT Management Toolkit contributors
+
+{$DOMAIN} {
+	root * /var/www/html/public
+	encode gzip
+
+	request_body {
+		max_size 30MB
+	}
+
+	@hidden path /.* */.*
+	respond @hidden 404
+
+	php_fastcgi app:9000 {
+		root /var/www/html/public
+	}
+	file_server
+}
