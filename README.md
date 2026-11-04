@@ -187,7 +187,8 @@ The toolkit is **not certified** and has not been audited by a third party. It g
 - **API:** `/docs/api` in the running application (for people with access to the administration panel), or [the OpenAPI file](docs/api/openapi.json)
 - **Modules:** [how each one is built](docs/modules/)
 - **Decisions:** [architecture decision records](docs/adr/)
-- **Contributing:** [the guide for people and AI agents](CLAUDE.md), and [development setup](docs/development/getting-started.md)
+- **Contributing:** [how to contribute](CONTRIBUTING.md), [the full rules](CLAUDE.md) and [development setup](docs/development/getting-started.md)
+- **Security:** [report a vulnerability](SECURITY.md), and [the security model](docs/security.md)
 
 ## Built with
 
