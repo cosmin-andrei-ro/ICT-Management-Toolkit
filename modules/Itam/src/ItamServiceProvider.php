@@ -21,6 +21,7 @@ use Modules\Core\Domain\Links\ContractDependents;
 use Modules\Core\Domain\Links\LinkedRecord;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Links\PhysicalAssets;
+use Modules\Core\Domain\Links\SoftwareLicences;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\Contract;
@@ -33,6 +34,7 @@ use Modules\Itam\Application\Exports\AssetExport;
 use Modules\Itam\Application\Exports\LicenseExport;
 use Modules\Itam\Application\Links\ItamSearchRecords;
 use Modules\Itam\Application\Links\RegisteredAssets;
+use Modules\Itam\Application\Links\RegisteredSoftwareLicences;
 use Modules\Itam\Application\Listeners\RecordAssetLocation;
 use Modules\Itam\Application\Metrics\AssetMetrics;
 use Modules\Itam\Application\PersonalData\ItamPersonalData;
@@ -78,6 +80,7 @@ final class ItamServiceProvider extends ModuleServiceProvider
         // The CMDB shows the assets linked to an item; contracts show the assets they cover.
         $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('itam.asset', self::linkedAssets(...)));
         $this->app->bind(PhysicalAssets::class, RegisteredAssets::class);
+        $this->app->bind(SoftwareLicences::class, RegisteredSoftwareLicences::class);
         $this->callAfterResolving(ContractDependents::class, function (ContractDependents $dependents): void {
             $dependents->register('itam::assets.covered_by_contract', self::assetsUnderContract(...));
             $dependents->register('itam::licenses.covered_by_contract', self::licensesUnderContract(...));

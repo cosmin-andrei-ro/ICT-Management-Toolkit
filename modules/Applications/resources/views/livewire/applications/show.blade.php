@@ -89,6 +89,25 @@
         </section>
     </div>
 
+    @if ($followUps !== [])
+        <section aria-labelledby="followups-heading" class="space-y-2 rounded-lg bg-amber-50 p-4 ring-1 ring-amber-200">
+            <h2 id="followups-heading" class="text-sm font-semibold">{{ __('applications::applications.followups.title') }}</h2>
+            <p class="text-xs text-gray-600">{{ __('applications::applications.followups.intro') }}</p>
+            <ul class="divide-y divide-amber-100 text-sm">
+                @foreach ($followUps as $followUp)
+                    <li wire:key="followup-{{ $followUp['key'] }}" class="flex flex-wrap items-center justify-between gap-2 py-1.5">
+                        @if ($followUp['url'] !== null)
+                            <a href="{{ $followUp['url'] }}" class="text-blue-700 underline">{{ $followUp['label'] }}</a>
+                        @else
+                            <span>{{ $followUp['label'] }} <span class="text-xs text-gray-600">{{ __('applications::applications.followups.ask') }}</span></span>
+                        @endif
+                        <button type="button" wire:click="dismissFollowUp('{{ $followUp['key'] }}')" class="text-xs text-gray-600 underline">{{ __('applications::applications.followups.dismiss') }}</button>
+                    </li>
+                @endforeach
+            </ul>
+        </section>
+    @endif
+
     @if ($articles !== [])
         <section aria-labelledby="articles-heading" class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200">
             <h2 id="articles-heading" class="text-sm font-semibold">{{ __('applications::applications.ui.documentation_pages') }}</h2>

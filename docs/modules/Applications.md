@@ -74,3 +74,7 @@ Abilities: `applications:read`, `applications:write`. Permissions are the screen
 | GET | `/api/v1/applications/{id}/sheet` | The approved documentation sheet in force, as stored by chapter; 404 when none |
 
 Sheets are written, submitted and approved on screen.
+
+## Next steps
+
+`ApplicationFollowUps` computes proposals from the version in force ([ADR 0076](../adr/0076-proposals-when-application-documentation-is-approved.md)). Only dismissals are stored, in `applications_followup_dismissals`.

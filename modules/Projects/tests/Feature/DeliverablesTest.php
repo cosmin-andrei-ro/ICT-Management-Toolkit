@@ -80,6 +80,11 @@ final class ChecklistWorld implements Applications, BusinessProcesses, Risks
         return [];
     }
 
+    public function newProcessUrl(string $name, User $viewer): ?string
+    {
+        return null;
+    }
+
     private function app(): ApplicationSummary
     {
         return new ApplicationSummary('0199a000-0000-7000-8000-000000000001', 'APP-007', 'Payroll', 'https://example.test/app', null, $this->documented, $this->item, array_keys($this->processes));

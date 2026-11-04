@@ -47,6 +47,14 @@ return [
         'code' => 'e.g. APP-TKT',
         'department_email' => 'e.g. digital.office@company.example',
     ],
+    'followups' => [
+        'title' => 'Next steps',
+        'intro' => 'What the approved documentation suggests doing elsewhere. Nothing is created until you do it.',
+        'process' => 'Assess the business process that :name serves',
+        'licence' => 'Record the licence for :name',
+        'ask' => '(ask someone who manages this)',
+        'dismiss' => 'Does not apply',
+    ],
     'ui' => [
         'intro' => 'Every application of the company with its technical documentation: how it is built, run and supported.',
         'new' => 'New application',

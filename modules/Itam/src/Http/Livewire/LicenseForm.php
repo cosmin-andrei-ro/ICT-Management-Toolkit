@@ -68,6 +68,8 @@ final class LicenseForm extends Component
             $product = request()->query('product');
             $this->productId = is_string($product) && SoftwareProduct::query()->whereKey($product)->exists() ? $product : '';
             $this->currency = config()->string('core.contracts.default_currency');
+            $newProduct = request()->query('new_product');
+            $this->newProduct = $this->productId === '' && is_string($newProduct) ? mb_substr($newProduct, 0, 255) : '';
 
             return;
         }

@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Modules\Core\Domain\Links;
 
+use Modules\Core\Domain\Models\User;
+
 /**
  * Business processes of the BIA, for modules that plan for them (continuity
  * plans). Implemented by the BIA module; when it is disabled, nothing is found.
@@ -34,4 +36,9 @@ interface BusinessProcesses
      * @return list<ProcessSummary>
      */
     public function assessed(): array;
+
+    /**
+     * Where this person can create a process with this name; null when they may not.
+     */
+    public function newProcessUrl(string $name, User $viewer): ?string;
 }

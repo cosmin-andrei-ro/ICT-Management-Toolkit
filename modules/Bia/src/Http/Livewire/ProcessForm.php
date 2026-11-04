@@ -43,6 +43,8 @@ final class ProcessForm extends Component
     {
         if ($process === null || ! $process->exists) {
             $this->authorize('create', BusinessProcess::class);
+            $name = request()->query('name');
+            $this->name = is_string($name) ? mb_substr($name, 0, 255) : '';
 
             return;
         }

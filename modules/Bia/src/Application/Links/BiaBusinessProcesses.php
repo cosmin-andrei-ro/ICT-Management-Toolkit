@@ -7,9 +7,11 @@ declare(strict_types=1);
 
 namespace Modules\Bia\Application\Links;
 
+use Illuminate\Support\Facades\Gate;
 use Modules\Bia\Domain\Models\BusinessProcess;
 use Modules\Core\Domain\Links\BusinessProcesses;
 use Modules\Core\Domain\Links\ProcessSummary;
+use Modules\Core\Domain\Models\User;
 
 /**
  * The BIA side of Core's BusinessProcesses contract: the objectives in force,
@@ -58,5 +60,12 @@ final class BiaBusinessProcesses implements BusinessProcesses
     private static function summary(BusinessProcess $process): ProcessSummary
     {
         return new ProcessSummary($process->id, $process->name, route('bia.processes.show', $process), $process->rto_minutes, $process->rpo_minutes, $process->tier?->value);
+    }
+
+    public function newProcessUrl(string $name, User $viewer): ?string
+    {
+        return Gate::forUser($viewer)->allows('create', BusinessProcess::class)
+            ? route('bia.processes.create', ['name' => mb_substr($name, 0, 255)])
+            : null;
     }
 }

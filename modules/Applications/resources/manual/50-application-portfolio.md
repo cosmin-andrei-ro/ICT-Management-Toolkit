@@ -59,6 +59,11 @@ When a version comes into force it gets its number — 1.0 for the first, then 1
 
 **Full document** (on the application and on each version) shows the documentation as the company's template lays it out: cover, change history, document control and approvals, contents, then every chapter. **Print** it, or **Download PDF** when your administrator has set up the PDF service - the PDF is what auditors expect. A version that is not in force is marked as such.
 
+
+## Next steps after approval
+
+When a version comes into force, the application gets its CMDB item and documentation page, and the risk register offers suggested risks. Its page may also show **Next steps**: assess a business process, if the documentation names none, and record a licence for each commercial product in chapter 6.6 that the licence register does not know. A link opens the form already filled in. Nothing is created until you save it. Choose **Does not apply** when a step is not needed.
+
 ## After approval
 
 - The application appears in the **CMDB** as an item of its own, running on the components linked in 5.2.
