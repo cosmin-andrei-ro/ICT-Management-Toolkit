@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Asset',
     'menu' => 'Assets',
     'title' => 'Assets',
     'covered_by_contract' => 'Assets covered by this contract',

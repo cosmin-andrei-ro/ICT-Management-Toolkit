@@ -11,6 +11,7 @@ use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Audit\Application\Exports\ComplianceExport;
+use Modules\Audit\Application\Links\AuditSearchRecords;
 use Modules\Audit\Application\Metrics\ComplianceMetrics;
 use Modules\Audit\Application\PersonalData\AuditPersonalData;
 use Modules\Audit\Application\Risks\ComplianceRiskSignals;
@@ -29,6 +30,7 @@ use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
+use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
@@ -53,6 +55,10 @@ final class AuditServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ComplianceMetrics::source()));
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->registerGlobalSearch('audit.control', 'audit::compliance.control_linked_kind', AuditSearchRecords::controls(...));
+            $records->registerGlobalSearch('audit.finding', 'audit::audits.finding_linked_kind', AuditSearchRecords::findings(...));
+        });
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(ComplianceExport::TYPE, ComplianceExport::class, 'audit.compliance.view'));
         $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('audit', fn (): array => (new ComplianceRiskSignals)()));

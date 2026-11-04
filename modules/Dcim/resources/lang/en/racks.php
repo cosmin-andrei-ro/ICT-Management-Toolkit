@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Rack',
     'menu' => 'Racks',
     'title' => 'Racks',
     'intro' => 'The racks of every room and how full they are.',

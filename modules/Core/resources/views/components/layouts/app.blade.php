@@ -35,6 +35,12 @@
             </div>
 
             <div class="flex items-center gap-4 text-sm">
+                @auth
+                    <form method="GET" action="{{ route('core.search') }}" role="search">
+                        <label for="global-search" class="sr-only">{{ __('core::search.label') }}</label>
+                        <input id="global-search" type="search" name="q" value="{{ request()->routeIs('core.search') && is_string(request()->query('q')) ? request()->query('q') : '' }}" maxlength="200" placeholder="{{ __('core::search.placeholder') }}" class="w-36 rounded-md border border-gray-300 px-2 py-1 text-sm">
+                    </form>
+                @endauth
                 <a href="{{ route('manual.index') }}" class="inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-1 text-gray-600 ring-1 ring-gray-300 hover:bg-gray-50 hover:text-gray-900">
                     <span aria-hidden="true">?</span> {{ __('core::manual.title') }}
                 </a>

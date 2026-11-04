@@ -12,6 +12,7 @@ use Modules\Core\Http\Controllers\HomeController;
 use Modules\Core\Http\Controllers\LogoutController;
 use Modules\Core\Http\Controllers\ManualController;
 use Modules\Core\Http\Controllers\SamlController;
+use Modules\Core\Http\Controllers\SearchController;
 use Modules\Core\Http\Controllers\SsoController;
 use Modules\Core\Http\Livewire\Account\AccountSecurity;
 use Modules\Core\Http\Livewire\Account\ApiTokens;
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'auth.session', 'organization'])->group(function (): 
 
 Route::middleware(['auth', 'auth.session', 'organization', 'mfa'])->group(function (): void {
     Route::get('/', HomeController::class)->name('home');
+    Route::get('/search', SearchController::class)->middleware('throttle:60,1')->name('core.search');
     Route::get('/attachments/{attachment}', AttachmentController::class)->name('core.attachments.download');
     Route::get('/exports/{export}', ExportController::class)->whereUuid('export')->name('core.exports.download');
 

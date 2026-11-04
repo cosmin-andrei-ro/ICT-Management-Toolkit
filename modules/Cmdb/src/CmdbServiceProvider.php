@@ -10,6 +10,7 @@ namespace Modules\Cmdb;
 use App\Support\Modules\ModuleServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Cmdb\Application\Links\CmdbConfigurationItems;
+use Modules\Cmdb\Application\Links\CmdbSearchRecords;
 use Modules\Cmdb\Application\PersonalData\CmdbPersonalData;
 use Modules\Cmdb\Application\Webhooks\CmdbWebhooks;
 use Modules\Cmdb\Domain\Models\CiType;
@@ -19,6 +20,7 @@ use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Links\ConfigurationItems;
+use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalData;
@@ -41,6 +43,9 @@ final class CmdbServiceProvider extends ModuleServiceProvider
         $this->app->bind(ConfigurationItems::class, CmdbConfigurationItems::class);
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->registerGlobalSearch('cmdb.item', 'cmdb::items.linked_kind', CmdbSearchRecords::items(...));
+        });
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
     }
 

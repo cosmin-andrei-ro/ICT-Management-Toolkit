@@ -31,6 +31,7 @@ use Modules\Core\Domain\Webhooks\WebhookEvents;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Itam\Application\Exports\AssetExport;
 use Modules\Itam\Application\Exports\LicenseExport;
+use Modules\Itam\Application\Links\ItamSearchRecords;
 use Modules\Itam\Application\Links\RegisteredAssets;
 use Modules\Itam\Application\Listeners\RecordAssetLocation;
 use Modules\Itam\Application\Metrics\AssetMetrics;
@@ -68,6 +69,10 @@ final class ItamServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(ExportRegistry::class, function (ExportRegistry $exports): void {
             $exports->register(AssetExport::TYPE, AssetExport::class, 'itam.asset.manage');
             $exports->register(LicenseExport::TYPE, LicenseExport::class, 'itam.license.manage');
+        });
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->registerGlobalSearch('itam.asset', 'itam::assets.linked_kind', ItamSearchRecords::assets(...));
+            $records->registerGlobalSearch('itam.license', 'itam::licenses.linked_kind', ItamSearchRecords::licenses(...));
         });
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         // The CMDB shows the assets linked to an item; contracts show the assets they cover.

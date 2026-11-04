@@ -42,6 +42,7 @@ use Modules\Core\Application\Authorization\RecordAuthorizationChange;
 use Modules\Core\Application\Exports\AuditLogExport;
 use Modules\Core\Application\Exports\PersonalDataExport;
 use Modules\Core\Application\Links\ContractRecords;
+use Modules\Core\Application\Links\SupplierRecords;
 use Modules\Core\Application\PersonalData\CorePersonalData;
 use Modules\Core\Application\Retention\ApplyRetention;
 use Modules\Core\Application\Risks\ContractRiskSignals;
@@ -183,6 +184,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
             $records->register('core.contract', ContractRecords::resolve(...));
             $records->registerSearch('core.contract', 'core::contracts.linked_kind', ContractRecords::search(...));
+            $records->registerGlobalSearch('core.supplier', 'core::suppliers.linked_kind', SupplierRecords::search(...));
         });
         $this->app->scoped(Directory::class, function (Application $app): Directory {
             /** @var array<string, mixed> $config */

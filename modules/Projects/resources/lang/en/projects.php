@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Project',
     'menu' => 'Projects',
     'title' => 'Projects',
     'intro' => 'IT projects, their phases and their tasks.',
