@@ -35,7 +35,7 @@ return [
         'new' => 'New space',
         'edit' => 'Edit space',
         'name' => 'Name',
-        'name_example' => 'e.g. Network, Service desk procedures, Guides for employees',
+        'name_example' => 'e.g. Network, IT support procedures, Guides for employees',
         'name_taken' => 'A space with this name already exists.',
         'description' => 'Description',
         'visibility' => 'Who reads it',

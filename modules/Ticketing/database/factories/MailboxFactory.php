@@ -24,12 +24,12 @@ final class MailboxFactory extends Factory
     {
         return [
             'organization_id' => app(OrganizationContext::class)->id() ?? Organization::factory(),
-            'name' => 'Service desk',
+            'name' => 'IT support',
             'address' => fake()->unique()->userName().'@example.com',
             'host' => 'mail.example.com',
             'port' => 993,
             'encryption' => MailEncryption::Ssl,
-            'username' => 'helpdesk',
+            'username' => 'support',
             'password' => 'factory-password',
             'folder' => 'INBOX',
             'is_active' => true,

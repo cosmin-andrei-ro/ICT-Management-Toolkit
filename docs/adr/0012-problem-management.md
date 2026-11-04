@@ -5,7 +5,7 @@
 
 ## Context
 
-ITIL 4 problem management finds and removes the causes of incidents. Agents need to group incidents under a problem, document the root cause and a workaround (a "known error"), find known errors quickly, and close the incidents once the cause is fixed.
+Problem management finds and removes the causes of incidents. Agents need to group incidents under a problem, document the root cause and a workaround (a "known error"), find known errors quickly, and close the incidents once the cause is fixed.
 
 ## Decision
 

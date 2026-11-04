@@ -9,4 +9,4 @@ When IT hands you something, you receive an email. Click **I received it** next 
 
 **My software** lists the software licensed to you by name. Keys are never shown here; IT installs or activates the software.
 
-If something is missing or wrong, or you no longer have a device, tell the service desk: open **My tickets** and report it.
+If something is missing or wrong, or you no longer have a device, tell IT support: open **My tickets** and report it.

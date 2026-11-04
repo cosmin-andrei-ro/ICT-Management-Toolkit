@@ -255,7 +255,7 @@ final class Ticket extends Model
      */
     public function scopeVisibleToRequester(Builder $query, User $user): void
     {
-        // Problems are internal to the service desk and never appear in the portal.
+        // Problems are internal to IT support and never appear in the portal.
         $query->whereIn('type', TicketType::requestable())
             ->where(fn (Builder $inner) => $inner
                 ->where('requester_id', $user->id)

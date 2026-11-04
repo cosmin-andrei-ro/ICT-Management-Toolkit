@@ -6,7 +6,7 @@
 declare(strict_types=1);
 
 return [
-    'title' => 'Service desk reports',
+    'title' => 'Ticketing reports',
     'menu' => 'Reports',
     'intro' => 'Incidents and service requests. Days are counted in :timezone.',
     'from' => 'From',
@@ -31,8 +31,8 @@ return [
     'no_category' => 'No category',
     'none' => 'Nothing to show.',
     'export_title' => 'Export',
-    'export_help' => 'One row per ticket created in the period (requesters are left out), plus the indicators in Excel. The file is prepared in the background; it appears below for you only, for 7 days.',
-    'export_xlsx' => 'Export to Excel',
+    'export_help' => 'One row per ticket created in the period (requesters are left out), plus the indicators in the XLSX file. The file is prepared in the background; it appears below for you only, for 7 days.',
+    'export_xlsx' => 'Export to spreadsheet',
     'export_csv' => 'Export to CSV',
     'export' => [
         'tickets_sheet' => 'Tickets',

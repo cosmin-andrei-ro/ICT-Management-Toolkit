@@ -5,7 +5,7 @@
 
 ## Context
 
-Most companies already keep identities in a cloud or on-premises identity provider (Microsoft Entra ID, Google Workspace, Okta, Keycloak). Signing in there means one password, the company's own second factor and conditional access, and access that ends when the person leaves. CLAUDE.md §4 plans SSO through OIDC and SAML2. The toolkit hosts several organizations (legal entities) of one company in one installation; organization administrators must not be able to reach other organizations' accounts.
+Most companies already keep identities in a cloud or on-premises identity provider. Signing in there means one password, the company's own second factor and conditional access, and access that ends when the person leaves. CLAUDE.md §4 plans SSO through OIDC and SAML2. The toolkit hosts several organizations (legal entities) of one company in one installation; organization administrators must not be able to reach other organizations' accounts.
 
 ## Decision (owner's choices)
 
@@ -41,5 +41,5 @@ Most companies already keep identities in a cloud or on-premises identity provid
 ## Consequences
 
 - Tests use a fake provider signing with a real RSA key (`FakeIdentityProvider`); the tests cover forged, expired, mis-addressed, replayed and HMAC-signed tokens.
-- Providers that do not send `amr` (Entra ID v2 tokens may not) leave the toolkit's own second factor in place unless their administrators configure the claim.
+- Providers that do not send `amr` leave the toolkit's own second factor in place unless their administrators configure the claim.
 - An account used by several organizations cannot be linked automatically: its owner keeps signing in as before.

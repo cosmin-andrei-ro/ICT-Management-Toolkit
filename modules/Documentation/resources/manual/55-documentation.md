@@ -3,7 +3,7 @@ title: Documentation
 audience: everyone
 ---
 
-**Documentation** in the menu gathers procedures, how-tos and reference pages, organised in **spaces** - for example *Network*, *Service desk procedures*, *Guides for employees*. You see the spaces you may read; search finds words in their pages, with the matching passages highlighted.
+**Documentation** in the menu gathers procedures, how-tos and reference pages, organised in **spaces** - for example *Network*, *IT support procedures*, *Guides for employees*. You see the spaces you may read; search finds words in their pages, with the matching passages highlighted.
 
 ## Who reads and who writes
 
@@ -56,9 +56,9 @@ Every published page has a **review** date, from the space's interval. On the sp
 
 On a page, **Link a record** connects it to what it is about - an application, a CMDB item, a continuity plan, a risk, a contract, a ticket: choose the kind, search, **Link**. Readers who may not open the record see "A record you cannot open" instead of its name, so a page never reveals the title of a ticket, risk or plan they may not read; editors of the space still see the name, to manage the link. **Files** keeps diagrams, exports or manuals with the page; whoever reads the page can download them.
 
-## Documentation and the service desk
+## Documentation and tickets
 
-Published pages of spaces read by **everyone** are the employees' help: they find them in **Documentation** and, while writing a new ticket, as **suggestions** under its summary. Link a page to a ticket or a known error (**Link a record → Service desk ticket**) and it shows on the ticket's page - to agents always, to the requester when they may read it. Other modules can link pages too, for example a procedure as evidence of a compliance control.
+Published pages of spaces read by **everyone** are the employees' help: they find them in **Documentation** and, while writing a new ticket, as **suggestions** under its summary. Link a page to a ticket or a known error (**Link a record → Ticket**) and it shows on the ticket's page - to agents always, to the requester when they may read it. Other modules can link pages too, for example a procedure as evidence of a compliance control.
 
 ## Application pages
 

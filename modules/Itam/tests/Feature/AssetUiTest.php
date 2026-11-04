@@ -62,7 +62,7 @@ it('creates assets with the attributes of their category and unique serial numbe
 
     Livewire::test(AssetForm::class)
         ->set('categoryId', $this->itam->laptops->id)
-        ->set('manufacturer', 'Lenovo')->set('model', 'T14')->set('serialNumber', 'SN-2')
+        ->set('manufacturer', 'Beta')->set('model', 'M14')->set('serialNumber', 'SN-2')
         ->set('properties.memory_gb', 'lots')
         ->call('save')
         ->assertHasErrors(['properties.memory_gb'])
@@ -72,7 +72,7 @@ it('creates assets with the attributes of their category and unique serial numbe
         ->assertHasNoErrors();
 
     $asset = Asset::query()->where('serial_number', 'SN-2')->sole();
-    expect($asset->displayName())->toBe('Lenovo T14')
+    expect($asset->displayName())->toBe('Beta M14')
         ->and($asset->properties)->toBe(['memory_gb' => 32])
         ->and($asset->currency)->toBe('EUR')
         ->and($asset->asset_tag)->toStartWith('AST-');
@@ -182,7 +182,7 @@ it('links an asset to one configuration item, shown on the item page too', funct
 });
 
 it('lists the assets a contract covers on the contract page', function (): void {
-    $contract = Contract::factory()->create(['title' => 'Dell ProSupport']);
+    $contract = Contract::factory()->create(['title' => 'Alpha Support']);
     $this->itam->laptop(['asset_tag' => 'AST-COVERED', 'contract_id' => $contract->id]);
 
     Livewire::test(ShowContract::class, ['contract' => $contract])

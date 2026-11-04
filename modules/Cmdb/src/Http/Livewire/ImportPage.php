@@ -24,7 +24,7 @@ use Modules\Core\Infrastructure\Imports\SpreadsheetUnreadable;
 use Throwable;
 
 /**
- * Import from CSV or Excel: upload, preview what each row will do, then import
+ * Import from CSV or XLSX: upload, preview what each row will do, then import
  * every row or none. The file is read again when importing: the preview shown
  * in the browser is never trusted.
  */

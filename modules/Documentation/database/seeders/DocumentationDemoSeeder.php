@@ -41,19 +41,19 @@ final class DocumentationDemoSeeder extends Seeder
      * @var array<string, array{0: string, 1: string}>
      */
     private const array POLICIES = [
-        'security_policy' => ['Information security policy', "Demo Logistics protects the information it holds, and that of its customers, against loss, disclosure and unavailability.\n\n- Every system has a business and a technical owner.\n- Access is granted on need, and reviewed twice a year.\n- Incidents are reported to the service desk at once."],
+        'security_policy' => ['Information security policy', "Demo Logistics protects the information it holds, and that of its customers, against loss, disclosure and unavailability.\n\n- Every system has a business and a technical owner.\n- Access is granted on need, and reviewed twice a year.\n- Incidents are reported to IT support at once."],
         'backup_policy' => ['Backup policy', "- Critical systems: nightly full backup and hourly logs, kept 35 days.\n- Other systems: nightly backup, kept 14 days.\n- One copy off-site.\n- A restore test every quarter for each critical system."],
-        'access_policy' => ['Access control policy', "Accounts are personal. Access is requested through the service desk and approved by the application owner.\n\nAccess of people who leave is removed on their last day."],
+        'access_policy' => ['Access control policy', "Accounts are personal. Access is requested through IT support and approved by the application owner.\n\nAccess of people who leave is removed on their last day."],
     ];
 
     /**
      * @var array<string, array{0: string, 1: string}>
      */
     private const array HELP = [
-        'vpn' => ['Connect to the VPN from home', "1. Open **Demo VPN** from the start menu.\n2. Sign in with your usual account and approve the request on your phone.\n3. Wait for the green shield, then open the ERP or the file shares.\n\nIf the VPN does not connect, restart your laptop and try again before calling the service desk."],
+        'vpn' => ['Connect to the VPN from home', "1. Open **Demo VPN** from the start menu.\n2. Sign in with your usual account and approve the request on your phone.\n3. Wait for the green shield, then open the ERP or the file shares.\n\nIf the VPN does not connect, restart your laptop and try again before calling IT support."],
         'printer' => ['Add the office printer', "1. Open *Settings > Printers*.\n2. Choose **Add printer** and select *HQ-PRINT-01*.\n3. Print a test page.\n\nThe printer releases your job when you tap your badge on it."],
         'password' => ['Reset your password', "Use the *Forgot password* link on the sign-in page. A reset link arrives by e-mail and is valid for one hour.\n\nChoose a long passphrase: four or five words are easier to remember and harder to guess."],
-        'mfa' => ['Set up the authenticator app on a new phone', "1. Install an authenticator app on the new phone.\n2. Ask the service desk to reset your second factor.\n3. Scan the QR code shown at your next sign-in."],
+        'mfa' => ['Set up the authenticator app on a new phone', "1. Install an authenticator app on the new phone.\n2. Ask IT support to reset your second factor.\n3. Scan the QR code shown at your next sign-in."],
         'teams_meeting' => ['Join a video meeting from a meeting room', "Each meeting room has a screen with a camera. Tap **Join** on the room panel next to your meeting.\n\nIf there is no sound, check that the room speaker is selected on the panel."],
     ];
 

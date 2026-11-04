@@ -5,8 +5,7 @@
     "description": "Open-source platform that centralizes a company's IT information: ITSM, CMDB, ITAM, DCIM, BIA, BCM, risk and compliance.",
     "keywords": [
         "itsm",
-        "itil",
-        "cmdb",
+                "cmdb",
         "itam",
         "dcim",
         "grc",

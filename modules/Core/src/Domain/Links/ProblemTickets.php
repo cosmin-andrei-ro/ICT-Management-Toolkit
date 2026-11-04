@@ -11,20 +11,20 @@ use InvalidArgumentException;
 use Modules\Core\Domain\Models\User;
 
 /**
- * Work other modules hand to the service desk (a finding of a recovery test).
+ * Work other modules hand to IT support (a finding of a recovery test).
  * Implemented by the Ticketing module; when it is disabled, nothing is raised.
  */
-interface ServiceDeskTickets
+interface ProblemTickets
 {
     public function isAvailable(): bool;
 
     /**
-     * Opens a problem for the service desk to investigate and fix.
+     * Opens a problem for IT support to investigate and fix.
      *
      * @param  string  $impact  low, medium or high
      * @param  list<string>  $itemIds  Configuration items concerned.
      *
-     * @throws InvalidArgumentException for an unknown impact, or when the service desk is not available
+     * @throws InvalidArgumentException for an unknown impact, or when Ticketing is not available
      */
     public function raiseProblem(string $title, string $description, string $impact, User $actor, array $itemIds = []): TicketSummary;
 

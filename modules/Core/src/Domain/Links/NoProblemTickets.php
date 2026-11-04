@@ -13,7 +13,7 @@ use Modules\Core\Domain\Models\User;
 /**
  * Used when the Ticketing module is disabled.
  */
-final class NoServiceDeskTickets implements ServiceDeskTickets
+final class NoProblemTickets implements ProblemTickets
 {
     public function isAvailable(): bool
     {
@@ -22,7 +22,7 @@ final class NoServiceDeskTickets implements ServiceDeskTickets
 
     public function raiseProblem(string $title, string $description, string $impact, User $actor, array $itemIds = []): TicketSummary
     {
-        throw new InvalidArgumentException('The service desk is not enabled.');
+        throw new InvalidArgumentException('Ticketing is not enabled.');
     }
 
     public function find(array $ticketIds): array

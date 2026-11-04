@@ -27,7 +27,7 @@ use Modules\Documentation\Database\Factories\SpaceFactory;
 use Modules\Documentation\Domain\Enums\SpaceVisibility;
 
 /**
- * An area of the documentation (network, service desk procedures, guides for
+ * An area of the documentation (network, IT support procedures, guides for
  * employees…) with its own readers, editors and owners.
  *
  * @property string $id

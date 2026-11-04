@@ -182,7 +182,7 @@ describe('groups', function (): void {
                 }), PHPUnit::anything())
                 ->andReturn([
                     'count' => 2,
-                    0 => ldapEntry('CN=IT-ServiceDesk,OU=Groups,DC=corp,DC=example', ['distinguishedname' => 'CN=IT-ServiceDesk,OU=Groups,DC=corp,DC=example']),
+                    0 => ldapEntry('CN=IT-Support,OU=Groups,DC=corp,DC=example', ['distinguishedname' => 'CN=IT-Support,OU=Groups,DC=corp,DC=example']),
                     1 => ldapEntry('CN=All-Staff,OU=Groups,DC=corp,DC=example', ['distinguishedname' => 'CN=All-Staff,OU=Groups,DC=corp,DC=example']),
                 ]),
         ]);
@@ -190,7 +190,7 @@ describe('groups', function (): void {
         $jane = new DirectoryUser(JANE_GUID, 'CN=Jane Doe,OU=Staff,DC=corp,DC=example', 'jdoe', 'Jane Doe', 'jane.doe@corp.example', true);
 
         expect(directoryWith($ldap)->groupsOf($jane))->toBe([
-            'cn=it-servicedesk,ou=groups,dc=corp,dc=example',
+            'cn=it-support,ou=groups,dc=corp,dc=example',
             'cn=all-staff,ou=groups,dc=corp,dc=example',
         ])->and($captured)->toContain('member:1.2.840.113556.1.4.1941:=');
     });

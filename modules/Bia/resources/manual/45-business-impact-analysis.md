@@ -31,7 +31,7 @@ When an assessment is submitted you receive an email. Open it, check it, and **A
 
 The **tier** follows from the RTO: tier 1 within 4 hours, tier 2 within a day, tier 3 within 3 days, tier 4 later. Team leads see the BIA too, to plan IT recovery.
 
-At the top of the list, the overview counts processes per tier, those never assessed or overdue for review, and the assessments being filled in or waiting for you. **Export to Excel** gives the whole register: processes, what they need, and the recovery gaps. Every Monday you receive an email when something needs attention.
+At the top of the list, the overview counts processes per tier, those never assessed or overdue for review, and the assessments being filled in or waiting for you. **Export to spreadsheet** gives the whole register: processes, what they need, and the recovery gaps. Every Monday you receive an email when something needs attention.
 
 On a process, **BIA sheet** shows its analysis on one page: print it, or **Download PDF** where the PDF service is installed, for an audit.
 

@@ -31,19 +31,19 @@ final class ItamDemoSeeder extends Seeder
 {
     /** @var array<string, array{0: string, 1: string, 2: string, 3: string, 4: string, 5: int, 6: array<string, mixed>}> key => category, name, manufacturer, model, supplier, months old, properties */
     private const array INFRASTRUCTURE = [
-        'host_1' => ['server', 'hv-01', 'Northwind', 'R760', 'hardware', 30, ['hostname' => 'hv-01', 'cpu_cores' => 32, 'memory_gb' => 512, 'ip_address' => '10.10.1.11']],
-        'host_2' => ['server', 'hv-02', 'Northwind', 'R760', 'hardware', 30, ['hostname' => 'hv-02', 'cpu_cores' => 32, 'memory_gb' => 512, 'ip_address' => '10.10.1.12']],
-        'backup_server' => ['server', 'bkp-01', 'Northwind', 'R450', 'hardware', 46, ['hostname' => 'bkp-01', 'cpu_cores' => 8, 'memory_gb' => 64, 'ip_address' => '10.10.1.13']],
-        'core_switch' => ['network_device', 'core-sw-01', 'Acme', 'CX-48', 'network', 58, ['device_type' => 'Switch', 'ip_address' => '10.10.0.2', 'firmware' => '9.3']],
-        'access_switch' => ['network_device', 'acc-sw-01', 'Acme', 'CX-24', 'network', 24, ['device_type' => 'Switch', 'ip_address' => '10.10.0.3', 'firmware' => '9.3']],
-        'firewall' => ['network_device', 'fw-01', 'Acme', 'FW-400', 'network', 20, ['device_type' => 'Firewall', 'ip_address' => '10.10.0.1', 'firmware' => '7.4']],
-        'wh_ap_1' => ['network_device', 'wh-ap-01', 'Acme', 'AP-6', 'network', 14, ['device_type' => 'Access point', 'ip_address' => '10.20.0.11']],
-        'wh_ap_2' => ['network_device', 'wh-ap-02', 'Acme', 'AP-6', 'network', 14, ['device_type' => 'Access point', 'ip_address' => '10.20.0.12']],
-        'patch_panel' => ['network_device', 'pp-r02-01', 'Acme', 'PP-24', 'network', 58, ['device_type' => 'Other']],
-        'wh_switch' => ['network_device', 'wh-sw-01', 'Acme', 'CX-24', 'network', 14, ['device_type' => 'Switch', 'ip_address' => '10.20.0.2', 'firmware' => '9.3']],
-        'wh_patch_panel' => ['network_device', 'pp-clj-01', 'Acme', 'PP-24', 'network', 14, ['device_type' => 'Other']],
-        'nas' => ['storage', 'nas-01', 'Northwind', 'NS-96', 'hardware', 34, ['capacity_tb' => 96]],
-        'floor2_printer' => ['printer', 'Floor 2 printer', 'Northwind', 'MF-500', 'hardware', 40, ['printer_type' => 'Multifunction', 'ip_address' => '10.30.0.50']],
+        'host_1' => ['server', 'hv-01', 'Demo Hardware', 'SRV-2U', 'hardware', 30, ['hostname' => 'hv-01', 'cpu_cores' => 32, 'memory_gb' => 512, 'ip_address' => '10.10.1.11']],
+        'host_2' => ['server', 'hv-02', 'Demo Hardware', 'SRV-2U', 'hardware', 30, ['hostname' => 'hv-02', 'cpu_cores' => 32, 'memory_gb' => 512, 'ip_address' => '10.10.1.12']],
+        'backup_server' => ['server', 'bkp-01', 'Demo Hardware', 'SRV-1U', 'hardware', 46, ['hostname' => 'bkp-01', 'cpu_cores' => 8, 'memory_gb' => 64, 'ip_address' => '10.10.1.13']],
+        'core_switch' => ['network_device', 'core-sw-01', 'Sample', 'SW-48', 'network', 58, ['device_type' => 'Switch', 'ip_address' => '10.10.0.2', 'firmware' => '9.3']],
+        'access_switch' => ['network_device', 'acc-sw-01', 'Sample', 'SW-24', 'network', 24, ['device_type' => 'Switch', 'ip_address' => '10.10.0.3', 'firmware' => '9.3']],
+        'firewall' => ['network_device', 'fw-01', 'Sample', 'FW-400', 'network', 20, ['device_type' => 'Firewall', 'ip_address' => '10.10.0.1', 'firmware' => '7.4']],
+        'wh_ap_1' => ['network_device', 'wh-ap-01', 'Sample', 'AP-6', 'network', 14, ['device_type' => 'Access point', 'ip_address' => '10.20.0.11']],
+        'wh_ap_2' => ['network_device', 'wh-ap-02', 'Sample', 'AP-6', 'network', 14, ['device_type' => 'Access point', 'ip_address' => '10.20.0.12']],
+        'patch_panel' => ['network_device', 'pp-r02-01', 'Sample', 'PP-24', 'network', 58, ['device_type' => 'Other']],
+        'wh_switch' => ['network_device', 'wh-sw-01', 'Sample', 'SW-24', 'network', 14, ['device_type' => 'Switch', 'ip_address' => '10.20.0.2', 'firmware' => '9.3']],
+        'wh_patch_panel' => ['network_device', 'pp-clj-01', 'Sample', 'PP-24', 'network', 14, ['device_type' => 'Other']],
+        'nas' => ['storage', 'nas-01', 'Demo Hardware', 'NS-96', 'hardware', 34, ['capacity_tb' => 96]],
+        'floor2_printer' => ['printer', 'Floor 2 printer', 'Demo Hardware', 'MF-500', 'hardware', 40, ['printer_type' => 'Multifunction', 'ip_address' => '10.30.0.50']],
     ];
 
     /** Assets that are what a CMDB item describes. */
@@ -61,7 +61,7 @@ final class ItamDemoSeeder extends Seeder
             foreach (array_values($company->users) as $index => $person) {
                 $bought = $today->subMonths(6 + ($index * 5) % 40);
                 $laptop = $save->handle(null, $category('laptop'), [
-                    'manufacturer' => 'Northwind', 'model' => $index % 4 === 0 ? 'Book 16 Pro' : 'Book 14', 'serial_number' => sprintf('NW%08d', 4100 + $index),
+                    'manufacturer' => 'Demo Hardware', 'model' => $index % 4 === 0 ? 'Laptop 16' : 'Laptop 14', 'serial_number' => sprintf('NW%08d', 4100 + $index),
                     'status' => 'in_stock', 'location_id' => $company->locations['office']->id, 'supplier_id' => $company->suppliers['hardware']->id,
                     'contract_id' => $company->contracts['hardware_support']->id, 'purchase_date' => $bought->toDateString(), 'purchase_cost' => '1150.00', 'currency' => 'EUR',
                     // Three-year warranty: the oldest ones end soon or have ended.
@@ -72,7 +72,7 @@ final class ItamDemoSeeder extends Seeder
             }
 
             foreach (range(1, 6) as $number) {
-                $monitor = $save->handle(null, $category('monitor'), ['manufacturer' => 'Northwind', 'model' => 'View 27', 'serial_number' => sprintf('NWM%06d', $number), 'status' => 'in_stock', 'location_id' => $company->locations['office']->id, 'purchase_date' => $today->subMonths(10)->toDateString()], ['size_inches' => 27, 'resolution' => '2560x1440']);
+                $monitor = $save->handle(null, $category('monitor'), ['manufacturer' => 'Demo Hardware', 'model' => 'Monitor 27', 'serial_number' => sprintf('NWM%06d', $number), 'status' => 'in_stock', 'location_id' => $company->locations['office']->id, 'purchase_date' => $today->subMonths(10)->toDateString()], ['size_inches' => 27, 'resolution' => '2560x1440']);
                 $company->refs['itam.monitor_'.$number] = $monitor->id;
             }
 

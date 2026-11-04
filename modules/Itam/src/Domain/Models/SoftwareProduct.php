@@ -24,7 +24,7 @@ use Modules\Itam\Application\Policies\LicensePolicy;
 use Modules\Itam\Database\Factories\SoftwareProductFactory;
 
 /**
- * A piece of software licences are bought for: "Microsoft 365 E3", "AutoCAD".
+ * A piece of software licences are bought for: "Office Suite E3", "Design Suite".
  * Compliance is counted per product, across its licences.
  *
  * @property string $id

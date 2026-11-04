@@ -5,7 +5,7 @@
 
 ## Context
 
-People using the platform (requesters, service desk agents, administrators) need a manual reachable from the application. Each module adds features, so the manual must grow with the modules without a central file every module edits.
+People using the platform (requesters, IT support agents, administrators) need a manual reachable from the application. Each module adds features, so the manual must grow with the modules without a central file every module edits.
 
 ## Decision
 

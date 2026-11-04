@@ -27,7 +27,7 @@ use Modules\Itam\Domain\Models\License;
 use Throwable;
 
 /**
- * Import of assets or licences from CSV or Excel: upload, preview what each row
+ * Import of assets or licences from CSV or XLSX: upload, preview what each row
  * will do, then import every row or none. The file is read again when
  * importing: the preview shown in the browser is never trusted.
  */

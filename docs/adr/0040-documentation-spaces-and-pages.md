@@ -12,7 +12,7 @@ CLAUDE.md §3 plans a Documentation / Knowledge Base module: versioned pages, te
 - **Module `Documentation`** (`documentation_*` tables), part A of four:
   - A: spaces and pages;
   - B: approval, review and PDF;
-  - C: portal and service desk;
+  - C: portal and ticketing;
   - D: generated application pages.
 - **Spaces** (`documentation_spaces`) group pages. Each space has a name, owners (people), the teams that write in it, and a **visibility**:
   - **IT staff**: people holding any role beyond Requester, through `documentation.staff.read`;

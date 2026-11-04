@@ -6,7 +6,7 @@
 declare(strict_types=1);
 
 return [
-    'button' => 'Export to Excel',
+    'button' => 'Export to spreadsheet',
     'of' => 'Continuity register of :date',
     'plans' => 'Plans',
     'coverage' => 'Process coverage',

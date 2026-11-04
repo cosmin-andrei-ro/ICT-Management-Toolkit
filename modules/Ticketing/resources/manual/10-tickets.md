@@ -20,7 +20,7 @@ Use **My tickets** to tell IT that something is broken, and to follow everything
 
 You get a number such as `INC-000042` and a confirmation email.
 
-**Attachments:** up to 5 files per message, 20 MB each. Accepted: PDF, images (PNG, JPEG, GIF, WebP), text and CSV, ZIP, Word/Excel/PowerPoint and OpenDocument files, and saved emails (`.eml`). Other types are refused, whatever their name.
+**Attachments:** up to 5 files per message, 20 MB each. Accepted: PDF, images (PNG, JPEG, GIF, WebP), text and CSV, ZIP, office documents (DOCX, XLSX, PPTX, OpenDocument), and saved emails (`.eml`). Other types are refused, whatever their name.
 
 ## Following your tickets
 
@@ -63,4 +63,4 @@ Only you, people added to the ticket as watchers, and the IT team can see your t
 
 ## Limits
 
-To protect the service desk from runaway scripts, one person can open at most 20 tickets per hour.
+To protect IT support from runaway scripts, one person can open at most 20 tickets per hour.

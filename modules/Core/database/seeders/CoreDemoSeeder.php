@@ -69,7 +69,7 @@ final class CoreDemoSeeder extends Seeder
                 $company->departments[$key] = Department::query()->create(['name' => $name, 'code' => $code, 'manager_id' => $company->user($manager)->id]);
             }
 
-            foreach (['desk' => ['Service Desk', 'teamlead', ['agent', 'agent2', 'teamlead']], 'infrastructure' => ['Infrastructure', 'teamlead', ['teamlead', 'assets', 'agent2']], 'applications' => ['Business Applications', 'applications', ['applications', 'agent']]] as $key => [$name, $lead, $members]) {
+            foreach (['desk' => ['IT Support', 'teamlead', ['agent', 'agent2', 'teamlead']], 'infrastructure' => ['Infrastructure', 'teamlead', ['teamlead', 'assets', 'agent2']], 'applications' => ['Business Applications', 'applications', ['applications', 'agent']]] as $key => [$name, $lead, $members]) {
                 $team = Team::query()->create(['name' => $name, 'lead_id' => $company->user($lead)->id]);
                 $teams->handle($team, array_map(fn (string $member): string => $company->user($member)->id, $members));
                 $company->teams[$key] = $team;
@@ -87,8 +87,8 @@ final class CoreDemoSeeder extends Seeder
             ];
 
             foreach ([
-                'hardware' => ['Northwind Hardware', 'support@northwind-hardware.example', '+40 21 000 0001', 'Mon–Fri 08:00–18:00'],
-                'network' => ['Acme Networks', 'noc@acme-networks.example', '+40 21 000 0002', '24/7'],
+                'hardware' => ['Demo Hardware', 'support@demo-hardware.example', '+40 21 000 0001', 'Mon–Fri 08:00–18:00'],
+                'network' => ['Demo Networks', 'noc@demo-networks.example', '+40 21 000 0002', '24/7'],
                 'cloud' => ['Blue Sky Cloud', 'help@bluesky-cloud.example', null, '24/7'],
                 'erp' => ['Ledger Soft', 'support@ledgersoft.example', '+40 21 000 0004', 'Mon–Fri 09:00–17:00'],
                 'power' => ['Volt Services', 'service@volt-services.example', '+40 21 000 0005', '24/7 for emergencies'],

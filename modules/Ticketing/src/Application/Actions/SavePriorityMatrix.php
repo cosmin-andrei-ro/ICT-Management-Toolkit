@@ -17,7 +17,7 @@ use Modules\Ticketing\Domain\Enums\Urgency;
 use Modules\Ticketing\Domain\Workflow\PriorityMatrix;
 
 /**
- * Stores only the cells that differ from the ITIL default. Applies to tickets
+ * Stores only the cells that differ from the default. Applies to tickets
  * created or triaged afterwards; existing priorities are not rewritten.
  */
 final readonly class SavePriorityMatrix

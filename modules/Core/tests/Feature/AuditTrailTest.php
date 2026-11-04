@@ -32,7 +32,7 @@ function auditEntriesFor(Department $department): array
 }
 
 it('records creation with the actor, organization and new values', function (): void {
-    $department = Department::query()->create(['name' => 'Service Desk', 'code' => 'SD']);
+    $department = Department::query()->create(['name' => 'IT Support', 'code' => 'IT']);
 
     [$entry] = auditEntriesFor($department);
 
@@ -40,24 +40,24 @@ it('records creation with the actor, organization and new values', function (): 
         ->and($entry->user_id)->toBe($this->user->id)
         ->and($entry->organization_id)->toBe($this->organization->id)
         ->and($entry->old_values)->toBeNull()
-        ->and($entry->new_values)->toMatchArray(['name' => 'Service Desk', 'code' => 'SD'])
+        ->and($entry->new_values)->toMatchArray(['name' => 'IT Support', 'code' => 'IT'])
         ->and($entry->new_values)->not->toHaveKeys(['created_at', 'updated_at']);
 });
 
 it('records only the changed fields with their old and new values', function (): void {
-    $department = Department::query()->create(['name' => 'Service Desk', 'code' => 'SD']);
+    $department = Department::query()->create(['name' => 'IT Support', 'code' => 'IT']);
 
     $department->update(['code' => 'SVD']);
 
     $entry = auditEntriesFor($department)[1];
 
     expect($entry->event)->toBe(AuditEvent::Updated)
-        ->and($entry->old_values)->toBe(['code' => 'SD'])
+        ->and($entry->old_values)->toBe(['code' => 'IT'])
         ->and($entry->new_values)->toBe(['code' => 'SVD']);
 });
 
 it('does not record a save without changes', function (): void {
-    $department = Department::query()->create(['name' => 'Service Desk']);
+    $department = Department::query()->create(['name' => 'IT Support']);
 
     $department->save();
 
@@ -65,7 +65,7 @@ it('does not record a save without changes', function (): void {
 });
 
 it('records soft delete, restore and force delete as distinct events', function (): void {
-    $department = Department::query()->create(['name' => 'Service Desk']);
+    $department = Department::query()->create(['name' => 'IT Support']);
 
     $department->delete();
     $department->restore();
@@ -125,13 +125,13 @@ it('leaves client metadata empty outside HTTP requests', function (): void {
 });
 
 it('rejects updates to audit entries at the database level', function (): void {
-    Department::query()->create(['name' => 'Service Desk']);
+    Department::query()->create(['name' => 'IT Support']);
 
     DB::table('core_audit_logs')->update(['event' => 'deleted']);
 })->throws(QueryException::class, 'append-only');
 
 it('rejects deletion of audit entries at the database level', function (): void {
-    Department::query()->create(['name' => 'Service Desk']);
+    Department::query()->create(['name' => 'IT Support']);
 
     AuditLog::query()->delete();
 })->throws(QueryException::class, 'append-only');

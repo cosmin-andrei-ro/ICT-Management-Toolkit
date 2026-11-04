@@ -10,7 +10,7 @@ namespace Modules\Ticketing\Domain\Workflow;
 use Modules\Ticketing\Domain\Enums\TicketStatus;
 
 /**
- * Allowed status transitions for incidents and service requests (ITIL 4).
+ * Allowed status transitions for incidents and service requests.
  * Closed and cancelled are final.
  */
 final class TicketWorkflow

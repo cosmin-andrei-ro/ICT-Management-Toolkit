@@ -17,7 +17,7 @@ use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecords;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
@@ -28,9 +28,9 @@ use Modules\Core\Domain\Webhooks\WebhookEvents;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Ticketing\Application\Email\MailboxReader;
 use Modules\Ticketing\Application\Email\ReplyAddress;
-use Modules\Ticketing\Application\Links\TicketingServiceDeskTickets;
+use Modules\Ticketing\Application\Links\TicketingProblemTickets;
 use Modules\Ticketing\Application\Links\TicketRecords;
-use Modules\Ticketing\Application\Metrics\ServiceDeskMetrics;
+use Modules\Ticketing\Application\Metrics\TicketingMetrics;
 use Modules\Ticketing\Application\Notifications\SendChangeNotifications;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
@@ -84,10 +84,10 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             fn (string $organizationId, CarbonImmutable $before): int => app(AnonymizeClosedTickets::class)($organizationId, $before),
         ));
 
-        $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ServiceDeskMetrics::source()));
+        $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(TicketingMetrics::source()));
 
         $this->app->bind(MailboxReader::class, ImapMailboxReader::class);
-        $this->app->bind(ServiceDeskTickets::class, TicketingServiceDeskTickets::class);
+        $this->app->bind(ProblemTickets::class, TicketingProblemTickets::class);
         // Scoped: a long-running worker must see mailboxes added later.
         $this->app->scoped(ReplyAddress::class);
 
@@ -129,11 +129,11 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('ticketing::catalog.menu', 'ticketing.catalog.index', 'ticketing.catalog.*', fn (User $user): bool => $user->can('ticketing.ticket.create'), order: 10);
             $navigation->add('ticketing::ui.menu.portal', 'ticketing.portal.index', 'ticketing.portal.*', fn (User $user): bool => $user->can('ticketing.ticket.create'), order: 20);
-            $navigation->add('ticketing::ui.menu.desk', 'ticketing.desk.index', 'ticketing.desk.index', fn (User $user): bool => $user->can('ticketing.ticket.view_all'), Navigation::SERVICE_DESK);
-            $navigation->add('ticketing::problems.ui.known_errors', 'ticketing.desk.known-errors', 'ticketing.desk.known-errors', fn (User $user): bool => $user->can('ticketing.ticket.view_all'), Navigation::SERVICE_DESK);
-            $navigation->add('ticketing::changes.ui.menu_calendar', 'ticketing.changes.calendar', 'ticketing.changes.calendar', fn (User $user): bool => $user->can('ticketing.ticket.view_all'), Navigation::SERVICE_DESK);
-            $navigation->add('ticketing::changes.ui.menu_approvals', 'ticketing.changes.approvals', 'ticketing.changes.approvals*', fn (User $user): bool => $user->can('ticketing.change.approve'), Navigation::SERVICE_DESK);
-            $navigation->add('ticketing::reports.menu', 'ticketing.reports', 'ticketing.reports', fn (User $user): bool => $user->can('ticketing.report.view'), Navigation::SERVICE_DESK);
+            $navigation->add('ticketing::ui.menu.desk', 'ticketing.desk.index', 'ticketing.desk.index', fn (User $user): bool => $user->can('ticketing.ticket.view_all'), Navigation::TICKETING);
+            $navigation->add('ticketing::problems.ui.known_errors', 'ticketing.desk.known-errors', 'ticketing.desk.known-errors', fn (User $user): bool => $user->can('ticketing.ticket.view_all'), Navigation::TICKETING);
+            $navigation->add('ticketing::changes.ui.menu_calendar', 'ticketing.changes.calendar', 'ticketing.changes.calendar', fn (User $user): bool => $user->can('ticketing.ticket.view_all'), Navigation::TICKETING);
+            $navigation->add('ticketing::changes.ui.menu_approvals', 'ticketing.changes.approvals', 'ticketing.changes.approvals*', fn (User $user): bool => $user->can('ticketing.change.approve'), Navigation::TICKETING);
+            $navigation->add('ticketing::reports.menu', 'ticketing.reports', 'ticketing.reports', fn (User $user): bool => $user->can('ticketing.report.view'), Navigation::TICKETING);
         });
 
         Event::listen([TicketCreated::class, TicketAssigned::class, TicketResolved::class, TicketCommentAdded::class], SendTicketNotifications::class);

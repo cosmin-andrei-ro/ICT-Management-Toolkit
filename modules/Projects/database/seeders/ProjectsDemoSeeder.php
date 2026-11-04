@@ -81,7 +81,7 @@ final class ProjectsDemoSeeder extends Seeder
         $sheet = $this->deliverable($project, PhaseKey::Execution, 'Application documentation approved', true);
         $this->deliverables->link($sheet, 'applications.application', $company->ref('applications.crm'), $company->user('applications'));
         $this->deliverable($project, PhaseKey::Execution, 'Integration test report', true);
-        $this->deliverable($project, PhaseKey::Closure, 'Handover to the service desk', true);
+        $this->deliverable($project, PhaseKey::Closure, 'Handover to IT support', true);
 
         $this->cost($company, $project, $today, 45, CostCategory::Licences, 'CRM subscription, first year', '18000.00', 'cloud');
         $this->cost($company, $project, $today, 30, CostCategory::ExternalLabour, 'Implementation partner, first milestone', '16500.00', null);
@@ -139,7 +139,7 @@ final class ProjectsDemoSeeder extends Seeder
 
         // The planning gate waits for the sponsor.
         DemoClock::at($today->subDays(2)->setTime(16, 0));
-        $this->gates->request($project->refresh(), $company->user('projects'), 'Offers compared, recommending Northwind.');
+        $this->gates->request($project->refresh(), $company->user('projects'), 'Offers compared, recommending Demo Hardware.');
     }
 
     private function awareness(DemoCompany $company, CarbonImmutable $today): void

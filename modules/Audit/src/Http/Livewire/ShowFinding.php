@@ -21,7 +21,7 @@ use Modules\Audit\Application\Actions\ManageFindingActions;
 use Modules\Audit\Domain\Enums\ActionStatus;
 use Modules\Audit\Domain\Models\Finding;
 use Modules\Audit\Domain\Models\FindingAction;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 
@@ -127,7 +127,7 @@ final class ShowFinding extends Component
         unset($this->finding);
     }
 
-    public function render(OrganizationContext $context, ServiceDeskTickets $tickets): View
+    public function render(OrganizationContext $context, ProblemTickets $tickets): View
     {
         $finding = $this->finding;
         $this->authorize('view', $finding);
@@ -140,7 +140,7 @@ final class ShowFinding extends Component
             'canWork' => $canWork,
             'people' => $canWork ? $this->people($context) : collect(),
             'statuses' => ActionStatus::cases(),
-            'serviceDesk' => $tickets->isAvailable(),
+            'ticketingAvailable' => $tickets->isAvailable(),
             'today' => CarbonImmutable::today(),
         ])->title($finding->code().' · '.$finding->title);
     }

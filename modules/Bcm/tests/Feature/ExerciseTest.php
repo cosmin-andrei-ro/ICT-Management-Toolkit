@@ -126,7 +126,7 @@ it('copies the runbook in force, records results and confirms the recovery in th
     $this->actingAs($this->bcm->owner)->get(route('bcm.exercises.report', Exercise::factory()->create(['plan_id' => $plan->id])))->assertNotFound();
 });
 
-it('raises findings as problems in the service desk, once, with the item of the step', function (): void {
+it('raises findings as problems in Ticketing, once, with the item of the step', function (): void {
     $plan = $this->bcm->approvedPayrollDrp();
     $this->actingAs($this->bcm->owner);
     $exercise = plannedExercise($plan);

@@ -46,7 +46,7 @@ function writePayrollPlan(BcmScenario $bcm): PlanVersion
         ->set('scenarios', ['it_outage', 'cyber_attack'])
         ->set('activationCriteria', 'Payroll application down for more than 1 hour on a working day')
         ->set('memberRole', 'Incident manager')->set('memberUserId', $bcm->coordinator->id)->call('addMember')
-        ->set('memberRole', 'Vendor support')->set('memberContactName', 'Acme hotline')->set('memberContactPhone', '+40 21 000 0000')->call('addMember')
+        ->set('memberRole', 'Vendor support')->set('memberContactName', 'Sample hotline')->set('memberContactPhone', '+40 21 000 0000')->call('addMember')
         ->call('editStep')->set('stepPhase', 'activation')->set('stepAction', 'Declare the incident')->set('stepDurationValue', '1')->set('stepDurationUnit', 'hours')->call('saveStep')
         ->call('editStep')->set('stepPhase', 'recovery')->set('stepAction', 'Restore the database from backup')->set('stepDurationValue', '2')->set('stepDurationUnit', 'hours')->set('stepItemId', $bcm->payrollApp->id)->call('saveStep')
         ->assertSee('Within the strictest RTO')
@@ -155,7 +155,7 @@ it('prints the plan in force for offline use', function (): void {
 
     $this->actingAs($this->bcm->agent)->get(route('bcm.plans.sheet', $version->plan))
         ->assertOk()
-        ->assertSee('Payroll DRP')->assertSee('Restore the database from backup')->assertSee('Acme hotline')->assertSee('+40 21 000 0000')
+        ->assertSee('Payroll DRP')->assertSee('Restore the database from backup')->assertSee('Sample hotline')->assertSee('+40 21 000 0000')
         ->assertSee('Required: 4 hours (Payroll).');
 
     config(['core.pdf.gotenberg_url' => 'http://gotenberg:3000']);

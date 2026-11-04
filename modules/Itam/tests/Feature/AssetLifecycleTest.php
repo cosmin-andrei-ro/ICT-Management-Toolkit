@@ -30,7 +30,7 @@ it('gives new assets the next free tag, skipping tags taken by hand', function (
     $save = app(SaveAsset::class);
     $this->itam->laptop(['asset_tag' => 'ast-000002']);
 
-    $first = $save->handle(null, $this->itam->laptops, ['manufacturer' => 'Dell'], ['memory_gb' => 16]);
+    $first = $save->handle(null, $this->itam->laptops, ['manufacturer' => 'Alpha'], ['memory_gb' => 16]);
     $second = $save->handle(null, $this->itam->laptops, ['status' => 'ordered'], []);
     $own = $save->handle(null, $this->itam->laptops, ['asset_tag' => 'OLD-17'], []);
 

@@ -10,7 +10,7 @@ namespace Modules\Ticketing\Application\Links;
 use Illuminate\Database\ConnectionInterface;
 use InvalidArgumentException;
 use Modules\Core\Domain\Links\ConfigurationItems;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Links\TicketSummary;
 use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Application\Problems\CreateProblem;
@@ -19,11 +19,11 @@ use Modules\Ticketing\Domain\Enums\Urgency;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * The Ticketing side of Core's ServiceDeskTickets contract. Work handed over by
+ * The Ticketing side of Core's ProblemTickets contract. Work handed over by
  * other modules becomes a problem: something to investigate and fix, with no
  * requester waiting on a service level.
  */
-final readonly class TicketingServiceDeskTickets implements ServiceDeskTickets
+final readonly class TicketingProblemTickets implements ProblemTickets
 {
     public function __construct(
         private ConnectionInterface $db,

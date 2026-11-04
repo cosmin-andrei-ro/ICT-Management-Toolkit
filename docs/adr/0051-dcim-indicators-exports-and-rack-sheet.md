@@ -5,7 +5,7 @@
 
 ## Context
 
-With racks, cabling, power and IP addresses in place (ADR 0047–0050), the data centre should appear where the other modules do. That means the dashboards and the monthly report (ADR 0044–0046), an Excel export like the other registers, and a sheet to take into the room.
+With racks, cabling, power and IP addresses in place (ADR 0047–0050), the data centre should appear where the other modules do. That means the dashboards and the monthly report (ADR 0044–0046), an XLSX export like the other registers, and a sheet to take into the room.
 
 ## Decision
 

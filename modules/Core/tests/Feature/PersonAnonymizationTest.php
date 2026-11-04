@@ -66,7 +66,7 @@ it('removes the name, the address and every way to sign in, and keeps the record
 
 it('takes the name, the address and the IP addresses out of the audit log, and keeps who did what', function (): void {
     app(AuditTrail::class)->record(AuditEvent::LoginFailed, null, null, ['email' => 'ana.popescu@example.com']);
-    (new AuditLog)->forceFill(['organization_id' => null, 'user_id' => $this->person->id, 'event' => AuditEvent::Login, 'auditable_type' => 'core.user', 'auditable_id' => $this->person->id, 'ip_address' => '203.0.113.7', 'user_agent' => 'Firefox'])->save();
+    (new AuditLog)->forceFill(['organization_id' => null, 'user_id' => $this->person->id, 'event' => AuditEvent::Login, 'auditable_type' => 'core.user', 'auditable_id' => $this->person->id, 'ip_address' => '203.0.113.7', 'user_agent' => 'TestBrowser'])->save();
     app(AuditTrail::class)->record(AuditEvent::Updated, $this->admin, ['name' => 'Ana Popescu Jr'], ['name' => 'Admin Person'], $this->admin->id);
 
     $redacted = anonymize($this->person, $this->admin);
@@ -75,7 +75,7 @@ it('takes the name, the address and the IP addresses out of the audit log, and k
     $text = $log->map(fn (AuditLog $entry): string => json_encode([$entry->old_values, $entry->new_values, $entry->ip_address, $entry->user_agent]))->implode(' ');
 
     expect($redacted)->toBeGreaterThan(1)
-        ->and($text)->not->toContain('ana.popescu@example.com')->not->toContain('"Ana Popescu"')->not->toContain('203.0.113.7')->not->toContain('Firefox')
+        ->and($text)->not->toContain('ana.popescu@example.com')->not->toContain('"Ana Popescu"')->not->toContain('203.0.113.7')->not->toContain('TestBrowser')
         // A longer name that only starts the same is someone else's.
         ->and($text)->toContain('Ana Popescu Jr')
         ->and($log->where('event', AuditEvent::Login)->first()?->user_id)->toBe($this->person->id);

@@ -42,7 +42,7 @@ function writeTicketingSheet(ApplicationsScenario $apps): Sheet
         ->assertSet('form.doc.document_owner', $apps->technicalOwner->id)
         ->call('openChapter', 1)
         ->set('form.1_1.description', 'Internal IT support application.')
-        ->set('form.1_2_1.internal_support.service_desk', 'servicedesk@company.example')
+        ->set('form.1_2_1.internal_support.it_support', 'support@company.example')
         ->set('form.1_3.status', 'in_production')
         ->set('form.1_3.criticality', 'high')
         ->set('form.1_3.exposure', ['internal'])
@@ -50,7 +50,7 @@ function writeTicketingSheet(ApplicationsScenario $apps): Sheet
         ->set('form.1_3.cartography_other', 'Shared IT service')
         ->call('addRow', '1_4', 'environments')
         ->set('form.1_4.environments.0.environment', 'production')
-        ->set('form.1_4.environments.0.url', 'https://servicedesk.company.local')
+        ->set('form.1_4.environments.0.url', 'https://ticketing.company.local')
         ->call('openChapter', 2)
         ->set('form.2_1.classification', 'internal')
         ->call('submit')
@@ -134,7 +134,7 @@ it('approves the first version by the business owner, the IT owner and security,
     Livewire::test(ShowApplication::class, ['application' => $this->apps->ticketing])
         ->assertSee('Initial documentation of the existing Ticketing Platform')->assertSee('Security officer');
     Livewire::test(SheetPage::class, ['sheet' => $sheet])->call('openChapter', 1)
-        ->assertSee('In production')->assertSee('Shared IT service')->assertSee('https://servicedesk.company.local')->assertSee('servicedesk@company.example');
+        ->assertSee('In production')->assertSee('Shared IT service')->assertSee('https://ticketing.company.local')->assertSee('support@company.example');
 });
 
 it('returns a version with a reason and clears the approvals given', function (): void {

@@ -38,6 +38,6 @@ GDPR's storage limitation (Art. 5(1)(e)) and CLAUDE.md §6 ("configurable retent
 ## Consequences
 
 - Choosing a period is the organization's decision, and the manual says so. Too short a period can destroy evidence an audit still needs.
-- The service desk must cope with tickets without a requester. The desk, change review, queue and API show "Anonymized" or null.
+- IT support must cope with tickets without a requester. The desk, change review, queue and API show "Anonymized" or null.
 - New kinds of personal records should register a retention policy.
 - DBA-level access can still use the exceptions. As before, the trigger protects against the application, not against the DBA.

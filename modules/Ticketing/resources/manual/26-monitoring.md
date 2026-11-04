@@ -3,7 +3,7 @@ title: Incidents from monitoring
 audience: agents
 ---
 
-When your monitoring tool (for example Zabbix or Prometheus) detects a problem, it can open an incident here on its own. These incidents show **Monitoring** as their channel and a **Monitoring alert** box on the ticket page.
+When your monitoring tool detects a problem, it can open an incident here on its own. These incidents show **Monitoring** as their channel and a **Monitoring alert** box on the ticket page.
 
 ## What happens
 

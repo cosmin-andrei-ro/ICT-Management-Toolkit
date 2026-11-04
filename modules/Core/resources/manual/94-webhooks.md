@@ -3,7 +3,7 @@ title: Webhooks
 audience: administrators
 ---
 
-A webhook tells another system, such as a chat channel, a monitoring tool or another service desk, when something happens here, for example when a ticket is created. Administrators set them up in **Administration → Integrations → Webhooks**.
+A webhook tells another system, such as a chat channel, a monitoring tool or another ticketing system, when something happens here, for example when a ticket is created. Administrators set them up in **Administration → Integrations → Webhooks**.
 
 ## Adding a webhook
 

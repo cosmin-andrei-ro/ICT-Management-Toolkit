@@ -26,5 +26,5 @@ The BIA says how fast each process must be back; plans say how. ISO 22301 §8.4 
 
 ## Consequences
 
-- The next part records exercises and DR tests step by step against these runbooks, confirms recovery capabilities in the CMDB, and turns findings into service desk tickets.
+- The next part records exercises and DR tests step by step against these runbooks, confirms recovery capabilities in the CMDB, and turns findings into tickets.
 - Coverage (processes and systems without an approved plan, plans not tested) builds on the scope recorded here.

@@ -72,7 +72,7 @@ describe('indicators', function (): void {
         reportTicket('2026-10-31 21:30');            // 1 Nov 00:30 in Bucharest: outside
         reportTicket('2026-09-30 21:30');            // 1 Oct 00:30 in Bucharest: inside
         reportTicket('2026-09-20 08:00', 24 * 30);   // created before, resolved in the period (20 Oct)
-        app(CreateProblem::class)->handle('Not a service desk ticket', 'x', Impact::Low, Urgency::Low, $this->desk->agent);
+        app(CreateProblem::class)->handle('Not counted', 'x', Impact::Low, Urgency::Low, $this->desk->agent);
         app(OrganizationContext::class)->runAs(Organization::factory()->create(), fn () => reportTicket('2026-10-10 08:00', 1));
 
         $summary = app(TicketReport::class)->summary($this->period);

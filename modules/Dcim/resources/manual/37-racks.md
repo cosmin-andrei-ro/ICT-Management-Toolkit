@@ -42,6 +42,6 @@ Mounting an asset records the rack's room as the asset's location in the asset r
 
 Print it, or **Download PDF** where the PDF service is installed.
 
-**Export to Excel** on the Racks page prepares a workbook of the whole data centre: racks, equipment, cables, the power chain with its load, and IP addresses. It appears in the list below the button when ready.
+**Export to spreadsheet** on the Racks page prepares a workbook of the whole data centre: racks, equipment, cables, the power chain with its load, and IP addresses. It appears in the list below the button when ready.
 
 The dashboard's **Data centre** group shows rack space used, power sources over capacity or under high load, equipment with a single power supply, and nearly full IPv4 subnets.

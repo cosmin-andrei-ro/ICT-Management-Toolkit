@@ -55,10 +55,10 @@ it('records the authenticated user as author', function (): void {
     app(OrganizationContext::class)->set($organization);
 
     $this->actingAs($author);
-    $department = Department::query()->create(['name' => 'Service Desk']);
+    $department = Department::query()->create(['name' => 'IT Support']);
 
     $this->actingAs($editor);
-    $department->update(['code' => 'SD']);
+    $department->update(['code' => 'IT']);
 
     expect($department->created_by)->toBe($author->id)
         ->and($department->updated_by)->toBe($editor->id);

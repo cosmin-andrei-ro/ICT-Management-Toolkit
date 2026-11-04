@@ -12,7 +12,7 @@ Business continuity plans (BCP) and IT disaster recovery plans (DRP). Code: `mod
 - **Exercise steps** (`bcm_exercise_steps`): the runbook copied when the exercise starts, with a result (done, with issues, failed, skipped) and the time taken.
 - **Exercise items** (`bcm_exercise_items`): CMDB items to bring back; those recovered are confirmed in the CMDB on completion (`ConfigurationItems::confirmRecovery`: `recovery_verified_on`, `recovery_verified_minutes`, `recovery_verified_by`).
 - **Activation** (`bcm_activations`): a real activation of a plan in force — time, scenario, reason, version and strictest RTO of the moment; service back time, summary, lessons; closed activations never change.
-- **Findings** (`bcm_exercise_findings`): description, severity, step; raised once as a problem in the service desk through Core's `ServiceDeskTickets`.
+- **Findings** (`bcm_exercise_findings`): description, severity, step; raised once as a problem in Ticketing through Core's `ProblemTickets`.
 
 ## Screens
 
@@ -24,7 +24,7 @@ Business continuity plans (BCP) and IT disaster recovery plans (DRP). Code: `mod
 - `/bcm/plans/{id}/exercises/new`: plan an exercise (plans in force only).
 - `/bcm/exercises/{id}`: start, record step results, recovered systems and findings, raise problems, complete; once completed, its report at `/bcm/exercises/{id}/report` (and `/report/pdf`).
 - `/bcm/plans/{id}/activate`, `/bcm/activations/{id}`: record a real activation (optionally emailing the crisis team), then the service back time and lessons, and close it.
-- `/bcm/coverage`: plans and where they stand (approval, review, exercise due, recovery vs RTO) and assessed processes with or without a plan in force; Excel export of the continuity register.
+- `/bcm/coverage`: plans and where they stand (approval, review, exercise due, recovery vs RTO) and assessed processes with or without a plan in force; XLSX export of the continuity register.
 - CMDB item pages list the plans covering the item and when its recovery was last tested.
 
 ## Scheduled tasks

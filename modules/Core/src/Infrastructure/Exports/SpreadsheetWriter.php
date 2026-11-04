@@ -65,7 +65,7 @@ final class SpreadsheetWriter
 
     private static function sheetName(string $name): string
     {
-        // Excel forbids \ / ? * [ ] : in sheet names and limits them to 31 characters.
+        // Spreadsheet applications forbid \ / ? * [ ] : in sheet names and limits them to 31 characters.
         $name = trim((string) preg_replace(['/[\\\\\/?*\[\]:]+/', '/\s+/'], ' ', $name));
 
         return mb_substr($name !== '' ? $name : 'Sheet', 0, 31);

@@ -15,18 +15,18 @@ use Modules\Bcm\Domain\Models\ExerciseStep;
 use Modules\Bcm\Domain\Models\Finding;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Links\TicketSummary;
 use Modules\Core\Domain\Models\User;
 
 /**
  * What an exercise showed must be fixed, and the problems raised for it in the
- * service desk (owner's decision). Audited on the exercise.
+ * ticketing (owner's decision). Audited on the exercise.
  */
 final readonly class ManageFindings
 {
     public function __construct(
-        private ServiceDeskTickets $tickets,
+        private ProblemTickets $tickets,
         private AuditTrail $trail,
     ) {}
 
@@ -75,7 +75,7 @@ final readonly class ManageFindings
         }
 
         if ($finding->ticket_id !== null) {
-            throw new InvalidArgumentException('The finding is tracked in the service desk.');
+            throw new InvalidArgumentException('The finding is tracked in Ticketing.');
         }
 
         $finding->delete();
@@ -85,12 +85,12 @@ final readonly class ManageFindings
     /**
      * Raises a problem for the finding, once, with the configuration item of its step.
      *
-     * @throws InvalidArgumentException when a problem was already raised or the service desk is not available
+     * @throws InvalidArgumentException when a problem was already raised or Ticketing is not available
      */
     public function raiseTicket(Finding $finding, User $actor): TicketSummary
     {
         if ($finding->ticket_id !== null || ! $this->tickets->isAvailable()) {
-            throw new InvalidArgumentException('A problem was already raised, or there is no service desk.');
+            throw new InvalidArgumentException('A problem was already raised, or Ticketing is not available.');
         }
 
         $exercise = Exercise::query()->with('plan')->findOrFail($finding->exercise_id);

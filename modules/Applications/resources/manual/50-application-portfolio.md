@@ -64,7 +64,7 @@ When a version comes into force it gets its number — 1.0 for the first, then 1
 - The application appears in the **CMDB** as an item of its own, running on the components linked in 5.2.
 - About a month before the yearly review, the owners and the deputy get an e-mail. Start a new version to review it, even if nothing changed (a minor version with "Yearly review, no change").
 - Every Monday, application managers get an e-mail with the applications not documented, overdue for review or waiting for approval.
-- **Export to Excel** on the portfolio list gives the applications with their data, integrations, components and certificates.
+- **Export to spreadsheet** on the portfolio list gives the applications with their data, integrations, components and certificates.
 
 ## Dropdown values
 

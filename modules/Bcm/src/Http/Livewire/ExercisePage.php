@@ -31,7 +31,7 @@ use Modules\Bcm\Domain\Models\ExerciseItem;
 use Modules\Bcm\Domain\Models\ExerciseStep;
 use Modules\Bcm\Domain\Models\Finding;
 use Modules\Core\Domain\Links\ConfigurationItems;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Time\Duration;
 
@@ -144,7 +144,7 @@ final class ExercisePage extends Component
         $this->attempt(fn () => $findings->raiseTicket($finding, $this->actor()), 'findings');
     }
 
-    public function render(ConfigurationItems $items, ServiceDeskTickets $tickets, PlanTiming $timing): View
+    public function render(ConfigurationItems $items, ProblemTickets $tickets, PlanTiming $timing): View
     {
         $exercise = $this->exercise;
         $steps = $exercise->steps()->get();

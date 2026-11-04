@@ -13,9 +13,9 @@ use Modules\Ticketing\Domain\Enums\TicketStatus;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * Indicators of the service desk for the dashboards (ADR 0044).
+ * Indicators of IT support for the dashboards (ADR 0044).
  */
-final class ServiceDeskMetrics
+final class TicketingMetrics
 {
     public static function source(): MetricSource
     {

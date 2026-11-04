@@ -19,7 +19,7 @@ use Modules\Documentation\Domain\Models\PageLink;
 use Modules\Documentation\Domain\Models\Space;
 
 /**
- * Published pages of the spaces a person reads, for the service desk and for
+ * Published pages of the spaces a person reads, for IT support and for
  * links from other modules (LinkedRecords "documentation.page").
  */
 final readonly class DocumentationArticles implements KnowledgeArticles

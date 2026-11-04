@@ -30,6 +30,6 @@ Keys are never shown in lists, exports or emails. On the licence's page, enter a
 
 ## Import, export and reminders
 
-**Import licences** reads a spreadsheet with one row per licence (product, licence name, model, seats, dates, supplier, cost). Keys are never imported: enter them on each licence. **Export to Excel** gives every licence with the seats in use, without keys.
+**Import licences** reads a spreadsheet with one row per licence (product, licence name, model, seats, dates, supplier, cost). Keys are never imported: enter them on each licence. **Export to spreadsheet** gives every licence with the seats in use, without keys.
 
 Every morning, asset managers and team leads receive one email listing the licences that expire in the next 60 days. Each expiry date is announced once.

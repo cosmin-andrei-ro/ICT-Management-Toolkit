@@ -13,7 +13,7 @@ use Modules\Ticketing\Domain\Workflow\InvalidTransition;
 use Modules\Ticketing\Domain\Workflow\PriorityMatrix;
 use Modules\Ticketing\Domain\Workflow\TicketWorkflow;
 
-it('allows the ITIL lifecycle', function (TicketStatus $from, TicketStatus $to): void {
+it('allows the ticket lifecycle', function (TicketStatus $from, TicketStatus $to): void {
     expect((new TicketWorkflow)->canTransition($from, $to))->toBeTrue();
 })->with([
     [TicketStatus::New, TicketStatus::Assigned],

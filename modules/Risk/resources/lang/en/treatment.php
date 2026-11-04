@@ -60,7 +60,7 @@ return [
         'start' => 'Start',
         'done' => 'Done',
         'cancel' => 'Cancel',
-        'raise_ticket' => 'Track in the service desk',
+        'raise_ticket' => 'Track in Ticketing',
         'acceptance' => 'Acceptance of the residual risk',
         'residual_first' => 'Assess the residual risk first.',
         'accept_at_once' => 'Below :threshold, the risk owner accepts the residual risk.',

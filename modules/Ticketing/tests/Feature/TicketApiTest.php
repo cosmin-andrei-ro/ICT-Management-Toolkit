@@ -107,7 +107,7 @@ it('never exposes internal notes to requesters', function (): void {
         ->assertJsonCount(2, 'data.comments');
 });
 
-it('lets only service desk staff post internal notes', function (): void {
+it('lets only IT support staff post internal notes', function (): void {
     $ticket = $this->desk->ticket();
 
     $this->postJson("/api/v1/tickets/{$ticket->id}/comments", ['body' => 'sneaky', 'internal' => true], bearer($this->desk->requester))

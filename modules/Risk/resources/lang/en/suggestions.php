@@ -14,7 +14,7 @@ return [
         'resolved' => 'No longer applies',
     ],
     'ui' => [
-        'intro' => 'What the other modules know that suggests a risk: applications, continuity, the service desk, assets, suppliers and compliance. Nothing becomes a risk until you register it.',
+        'intro' => 'What the other modules know that suggests a risk: applications, continuity, tickets, assets, suppliers and compliance. Nothing becomes a risk until you register it.',
         'link' => 'Suggested risks (:count)',
         'refresh' => 'Check now',
         'refreshed' => ':opened new suggestion(s); :resolved no longer apply.',

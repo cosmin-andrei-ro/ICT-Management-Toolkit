@@ -5,13 +5,13 @@
 
 ## Context
 
-OpenID Connect sign-in (ADR 0038) covers modern identity providers. Many companies still run ADFS, Shibboleth or older identity providers that only speak SAML 2.0, and some prefer SAML for Entra ID enterprise applications. The owner chose OIDC first and SAML2 after, with the same account and role model.
+OpenID Connect sign-in (ADR 0038) covers modern identity providers. Many companies still run older identity providers that only speak SAML 2.0, and some prefer SAML. The owner chose OIDC first and SAML2 after, with the same account and role model.
 
 ## Decision
 
 - **SAML providers live next to OIDC ones** in `core_sso_providers`, with a `protocol` column:
   - for SAML, `issuer` is the IdP entity ID, and the provider adds a single sign-on URL (HTTP-Redirect binding) and the IdP's signing certificate (public, not a secret);
-  - optional email and name attributes, with Microsoft, LDAP OID and plain fallbacks, or the NameID when it is an email;
+  - optional email and name attributes, with common claim, LDAP OID and plain fallbacks, or the NameID when it is an email;
   - the groups attribute.
   
   A CHECK constraint keeps each protocol's required fields.
@@ -32,7 +32,7 @@ OpenID Connect sign-in (ADR 0038) covers modern identity providers. Many compani
 - **Mapping to the account model:** the assertion becomes the same claims as an OIDC ID token, and `SignInWithSso` applies the same rules (ADR 0038):
   - **sub** is the NameID;
   - **email**, **name** and **groups** come from the attributes;
-  - **amr** is `mfa` when the AuthnContextClassRef is a multi-factor context (Microsoft *multipleauthn*, REFEDS MFA, SAML two-factor and smartcard classes). It is read from the **signed assertion** only (`SamlResponse`): the response around it is not signed, and an `AuthnStatement` slipped into `samlp:Extensions` must not pass for a second factor (found in the security review of 2026-11-03).
+  - **amr** is `mfa` when the AuthnContextClassRef is a multi-factor context (the *multipleauthn* class, REFEDS MFA, SAML two-factor and smartcard classes). It is read from the **signed assertion** only (`SamlResponse`): the response around it is not signed, and an `AuthnStatement` slipped into `samlp:Extensions` must not pass for a second factor (found in the security review of 2026-11-03).
 
 ## Alternatives considered
 

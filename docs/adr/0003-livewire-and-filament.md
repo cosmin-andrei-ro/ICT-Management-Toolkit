@@ -21,7 +21,7 @@ All packages are MIT licensed, which is compatible with AGPLv3.
 ## Rejected alternatives
 
 - **SPA (Vue/React + Inertia):** a second build and test ecosystem is too costly for a small team, and Livewire covers the interactivity we need.
-- **Filament only:** too rigid for the self-service portal and the ITIL flows.
+- **Filament only:** too rigid for the self-service portal and the ticket flows.
 - **Livewire only:** a lot of hand-written CRUD for configuration screens.
 
 ## Consequences

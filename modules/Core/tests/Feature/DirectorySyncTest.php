@@ -20,7 +20,7 @@ use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Tests\Support\FakeDirectory;
 
-const SYNC_SERVICE_DESK = 'cn=it-servicedesk,ou=groups,dc=corp,dc=example';
+const SYNC_TICKETING = 'cn=it-support,ou=groups,dc=corp,dc=example';
 const SYNC_ADMINS = 'cn=it-admins,ou=groups,dc=corp,dc=example';
 
 beforeEach(function (): void {
@@ -30,14 +30,14 @@ beforeEach(function (): void {
     app()->instance(Directory::class, $this->directory);
 
     $this->organization = Organization::factory()->create();
-    DirectoryGroupMapping::factory()->for($this->organization)->forRole(DefaultRole::Agent)->create(['group_dn' => SYNC_SERVICE_DESK]);
+    DirectoryGroupMapping::factory()->for($this->organization)->forRole(DefaultRole::Agent)->create(['group_dn' => SYNC_TICKETING]);
     DirectoryGroupMapping::factory()->for($this->organization)->forRole(DefaultRole::TeamLead)->create(['group_dn' => SYNC_ADMINS]);
 });
 
 /**
  * A directory account already provisioned locally, with the agent role.
  */
-function provisionedDirectoryUser(Organization $organization, string $username, bool $enabled = true, array $groups = [SYNC_SERVICE_DESK]): array
+function provisionedDirectoryUser(Organization $organization, string $username, bool $enabled = true, array $groups = [SYNC_TICKETING]): array
 {
     $guid = (string) str()->uuid();
     $user = User::factory()->fromDirectory($guid)->memberOf($organization)->create(['email' => "{$username}@corp.example"]);
@@ -56,7 +56,7 @@ function rolesOf(User $user, Organization $organization): array
 
 it('blocks accounts disabled in AD and lets them back in when re-enabled', function (): void {
     [$user, $entry] = provisionedDirectoryUser($this->organization, 'jdoe');
-    $this->directory->addUser(new DirectoryUser($entry->guid, $entry->distinguishedName, 'jdoe', 'Jdoe', 'jdoe@corp.example', enabled: false), 'secret', [SYNC_SERVICE_DESK]);
+    $this->directory->addUser(new DirectoryUser($entry->guid, $entry->distinguishedName, 'jdoe', 'Jdoe', 'jdoe@corp.example', enabled: false), 'secret', [SYNC_TICKETING]);
 
     expect(app(SyncDirectoryAccounts::class)->handle()['disabled'])->toBe(1);
 
@@ -67,7 +67,7 @@ it('blocks accounts disabled in AD and lets them back in when re-enabled', funct
         // Roles are kept so re-enabling restores access as it was.
         ->and(rolesOf($user, $this->organization))->toBe(['agent']);
 
-    $this->directory->addUser($entry, 'secret', [SYNC_SERVICE_DESK]);
+    $this->directory->addUser($entry, 'secret', [SYNC_TICKETING]);
     app(SyncDirectoryAccounts::class)->handle();
 
     expect($user->fresh()?->canSignIn())->toBeTrue();
@@ -113,7 +113,7 @@ it('updates names and emails, but never onto another account\'s email', function
     [$user, $entry] = provisionedDirectoryUser($this->organization, 'jdoe');
     User::factory()->create(['email' => 'taken@corp.example']);
 
-    $this->directory->addUser(new DirectoryUser($entry->guid, $entry->distinguishedName, 'jdoe', 'Jane Renamed', 'taken@corp.example', true), 'secret', [SYNC_SERVICE_DESK]);
+    $this->directory->addUser(new DirectoryUser($entry->guid, $entry->distinguishedName, 'jdoe', 'Jane Renamed', 'taken@corp.example', true), 'secret', [SYNC_TICKETING]);
 
     expect(app(SyncDirectoryAccounts::class)->handle()['email_conflict'])->toBe(1);
     expect($user->fresh())

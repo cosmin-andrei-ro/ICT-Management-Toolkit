@@ -6,7 +6,7 @@
 declare(strict_types=1);
 
 return [
-    'linked_kind' => 'Service desk ticket',
+    'linked_kind' => 'Ticket',
     'types' => [
         'incident' => 'Incident',
         'service_request' => 'Service request',
@@ -40,7 +40,7 @@ return [
     ],
     'channels' => [
         'portal' => 'Self-service portal',
-        'agent' => 'Service desk',
+        'agent' => 'IT support',
         'email' => 'Email',
         'api' => 'API',
         'phone' => 'Phone',

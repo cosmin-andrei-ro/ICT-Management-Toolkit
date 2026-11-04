@@ -10,7 +10,7 @@ return [
         'title' => 'Knowledge base',
         'none' => 'No article linked to this ticket.',
         'maybe' => 'May help:',
-        'how_to_link' => 'Link an article from its page: About → Service desk ticket.',
+        'how_to_link' => 'Link an article from its page: About → Ticket.',
         'suggestions' => 'These articles may solve it right away:',
         'for_this_ticket' => 'Articles about your request',
     ],
@@ -69,11 +69,11 @@ return [
         'confirm_resolution' => 'Yes, it is solved',
         'reopen_reason' => 'What is still wrong?',
         'cancel' => 'Withdraw this ticket',
-        'cancel_confirm' => 'Withdraw this ticket? The service desk will stop working on it.',
+        'cancel_confirm' => 'Withdraw this ticket? IT support will stop working on it.',
     ],
     'desk' => [
-        'title' => 'Service desk',
-        'back' => '← Service desk',
+        'title' => 'All tickets',
+        'back' => '← All tickets',
         'empty' => 'No tickets match these filters.',
         'search_placeholder' => 'Number or words…',
         'internal_toggle' => 'Internal note (not visible to the requester)',
@@ -91,7 +91,7 @@ return [
     ],
     'menu' => [
         'portal' => 'My tickets',
-        'desk' => 'Service desk',
+        'desk' => 'All tickets',
     ],
     'items' => [
         'title' => 'Configuration items',
@@ -102,7 +102,7 @@ return [
         'impact' => 'If these fail, :count other item(s) are affected:',
     ],
     'metrics' => [
-        'group' => 'Service desk',
+        'group' => 'Ticketing',
         'open' => 'Open tickets',
         'unassigned' => 'Open tickets without an assignee',
         'sla_breached' => 'Open tickets past their SLA',

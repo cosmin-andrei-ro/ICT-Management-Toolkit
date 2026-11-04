@@ -10,7 +10,7 @@ namespace Modules\Core\Domain\Links;
 use Modules\Core\Domain\Models\User;
 
 /**
- * Published documentation pages for other modules (the service desk):
+ * Published documentation pages for other modules (IT support):
  * suggested for a text, or linked to a record. Implemented by the
  * Documentation module; when it is disabled, none. Only pages the viewer may
  * read are returned.

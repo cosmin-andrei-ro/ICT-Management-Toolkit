@@ -14,7 +14,7 @@ use Illuminate\Contracts\Config\Repository as Config;
  * application connects (SSRF): HTTPS only (plain HTTP only when explicitly
  * allowed, for a development identity provider), never loopback, link-local
  * (cloud metadata) or reserved addresses. Private networks stay allowed: an
- * on-premises Keycloak or ADFS lives there.
+ * on-premises identity provider lives there.
  */
 final readonly class OutboundUrlGuard
 {

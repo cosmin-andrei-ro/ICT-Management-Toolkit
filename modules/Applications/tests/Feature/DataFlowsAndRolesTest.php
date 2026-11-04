@@ -51,13 +51,13 @@ it('draws the data flow diagram from the integrations', function (): void {
         ->assertSee('Add the system integrations in 2.4')
         ->call('addRow', '2_4', 'integrations')->call('addRow', '2_4', 'integrations')
         ->set('form.2_4.integrations.0.name', 'Import users')->set('form.2_4.integrations.0.system', 'Active Directory')->set('form.2_4.integrations.0.direction', 'inbound')
-        ->set('form.2_4.integrations.1.name', 'Notifications')->set('form.2_4.integrations.1.system', 'Microsoft 365')->set('form.2_4.integrations.1.direction', 'bidirectional')
-        ->set('form.2_4.integrations.1.type', SheetForm::OTHER)->set('form.2_4.integrations.1.type_other', 'Microsoft Graph')
+        ->set('form.2_4.integrations.1.name', 'Notifications')->set('form.2_4.integrations.1.system', 'Mail Service')->set('form.2_4.integrations.1.direction', 'bidirectional')
+        ->set('form.2_4.integrations.1.type', SheetForm::OTHER)->set('form.2_4.integrations.1.type_other', 'Graph API')
         ->call('save')->assertHasNoErrors()
         ->assertSeeHtml('<title id="dfd-title">Data flow diagram of Ticketing Platform</title>')
-        ->assertSee('Active Directory')->assertSee('Microsoft 365');
+        ->assertSee('Active Directory')->assertSee('Mail Service');
 
-    expect($this->sheet->fresh()->section('2_4')['integrations'][1]['type'])->toBe('Microsoft Graph');
+    expect($this->sheet->fresh()->section('2_4')['integrations'][1]['type'])->toBe('Graph API');
 });
 
 it('attaches an image and a .drawio file to a diagram, shows only images inline, and keeps them for the application', function (): void {

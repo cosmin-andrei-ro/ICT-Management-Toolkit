@@ -166,7 +166,7 @@ final class ItamServiceProvider extends ModuleServiceProvider
     {
         $registry->register([
             'itam.asset.view',
-            // Hand out and take back equipment: the service desk does it every day.
+            // Hand out and take back equipment: IT support does it every day.
             'itam.asset.assign',
             // The register itself: details, costs, status, disposal.
             'itam.asset.manage',

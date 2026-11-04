@@ -14,7 +14,7 @@ return [
     'help_signing_in' => 'Help with signing in · User manual',
     'audiences' => [
         'everyone' => 'For everyone',
-        'agents' => 'For the service desk',
+        'agents' => 'For IT support',
         'administrators' => 'For administrators',
     ],
 ];

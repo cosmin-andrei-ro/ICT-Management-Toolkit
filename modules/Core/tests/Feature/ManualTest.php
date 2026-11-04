@@ -13,7 +13,7 @@ use Modules\Core\Domain\Models\User;
 it('loads every page shipped by the enabled modules', function (): void {
     $pages = app(Manual::class)->pages();
 
-    expect(array_keys($pages))->toContain('getting-started', 'access-and-roles', 'tickets', 'service-catalog', 'service-desk', 'sla', 'problems', 'service-desk-setup');
+    expect(array_keys($pages))->toContain('getting-started', 'access-and-roles', 'tickets', 'service-catalog', 'ticketing', 'sla', 'problems', 'ticketing-setup');
 
     foreach ($pages as $page) {
         expect($page->title)->not->toBe('')
@@ -31,9 +31,9 @@ it('is readable without signing in', function (): void {
         ->assertSee(ManualAudience::Agents->label())
         ->assertSee(route('manual.show', 'getting-started'));
 
-    $this->get(route('manual.show', 'service-desk'))
+    $this->get(route('manual.show', 'ticketing'))
         ->assertOk()
-        ->assertSee('Working in the service desk')
+        ->assertSee('Working in Ticketing')
         ->assertSee('<table>', escape: false);
 });
 

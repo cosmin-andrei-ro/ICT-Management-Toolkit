@@ -44,7 +44,7 @@ use Modules\Ticketing\Domain\Models\Service;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * A service desk that has been running for three months: queues, categories,
+ * An IT support team that has been running for three months: queues, categories,
  * the catalog, about sixty tickets opened and worked over the last 90 days
  * (some late on their SLA), problems with a known error, and changes
  * approved by the CAB. Everything goes through the desk's own actions.

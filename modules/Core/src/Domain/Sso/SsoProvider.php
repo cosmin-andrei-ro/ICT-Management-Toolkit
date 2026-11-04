@@ -21,8 +21,7 @@ use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 
 /**
- * An identity provider of an organization (Entra ID, Google Workspace,
- * Keycloak, Okta, ADFS…), through OpenID Connect or SAML 2.0. For SAML the
+ * An identity provider of an organization (cloud or on-premises), through OpenID Connect or SAML 2.0. For SAML the
  * issuer is the IdP's entity ID. The OIDC client secret is encrypted at rest,
  * hidden from serialization and from the audit trail, and never shown again.
  *

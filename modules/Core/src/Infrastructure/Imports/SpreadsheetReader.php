@@ -102,7 +102,7 @@ final class SpreadsheetReader
     }
 
     /**
-     * Excel saves CSV with ";" where the decimal separator is a comma (e.g. Romanian settings).
+     * Spreadsheet applications save CSV with ";" where the decimal separator is a comma (e.g. Romanian settings).
      */
     private function csvOptions(string $path): CsvOptions
     {

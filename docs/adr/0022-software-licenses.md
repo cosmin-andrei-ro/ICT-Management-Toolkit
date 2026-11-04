@@ -22,7 +22,7 @@ Software is the other half of IT asset management: what the organization pays fo
 
 - **Refusing seats beyond the quantity bought:** keeps numbers tidy, but people would stop recording real installations, which is what an audit needs.
 - **Keys shown to everyone who sees the licence, or after the password:** simpler, but the password is not asked again for AD accounts and is often remembered by the browser; the app code proves presence.
-- **Software discovery (agents, SCCM/Intune):** gives installed counts automatically; a natural next step through the import, out of scope here.
+- **Software discovery (agents, device management):** gives installed counts automatically; a natural next step through the import, out of scope here.
 
 ## Consequences
 

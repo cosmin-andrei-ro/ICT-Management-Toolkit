@@ -32,7 +32,7 @@ beforeEach(function (): void {
         'name' => 'Network refresh', 'description' => null, 'kind' => ProjectKind::Infrastructure,
         'sponsor_id' => $this->projects->sponsor->id, 'manager_id' => $this->projects->manager->id, 'planned_start' => null, 'planned_end' => null,
     ]);
-    $this->supplier = Supplier::factory()->create(['name' => 'Acme Networks']);
+    $this->supplier = Supplier::factory()->create(['name' => 'Demo Networks']);
 });
 
 function addCost(object $test, string $description, string $amount, string $category = 'hardware', ?string $supplierId = null): void
@@ -54,7 +54,7 @@ it('records the budget and the costs against it, by category', function (): void
         ->and($figures->percent)->toBe(102)->and($figures->isOver())->toBeTrue()
         ->and($figures->byCategory['hardware'])->toBe(41500.0)->and($figures->byCategory['external_labour'])->toBe(9500.0);
 
-    Livewire::test(ProjectBudget::class, ['project' => $this->project])->assertSee(__('projects::budget.over'))->assertSee('Acme Networks')
+    Livewire::test(ProjectBudget::class, ['project' => $this->project])->assertSee(__('projects::budget.over'))->assertSee('Demo Networks')
         ->set('costDescription', 'Zero')->set('costAmount', '0')->call('addCost')->assertHasErrors('costAmount')
         ->call('editBudget')->set('currency', 'USD')->call('saveBudget')->assertHasErrors('currency');
 });

@@ -11,7 +11,7 @@ use InvalidArgumentException;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * ITIL: a problem whose cause and workaround are documented. From then on, agents
+ * A problem whose cause and workaround are documented. From then on, agents
  * find it in the known error database and get its workaround when they link an incident.
  */
 final readonly class MarkKnownError

@@ -21,8 +21,8 @@ return [
         'line' => 'Ticket :number has been resolved. If the problem persists, you can reopen it.',
     ],
     'desk_replied' => [
-        'subject' => '[:number] New reply from the service desk',
-        'line' => 'The service desk replied on ticket :number.',
+        'subject' => '[:number] New reply from IT support',
+        'line' => 'IT support replied on ticket :number.',
     ],
     'requester_replied' => [
         'subject' => '[:number] The requester replied',

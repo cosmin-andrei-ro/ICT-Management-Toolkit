@@ -25,7 +25,7 @@ use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\TracksAuthors;
 
 /**
- * A group of people working together (service desk, network team, …). Modules
+ * A group of people working together (IT support, network team, …). Modules
  * attach their own meaning: Ticketing routes queues to teams.
  *
  * @property string $id

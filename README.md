@@ -8,7 +8,7 @@ An incident links to the server it took down, the server to the application it r
 
 | Module | What it covers |
 |---|---|
-| **Service desk** | Incidents, service requests, problems and changes (ITIL 4), with SLAs, a self-service portal, a change advisory board and tickets by email |
+| **Ticketing** | Incidents, service requests, problems and changes, with SLAs, a self-service portal, a change advisory board and tickets by email |
 | **CMDB** | Configuration items and their relationships, impact analysis, a dependency map |
 | **Assets** | Hardware life cycle, handovers, QR labels, software licences and their compliance |
 | **Data centre** | Racks, cabling, power chains, IP addresses and VLANs |
@@ -31,7 +31,7 @@ From the demo described below, with made-up data. Click a picture to see it full
 
 <table>
   <tr>
-    <td width="50%"><a href="docs/screenshots/service-desk.png"><img src="docs/screenshots/service-desk.png" alt="Service desk: tickets with priority, status and sla"></a><br><b>Service desk</b><br>Tickets with priority, status and SLA</td>
+    <td width="50%"><a href="docs/screenshots/ticketing.png"><img src="docs/screenshots/ticketing.png" alt="Ticketing: tickets with priority, status and sla"></a><br><b>Ticketing</b><br>Tickets with priority, status and SLA</td>
     <td width="50%"><a href="docs/screenshots/cmdb.png"><img src="docs/screenshots/cmdb.png" alt="CMDB: a configuration item and its dependency map"></a><br><b>CMDB</b><br>A configuration item and its dependency map</td>
   </tr>
   <tr>
@@ -77,7 +77,7 @@ Following a standard here means built to its requirements. Nothing has been cert
 - **REST API** at `/api/v1`, with tokens limited to chosen abilities
 - **Signed webhooks** for events from tickets, changes, the CMDB, assets, risks, findings and continuity plans
 - **Monitoring alerts** that open and resolve incidents, in the toolkit's own format or from [Prometheus Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/)
-- **Email to ticket** from IMAP mailboxes, and **imports** from CSV or Excel
+- **Email to ticket** from IMAP mailboxes, and **imports** from CSV or XLSX
 
 ## Try it on your computer
 
@@ -126,7 +126,7 @@ In order, they download the libraries, start the containers, create a secret key
 Go to **http://localhost** in your browser. Every demo account has the password `password`:
 
 - **`employee@example.com`** sees what an employee sees. It signs in with just the password, so start here.
-- **`admin@example.com`** sees everything, and also asks for a six-digit code. In an authenticator app on your phone (Google Authenticator, for example), add an account by entering a key manually, and type `JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP`, time-based. The app then shows the code.
+- **`admin@example.com`** sees everything, and also asks for a six-digit code. In an authenticator app on your phone, add an account by entering a key manually, and type `JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP`, time-based. The app then shows the code.
 
 Emails the toolkit sends do not really go out: you can read them at http://localhost:8025. To have emails and exports processed, keep this running in a second terminal, in the same folder: `./vendor/bin/sail artisan queue:work`.
 

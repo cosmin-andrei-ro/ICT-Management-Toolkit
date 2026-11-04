@@ -71,20 +71,20 @@ it('links CMDB items to the version, lists the application on the item and keeps
 it('records software, databases, libraries and technical accounts', function (): void {
     Livewire::test(SheetPage::class, ['sheet' => $this->sheet])->call('openChapter', 6)
         ->set('form.6_1.application_type', 'web')
-        ->call('addRow', '6_4', 'databases')->set('form.6_4.databases.0.dbms', 'postgresql')->set('form.6_4.databases.0.version', '16')
+        ->call('addRow', '6_4', 'databases')->set('form.6_4.databases.0.dbms', 'relational')->set('form.6_4.databases.0.version', '16')
         ->call('addRow', '6_6', 'libraries')->set('form.6_6.libraries.0.name', 'Laravel Framework')->set('form.6_6.libraries.0.support_until', '31.12.2026')
         ->call('save')->assertHasErrors('form.6_6.libraries.0.support_until')
         ->set('form.6_6.libraries.0.support_until', '2026-12-31')
         ->call('openChapter', 7)->assertHasNoErrors()
-        ->call('addRow', '7', 'accounts')->set('form.7.accounts.0.username', 'svc_sd_db')->set('form.7.accounts.0.credential_location', 'CyberArk safe SD-PROD')
+        ->call('addRow', '7', 'accounts')->set('form.7.accounts.0.username', 'svc_tk_db')->set('form.7.accounts.0.credential_location', 'Vault safe PROD')
         ->call('save')->assertHasNoErrors();
 
     $sheet = $this->sheet->fresh();
-    expect($sheet->section('6_4')['databases'][0]['dbms'])->toBe('postgresql')
+    expect($sheet->section('6_4')['databases'][0]['dbms'])->toBe('relational')
         ->and($sheet->section('6_6')['libraries'][0]['support_until'])->toBe('2026-12-31')
-        ->and($sheet->section('7')['accounts'][0]['credential_location'])->toBe('CyberArk safe SD-PROD');
+        ->and($sheet->section('7')['accounts'][0]['credential_location'])->toBe('Vault safe PROD');
 
     $this->actingAs($this->apps->agent);
-    Livewire::test(SheetPage::class, ['sheet' => $sheet])->call('openChapter', 6)->assertSee('PostgreSQL')->assertSee('Laravel Framework')
-        ->call('openChapter', 7)->assertSee('svc_sd_db')->assertSee('Credential location (vault, never the password)');
+    Livewire::test(SheetPage::class, ['sheet' => $sheet])->call('openChapter', 6)->assertSee('Relational database')->assertSee('Laravel Framework')
+        ->call('openChapter', 7)->assertSee('svc_tk_db')->assertSee('Credential location (vault, never the password)');
 });

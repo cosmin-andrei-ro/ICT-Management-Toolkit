@@ -9,7 +9,7 @@ People write to a support address. Those messages, and replies to ticket emails,
 
 ## Decision
 
-- **IMAP polling** with `directorytree/imapengine` (MIT; actively maintained; same author as LdapRecord; no `ext-imap`, which PHP 8.4 removed). `webklex/php-imap` was considered but had no release since April 2025. The library sits behind `MailboxReader`, so tests use a fake and another transport (e.g. Microsoft Graph) can be added later.
+- **IMAP polling** with `directorytree/imapengine` (MIT; actively maintained; same author as LdapRecord; no `ext-imap`, which PHP 8.4 removed). `webklex/php-imap` was considered but had no release since April 2025. The library sits behind `MailboxReader`, so tests use a fake and another transport can be added later.
 - **Mailboxes** (`ticketing_mailboxes`) are configured by administrators only (`ticketing.mailbox.manage`). The password is encrypted with the application key, hidden from serialization and the audit trail, never sent back to the browser; `credentials_updated_at` is audited instead. Errors are stored as short reason codes, never the server's text, which may echo credentials.
 - **SSRF guard:** a mailbox connects only to allowed ports (993 and 143 by default), never to loopback, link-local (cloud metadata), unspecified, reserved or multicast addresses, and only encrypted unless the installation allows otherwise (development). Private networks stay allowed: on-premises Exchange lives there. Certificates are verified.
 - **Reading:** the scheduler queues one `FetchMailbox` job per active mailbox every minute; the job is unique per mailbox. Messages are fetched without setting `\Seen`, handled, then marked as read (and moved, when configured).
@@ -29,5 +29,5 @@ People write to a support address. Those messages, and replies to ticket emails,
 
 ## Consequences
 
-- Microsoft 365 and Google need OAuth2 (XOAUTH2), which ImapEngine supports; adding it means storing a client registration instead of a password.
+- Some hosted mail services need OAuth2 (XOAUTH2), which ImapEngine supports; adding it means storing a client registration instead of a password.
 - An attacker who can forge the From address of a user, on a server that does not check SPF/DMARC, can raise tickets in their name. Exchange should reject forged internal senders from outside.

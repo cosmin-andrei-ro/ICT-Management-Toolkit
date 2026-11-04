@@ -27,4 +27,4 @@ Messages are read every minute or so. A message is ignored, without any answer, 
 - you sent many messages in a short time;
 - it is very large.
 
-If your message does not become a ticket, use the portal, or ask the service desk.
+If your message does not become a ticket, use the portal, or ask IT support.

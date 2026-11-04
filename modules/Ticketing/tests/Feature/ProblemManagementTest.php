@@ -39,7 +39,7 @@ function newProblem(TicketingScenario $desk, array $incidents = []): Ticket
 
 it('opens a problem from incidents, numbered separately and without SLA clocks', function (): void {
     $first = $this->desk->ticket(title: 'Email is slow');
-    $second = $this->desk->ticket(title: 'Outlook hangs');
+    $second = $this->desk->ticket(title: 'Mail client hangs');
 
     $problem = newProblem($this->desk, [$first, $second]);
 
@@ -81,7 +81,7 @@ it('becomes a known error only with a workaround, and hands it to agents linking
 
     expect(fn () => app(MarkKnownError::class)->handle($problem->fresh()))->toThrow(InvalidArgumentException::class);
 
-    app(UpdateProblemAnalysis::class)->handle($problem->fresh(), 'Mailbox database on a full disk.', 'Restart the Outlook cache: File > Account settings > Repair.');
+    app(UpdateProblemAnalysis::class)->handle($problem->fresh(), 'Mailbox database on a full disk.', 'Restart the mail client cache: File > Account settings > Repair.');
     app(MarkKnownError::class)->handle($problem->fresh());
 
     expect($problem->fresh()->problemDetails?->isKnownError())->toBeTrue();

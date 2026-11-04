@@ -5,7 +5,7 @@
 
 ## Context
 
-ITIL 4 distinguishes incidents, service requests, problems and changes. They share most of their lifecycle (queue, assignee, comments, attachments, SLA, reporting) but differ in workflow and in a few fields.
+IT service management distinguishes incidents, service requests, problems and changes. They share most of their lifecycle (queue, assignee, comments, attachments, SLA, reporting) but differ in workflow and in a few fields.
 
 ## Decision
 
@@ -22,7 +22,7 @@ ITIL 4 distinguishes incidents, service requests, problems and changes. They sha
   - closed tickets require `closed_at`;
   - composite foreign keys keep queues and categories inside the ticket's organization.
 - **Numbers** (`INC-000042`, `REQ-000007`) are per organization and type. A single atomic `INSERT … ON CONFLICT … RETURNING` hands them out, so concurrent requests never collide. A rolled-back transaction may leave a gap, which is acceptable. URLs use the UUID, never the number (no enumeration).
-- **Priority** is derived from impact × urgency, using the ITIL default matrix. Organizations can override single cells in `ticketing_priority_matrix`. Priority is never set by hand.
+- **Priority** is derived from impact × urgency, using the usual default matrix. Organizations can override single cells in `ticketing_priority_matrix`. Priority is never set by hand.
 - **Search** uses a generated `tsvector` column with a GIN index. The number goes through the `simple` configuration (kept intact); title and description go through `english` (stemmed).
 - **Visibility** (owner's decision):
   - Requesters see their own tickets and those they watch.

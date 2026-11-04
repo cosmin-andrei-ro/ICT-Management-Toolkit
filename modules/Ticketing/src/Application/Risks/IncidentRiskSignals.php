@@ -13,7 +13,7 @@ use Modules\Ticketing\Domain\Enums\TicketType;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * Operational risk the service desk sees: the same CMDB item failing again
+ * Operational risk IT support sees: the same CMDB item failing again
  * and again (three incidents or more in 90 days).
  */
 final readonly class IncidentRiskSignals

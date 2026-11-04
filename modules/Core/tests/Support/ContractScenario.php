@@ -39,7 +39,7 @@ final class ContractScenario
         $scenario->manager = $scenario->member(DefaultRole::AssetManager);
         $scenario->agent = $scenario->member(DefaultRole::Agent);
         $scenario->requester = $scenario->member(DefaultRole::Requester);
-        $scenario->supplier = Supplier::factory()->create(['name' => 'Acme Support']);
+        $scenario->supplier = Supplier::factory()->create(['name' => 'Sample Support']);
 
         return $scenario;
     }

@@ -55,15 +55,15 @@ if [ ! -f /var/lib/samba/private/sam.ldb ]; then
     samba-tool user create dnogroup "$USER_PASSWORD" --userou=OU=Staff \
         --given-name=Dee --surname=NoGroup --mail-address=dee.nogroup@corp.example
 
-    samba-tool group add IT-ServiceDesk --groupou=OU=Groups
+    samba-tool group add IT-Support --groupou=OU=Groups
     samba-tool group add IT-Admins --groupou=OU=Groups
     samba-tool group add IT-L2 --groupou=OU=Groups
 
-    samba-tool group addmembers IT-ServiceDesk jdoe,cdisabled
+    samba-tool group addmembers IT-Support jdoe,cdisabled
     samba-tool group addmembers IT-Admins asmith
-    # Nested: bnested is only in IT-L2, which is a member of IT-ServiceDesk.
+    # Nested: bnested is only in IT-L2, which is a member of IT-Support.
     samba-tool group addmembers IT-L2 bnested
-    samba-tool group addmembers IT-ServiceDesk IT-L2
+    samba-tool group addmembers IT-Support IT-L2
 
     samba-tool user setexpiry --noexpiry svc-ictmt
     for u in jdoe asmith bnested cdisabled dnogroup; do samba-tool user setexpiry --noexpiry "$u"; done

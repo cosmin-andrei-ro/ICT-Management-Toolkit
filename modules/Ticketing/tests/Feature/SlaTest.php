@@ -75,7 +75,7 @@ it('uses organization overrides', function (): void {
     expect(dueLocal(clockOf($this->desk->ticket(), SlaMetric::Response)))->toBe('2026-11-02 10:30');
 });
 
-it('completes the response clock on the first public reply from the service desk', function (): void {
+it('completes the response clock on the first public reply from IT support', function (): void {
     $ticket = $this->desk->ticket();
     $this->travelTo(bucharest('2026-11-02 11:00'));
 

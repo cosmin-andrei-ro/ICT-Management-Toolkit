@@ -53,7 +53,7 @@ it('creates a mapping in the current organization, lowercased and audited', func
 
     Livewire::test(ManageDirectoryGroupMappings::class)
         ->callAction('create', data: [
-            'group_dn' => 'CN=IT-ServiceDesk,OU=Groups,DC=corp,DC=example',
+            'group_dn' => 'CN=IT-Support,OU=Groups,DC=corp,DC=example',
             'role_id' => agentRoleId(),
         ])
         ->assertHasNoFormErrors();
@@ -61,7 +61,7 @@ it('creates a mapping in the current organization, lowercased and audited', func
     $mapping = DirectoryGroupMapping::query()->sole();
 
     expect($mapping->organization_id)->toBe($this->orgA->id)
-        ->and($mapping->group_dn)->toBe('cn=it-servicedesk,ou=groups,dc=corp,dc=example')
+        ->and($mapping->group_dn)->toBe('cn=it-support,ou=groups,dc=corp,dc=example')
         ->and($mapping->created_by)->toBe($this->admin->id)
         ->and(AuditLog::query()->where('auditable_type', 'core.directory_group_mapping')->where('event', AuditEvent::Created)->exists())->toBeTrue();
 });

@@ -15,19 +15,19 @@ use Modules\Audit\Domain\Models\Finding;
 use Modules\Audit\Domain\Models\FindingAction;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Links\TicketSummary;
 use Modules\Core\Domain\Models\User;
 
 /**
  * The corrective actions of a finding, each with an owner and a due date,
- * and optionally tracked as a problem in the service desk. Audited on the
+ * and optionally tracked as a problem in Ticketing. Audited on the
  * finding.
  */
 final readonly class ManageFindingActions
 {
     public function __construct(
-        private ServiceDeskTickets $tickets,
+        private ProblemTickets $tickets,
         private AuditTrail $trail,
     ) {}
 
@@ -65,14 +65,14 @@ final readonly class ManageFindingActions
     }
 
     /**
-     * Raises the action as a problem in the service desk, once.
+     * Raises the action as a problem in Ticketing, once.
      *
-     * @throws InvalidArgumentException when already raised or there is no service desk
+     * @throws InvalidArgumentException when already raised or Ticketing is not available
      */
     public function raiseTicket(FindingAction $action, User $actor): TicketSummary
     {
         if ($action->ticket_id !== null || ! $this->tickets->isAvailable()) {
-            throw new InvalidArgumentException('Already raised, or there is no service desk.');
+            throw new InvalidArgumentException('Already raised, or Ticketing is not available.');
         }
 
         $finding = Finding::query()->findOrFail($action->finding_id);

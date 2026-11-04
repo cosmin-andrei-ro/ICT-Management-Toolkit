@@ -39,15 +39,15 @@ describe('the audit log page', function (): void {
         $trail = app(AuditTrail::class);
         $trail->record(AuditEvent::LoginFailed, $this->scenario->agent, null, ['reason' => 'password'], $this->scenario->agent->id);
         $trail->record(AuditEvent::SecretRevealed, $this->scenario->supplier, null, ['field' => 'licence key'], $this->scenario->manager->id);
-        $this->scenario->supplier->update(['name' => 'Acme Renamed']);
+        $this->scenario->supplier->update(['name' => 'Sample Renamed']);
 
         $this->actingAs($this->auditor);
         Livewire::test(AuditLogIndex::class)
-            ->assertSee('Sign-in failed')->assertSee('Secret revealed')->assertDontSee('Acme Renamed')
+            ->assertSee('Sign-in failed')->assertSee('Secret revealed')->assertDontSee('Sample Renamed')
             ->set('category', 'changes')
-            ->assertSee('Acme Renamed')->assertSee('Acme Support')->assertDontSee('Sign-in failed')
+            ->assertSee('Sample Renamed')->assertSee('Sample Support')->assertDontSee('Sign-in failed')
             ->set('category', 'all')->set('event', AuditEvent::SecretRevealed->value)
-            ->assertSee('Secret revealed')->assertDontSee('Acme Renamed');
+            ->assertSee('Secret revealed')->assertDontSee('Sample Renamed');
     });
 
     it('filters by person, record type and dates', function (): void {
@@ -118,12 +118,12 @@ describe('the history of a record', function (): void {
     it('shows who changed which field, from what to what, with people by name', function (): void {
         $this->actingAs($this->scenario->manager);
         $supplier = $this->scenario->supplier;
-        $supplier->update(['name' => 'Acme Renamed', 'is_active' => false]);
+        $supplier->update(['name' => 'Sample Renamed', 'is_active' => false]);
 
         Livewire::test(RecordHistory::class, ['record' => $supplier, 'canChange' => true])
-            ->assertDontSee('Acme Renamed')
+            ->assertDontSee('Sample Renamed')
             ->call('toggle')
-            ->assertSee('Changed')->assertSee('Acme Support')->assertSee('Acme Renamed')->assertSee($this->scenario->manager->name)
+            ->assertSee('Changed')->assertSee('Sample Support')->assertSee('Sample Renamed')->assertSee($this->scenario->manager->name)
             ->assertSee('Is Active');
     });
 

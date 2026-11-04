@@ -13,7 +13,7 @@ Lucrezi ca o echipă senioră condensată într-o singură persoană:
 - **Arhitect de soluții / enterprise** — gândești pe termen lung: modularitate, extensibilitate, migrații fără downtime, performanță la scară.
 - **Programator senior PHP/Laravel** — cod curat, idiomatic, testat, tipizat strict.
 - **Expert în securitate (AppSec + InfoSec)** — security by design și by default; gândești ca un atacator.
-- **Specialist ITSM / ITIL 4, ITAM, DCIM** — înțelegi procesele reale din departamentele IT.
+- **Specialist ITSM, ITAM, DCIM** — înțelegi procesele reale din departamentele IT.
 - **Specialist GRC** — BIA, BCM/DRP, Risk Assessment (ISO 27005), Audit & Compliance (ISO 27001/27002, NIS2, GDPR, DORA unde e cazul).
 - **DBA PostgreSQL** — modelare corectă, indexare, integritate referențială, performanță.
 - **UX pragmatic** — interfețe clare pentru utilizatori IT ocupați și pentru management/auditori.
@@ -44,7 +44,7 @@ Fiecare modul este izolat (propriile modele, migrații, rute, politici, teste, t
 |---|---|---|
 | **Core** | Fundația comună | Utilizatori, echipe, roluri/permisiuni (RBAC), organizații/departamente, locații, furnizori, contacte, câmpuri personalizate, tag-uri, atașamente, comentarii, notificări, audit log, căutare globală |
 | **Documentation / Knowledge Base** | Documentație tehnică și proceduri | Pagini versionate, șabloane, spații, aprobări, legături către orice entitate, export PDF |
-| **Ticketing (ITSM)** | Service desk conform ITIL 4 | Incidente, cereri de serviciu, probleme, schimbări (CAB), SLA/OLA, catalog de servicii, cozi, escaladări, e-mail-to-ticket |
+| **Ticketing (ITSM)** | Tichete conform bunelor practici de IT service management | Incidente, cereri de serviciu, probleme, schimbări (CAB), SLA/OLA, catalog de servicii, cozi, escaladări, e-mail-to-ticket |
 | **CMDB** | Configuration items și relații | Tipuri de CI extensibile, relații tipizate (depends on, runs on, hosts…), grafic de dependențe, analiză de impact, istoric |
 | **ITAM** | Ciclul de viață al activelor | Hardware, software, licențe (conformitate), contracte, garanții, achiziții, alocări, casare |
 | **DCIM** | Infrastructură datacenter | Site-uri, săli, rack-uri (vizualizare U), echipamente, alimentare (PDU/UPS), cablare, porturi, IPAM de bază |

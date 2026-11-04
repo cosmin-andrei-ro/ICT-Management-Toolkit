@@ -6956,7 +6956,7 @@
             "get": {
                 "operationId": "v1.tickets.index",
                 "description": "Filters: `filter[status]` (open, closed or a status), `filter[type]`, `filter[priority]`,\n`filter[queue_id]`, `filter[assignee_id]`, `filter[search]`. Sorts: `created_at`,\n`updated_at`, `number`, `priority`; newest first by default. The `status` and\n`search` parameters of the first version still work.",
-                "summary": "List tickets visible to the token's user: all tickets of the organization for\nservice desk staff, otherwise the user's own and watched tickets",
+                "summary": "List tickets visible to the token's user: all tickets of the organization for\nIT support staff, otherwise the user's own and watched tickets",
                 "tags": [
                     "Ticket"
                 ],
@@ -7202,7 +7202,7 @@
         "/tickets/{ticket}": {
             "get": {
                 "operationId": "v1.tickets.show",
-                "summary": "A ticket with its conversation; internal notes only for service desk staff",
+                "summary": "A ticket with its conversation; internal notes only for IT support staff",
                 "tags": [
                     "Ticket"
                 ],
@@ -7267,7 +7267,7 @@
         "/tickets/{ticket}/comments": {
             "post": {
                 "operationId": "v1.tickets.comments.store",
-                "summary": "Add a comment. Internal notes require service desk permissions",
+                "summary": "Add a comment. Internal notes require ticketing permissions",
                 "tags": [
                     "TicketComment"
                 ],
@@ -10911,7 +10911,7 @@
             },
             "StoreMonitoringAlertRequest": {
                 "type": "object",
-                "description": "An alert in the toolkit's own format, which Zabbix, Nagios and others send\nthrough their webhook templates (ADR 0067).",
+                "description": "An alert in the toolkit's own format, which most monitoring tools can send\nthrough their webhook templates (ADR 0067).",
                 "properties": {
                     "key": {
                         "type": "string",

@@ -66,13 +66,13 @@ use Modules\Core\Domain\Links\NoBusinessProcesses;
 use Modules\Core\Domain\Links\NoConfigurationItems;
 use Modules\Core\Domain\Links\NoKnowledgeArticles;
 use Modules\Core\Domain\Links\NoPhysicalAssets;
+use Modules\Core\Domain\Links\NoProblemTickets;
 use Modules\Core\Domain\Links\NoRackPlacements;
 use Modules\Core\Domain\Links\NoRisks;
-use Modules\Core\Domain\Links\NoServiceDeskTickets;
 use Modules\Core\Domain\Links\PhysicalAssets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Links\RackPlacements;
 use Modules\Core\Domain\Links\Risks;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\Attachment;
@@ -170,7 +170,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         // Replaced by the BIA module when it is enabled.
         $this->app->bindIf(BusinessProcesses::class, NoBusinessProcesses::class);
         // Replaced by the Ticketing module when it is enabled.
-        $this->app->bindIf(ServiceDeskTickets::class, NoServiceDeskTickets::class);
+        $this->app->bindIf(ProblemTickets::class, NoProblemTickets::class);
         // Replaced by the Applications module when it is enabled.
         $this->app->bindIf(Applications::class, NoApplications::class);
         // Replaced by the Risk module when it is enabled.

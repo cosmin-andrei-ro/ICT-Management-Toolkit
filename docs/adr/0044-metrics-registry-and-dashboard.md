@@ -36,7 +36,7 @@ Reporting must not read other modules' tables (CLAUDE.md §5.1). Most modules al
 
   Only keys the person may see are accepted. Indicators added later appear by default. It is a personal setting, not a record of the organization, so it has no audit trail. **Restore defaults** deletes it.
 - **Initial indicators:**
-  - service desk: open, unassigned, past their SLA;
+  - ticketing: open, unassigned, past their SLA;
   - asset management: licences expiring, warranties ending;
   - BIA: processes never assessed, past their review, awaiting approval;
   - continuity: critical processes without a plan in force, plans not in force, overdue exercises, overdue reviews;

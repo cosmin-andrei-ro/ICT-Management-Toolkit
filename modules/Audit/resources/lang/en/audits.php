@@ -110,7 +110,7 @@ return [
         'no_actions' => 'No corrective action yet.',
         'action_title' => 'Corrective action',
         'add_action' => 'Add action',
-        'raise_ticket' => 'Track in the service desk',
+        'raise_ticket' => 'Track in Ticketing',
         'closure' => 'Closure',
         'submit' => 'Submit for verification',
         'submit_help' => 'When the finding is dealt with, submit it: a compliance manager other than you verifies and closes it.',
@@ -125,7 +125,7 @@ return [
     'errors' => [
         'status' => 'The audit cannot change to this status; completing it needs a conclusion.',
         'invalid' => 'Unknown control, requirement or owner.',
-        'ticket' => 'This action is already tracked, or there is no service desk.',
+        'ticket' => 'This action is already tracked, or Ticketing is not available.',
         'not_ready' => 'Not ready: a nonconformity needs a root cause and at least one corrective action, and every action must be done or cancelled.',
     ],
     'ticket' => [

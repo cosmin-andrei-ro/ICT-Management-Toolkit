@@ -57,7 +57,7 @@ function currentCode(): string
 
 it('creates a licence with a new product and keeps its key encrypted, out of the audit trail', function (): void {
     Livewire::test(LicenseForm::class)
-        ->set('newProduct', 'Microsoft 365 E3')->set('name', '2026 agreement')
+        ->set('newProduct', 'Office Suite E3')->set('name', '2026 agreement')
         ->set('quantity', '25')->set('newKey', 'ABCDE-12345-SECRET')
         ->set('expiresOn', '2026-12-31')
         ->call('save')
@@ -67,7 +67,7 @@ it('creates a licence with a new product and keeps its key encrypted, out of the
     $license = License::query()->sole();
     $raw = DB::table('itam_licenses')->where('id', $license->id)->value('license_key');
 
-    expect($license->product->name)->toBe('Microsoft 365 E3')
+    expect($license->product->name)->toBe('Office Suite E3')
         ->and($license->license_key)->toBe('ABCDE-12345-SECRET')
         ->and($raw)->not->toContain('SECRET')
         ->and($license->toJson())->not->toContain('SECRET')
@@ -82,7 +82,7 @@ it('creates a licence with a new product and keeps its key encrypted, out of the
 });
 
 it('shows a key only after a valid code, records it, and throttles wrong codes', function (): void {
-    $license = licenseFor('AutoCAD', ['license_key' => 'KEY-777']);
+    $license = licenseFor('Design Suite', ['license_key' => 'KEY-777']);
 
     Livewire::test(ShowLicense::class, ['license' => $license])
         ->set('revealCode', '000000')->call('revealKey')->assertHasErrors(['revealCode'])->assertDontSee('KEY-777')
@@ -104,8 +104,8 @@ it('shows a key only after a valid code, records it, and throttles wrong codes',
 });
 
 it('gives seats to people or devices by the licence model, and releases device seats on disposal', function (): void {
-    $users = licenseFor('Adobe Acrobat', ['model' => 'per_user', 'quantity' => 1]);
-    $devices = licenseFor('Windows 11 Pro', ['model' => 'per_device', 'quantity' => 5]);
+    $users = licenseFor('PDF Editor', ['model' => 'per_user', 'quantity' => 1]);
+    $devices = licenseFor('Desktop OS Pro', ['model' => 'per_device', 'quantity' => 5]);
     $laptop = $this->itam->laptop(['asset_tag' => 'AST-W11', 'status' => 'retired']);
     $seats = app(ManageLicenseSeats::class);
 
@@ -117,20 +117,20 @@ it('gives seats to people or devices by the licence model, and releases device s
         ->and(fn () => $seats->giveToPerson($devices, $this->itam->employee, $this->itam->manager))->toThrow(InvalidArgumentException::class);
 
     $compliance = app(LicenseCompliance::class)->products(CarbonImmutable::today())->keyBy(fn ($product) => $product->product->name);
-    expect($compliance['Adobe Acrobat']->used)->toBe(2)
-        ->and($compliance['Adobe Acrobat']->isOverAllocated())->toBeTrue()
-        ->and($compliance['Windows 11 Pro']->isOverAllocated())->toBeFalse();
+    expect($compliance['PDF Editor']->used)->toBe(2)
+        ->and($compliance['PDF Editor']->isOverAllocated())->toBeTrue()
+        ->and($compliance['Desktop OS Pro']->isOverAllocated())->toBeFalse();
 
     app(DisposeAsset::class)->handle($laptop, CarbonImmutable::today(), DisposalMethod::Recycled, true, null, $this->itam->manager);
     expect(LicenseAssignment::query()->where('license_id', $devices->id)->exists())->toBeFalse();
 
-    Livewire::test(LicenseIndex::class)->set('over', true)->assertSee('Adobe Acrobat')->assertDontSee('Windows 11 Pro');
+    Livewire::test(LicenseIndex::class)->set('over', true)->assertSee('PDF Editor')->assertDontSee('Desktop OS Pro');
 });
 
 it('counts seats bought on valid licences only, and site licences without a limit', function (): void {
     $today = CarbonImmutable::today();
-    $old = licenseFor('Visio', ['quantity' => 10, 'expires_on' => $today->subDay()]);
-    licenseFor('Visio', ['quantity' => 2, 'expires_on' => $today->addYear()]);
+    $old = licenseFor('Diagram Tool', ['quantity' => 10, 'expires_on' => $today->subDay()]);
+    licenseFor('Diagram Tool', ['quantity' => 2, 'expires_on' => $today->addYear()]);
     licenseFor('Antivirus', ['model' => 'site', 'quantity' => null]);
     app(ManageLicenseSeats::class)->giveToPerson($old, $this->itam->employee, $this->itam->manager);
     app(ManageLicenseSeats::class)->giveToPerson($old, $this->itam->colleague, $this->itam->manager);
@@ -138,10 +138,10 @@ it('counts seats bought on valid licences only, and site licences without a limi
 
     $compliance = app(LicenseCompliance::class)->products($today)->keyBy(fn ($product) => $product->product->name);
 
-    expect($compliance['Visio']->purchased)->toBe(2)
-        ->and($compliance['Visio']->used)->toBe(3)
-        ->and($compliance['Visio']->isOverAllocated())->toBeTrue()
-        ->and($compliance['Visio']->licenses)->toHaveCount(1)
+    expect($compliance['Diagram Tool']->purchased)->toBe(2)
+        ->and($compliance['Diagram Tool']->used)->toBe(3)
+        ->and($compliance['Diagram Tool']->isOverAllocated())->toBeTrue()
+        ->and($compliance['Diagram Tool']->licenses)->toHaveCount(1)
         ->and($compliance['Antivirus']->purchased)->toBeNull()
         ->and($compliance['Antivirus']->isOverAllocated())->toBeFalse();
 });
@@ -155,7 +155,7 @@ it('does not switch a licence with seats between people and devices', function (
 });
 
 it('lets agents give seats but not see keys or change licences, and keeps employees out', function (): void {
-    $license = licenseFor('Slack', ['license_key' => 'K-1']);
+    $license = licenseFor('Chat App', ['license_key' => 'K-1']);
     $this->actingAs($this->itam->agent);
 
     Livewire::test(ShowLicense::class, ['license' => $license])
@@ -167,12 +167,12 @@ it('lets agents give seats but not see keys or change licences, and keeps employ
     $this->get(route('itam.licenses.edit', $license))->assertForbidden();
 
     $this->actingAs($this->itam->employee)->get(route('itam.licenses.index'))->assertForbidden();
-    Livewire::test(MyEquipment::class)->assertSee('My software')->assertSee('Slack')->assertDontSee('K-1');
+    Livewire::test(MyEquipment::class)->assertSee('My software')->assertSee('Chat App')->assertDontSee('K-1');
 });
 
 it('keeps licences and seats inside their organization', function (): void {
     $theirs = app(OrganizationContext::class)->runAs(Organization::factory()->create(), fn () => License::factory()->create());
-    $license = licenseFor('Zoom', ['model' => 'per_device']);
+    $license = licenseFor('Video App', ['model' => 'per_device']);
     $theirDevice = app(OrganizationContext::class)->runAs($theirs->organization_id, fn () => Asset::factory()->create());
 
     $this->get(route('itam.licenses.show', $theirs))->assertNotFound();
@@ -180,11 +180,11 @@ it('keeps licences and seats inside their organization', function (): void {
 });
 
 it('imports licences without keys, creating products, all rows or none', function (): void {
-    licenseFor('Jira', ['name' => 'Cloud Standard', 'quantity' => 10]);
+    licenseFor('Issue Tracker', ['name' => 'Cloud Standard', 'quantity' => 10]);
     $csv = "product;publisher;name;model;quantity;expires_on;license_key\n"
-        ."Jira;Atlassian;Cloud Standard;;50;2027-01-31;LEAKED\n"
+        ."Issue Tracker;Tool Vendor;Cloud Standard;;50;2027-01-31;LEAKED\n"
         ."Figma;Figma;Team;per user;5;;\n"
-        ."CrowdStrike;;EDR;site;;;\n";
+        ."Endpoint Guard;;EDR;site;;;\n";
 
     Livewire::test(ImportAssets::class, ['kind' => 'licenses'])
         ->set('kind', 'licenses')
@@ -193,17 +193,17 @@ it('imports licences without keys, creating products, all rows or none', functio
         ->call('import')
         ->assertSet('imported', 3);
 
-    $jira = License::query()->whereHas('product', fn ($query) => $query->where('name', 'Jira'))->sole();
-    expect($jira->quantity)->toBe(50)
-        ->and($jira->product->publisher)->toBe('Atlassian')
-        ->and($jira->hasKey())->toBeFalse()
+    $tracker = License::query()->whereHas('product', fn ($query) => $query->where('name', 'Issue Tracker'))->sole();
+    expect($tracker->quantity)->toBe(50)
+        ->and($tracker->product->publisher)->toBe('Tool Vendor')
+        ->and($tracker->hasKey())->toBeFalse()
         ->and(SoftwareProduct::query()->where('name', 'Figma')->exists())->toBeTrue();
 
-    $bad = "product;name;model;quantity\nVisio;;per_user;0\n";
+    $bad = "product;name;model;quantity\nDiagram Tool;;per_user;0\n";
     Livewire::test(ImportAssets::class)->set('kind', 'licenses')
         ->set('file', UploadedFile::fake()->createWithContent('bad.csv', $bad))
         ->call('analyse')->call('import')->assertHasErrors(['file']);
-    expect(SoftwareProduct::query()->where('name', 'Visio')->exists())->toBeFalse();
+    expect(SoftwareProduct::query()->where('name', 'Diagram Tool')->exists())->toBeFalse();
 
     $this->actingAs($this->itam->agent)->get(route('itam.assets.import', ['kind' => 'licenses']))->assertForbidden();
 });
@@ -221,9 +221,9 @@ it('exports licences with seats in use, never the key', function (): void {
 
 it('lists licences under a contract, and reminds once before expiry', function (): void {
     $contract = Contract::factory()->create();
-    licenseFor('Veeam', ['name' => 'Backup', 'contract_id' => $contract->id, 'expires_on' => CarbonImmutable::today()->addDays(20)]);
+    licenseFor('Backup Suite', ['name' => 'Backup', 'contract_id' => $contract->id, 'expires_on' => CarbonImmutable::today()->addDays(20)]);
 
-    Livewire::test(ShowContract::class, ['contract' => $contract])->assertSee('Licences under this contract')->assertSee('Veeam · Backup');
+    Livewire::test(ShowContract::class, ['contract' => $contract])->assertSee('Licences under this contract')->assertSee('Backup Suite · Backup');
 
     expect(app(SendLicenseExpiryReminders::class)->handle())->toBe(1)
         ->and(app(SendLicenseExpiryReminders::class)->handle())->toBe(0);

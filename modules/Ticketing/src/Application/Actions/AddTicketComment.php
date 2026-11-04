@@ -18,7 +18,7 @@ use Modules\Ticketing\Domain\Events\TicketCommentAdded;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * Comments on a ticket. A public reply from the service desk counts as the first
+ * Comments on a ticket. A public reply from IT support counts as the first
  * response; a reply from the requester takes a pending ticket back into work.
  */
 final readonly class AddTicketComment

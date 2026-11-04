@@ -21,7 +21,7 @@ use Modules\Ticketing\Application\Policies\TicketingSettingsPolicy;
 use Modules\Ticketing\Domain\Changes\ChangeRisk;
 
 /**
- * A pre-approved routine change (ITIL "standard change"). Creating a change from it
+ * A pre-approved routine change (a "standard change"). Creating a change from it
  * needs no CAB; its plans are copied and cannot be edited on the change.
  *
  * @property string $id

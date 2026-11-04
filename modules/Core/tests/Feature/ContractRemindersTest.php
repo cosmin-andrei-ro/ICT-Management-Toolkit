@@ -42,7 +42,7 @@ it('emails the owner and the contract managers once per reminder, counting down 
 
     expect($remind->handle($this->today))->toBe(1);
     Notification::assertSentTo([$this->owner, $this->scenario->manager], ContractDeadlineApproaching::class,
-        fn (ContractDeadlineApproaching $mail): bool => $mail->deadline === '2026-08-25' && $mail->supplier === 'Acme Support');
+        fn (ContractDeadlineApproaching $mail): bool => $mail->deadline === '2026-08-25' && $mail->supplier === 'Sample Support');
     Notification::assertNotSentTo([$this->scenario->agent, $this->scenario->requester], ContractDeadlineApproaching::class);
 
     expect($remind->handle($this->today->addDay()))->toBe(0);
@@ -122,7 +122,7 @@ it('runs from the scheduler command', function (): void {
 });
 
 it('says what to do and by when, without the value of the contract', function (): void {
-    $mail = new ContractDeadlineApproaching('Server maintenance', 'Acme Support', 'C-42', '2026-08-25', '2026-09-24', true, 'https://toolkit.example/contracts/1');
+    $mail = new ContractDeadlineApproaching('Server maintenance', 'Sample Support', 'C-42', '2026-08-25', '2026-09-24', true, 'https://toolkit.example/contracts/1');
     $rendered = (string) $mail->toMail($this->owner)->render();
 
     expect($rendered)->toContain('Server maintenance')->toContain('2026-08-25')->toContain('renews automatically on 2026-09-24')->toContain('C-42');

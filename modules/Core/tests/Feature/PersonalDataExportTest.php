@@ -101,7 +101,7 @@ it('lists the account, the records each module names the person in, what they wr
     $sheets = personalDataOf(personalDataExport($this->organization, $this->admin, $this->person));
     $flat = json_encode($sheets);
 
-    expect(array_keys($sheets))->toContain('Account', 'Service desk', 'Risks', 'Comments', 'Files', 'Activity')
+    expect(array_keys($sheets))->toContain('Account', 'Ticketing', 'Risks', 'Comments', 'Files', 'Activity')
         ->and($sheets['Account'])->toContain(['Email', 'ana@example.com'])
         ->and($flat)->toContain('Laptop screen flickers badly')->toContain('Since Monday, after the update.')->toContain('Requester')
         ->toContain('Ana owns this risk')->toContain($risk->code())

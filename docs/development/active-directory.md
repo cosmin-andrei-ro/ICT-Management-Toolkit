@@ -41,14 +41,14 @@ Domain `CORP.EXAMPLE` (NetBIOS `CORP`), base DN `DC=corp,DC=example`.
 | Account | Password | Groups | Purpose |
 |---|---|---|---|
 | `svc-ictmt` | `Service-Dev-Passw0rd!` | — | Service account for lookups |
-| `jdoe` (Jane Doe) | `User-Dev-Passw0rd!` | IT-ServiceDesk | Regular member |
+| `jdoe` (Jane Doe) | `User-Dev-Passw0rd!` | IT-Support | Regular member |
 | `asmith` (Alex Smith) | `User-Dev-Passw0rd!` | IT-Admins | Different group |
-| `bnested` (Bo Nested) | `User-Dev-Passw0rd!` | IT-L2 → IT-ServiceDesk | Nested membership |
-| `cdisabled` (Cy Disabled) | `User-Dev-Passw0rd!` | IT-ServiceDesk | Disabled in AD |
+| `bnested` (Bo Nested) | `User-Dev-Passw0rd!` | IT-L2 → IT-Support | Nested membership |
+| `cdisabled` (Cy Disabled) | `User-Dev-Passw0rd!` | IT-Support | Disabled in AD |
 | `dnogroup` (Dee NoGroup) | `User-Dev-Passw0rd!` | — | No mapped group |
 | `Administrator` | `Admin-Dev-Passw0rd!` | Domain Admins | Domain administration |
 
-Groups are in `OU=Groups,DC=corp,DC=example`, for example `CN=IT-ServiceDesk,OU=Groups,DC=corp,DC=example`. To sign in to the application with an AD account, first map a group to a role in the admin panel (Access → AD group mappings).
+Groups are in `OU=Groups,DC=corp,DC=example`, for example `CN=IT-Support,OU=Groups,DC=corp,DC=example`. To sign in to the application with an AD account, first map a group to a role in the admin panel (Access → AD group mappings).
 
 You can override the passwords with `SAMBA_ADMIN_PASSWORD`, `SAMBA_USER_PASSWORD` and `SAMBA_SERVICE_PASSWORD` before the first start.
 

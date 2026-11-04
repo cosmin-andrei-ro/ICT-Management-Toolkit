@@ -129,7 +129,7 @@ final readonly class ContinuityCoverage
             'awaiting_approval' => count(array_filter($plans, fn (PlanStanding $standing): bool => $standing->awaitingApproval)),
             'processes' => count($processes),
             'uncovered' => count(array_filter($processes, fn (ProcessCoverage $coverage): bool => ! $coverage->isCovered())),
-            // Findings of completed exercises nobody has handed to the service desk.
+            // Findings of completed exercises nobody has handed to IT support.
             'open_findings' => Finding::query()->whereNull('ticket_id')->whereIn('exercise_id', Exercise::query()->where('status', ExerciseStatus::Completed)->select('id'))->count(),
             'open_activations' => Activation::query()->whereNull('closed_at')->count(),
         ];

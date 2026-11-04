@@ -22,7 +22,7 @@ use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * The service desk's working list: all tickets of the organization, open ones by
+ * IT support's working list: all tickets of the organization, open ones by
  * default, most urgent first.
  */
 #[Layout('core::components.layouts.app')]

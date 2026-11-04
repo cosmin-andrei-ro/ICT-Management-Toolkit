@@ -29,8 +29,8 @@ beforeEach(function (): void {
 function mailboxData(array $overrides = []): array
 {
     return [
-        'name' => 'Service desk', 'address' => 'Helpdesk@Example.com', 'host' => 'mail.example.com', 'port' => 993,
-        'encryption' => 'ssl', 'username' => 'helpdesk', 'password' => 'S3cret-imap-password', 'folder' => 'INBOX',
+        'name' => 'IT support', 'address' => 'Support@Example.com', 'host' => 'mail.example.com', 'port' => 993,
+        'encryption' => 'ssl', 'username' => 'support', 'password' => 'S3cret-imap-password', 'folder' => 'INBOX',
         'ticket_type' => 'incident', 'is_active' => true, ...$overrides,
     ];
 }
@@ -53,7 +53,7 @@ it('stores the password encrypted, out of the audit trail and out of the form', 
     $mailbox = Mailbox::query()->sole();
     $stored = DB::table('ticketing_mailboxes')->where('id', $mailbox->id)->value('password');
 
-    expect($mailbox->address)->toBe('helpdesk@example.com')
+    expect($mailbox->address)->toBe('support@example.com')
         ->and($mailbox->password)->toBe('S3cret-imap-password')
         ->and($stored)->not->toContain('S3cret')
         ->and($mailbox->credentials_updated_at)->not->toBeNull()

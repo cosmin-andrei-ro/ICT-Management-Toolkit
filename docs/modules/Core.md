@@ -15,7 +15,7 @@ The foundation every other module builds on. Code: `modules/Core/`.
 - The table is append-only, enforced by a database trigger.
 - Authentication events (login, failed login, logout, lockout) are recorded too, as are role and permission changes.
 - Each entry carries the IP address, user agent and request id of the HTTP request (`X-Request-Id`, echoed in the response).
-- Shown in the application (ADR 0056): a **History** section on record pages (`<x-core::record-history :record :can-change />`, for those who may change the record or hold `core.audit.view`) and the **Audit log** page `/audit-log` (security events by default, filters, Excel export `core.audit_log`), scoped to the organization by `AuditLogQuery`.
+- Shown in the application (ADR 0056): a **History** section on record pages (`<x-core::record-history :record :can-change />`, for those who may change the record or hold `core.audit.view`) and the **Audit log** page `/audit-log` (security events by default, filters, XLSX export `core.audit_log`), scoped to the organization by `AuditLogQuery`.
 
 ## REST API (ADR 0009, 0061)
 
@@ -122,7 +122,7 @@ The organization chart (`core_departments`), nested, with a manager: Administrat
 
 ## Main menu
 
-Modules add entries through `Modules\Core\Http\Navigation\Navigation::add()`: a link of its own (with an `order`), or an entry of a shared group (`SERVICE_DESK`, `CONFIGURATION`, `RESILIENCE`, `SUPPLIERS`) shown as a drop-down. A group with a single visible entry is shown as that link. The drop-downs are `<details>` elements, so they work without script; `resources/js/navigation.js` closes them on outside clicks and Escape.
+Modules add entries through `Modules\Core\Http\Navigation\Navigation::add()`: a link of its own (with an `order`), or an entry of a shared group (`TICKETING`, `CONFIGURATION`, `RESILIENCE`, `SUPPLIERS`) shown as a drop-down. A group with a single visible entry is shown as that link. The drop-downs are `<details>` elements, so they work without script; `resources/js/navigation.js` closes them on outside clicks and Escape.
 
 ## Administration panel
 

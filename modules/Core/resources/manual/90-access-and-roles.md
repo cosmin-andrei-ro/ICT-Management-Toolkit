@@ -12,8 +12,8 @@ Each person can have different roles in different organizations. Every role is a
 | Role | Typical person | What they can do |
 |---|---|---|
 | **Requester** | every employee | Raise tickets, request services, follow their own tickets. |
-| **Agent** | service desk staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, raise changes, keep the CMDB up to date, read continuity plans and application documentation, hand out and take back equipment, give software licence seats, and see suppliers and their contacts. |
-| **Team lead** | service desk lead | Everything an agent can, plus see reports, approve changes, configure the service desk (categories, queues, SLA targets, catalog, CAB boards, standard changes), define CMDB item types, keep the asset register and the software licences, read the business impact analysis, write and exercise IT disaster recovery plans, and manage suppliers, contracts and locations; create documentation spaces and read and write every one. These settings are in **Administration**. |
+| **Agent** | IT support staff | Everything a requester can, plus see and work every ticket of the organization, assign tickets, manage problems, raise changes, keep the CMDB up to date, read continuity plans and application documentation, hand out and take back equipment, give software licence seats, and see suppliers and their contacts. |
+| **Team lead** | IT support lead | Everything an agent can, plus see reports, approve changes, configure Ticketing (categories, queues, SLA targets, catalog, CAB boards, standard changes), define CMDB item types, keep the asset register and the software licences, read the business impact analysis, write and exercise IT disaster recovery plans, and manage suppliers, contracts and locations; create documentation spaces and read and write every one. These settings are in **Administration**. |
 | **Continuity coordinator** | business continuity | Run the business impact analysis and the continuity and recovery plans: processes, plans, their owners, approvals, exercises and recovery tests, activations, coverage and the weekly digest, settings; keep departments. |
 | **Asset manager** | IT asset and contract management | Raise tickets; see the CMDB; keep the asset register (assets, categories, disposal) and the software licences, including showing licence keys; manage suppliers, contracts and locations. |
 | **Application manager** | application portfolio | Keep the application portfolio: register applications and their owners, write any application's documentation, approve in place of an owner, edit the documentation's dropdown values; read suppliers and contracts. |
@@ -56,7 +56,7 @@ The page also shows two settings that apply to the whole installation and are se
 
 ## Teams
 
-**Administration → Access → Teams.** A team groups people who work together, such as "Service Desk" or "Network". Service desk queues are routed to teams, and a ticket in a queue can only be assigned to members of that queue's team. Only members of the organization can join a team.
+**Administration → Access → Teams.** A team groups people who work together, such as "IT Support" or "Network". Ticketing queues are routed to teams, and a ticket in a queue can only be assigned to members of that queue's team. Only members of the organization can join a team.
 
 ## Active Directory sign-in
 
@@ -66,13 +66,13 @@ People can sign in with their Windows account when your installation is connecte
 
 **Administration → Access → AD group mappings.** Each mapping says: *members of this AD group get this role in this organization*.
 
-1. Enter the group's distinguished name, for example `CN=IT-ServiceDesk,OU=Groups,DC=corp,DC=example`. Your AD administrator can give it to you.
+1. Enter the group's distinguished name, for example `CN=IT-Support,OU=Groups,DC=corp,DC=example`. Your AD administrator can give it to you.
 2. Choose the role.
 3. Save.
 
 Things to know:
 
-- **Nested groups count.** If `IT-L2` is a member of `IT-ServiceDesk`, members of `IT-L2` get the `IT-ServiceDesk` role.
+- **Nested groups count.** If `IT-L2` is a member of `IT-Support`, members of `IT-L2` get the `IT-Support` role.
 - **Active Directory decides.** For AD accounts, organizations and roles come only from these mappings, and are refreshed at every sign-in. A role you give an AD user by hand disappears at their next sign-in.
 - **People without a mapped group cannot sign in.** A good default is to map a group such as `Domain Users` to *Requester*.
 - **Changes in AD reach the application within 15 minutes.** Accounts disabled or deleted in AD are blocked, and group changes are applied. When AD re-enables an account, access returns on its own.
@@ -80,22 +80,22 @@ Things to know:
 
 ## Single sign-on
 
-People can sign in with their company account at your identity provider - Microsoft Entra ID, Google Workspace, Okta, Keycloak, ADFS or any provider speaking OpenID Connect or SAML 2.0. Each organization connects its own providers in **Administration → Access → Single sign-on**.
+People can sign in with their company account at your identity provider: any provider speaking OpenID Connect or SAML 2.0. Each organization connects its own providers in **Administration → Access → Single sign-on**.
 
 ### Connecting a provider
 
-1. At the provider, register the toolkit as a **web application** (OpenID Connect, authorization code flow). Your identity administrator gives you its **issuer URL**, a **client ID** and a **client secret**. For Microsoft Entra ID the issuer is `https://login.microsoftonline.com/<tenant id>/v2.0`; for Keycloak `https://<server>/realms/<realm>`.
-2. In **Single sign-on**, click **New**, give the name shown on the sign-in button (for example *Microsoft*), the issuer, client ID and secret, and the **email domains** of your people (for example `company.com`). Only these domains sign in through this provider. If other organizations on this installation also use single sign-on, the sign-in page asks for the email instead of showing buttons; a domain claimed by two organizations then finds no provider, so tell the operator if your people get that message.
+1. At the provider, register the toolkit as a **web application** (OpenID Connect, authorization code flow). Your identity administrator gives you its **issuer URL**, a **client ID** and a **client secret**. The provider's documentation shows the issuer, for example `https://<server>/realms/<realm>`.
+2. In **Single sign-on**, click **New**, give the name shown on the sign-in button (for example *Company account*), the issuer, client ID and secret, and the **email domains** of your people (for example `company.com`). Only these domains sign in through this provider. If other organizations on this installation also use single sign-on, the sign-in page asks for the email instead of showing buttons; a domain claimed by two organizations then finds no provider, so tell the operator if your people get that message.
 3. Edit the provider: copy the **Redirect URI** shown and register it at the provider as the application's redirect (reply) URI.
-4. To give roles by group, have the provider send the groups in the ID token (Entra ID: *groups claim*; Keycloak: a *group membership* mapper) and set the claim's name if it is not `groups`.
+4. To give roles by group, have the provider send the groups in the ID token (the provider's documentation calls this a groups claim or a group mapper) and set the claim's name if it is not `groups`.
 
 The client secret is stored encrypted and never shown again; leave it empty when editing to keep it.
 
-### Connecting a SAML 2.0 provider (ADFS, Shibboleth…)
+### Connecting a SAML 2.0 provider
 
 1. In **Single sign-on**, click **New** and choose the protocol **SAML 2.0**. From the identity provider's metadata, enter its **entity ID**, its **single sign-on URL** and its **signing certificate**, and the email domains of your people.
-2. Edit the provider: give the identity provider the **service provider metadata URL** shown (or the entity ID and the **reply URL** next to it). In ADFS this is a *relying party trust*; in Entra ID an *enterprise application* with SAML.
-3. Have the identity provider send the person's **email** (the usual Microsoft or LDAP attributes are recognised; otherwise name the attribute), their **name**, and their **groups** in the attribute you set.
+2. Edit the provider: give the identity provider the **service provider metadata URL** shown (or the entity ID and the **reply URL** next to it). Providers call this a *relying party*, a *service provider* or an *enterprise application*.
+3. Have the identity provider send the person's **email** (the usual claim and LDAP attributes are recognised; otherwise name the attribute), their **name**, and their **groups** in the attribute you set.
 4. Assertions must be signed with SHA-256 or stronger.
 
 Signing out of the toolkit does not sign out of the identity provider.
@@ -103,7 +103,7 @@ Signing out of the toolkit does not sign out of the identity provider.
 ### Who gets in, with which role
 
 - **The first time** someone signs in, their account is created in your organization. If an account with their email already exists and belongs to your organization only, it is linked instead. An account shared with another organization is refused - its owner keeps signing in as before.
-- **Roles** of accounts created this way come from **Single sign-on group mappings**: *members of this group of the provider get this role*. Enter the group as the provider sends it (an Entra ID group object id, a Keycloak group name…). They are refreshed at every sign-in; without a matching group the person is a *Requester*.
+- **Roles** of accounts created this way come from **Single sign-on group mappings**: *members of this group of the provider get this role*. Enter the group as the provider sends it (a group id or a group name). They are refreshed at every sign-in; without a matching group the person is a *Requester*.
 - **Two-factor authentication:** with **Trust the provider's two-factor authentication** on, people the provider asked for a second factor (it says so in the `amr` claim) are not asked again by the toolkit. This applies only to accounts the provider created: an existing account linked by its email keeps its own two-factor authentication. Otherwise those who use the toolkit's two-factor authentication give their code as usual.
 - Refused sign-ins - another domain, an account of another organization - are recorded in the audit trail with the reason.
 

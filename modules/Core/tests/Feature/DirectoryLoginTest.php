@@ -22,7 +22,7 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Livewire\Auth\Login;
 use Modules\Core\Tests\Support\FakeDirectory;
 
-const SERVICE_DESK_GROUP = 'CN=IT-ServiceDesk,OU=Groups,DC=corp,DC=example';
+const TICKETING_GROUP = 'CN=IT-Support,OU=Groups,DC=corp,DC=example';
 const ADMINS_GROUP = 'CN=IT-Admins,OU=Groups,DC=corp,DC=example';
 
 beforeEach(function (): void {
@@ -43,7 +43,7 @@ beforeEach(function (): void {
         enabled: true,
     );
 
-    DirectoryGroupMapping::factory()->for($this->orgA)->forRole(DefaultRole::Agent)->create(['group_dn' => SERVICE_DESK_GROUP]);
+    DirectoryGroupMapping::factory()->for($this->orgA)->forRole(DefaultRole::Agent)->create(['group_dn' => TICKETING_GROUP]);
 });
 
 function directoryLogin(string $login, string $password, bool $remember = false): Testable
@@ -73,7 +73,7 @@ function janeAccount(): User
 
 describe('first sign-in', function (): void {
     it('creates the account from AD and grants roles from mapped groups', function (string $identifier): void {
-        $this->directory->addUser($this->jane, 'ad-secret', [SERVICE_DESK_GROUP]);
+        $this->directory->addUser($this->jane, 'ad-secret', [TICKETING_GROUP]);
 
         directoryLogin($identifier, 'ad-secret')->assertHasNoErrors()->assertRedirect(route('home'));
 
@@ -91,7 +91,7 @@ describe('first sign-in', function (): void {
 
     it('maps roles per organization', function (): void {
         DirectoryGroupMapping::factory()->for($this->orgB)->forRole(DefaultRole::Administrator)->create(['group_dn' => ADMINS_GROUP]);
-        $this->directory->addUser($this->jane, 'ad-secret', [SERVICE_DESK_GROUP, ADMINS_GROUP]);
+        $this->directory->addUser($this->jane, 'ad-secret', [TICKETING_GROUP, ADMINS_GROUP]);
 
         directoryLogin('jdoe', 'ad-secret')->assertHasNoErrors();
 
@@ -114,7 +114,7 @@ describe('first sign-in', function (): void {
 
     it('never takes over a local account with the same email', function (): void {
         $local = User::factory()->memberOf($this->orgA)->create(['email' => 'jane.doe@corp.example']);
-        $this->directory->addUser($this->jane, 'ad-secret', [SERVICE_DESK_GROUP]);
+        $this->directory->addUser($this->jane, 'ad-secret', [TICKETING_GROUP]);
 
         directoryLogin('jdoe', 'ad-secret')->assertHasErrors(['login']);
 
@@ -126,7 +126,7 @@ describe('first sign-in', function (): void {
 
 describe('credentials', function (): void {
     beforeEach(function (): void {
-        $this->directory->addUser($this->jane, 'ad-secret', [SERVICE_DESK_GROUP]);
+        $this->directory->addUser($this->jane, 'ad-secret', [TICKETING_GROUP]);
     });
 
     it('rejects a wrong AD password with the generic message', function (): void {
@@ -152,7 +152,7 @@ describe('credentials', function (): void {
         directoryLogin('jdoe', 'ad-secret');
         auth()->logout();
 
-        $this->directory = (new FakeDirectory)->addUser($this->jane, 'changed-in-ad', [SERVICE_DESK_GROUP]);
+        $this->directory = (new FakeDirectory)->addUser($this->jane, 'changed-in-ad', [TICKETING_GROUP]);
         app()->instance(Directory::class, $this->directory);
 
         directoryLogin('jane.doe@corp.example', 'ad-secret')->assertHasErrors(['login']);
@@ -176,11 +176,11 @@ describe('credentials', function (): void {
 describe('later sign-ins', function (): void {
     it('follows group changes: new roles, removed organizations', function (): void {
         DirectoryGroupMapping::factory()->for($this->orgB)->forRole(DefaultRole::TeamLead)->create(['group_dn' => ADMINS_GROUP]);
-        $this->directory->addUser($this->jane, 'ad-secret', [SERVICE_DESK_GROUP, ADMINS_GROUP]);
+        $this->directory->addUser($this->jane, 'ad-secret', [TICKETING_GROUP, ADMINS_GROUP]);
         directoryLogin('jdoe', 'ad-secret');
         auth()->logout();
 
-        // Moved out of the service desk group in AD.
+        // Moved out of IT support group in AD.
         $this->directory->addUser($this->jane, 'ad-secret', [ADMINS_GROUP]);
         directoryLogin('jdoe', 'ad-secret')->assertHasNoErrors();
 
@@ -192,7 +192,7 @@ describe('later sign-ins', function (): void {
     });
 
     it('overrides roles given manually to a directory account', function (): void {
-        $this->directory->addUser($this->jane, 'ad-secret', [SERVICE_DESK_GROUP]);
+        $this->directory->addUser($this->jane, 'ad-secret', [TICKETING_GROUP]);
         directoryLogin('jdoe', 'ad-secret');
         auth()->logout();
         app(OrganizationContext::class)->runAs($this->orgA, fn () => janeAccount()->assignRole(DefaultRole::Administrator->value));
@@ -203,7 +203,7 @@ describe('later sign-ins', function (): void {
     });
 
     it('logs nothing about roles when nothing changed', function (): void {
-        $this->directory->addUser($this->jane, 'ad-secret', [SERVICE_DESK_GROUP]);
+        $this->directory->addUser($this->jane, 'ad-secret', [TICKETING_GROUP]);
         directoryLogin('jdoe', 'ad-secret');
         auth()->logout();
         $before = AuditLog::query()->whereIn('event', [AuditEvent::RoleAssigned, AuditEvent::RoleRevoked, AuditEvent::Updated])->count();
@@ -214,13 +214,13 @@ describe('later sign-ins', function (): void {
     });
 
     it('denies accounts disabled in AD or deactivated locally', function (bool $disabledInAd): void {
-        $this->directory->addUser($this->jane, 'ad-secret', [SERVICE_DESK_GROUP]);
+        $this->directory->addUser($this->jane, 'ad-secret', [TICKETING_GROUP]);
         directoryLogin('jdoe', 'ad-secret');
         auth()->logout();
 
         if ($disabledInAd) {
             $disabled = new DirectoryUser($this->jane->guid, $this->jane->distinguishedName, 'jdoe', 'Jane Doe', 'jane.doe@corp.example', enabled: false);
-            $this->directory->addUser($disabled, 'ad-secret', [SERVICE_DESK_GROUP]);
+            $this->directory->addUser($disabled, 'ad-secret', [TICKETING_GROUP]);
         } else {
             janeAccount()->forceFill(['is_active' => false])->save();
         }

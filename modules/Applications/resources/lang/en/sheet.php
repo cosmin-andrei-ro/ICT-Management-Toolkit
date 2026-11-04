@@ -133,7 +133,7 @@ return [
         ],
         '6_5' => [
             'title' => 'Cache & Middleware',
-            'guidance' => 'One row per cache, message broker or other middleware product the application uses (e.g. Redis, RabbitMQ, Kafka, IBM MQ, Elasticsearch). Skip this subsection if the application uses none.',
+            'guidance' => 'One row per cache, message broker or other middleware product the application uses (e.g. a cache, a message queue, a search engine). Skip this subsection if the application uses none.',
         ],
         '6_6' => [
             'title' => 'Third-party Libraries & Licenses',
@@ -498,7 +498,7 @@ return [
     ],
     'examples' => [
         'doc' => [
-            'document_location' => 'e.g. SharePoint › IT Documentation › Ticketing Platform',
+            'document_location' => 'e.g. Intranet › IT Documentation › Ticketing Platform',
         ],
         '1_1' => [
             'description' => 'e.g. Ticketing Platform is the internal IT support application. Employees and the monitoring system raise tickets, support agents resolve them using a shared knowledge base, and IT managers receive SLA reports.',
@@ -509,7 +509,7 @@ return [
         ],
         '1_4' => [
             'environments' => [
-                'url' => 'e.g. https://servicedesk.company.local',
+                'url' => 'e.g. https://ticketing.company.local',
                 'purpose' => 'e.g. Live ticket handling for all employees',
                 'access' => 'e.g. All employees via SSO; agents via AD group SD_Agents',
             ],
@@ -517,7 +517,7 @@ return [
         '1_5' => [
             'documents' => [
                 'name' => 'e.g. Ticketing Platform source code',
-                'link' => 'e.g. https://git.company.local/servicedesk/ticketing',
+                'link' => 'e.g. https://git.company.local/it/ticketing',
             ],
         ],
         '1_6' => [
@@ -548,7 +548,7 @@ return [
         '3_1' => [
             'ad_domain' => 'e.g. corp.company.example / ldaps://dc01.corp.company.example',
             'iam_resource' => 'e.g. TKT01_APP',
-            'mfa_method' => 'e.g. Microsoft Authenticator, token',
+            'mfa_method' => 'e.g. authenticator app, hardware token',
         ],
         '3_2_1' => [
             'procedure' => 'e.g. Create a request in the Ticketing Platform, Identity & Access Management (IAM) Platform or Access Request Portal',
@@ -564,24 +564,24 @@ return [
             ],
         ],
         '4_1' => [
-            'dns_names' => 'e.g. servicedesk.company.local',
-            'load_balancer' => 'e.g. SD-LB-VIP 10.20.10.10:443',
+            'dns_names' => 'e.g. ticketing.company.local',
+            'load_balancer' => 'e.g. TK-LB-VIP 10.20.10.10:443',
         ],
         '4_3' => [
             'rules' => [
                 'source' => 'e.g. Users (VLAN 100)',
-                'destination' => 'e.g. SD-LB-VIP',
+                'destination' => 'e.g. TK-LB-VIP',
                 'port' => 'e.g. 443',
                 'purpose' => 'e.g. User web access',
                 'ticket' => 'e.g. CHG123',
             ],
         ],
         '5_1' => [
-            'provider' => 'e.g. DC Bucharest, Azure West Europe',
+            'provider' => 'e.g. DC Bucharest, cloud region West Europe',
         ],
         '5_2' => [
             'components' => [
-                'server' => 'e.g. SDAPP01',
+                'server' => 'e.g. TKAPP01',
                 'ip' => 'e.g. 10.20.10.11',
                 'type' => 'e.g. VM',
                 'description' => 'e.g. Web UI & REST API (node 1)',
@@ -590,13 +590,13 @@ return [
         ],
         '6_1' => [
             'tiers' => 'e.g. Browser › Web server › Application server › Database',
-            'notes' => 'e.g. Worker server SDWRK01 processes e-mails and SLA timers asynchronously through a Redis queue',
+            'notes' => 'e.g. Worker server TKWRK01 processes e-mails and SLA timers asynchronously through a Redis queue',
         ],
         '6_2' => [
             'backends' => [
                 'framework' => 'e.g. Laravel',
                 'framework_version' => 'e.g. 11',
-                'servers' => 'e.g. SDAPP01 / 02',
+                'servers' => 'e.g. TKAPP01 / 02',
                 'role' => 'e.g. Web UI & REST API',
                 'app_server_version' => 'e.g. 2.4',
                 'paths' => 'e.g. /etc/httpd/',
@@ -615,7 +615,7 @@ return [
         '6_4' => [
             'databases' => [
                 'version' => 'e.g. 16',
-                'host' => 'e.g. SDDB01:5432/sddb',
+                'host' => 'e.g. TKDB01:5432/sddb',
                 'schemas' => 'e.g. sd_app, sd_audit',
             ],
         ],
@@ -623,7 +623,7 @@ return [
             'middleware' => [
                 'product' => 'e.g. Redis',
                 'version' => 'e.g. 7.2',
-                'endpoint' => 'e.g. SDWRK01:6379',
+                'endpoint' => 'e.g. TKWRK01:6379',
                 'purpose' => 'e.g. Session cache and queue for e-mails and SLA timers',
             ],
         ],
@@ -636,60 +636,60 @@ return [
         ],
         '7' => [
             'accounts' => [
-                'username' => 'e.g. svc_sd_db',
+                'username' => 'e.g. svc_tk_db',
                 'user_type' => 'e.g. Privileged',
-                'purpose' => 'e.g. Application access to SDDB01',
-                'systems' => 'e.g. SDAPP01 / 02, SDWRK01 › SDDB01',
+                'purpose' => 'e.g. Application access to TKDB01',
+                'systems' => 'e.g. TKAPP01 / 02, TKWRK01 › TKDB01',
                 'owner' => 'e.g. Application Support (L2/L3)',
-                'credential_location' => 'e.g. CyberArk safe SD-PROD',
+                'credential_location' => 'e.g. vault safe PROD',
                 'ticket' => 'e.g. CHG123',
             ],
         ],
-        '8_1' => ['certificates' => ['name' => 'e.g. servicedesk.company.local', 'used_for' => 'e.g. HTTPS on SD-LB-VIP', 'issuer' => 'e.g. internal CA', 'tracking' => 'e.g. Keyfactor Command', 'lead_time' => 'e.g. 60 / 30 / 7 days', 'owner' => 'e.g. Application Support (L2/L3)']],
-        '8_2' => ['secrets' => ['name' => 'e.g. sd_db_app_password', 'used_by' => 'e.g. SDAPP01 / 02, SDWRK01', 'location' => 'e.g. HashiCorp Vault secret/servicedesk/db', 'owner' => 'e.g. Application Support (L2/L3)']],
+        '8_1' => ['certificates' => ['name' => 'e.g. ticketing.company.local', 'used_for' => 'e.g. HTTPS on TK-LB-VIP', 'issuer' => 'e.g. internal CA', 'tracking' => 'e.g. certificate management tool', 'lead_time' => 'e.g. 60 / 30 / 7 days', 'owner' => 'e.g. Application Support (L2/L3)']],
+        '8_2' => ['secrets' => ['name' => 'e.g. tk_db_app_password', 'used_by' => 'e.g. TKAPP01 / 02, TKWRK01', 'location' => 'e.g. secrets vault secret/ticketing/db', 'owner' => 'e.g. Application Support (L2/L3)']],
         '8_3' => ['requirements' => ['regulation' => 'e.g. GDPR', 'scope' => 'e.g. Employee personal data in tickets and attachments', 'evidence' => 'e.g. DPIA, records of processing (link)', 'last_audit' => 'e.g. 2026-03', 'owner' => 'e.g. Data Protection Officer']],
         '9_1' => [
-            'app_location' => 'e.g. SDDB01, table sd_audit.audit_log',
-            'app_forwarded' => 'e.g. Splunk',
+            'app_location' => 'e.g. TKDB01, table sd_audit.audit_log',
+            'app_forwarded' => 'e.g. central log platform',
             'app_method' => 'e.g. Log file, syslog, DB table',
             'os_location' => 'e.g. /var/log/audit/audit.log or Windows Security Event Log',
-            'os_forwarded' => 'e.g. Splunk',
+            'os_forwarded' => 'e.g. central log platform',
             'os_method' => 'e.g. auditd, syslog, Windows Event Forwarding',
-            'db_location' => 'e.g. SDDB01: /var/lib/pgsql/16/data/log/',
-            'db_forwarded' => 'e.g. Splunk',
+            'db_location' => 'e.g. TKDB01: /var/lib/pgsql/16/data/log/',
+            'db_forwarded' => 'e.g. central log platform',
             'db_method' => 'e.g. pgAudit extension, syslog',
         ],
-        '9_2' => ['logs' => ['name' => 'e.g. laravel.log', 'description' => 'e.g. Application errors; check first on HTTP 500', 'server' => 'e.g. SDAPP01 / 02', 'path' => 'e.g. /var/www/servicedesk/storage/logs/', 'retention' => 'e.g. daily / 30 days']],
+        '9_2' => ['logs' => ['name' => 'e.g. laravel.log', 'description' => 'e.g. Application errors; check first on HTTP 500', 'server' => 'e.g. TKAPP01 / 02', 'path' => 'e.g. /var/www/ticketing/storage/logs/', 'retention' => 'e.g. daily / 30 days']],
         '9_3' => [
-            'tools' => 'e.g. Dynatrace, Zabbix, Grafana',
-            'dashboards' => 'e.g. Grafana › Ticketing Platform',
-            'health_urls' => 'e.g. https://servicedesk.company.local/health',
+            'tools' => 'e.g. infrastructure monitoring, application monitoring, dashboards',
+            'dashboards' => 'e.g. Monitoring › Ticketing Platform',
+            'health_urls' => 'e.g. https://ticketing.company.local/health',
             'alerts' => ['name' => 'e.g. Application down', 'condition' => 'e.g. Health-check URL fails 3 times in 5 min', 'recipients' => 'e.g. Application Support (L2/L3)', 'action' => 'e.g. Restart services (13.1), run health checks (13.2)'],
         ],
         '10_1' => [
-            'departments' => 'e.g. All employees (requesters), IT Service Desk, IT support teams',
+            'departments' => 'e.g. All employees (requesters), IT Support, IT support teams',
             'impact' => 'e.g. Users cannot log tickets; SLA breaches after 4 hours',
             'critical_periods' => 'e.g. Business hours Mon-Fri 08:00-18:00, major IT incidents, release weekends',
-            'key_roles' => 'e.g. Application administrator, DBA, service desk agents',
-            'minimum_staffing' => 'e.g. 1 administrator and 3 service desk agents per shift',
-            'other_resources' => 'e.g. Agent workstations, Service Desk phone line, shared mailbox, VPN access',
+            'key_roles' => 'e.g. Application administrator, DBA, IT support agents',
+            'minimum_staffing' => 'e.g. 1 administrator and 3 IT support agents per shift',
+            'other_resources' => 'e.g. Agent workstations, IT support phone line, shared mailbox, VPN access',
             'mtpd' => 'e.g. 24 hours',
             'rpo' => 'e.g. 4 hours (maximum acceptable data loss)',
             'rto' => 'e.g. 8 hours (maximum time to restore service)',
             'dr_site' => 'e.g. DC secondary',
         ],
-        '10_2' => ['backups' => ['what' => 'e.g. SDDB01 database', 'frequency' => 'e.g. daily', 'retention' => 'e.g. 30 days', 'owner' => 'e.g. Database Team', 'ticket' => 'e.g. CHG123']],
+        '10_2' => ['backups' => ['what' => 'e.g. TKDB01 database', 'frequency' => 'e.g. daily', 'retention' => 'e.g. 30 days', 'owner' => 'e.g. Database Team', 'ticket' => 'e.g. CHG123']],
         '10_3' => ['dependencies' => ['system' => 'e.g. Active Directory', 'order' => 'e.g. 1', 'notes' => 'e.g. Login impossible without it']],
-        '10_4' => ['workarounds' => 'e.g. If the Ticketing Platform is down, employees report incidents by phone or e-mail to the Service Desk, which logs them in a shared Excel sheet and enters them in the platform once it is back.'],
-        '10_5' => ['procedure' => 'e.g. 1. Declare the incident and inform the business owner. 2. Restore the SDDB01 database from the latest BKP01 backup. 3. Start SDAPP01/02 and SDWRK01. 4. Repoint the SD-LB-VIP if needed and run the health checks (13.2).'],
-        '11' => ['repository' => 'e.g. https://git.company.local/servicedesk/ticketing', 'change_management' => 'e.g. CHG ticket in the Ticketing Platform, approved by CAB'],
-        '11_1' => ['procedure' => 'e.g. 1. Approve the change ticket (CHG). 2. Back up SDDB01. 3. Deploy the new release on SDTEST01 and run smoke tests. 4. Remove SDAPP01 from the load balancer, deploy, re-add it; repeat for SDAPP02. 5. Run the health checks (13.2).'],
-        '11_2' => ['procedure' => 'e.g. Redeploy the previous release package on SDAPP01/02, restore the SDDB01 backup taken before the deployment if the database schema changed, then run the health checks (13.2).'],
-        '12' => ['jobs' => ['name' => 'e.g. SLA timer check', 'schedule' => 'e.g. every 5 minutes', 'description' => 'e.g. Recalculates SLA timers and escalates tickets close to breach', 'dependencies' => 'e.g. SDDB01, Redis', 'if_fails' => 'e.g. Re-run manually; warn team leads about possible SLA breaches']],
-        '13_1' => ['steps' => ['step' => 'e.g. 1', 'component' => 'e.g. PostgreSQL', 'server' => 'e.g. SDDB01', 'command' => 'e.g. systemctl start postgresql-16', 'verification' => 'e.g. pg_isready reports accepting connections']],
-        '13_2' => ['checks' => 'e.g. https://servicedesk.company.local/health returns OK; no errors in the application log; a test ticket can be created and receives an e-mail notification; SDWRK01 jobs are running.'],
-        '13_3' => ['tasks' => ['task' => 'e.g. Clear application cache', 'procedure' => 'e.g. php artisan cache:clear on SDAPP01 / 02']],
-        '14' => ['issues' => ['symptom' => 'e.g. Users get HTTP 500 when opening a ticket', 'cause' => 'e.g. Database connections exhausted on SDDB01', 'resolution' => 'e.g. Restart httpd on SDAPP01 / 02; check long-running queries', 'ticket' => 'e.g. INC0012345']],
+        '10_4' => ['workarounds' => 'e.g. If the Ticketing Platform is down, employees report incidents by phone or e-mail to the IT Support, which logs them in a shared spreadsheet and enters them in the platform once it is back.'],
+        '10_5' => ['procedure' => 'e.g. 1. Declare the incident and inform the business owner. 2. Restore the TKDB01 database from the latest BKP01 backup. 3. Start TKAPP01/02 and TKWRK01. 4. Repoint the TK-LB-VIP if needed and run the health checks (13.2).'],
+        '11' => ['repository' => 'e.g. https://git.company.local/it/ticketing', 'change_management' => 'e.g. CHG ticket in the Ticketing Platform, approved by CAB'],
+        '11_1' => ['procedure' => 'e.g. 1. Approve the change ticket (CHG). 2. Back up TKDB01. 3. Deploy the new release on SDTEST01 and run smoke tests. 4. Remove TKAPP01 from the load balancer, deploy, re-add it; repeat for TKAPP02. 5. Run the health checks (13.2).'],
+        '11_2' => ['procedure' => 'e.g. Redeploy the previous release package on TKAPP01/02, restore the TKDB01 backup taken before the deployment if the database schema changed, then run the health checks (13.2).'],
+        '12' => ['jobs' => ['name' => 'e.g. SLA timer check', 'schedule' => 'e.g. every 5 minutes', 'description' => 'e.g. Recalculates SLA timers and escalates tickets close to breach', 'dependencies' => 'e.g. TKDB01, Redis', 'if_fails' => 'e.g. Re-run manually; warn team leads about possible SLA breaches']],
+        '13_1' => ['steps' => ['step' => 'e.g. 1', 'component' => 'e.g. PostgreSQL', 'server' => 'e.g. TKDB01', 'command' => 'e.g. systemctl start postgresql-16', 'verification' => 'e.g. pg_isready reports accepting connections']],
+        '13_2' => ['checks' => 'e.g. https://ticketing.company.local/health returns OK; no errors in the application log; a test ticket can be created and receives an e-mail notification; TKWRK01 jobs are running.'],
+        '13_3' => ['tasks' => ['task' => 'e.g. Clear application cache', 'procedure' => 'e.g. php artisan cache:clear on TKAPP01 / 02']],
+        '14' => ['issues' => ['symptom' => 'e.g. Users get HTTP 500 when opening a ticket', 'cause' => 'e.g. Database connections exhausted on TKDB01', 'resolution' => 'e.g. Restart httpd on TKAPP01 / 02; check long-running queries', 'ticket' => 'e.g. INC0012345']],
         '15_1' => [
             'replaced_by' => 'e.g. New cloud ITSM platform (SaaS)',
             'approval' => 'e.g. CHG123 / committee decision',
@@ -762,7 +762,7 @@ return [
         'change_heading' => 'This version',
         'change_summary' => 'Description of change',
         'change_example_first' => 'e.g. Initial documentation of the existing application',
-        'change_example' => 'e.g. Added e-mail-to-ticket integration with Microsoft 365',
+        'change_example' => 'e.g. Added e-mail-to-ticket integration with the mail service',
         'save' => 'Save',
         'saving' => 'Saving…',
         'submit' => 'Submit for approval',
