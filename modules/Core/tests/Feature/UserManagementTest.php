@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 use Modules\Core\Application\Authorization\SyncPermissions;
@@ -269,3 +270,7 @@ it('removes someone from the organization and lists only its people', function (
     expect($leaving->fresh()->isMemberOf($this->organization->id))->toBeFalse()
         ->and($leaving->fresh()->roles()->count())->toBe(0);
 });
+
+it('names every way an account can sign in', function (AuthSource $source): void {
+    expect(Lang::has('core::users.sources.'.$source->value))->toBeTrue();
+})->with(AuthSource::cases());

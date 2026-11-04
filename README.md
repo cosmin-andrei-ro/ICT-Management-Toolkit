@@ -156,7 +156,7 @@ This is for real use, so people in your company can reach it. **Do not use the s
 
 **You need:**
 
-- a Linux server with [PHP](https://www.php.net) 8.3 or later, [Composer](https://getcomposer.org), [PostgreSQL](https://www.postgresql.org) 18 (no other database works), [Redis](https://redis.io) 7 or later, [Node.js](https://nodejs.org) 20 or later, and [nginx](https://nginx.org) or [Apache](https://httpd.apache.org) with [PHP-FPM](https://www.php.net/manual/en/install.fpm.php);
+- a Linux server with [PHP](https://www.php.net) 8.4 or later, [Composer](https://getcomposer.org), [PostgreSQL](https://www.postgresql.org) 18 (no other database works), [Redis](https://redis.io) 7 or later, [Node.js](https://nodejs.org) 22.12 or later, and [nginx](https://nginx.org) or [Apache](https://httpd.apache.org) with [PHP-FPM](https://www.php.net/manual/en/install.fpm.php);
 - a name such as `ictmt.example.com` that points to the server, with an HTTPS certificate;
 - an email account the toolkit can send from (SMTP).
 
