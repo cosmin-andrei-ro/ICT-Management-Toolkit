@@ -11,6 +11,7 @@ export default () => ({
     async init() {
         const graph = JSON.parse(this.$el.dataset.graph || '{"nodes":[],"edges":[]}');
         const { default: cytoscape } = await import('cytoscape');
+        const { clientWidth: width, clientHeight: height } = this.$refs.canvas;
 
         this.cy = cytoscape({
             container: this.$refs.canvas,
@@ -26,6 +27,11 @@ export default () => ({
                         'font-size': 11,
                         'text-valign': 'bottom',
                         'text-margin-y': 4,
+                        'text-wrap': 'wrap',
+                        'text-max-width': 110,
+                        'text-background-color': '#ffffff',
+                        'text-background-opacity': 1,
+                        'text-background-padding': 1,
                         width: 22,
                         height: 22,
                         'background-color': (node) => colors[node.data('criticality')] ?? colors.medium,
@@ -44,10 +50,25 @@ export default () => ({
                         'target-arrow-shape': 'triangle',
                         'curve-style': 'bezier',
                         'text-rotation': 'autorotate',
+                        'text-background-color': '#ffffff',
+                        'text-background-opacity': 1,
+                        'text-background-padding': 2,
                     },
                 },
             ],
-            layout: { name: 'breadthfirst', directed: true, padding: 20, spacingFactor: 1.1 },
+            // Drawn left to right: node names sit under the nodes, where a top-to-bottom
+            // edge and its label would run through them. Scaled so the turned layout
+            // still fills the canvas. A phone's canvas is taller than it is wide, and its
+            // columns would be too narrow for the names, so it stays top to bottom.
+            layout: {
+                name: 'breadthfirst',
+                directed: true,
+                padding: 20,
+                spacingFactor: 1.1,
+                transform: (node, position) => (width > height
+                    ? { x: (position.y * width) / height, y: (position.x * height) / width }
+                    : position),
+            },
         });
 
         this.cy.on('tap', 'node', (event) => {
