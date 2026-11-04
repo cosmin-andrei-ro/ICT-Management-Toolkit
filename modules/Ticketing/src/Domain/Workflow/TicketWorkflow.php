@@ -17,6 +17,8 @@ final class TicketWorkflow
 {
     /** @var array<string, list<TicketStatus>> */
     private const array TRANSITIONS = [
+        // Approval itself goes through TicketLifecycle::approve: no agent can skip it by changing the status.
+        'awaiting_approval' => [TicketStatus::Cancelled],
         'new' => [TicketStatus::Assigned, TicketStatus::InProgress, TicketStatus::Pending, TicketStatus::Resolved, TicketStatus::Cancelled],
         'assigned' => [TicketStatus::New, TicketStatus::InProgress, TicketStatus::Pending, TicketStatus::Resolved, TicketStatus::Cancelled],
         'in_progress' => [TicketStatus::Assigned, TicketStatus::Pending, TicketStatus::Resolved, TicketStatus::Cancelled],

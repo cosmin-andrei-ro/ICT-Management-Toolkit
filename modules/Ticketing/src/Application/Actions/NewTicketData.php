@@ -26,5 +26,7 @@ final readonly class NewTicketData
         public ?string $serviceId = null,
         /** @var array<string, mixed> Stored in the ticket's custom_fields (e.g. service form answers). */
         public array $customFields = [],
+        /** A catalog request whose service needs approval first (ADR 0075). */
+        public bool $awaitsApproval = false,
     ) {}
 }

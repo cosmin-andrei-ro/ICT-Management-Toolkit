@@ -22,6 +22,10 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\In;
+use Modules\Core\Domain\Audit\AuditEvent;
+use Modules\Core\Domain\Audit\AuditTrail;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Filament\Components\FormSchemaEditor;
@@ -79,6 +83,22 @@ final class ServiceResource extends Resource
                 ->options(fn (): array => self::memberOptions())
                 ->in(fn (): array => array_keys(self::memberOptions()))
                 ->searchable(),
+            Select::make('approvers')->label(__('ticketing::admin.services.approvers'))->helperText(__('ticketing::admin.services.approvers_help'))
+                ->multiple()->searchable()
+                ->options(fn (): array => self::memberOptions())
+                ->nestedRecursiveRules([fn (): In => Rule::in(array_keys(self::memberOptions()))])
+                ->loadStateFromRelationshipsUsing(function (Select $component, ?Service $record): void {
+                    $component->state($record?->approvers()->pluck('users.id')->all() ?? []);
+                })
+                ->saveRelationshipsUsing(function (Service $record, ?array $state): void {
+                    $before = $record->approvers()->orderBy('users.id')->pluck('users.id')->all();
+                    $changes = $record->approvers()->sync($state ?? []);
+
+                    if ($changes['attached'] !== [] || $changes['detached'] !== []) {
+                        app(AuditTrail::class)->record(AuditEvent::Updated, $record, ['approvers' => $before], ['approvers' => $record->approvers()->orderBy('users.id')->pluck('users.id')->all()]);
+                    }
+                })
+                ->dehydrated(false),
             TextInput::make('sort_order')->label(__('ticketing::admin.sort_order'))->integer()->minValue(0)->maxValue(10000)->default(0),
             Toggle::make('is_active')->label(__('ticketing::admin.active'))->default(true),
             Section::make(__('ticketing::admin.services.form'))

@@ -102,7 +102,7 @@ final class TicketingDemoSeeder extends Seeder
                 'sort_order' => 1,
             ]);
 
-            Service::query()->create([
+            $vpn = Service::query()->create([
                 'name' => 'VPN access',
                 'description' => 'Remote access to the company network.',
                 'category_id' => $categories['access']->id,
@@ -114,6 +114,8 @@ final class TicketingDemoSeeder extends Seeder
                 ],
                 'sort_order' => 2,
             ]);
+            // A request for access waits for someone's decision (ADR 0075).
+            $vpn->approvers()->attach($company->user('security')->id);
 
             $incidents = $this->tickets($company, $queue, $categories);
             $this->problems($company, $incidents);

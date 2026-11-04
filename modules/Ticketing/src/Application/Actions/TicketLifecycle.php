@@ -46,6 +46,19 @@ final readonly class TicketLifecycle
         $this->events->dispatch(new TicketStatusChanged($ticket, $actor, $from, $to));
     }
 
+    /**
+     * A catalog request was approved: it starts its normal life, and its clocks start running.
+     */
+    public function approve(Ticket $ticket, ?User $actor): void
+    {
+        $ticket->status = TicketStatus::New;
+        $ticket->save();
+
+        $this->record($ticket, TicketStatus::AwaitingApproval, TicketStatus::New, $actor);
+        $this->sla->onTransition($ticket, TicketStatus::AwaitingApproval, TicketStatus::New);
+        $this->events->dispatch(new TicketStatusChanged($ticket, $actor, TicketStatus::AwaitingApproval, TicketStatus::New));
+    }
+
     public function record(Ticket $ticket, ?TicketStatus $from, TicketStatus $to, ?User $actor): void
     {
         (new StatusTransition)->forceFill([

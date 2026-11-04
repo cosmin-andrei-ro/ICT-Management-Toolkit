@@ -18,6 +18,14 @@ You get a service request number such as `REQ-000017`, and you follow it like an
 
 If what you need is not in the catalog, use **Open a ticket instead** at the bottom of the catalog.
 
+## Requests that need approval
+
+Some services need someone's approval first. Your request then shows **Waiting for approval**, and IT does not start on it until it is approved. You get an email with the decision. If it is rejected, the reason is on the request. You can still withdraw it while it waits.
+
+## Approving a request
+
+If you approve requests for a service, you get an email and see **Requests to approve** in the menu. Open a request to see what was asked and by whom, then **Approve** or **Reject**. One approval is enough, and a rejection needs a comment, which the requester sees. Nobody approves their own request.
+
 ## Good to know
 
 - Your answers are kept with the request exactly as you gave them, even if IT changes the form later.

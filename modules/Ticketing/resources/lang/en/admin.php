@@ -30,6 +30,8 @@ return [
         'default_help' => 'New tickets without a queue land here. Only one queue can be the default.',
     ],
     'services' => [
+        'approvers' => 'Approvers',
+        'approvers_help' => 'Requests for this service wait until one of these people approves. Empty: IT starts at once.',
         'label' => 'Service',
         'plural_label' => 'Service catalog',
         'owner' => 'Service owner',

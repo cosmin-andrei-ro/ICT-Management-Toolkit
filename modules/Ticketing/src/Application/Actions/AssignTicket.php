@@ -37,6 +37,10 @@ final readonly class AssignTicket
     {
         $this->lifecycle->assertOpen($ticket);
 
+        if ($ticket->status === TicketStatus::AwaitingApproval) {
+            throw new InvalidArgumentException('This request waits for approval.');
+        }
+
         if ($queue !== null && ($queue->organization_id !== $ticket->organization_id || ! $queue->is_active)) {
             throw new InvalidArgumentException('The queue must be active and belong to the ticket\'s organization.');
         }

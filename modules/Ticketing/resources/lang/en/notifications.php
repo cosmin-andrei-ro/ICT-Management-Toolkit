@@ -44,6 +44,18 @@ return [
         'subject' => '[:number] Resolution overdue',
         'line' => 'Ticket :number missed its resolution target.',
     ],
+    'approval_needed' => [
+        'subject' => '[:number] A request waits for your approval',
+        'line' => 'Request :number waits for your decision before IT starts on it.',
+    ],
+    'request_approved' => [
+        'subject' => '[:number] Your request was approved',
+        'line' => 'Your request :number was approved. IT will now work on it.',
+    ],
+    'request_rejected' => [
+        'subject' => '[:number] Your request was rejected',
+        'line' => 'Your request :number was rejected. The reason is on the request.',
+    ],
     'ola_breached' => [
         'subject' => '[:number] Team target missed',
         'line' => 'Ticket :number has stayed with your team longer than the team\'s target.',

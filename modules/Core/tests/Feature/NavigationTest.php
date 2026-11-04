@@ -31,6 +31,7 @@ it('groups the menu of IT staff, in a fixed order whatever the module order', fu
     expect(menuOf($lead))->toBe([
         'Request a service',
         'My tickets',
+        'Requests to approve',
         ['Ticketing' => ['All tickets', 'Known errors', 'Change calendar', 'Approvals', 'Reports']],
         'Documentation',
         'Projects',

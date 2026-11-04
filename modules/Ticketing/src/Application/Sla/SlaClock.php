@@ -79,8 +79,8 @@ final readonly class SlaClock
         match (true) {
             $to === TicketStatus::Cancelled => $this->ola->complete($ticket, SlaOutcome::Cancelled),
             $to === TicketStatus::Resolved => $this->ola->complete($ticket, null),
-            $to === TicketStatus::Pending => $this->ola->pause($ticket),
-            $from === TicketStatus::Pending => $this->ola->resume($ticket),
+            $to === TicketStatus::Pending || $to === TicketStatus::AwaitingApproval => $this->ola->pause($ticket),
+            $from === TicketStatus::Pending || $from === TicketStatus::AwaitingApproval => $this->ola->resume($ticket),
             $from === TicketStatus::Resolved && $to !== TicketStatus::Closed => $this->ola->start($ticket),
             default => null,
         };
@@ -88,8 +88,8 @@ final readonly class SlaClock
         match (true) {
             $to === TicketStatus::Cancelled => $this->completeOpen($ticket, SlaOutcome::Cancelled),
             $to === TicketStatus::Resolved => $this->completeOpen($ticket, null),
-            $to === TicketStatus::Pending => $this->pause($ticket),
-            $from === TicketStatus::Pending => $this->resume($ticket),
+            $to === TicketStatus::Pending || $to === TicketStatus::AwaitingApproval => $this->pause($ticket),
+            $from === TicketStatus::Pending || $from === TicketStatus::AwaitingApproval => $this->resume($ticket),
             $from === TicketStatus::Resolved && $to !== TicketStatus::Closed => $this->reopen($ticket),
             default => null,
         };

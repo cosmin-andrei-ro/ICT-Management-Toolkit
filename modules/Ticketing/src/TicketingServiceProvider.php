@@ -33,6 +33,7 @@ use Modules\Ticketing\Application\Links\TicketRecords;
 use Modules\Ticketing\Application\Metrics\TicketingMetrics;
 use Modules\Ticketing\Application\Notifications\SendChangeNotifications;
 use Modules\Ticketing\Application\Notifications\SendOlaNotifications;
+use Modules\Ticketing\Application\Notifications\SendServiceApprovalNotifications;
 use Modules\Ticketing\Application\Notifications\SendSlaNotifications;
 use Modules\Ticketing\Application\Notifications\SendTicketNotifications;
 use Modules\Ticketing\Application\PersonalData\TicketingPersonalData;
@@ -44,6 +45,8 @@ use Modules\Ticketing\Domain\Events\ChangeApproved;
 use Modules\Ticketing\Domain\Events\ChangeRejected;
 use Modules\Ticketing\Domain\Events\ChangeSubmitted;
 use Modules\Ticketing\Domain\Events\OlaBreached;
+use Modules\Ticketing\Domain\Events\ServiceRequestAwaitsApproval;
+use Modules\Ticketing\Domain\Events\ServiceRequestDecided;
 use Modules\Ticketing\Domain\Events\SlaBreached;
 use Modules\Ticketing\Domain\Events\SlaWarning;
 use Modules\Ticketing\Domain\Events\TicketAssigned;
@@ -65,6 +68,7 @@ use Modules\Ticketing\Domain\Models\Service;
 use Modules\Ticketing\Domain\Models\SlaTimer;
 use Modules\Ticketing\Domain\Models\TeamOla;
 use Modules\Ticketing\Domain\Models\Ticket;
+use Modules\Ticketing\Http\Livewire\RequestApprovals\RequestApprovalInbox;
 use Modules\Ticketing\Infrastructure\Console\AutoCloseTicketsCommand;
 use Modules\Ticketing\Infrastructure\Console\CheckSlaCommand;
 use Modules\Ticketing\Infrastructure\Console\FetchMailCommand;
@@ -134,6 +138,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(Navigation::class, function (Navigation $navigation): void {
             $navigation->add('ticketing::catalog.menu', 'ticketing.catalog.index', 'ticketing.catalog.*', fn (User $user): bool => $user->can('ticketing.ticket.create'), order: 10);
             $navigation->add('ticketing::ui.menu.portal', 'ticketing.portal.index', 'ticketing.portal.*', fn (User $user): bool => $user->can('ticketing.ticket.create'), order: 20);
+            $navigation->add('ticketing::catalog.approval.title', 'ticketing.request-approvals', 'ticketing.request-approvals*', fn (User $user): bool => RequestApprovalInbox::isAvailableTo($user), order: 25);
             $navigation->add('ticketing::ui.menu.desk', 'ticketing.desk.index', 'ticketing.desk.index', fn (User $user): bool => $user->can('ticketing.ticket.view_all'), Navigation::TICKETING);
             $navigation->add('ticketing::problems.ui.known_errors', 'ticketing.desk.known-errors', 'ticketing.desk.known-errors', fn (User $user): bool => $user->can('ticketing.ticket.view_all'), Navigation::TICKETING);
             $navigation->add('ticketing::changes.ui.menu_calendar', 'ticketing.changes.calendar', 'ticketing.changes.calendar', fn (User $user): bool => $user->can('ticketing.ticket.view_all'), Navigation::TICKETING);
@@ -144,6 +149,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
         Event::listen([TicketCreated::class, TicketAssigned::class, TicketResolved::class, TicketCommentAdded::class], SendTicketNotifications::class);
         Event::listen([SlaWarning::class, SlaBreached::class], SendSlaNotifications::class);
         Event::listen([OlaBreached::class, TicketEscalated::class], SendOlaNotifications::class);
+        Event::listen([ServiceRequestAwaitsApproval::class, ServiceRequestDecided::class], SendServiceApprovalNotifications::class);
         Event::listen([ChangeSubmitted::class, ChangeApproved::class, ChangeRejected::class], SendChangeNotifications::class);
         Event::listen([TicketCreated::class, TicketAssigned::class, TicketStatusChanged::class, TicketResolved::class, SlaWarning::class, SlaBreached::class, ChangeSubmitted::class, ChangeApproved::class, ChangeRejected::class], PublishTicketWebhooks::class);
 

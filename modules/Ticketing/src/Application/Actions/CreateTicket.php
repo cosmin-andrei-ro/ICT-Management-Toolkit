@@ -66,7 +66,7 @@ final readonly class CreateTicket
                 'type' => $data->type,
                 'title' => trim($data->title),
                 'description' => trim($data->description),
-                'status' => TicketStatus::New,
+                'status' => $data->awaitsApproval ? TicketStatus::AwaitingApproval : TicketStatus::New,
                 'impact' => $data->impact,
                 'urgency' => $data->urgency,
                 'priority' => $this->priorities->resolve($organizationId, $data->impact, $data->urgency),
@@ -84,8 +84,13 @@ final readonly class CreateTicket
 
             $ticket->save();
 
-            $this->lifecycle->record($ticket, null, TicketStatus::New, $actor);
+            $this->lifecycle->record($ticket, null, $ticket->status, $actor);
             $this->sla->start($ticket);
+
+            // Nobody can work on it yet: the time waiting for approval is not IT's.
+            if ($data->awaitsApproval) {
+                $this->sla->onTransition($ticket, TicketStatus::New, TicketStatus::AwaitingApproval);
+            }
 
             return $ticket;
         });

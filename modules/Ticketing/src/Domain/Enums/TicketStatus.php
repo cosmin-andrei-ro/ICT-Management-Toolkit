@@ -12,6 +12,8 @@ namespace Modules\Ticketing\Domain\Enums;
  */
 enum TicketStatus: string
 {
+    /** A catalog request whose service needs approval. IT does not work on it yet. */
+    case AwaitingApproval = 'awaiting_approval';
     case New = 'new';
     case Assigned = 'assigned';
     case InProgress = 'in_progress';

@@ -7,12 +7,14 @@ declare(strict_types=1);
 
 namespace Modules\Ticketing\Application\Actions;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Domain\Enums\TicketChannel;
 use Modules\Ticketing\Domain\Enums\TicketType;
+use Modules\Ticketing\Domain\Events\ServiceRequestAwaitsApproval;
 use Modules\Ticketing\Domain\Models\Service;
 use Modules\Ticketing\Domain\Models\Ticket;
 
@@ -28,6 +30,7 @@ final readonly class RequestService
     public function __construct(
         private CreateTicket $createTicket,
         private ValidationFactory $validation,
+        private Dispatcher $events,
     ) {}
 
     /**
@@ -49,7 +52,9 @@ final readonly class RequestService
 
         $stored = $service->form()->answer($answers, $this->validation);
 
-        return $this->createTicket->handle(new NewTicketData(
+        $awaitsApproval = $service->approvers()->exists();
+
+        $ticket = $this->createTicket->handle(new NewTicketData(
             type: TicketType::ServiceRequest,
             title: $service->name,
             // The description stays readable on its own; answers are shown separately.
@@ -62,6 +67,13 @@ final readonly class RequestService
             queueId: $service->queue?->is_active === true ? $service->queue_id : null,
             serviceId: $service->id,
             customFields: ['service_form' => $stored],
+            awaitsApproval: $awaitsApproval,
         ), $requester, $requester);
+
+        if ($awaitsApproval) {
+            $this->events->dispatch(new ServiceRequestAwaitsApproval($ticket));
+        }
+
+        return $ticket;
     }
 }

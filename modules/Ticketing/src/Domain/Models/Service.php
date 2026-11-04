@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Core\Domain\Concerns\Auditable;
@@ -89,6 +90,16 @@ final class Service extends Model
     public function form(): FormSchema
     {
         return FormSchema::fromArray($this->form_schema);
+    }
+
+    /**
+     * Who must approve a request for this service before IT starts on it. None: no approval.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function approvers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'ticketing_service_approvers');
     }
 
     /**
