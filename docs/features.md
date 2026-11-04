@@ -4,7 +4,7 @@ What each module does today.
 
 ## Core
 - Several organizations (legal entities) in one installation, with their data kept apart.
-- Sign-in with local accounts, **Active Directory** (LDAPS) or **single sign-on** through each organization's OpenID Connect or SAML 2.0 provider, with roles from its groups. AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
+- Sign-in with local accounts, **Active Directory** (LDAPS) or **single sign-on** through each organization's OpenID Connect or SAML 2.0 provider, with roles from its groups. For SAML, optional single logout in both directions and encrypted assertions. AD groups are mapped to roles, and accounts are re-checked every 15 minutes.
 - **Two-factor authentication** with an authenticator app, required for IT staff, plus recovery codes; **security keys and passkeys** (WebAuthn), also to sign in without a password.
 - **People management**: invitations to local accounts by email, roles, deactivation. Password reset by email and password change for local accounts.
 - Role-based permissions: requester, agent, team lead, CAB member, asset manager, continuity coordinator, application manager, security officer, risk manager, compliance manager, auditor, project manager, administrator.
@@ -94,7 +94,3 @@ What each module does today.
 - **Status reports** green / amber / red (overall, schedule, budget, scope) with what was done, next steps and issues; weekly reminders when one is due; a **portfolio** of open projects for management.
 - **Deliverables** per phase linked to what they became in other modules (the application, a CMDB item, a change, a plan, a page…); for a **new application**, a checklist read live from the modules - documentation approved, CMDB item, risks assessed, BIA processes with RTO - that, with the required deliverables, must be complete before the sponsor can close the project.
 - **Budget**: approved amount against costs by category (external labour, licences, hardware, services), with suppliers and invoices; over-budget projects flagged; project indicators on the dashboards and in the monthly report; the portfolio in XLSX; each project's status report to print or as PDF.
-
-## Not done yet
-
-Single logout (SAML SLO).

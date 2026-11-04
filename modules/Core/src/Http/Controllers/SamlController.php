@@ -12,9 +12,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Modules\Core\Application\Authentication\CompleteLogin;
+use Modules\Core\Application\Authentication\EndAllSessions;
 use Modules\Core\Application\Sso\Saml;
 use Modules\Core\Application\Sso\SignInWithSso;
 use Modules\Core\Application\Sso\SsoFailed;
+use Modules\Core\Domain\Sso\SsoIdentity;
 use Modules\Core\Domain\Sso\SsoProtocol;
 use Modules\Core\Domain\Sso\SsoProvider;
 use Modules\Core\Domain\Tenancy\OrganizationScope;
@@ -62,8 +64,43 @@ final readonly class SamlController
         }
 
         $needsCode = $completeLogin->afterSso($user, $ssoProvider->trust_mfa && $signIn->mfaAsserted($claims));
+        $request->session()->put(LogoutController::SAML_SESSION, [
+            'provider' => $ssoProvider->id,
+            'name_id' => $claims['sub'] ?? null,
+            'session_index' => $claims['session_index'] ?? null,
+        ]);
 
         return $needsCode ? redirect()->route('login.challenge') : redirect()->intended(route('home'));
+    }
+
+    /**
+     * Single logout, through the browser. The provider's answer to our own request
+     * needs nothing: the session here ended before the browser left. Its request is
+     * answered the same whether or not it names an account here.
+     */
+    public function singleLogout(string $provider, Request $request, EndAllSessions $endSessions): RedirectResponse
+    {
+        $ssoProvider = $this->provider($provider);
+        abort_if($ssoProvider->slo_url === null || $ssoProvider->slo_url === '', 404);
+
+        if ($request->query('SAMLRequest') === null) {
+            return redirect()->route('login');
+        }
+
+        try {
+            $logout = $this->saml->logoutRequest($ssoProvider);
+        } catch (SsoFailed $failure) {
+            $this->exceptions->report($failure);
+            abort(400);
+        }
+
+        $identity = SsoIdentity::query()->with('user')->where('provider_id', $ssoProvider->id)->where('subject', $logout['nameId'])->first();
+
+        if ($identity !== null) {
+            $endSessions->handle($identity->user, 'saml_single_logout');
+        }
+
+        return redirect()->away($logout['responseUrl']);
     }
 
     public function metadata(string $provider): Response

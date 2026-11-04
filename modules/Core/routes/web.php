@@ -30,6 +30,7 @@ use Modules\Core\Http\Livewire\Suppliers\SupplierIndex;
 
 // Public: needed most by people who cannot sign in.
 Route::get('/saml/{provider}/metadata', [SamlController::class, 'metadata'])->whereUuid('provider')->name('login.saml.metadata');
+Route::get('/saml/{provider}/logout', [SamlController::class, 'singleLogout'])->whereUuid('provider')->middleware('throttle:60,1')->name('login.saml.slo');
 Route::get('/manual', [ManualController::class, 'index'])->name('manual.index');
 Route::get('/manual/{page}', [ManualController::class, 'show'])->where('page', '[a-z0-9-]+')->name('manual.show');
 

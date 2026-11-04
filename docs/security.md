@@ -30,7 +30,7 @@ An attacker who controls the server, the database or the application key is outs
 |---|---|
 | Password guessing | Limits per account and per address, account locked after 10 failures in a row, an email to the person, known-breached passwords refused |
 | Stolen password | Two-factor authentication or passkeys, required for IT staff by default; a fresh code for sensitive actions; sessions ended and API tokens revoked when a password is reset |
-| Forged single sign-on answers | Signatures checked strictly; each SAML request answered once and only in the browser that made it; OpenID Connect with PKCE and verified tokens; a provider's second factor trusted only for accounts it created |
+| Forged single sign-on answers | Signatures checked strictly; each SAML request answered once and only in the browser that made it; OpenID Connect with PKCE and verified tokens; a provider's second factor trusted only for accounts it created; SAML logout messages must be signed |
 | Reaching another person's or organization's data | Permission check on every action, deny by default; queries scoped by organization, with tests; an existing account joins another organization only after accepting |
 | Approving your own work | Separation of duties: for example, a change's requester, submitter and last plan editor cannot approve it |
 | Script injection (XSS) | Escaped output, sanitized Markdown, strict Content Security Policy with nonces. The admin panel's framework needs a looser policy than the rest of the application |
@@ -48,8 +48,8 @@ An attacker who controls the server, the database or the application key is outs
 ## Known limits
 
 - **Antivirus scanning of uploads** does not exist yet. Files are checked by type and size only.
-- **SAML:** no single logout, so a session already open here survives the end of the provider's session. Encrypted assertions are not supported.
-- **Real identity providers:** automated tests use simulated providers. OpenID Connect and SAML were also tried by hand against one open-source identity provider in a local setup (2026-11-04); other providers are untested.
+- **Single sign-on logout:** single logout exists for SAML, when the provider's address is set. For OpenID Connect, a session already open here survives the end of the provider's session.
+- **Real identity providers:** automated tests use simulated providers. OpenID Connect and SAML, including encrypted assertions and single logout, were also tried by hand against one open-source identity provider in a local setup (2026-11-04); other providers are untested.
 - **Older passwords:** passwords shorter than the current minimum stay valid until changed. Someone who stops using a second factor keeps a password that was only allowed with one.
 - **Who has an account:** someone allowed to invite people can tell from the lists whether an email already has an account.
 - **Item search:** the configuration item pickers in other modules search item names even for people without the right to view the CMDB, because owners must be able to pick items.

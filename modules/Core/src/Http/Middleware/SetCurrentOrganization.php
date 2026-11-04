@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Core\Http\Middleware;
 
 use Closure;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Core\Domain\Models\Organization;
@@ -22,7 +23,13 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final readonly class SetCurrentOrganization
 {
-    public function __construct(private OrganizationContext $context) {}
+    /** When this session signed in: a provider's single logout ends older sessions (ADR 0071). */
+    public const string SIGNED_IN_AT = 'login.signed_in_at';
+
+    public function __construct(
+        private OrganizationContext $context,
+        private AuthFactory $auth,
+    ) {}
 
     /**
      * @param  Closure(Request): Response  $next
@@ -35,6 +42,14 @@ final readonly class SetCurrentOrganization
 
         if (! $user instanceof User) {
             return $next($request);
+        }
+
+        if ($guard !== 'sanctum' && $this->sessionWasRevoked($user, $request)) {
+            $this->auth->guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login');
         }
 
         // Deactivation takes effect on the next request, not at the next login.
@@ -52,6 +67,17 @@ final readonly class SetCurrentOrganization
         $this->context->set($organization);
 
         return $next($request);
+    }
+
+    private function sessionWasRevoked(User $user, Request $request): bool
+    {
+        if ($user->sessions_revoked_at === null || ! $request->hasSession()) {
+            return false;
+        }
+
+        $signedInAt = $request->session()->get(self::SIGNED_IN_AT);
+
+        return ! is_int($signedInAt) || $signedInAt <= $user->sessions_revoked_at->getTimestamp();
     }
 
     /**

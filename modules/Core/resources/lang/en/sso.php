@@ -6,6 +6,11 @@
 declare(strict_types=1);
 
 return [
+    'signing_out' => [
+        'title' => 'Signing out',
+        'line' => 'You are signed out here. Now signing you out at your company\'s sign-in service.',
+        'continue' => 'Continue',
+    ],
     'sign_in_with' => 'Sign in with :provider',
     'find_label' => 'Your organization uses single sign-on? Enter your work email',
     'find' => 'Continue with single sign-on',
@@ -23,6 +28,10 @@ return [
         'sso_url_help' => 'The provider\'s SAML endpoint for the HTTP-Redirect binding, from its metadata.',
         'certificate' => 'Signing certificate',
         'certificate_help' => 'The provider\'s token-signing certificate (Base64 / PEM), from its metadata. Assertions must be signed with it.',
+        'slo_url' => 'Single logout URL',
+        'slo_url_help' => 'Optional, from the provider\'s metadata (HTTP-Redirect binding). With it, signing out here also signs out at the provider, and signing out there ends the person\'s sessions here.',
+        'want_encrypted' => 'Require encrypted assertions',
+        'want_encrypted_help' => 'Refuse answers whose assertion is not encrypted. The provider needs the encryption certificate in the service provider metadata first, and RSA-OAEP with SHA-1 for the key.',
         'certificate_invalid' => 'This is not a valid certificate.',
         'email_attribute' => 'Email attribute',
         'email_attribute_help' => 'Leave empty to use the usual ones (the common email claims, mail, email) or the NameID when it is an email.',
@@ -31,6 +40,7 @@ return [
         'sp_metadata' => 'Service provider metadata URL',
         'sp_metadata_help' => 'Give this address to the identity provider: it describes the toolkit (entity ID and assertion consumer service).',
         'sp_acs' => 'Assertion consumer service (reply URL)',
+        'sp_slo' => 'Single logout service',
         'label' => 'Single sign-on provider',
         'plural_label' => 'Single sign-on',
         'name' => 'Name on the sign-in button',

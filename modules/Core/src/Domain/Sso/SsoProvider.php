@@ -33,7 +33,11 @@ use Modules\Core\Domain\Concerns\TracksAuthors;
  * @property ?string $client_id
  * @property ?string $client_secret
  * @property ?string $sso_url
+ * @property ?string $slo_url
+ * @property bool $want_encrypted_assertions
  * @property ?string $certificate
+ * @property ?string $sp_certificate
+ * @property ?string $sp_private_key
  * @property ?string $email_attribute
  * @property ?string $name_attribute
  * @property string $scopes
@@ -46,8 +50,8 @@ use Modules\Core\Domain\Concerns\TracksAuthors;
  */
 #[Table('core_sso_providers')]
 #[UsePolicy(SsoPolicy::class)]
-#[Hidden(['client_secret'])]
-#[Fillable(['protocol', 'name', 'issuer', 'client_id', 'client_secret', 'sso_url', 'certificate', 'email_attribute', 'name_attribute', 'scopes', 'groups_claim', 'allowed_domains', 'trust_mfa', 'is_enabled'])]
+#[Hidden(['client_secret', 'sp_private_key'])]
+#[Fillable(['protocol', 'name', 'issuer', 'client_id', 'client_secret', 'sso_url', 'slo_url', 'want_encrypted_assertions', 'certificate', 'email_attribute', 'name_attribute', 'scopes', 'groups_claim', 'allowed_domains', 'trust_mfa', 'is_enabled'])]
 final class SsoProvider extends Model
 {
     use Auditable;
@@ -62,6 +66,7 @@ final class SsoProvider extends Model
         'groups_claim' => 'groups',
         'trust_mfa' => true,
         'is_enabled' => true,
+        'want_encrypted_assertions' => false,
     ];
 
     public function allowsEmail(string $email): bool
@@ -84,6 +89,8 @@ final class SsoProvider extends Model
         return [
             'protocol' => SsoProtocol::class,
             'client_secret' => 'encrypted',
+            'sp_private_key' => 'encrypted',
+            'want_encrypted_assertions' => 'boolean',
             'allowed_domains' => 'array',
             'trust_mfa' => 'boolean',
             'is_enabled' => 'boolean',

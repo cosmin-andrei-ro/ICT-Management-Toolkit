@@ -278,6 +278,11 @@ final class CoreServiceProvider extends ModuleServiceProvider
         );
 
         Event::listen([Login::class, Failed::class, Logout::class, Lockout::class], RecordAuthenticationEvent::class);
+        Event::listen(Login::class, function (Login $event): void {
+            if (request()->hasSession()) {
+                request()->session()->put(SetCurrentOrganization::SIGNED_IN_AT, time());
+            }
+        });
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
             $schedule->command(PruneExportsCommand::class)->hourly()->onOneServer();
