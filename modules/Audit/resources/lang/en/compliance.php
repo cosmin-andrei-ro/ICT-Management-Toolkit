@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'control_linked_kind' => 'Control',
     'menu' => 'Compliance',
     'title' => 'Compliance',
     'control_statuses' => [

@@ -14,12 +14,14 @@ use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Exports\ExportRegistry;
+use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
 use Modules\Core\Domain\Metrics\Metrics;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\PersonalData\PersonalData;
 use Modules\Core\Http\Navigation\Navigation;
 use Modules\Projects\Application\Exports\PortfolioExport;
+use Modules\Projects\Application\Links\ProjectsSearchRecords;
 use Modules\Projects\Application\Metrics\ProjectMetrics;
 use Modules\Projects\Application\PersonalData\ProjectsPersonalData;
 use Modules\Projects\Domain\Models\Cost;
@@ -46,6 +48,9 @@ final class ProjectsServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(Metrics::class, fn (Metrics $metrics) => $metrics->register(ProjectMetrics::source()));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PortfolioExport::TYPE, PortfolioExport::class, 'projects.project.view'));
+        $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
+            $records->registerGlobalSearch('projects.project', 'projects::projects.linked_kind', ProjectsSearchRecords::projects(...));
+        });
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
     }
 

@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'finding_linked_kind' => 'Audit finding',
     'menu' => 'Audits',
     'title' => 'Audits',
     'kinds' => [

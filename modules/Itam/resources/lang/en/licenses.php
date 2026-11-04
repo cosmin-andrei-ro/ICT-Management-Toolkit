@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Licence',
     'menu' => 'Licences',
     'title' => 'Software licences',
     'covered_by_contract' => 'Licences under this contract',

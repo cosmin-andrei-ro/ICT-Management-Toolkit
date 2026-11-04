@@ -55,6 +55,10 @@ When only one entry of a group is yours, it appears on its own, without the **â–
 
 **User manual**, at the top right of every page, opens this manual.
 
+## Find anything
+
+The **Search** box at the top of every page looks through tickets, configuration items, assets, licences, applications, business processes, continuity plans and exercises, risks, controls, findings, contracts, suppliers, racks, projects and documentation. Type at least two letters and press Enter. You only see what you are allowed to open, and each kind shows its first results; to narrow them down, use more words or that module's own list.
+
 ## Notifications
 
 You receive an email when your ticket is registered, when IT replies, and when it is resolved. Emails contain the ticket number, its title and a link, but never the text of the conversation. Sign in to read it.

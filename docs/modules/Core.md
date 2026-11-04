@@ -170,3 +170,7 @@ A strict CSP with a per-request nonce, plus the standard hardening headers on ev
   - `WEBHOOKS_ALLOW_PRIVATE_NETWORKS` and `WEBHOOKS_ALLOW_HTTP` (both `false`).
   - `WEBHOOKS_TIMEOUT` (`10` seconds).
 - Retention policy `core.webhook_deliveries`, one year by default.
+
+## Global search
+
+`/search` (`SearchController`) asks `LinkedRecords::searchEverywhere()`: every kind registered with `registerSearch` (also offered as evidence or deliverables) or `registerGlobalSearch` (search only). Each module returns only what the viewer may see, using its own policies; terms of fewer than two characters find nothing. The terms are not logged. It searches names and identifiers with `LIKE`, or the full-text index where a module has one, and licence keys are never searched.

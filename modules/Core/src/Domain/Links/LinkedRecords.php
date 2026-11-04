@@ -18,11 +18,16 @@ use Modules\Core\Domain\Models\User;
  */
 final class LinkedRecords
 {
+    public const int MIN_SEARCH_LENGTH = 2;
+
     /** @var array<string, Closure(list<string>, User): list<LinkedRecord>> */
     private array $resolvers = [];
 
     /** @var array<string, array{label: string, search: Closure(string, User): list<LinkedRecord>}> */
     private array $searches = [];
+
+    /** @var array<string, array{label: string, search: Closure(string, User): list<LinkedRecord>}> */
+    private array $globalOnly = [];
 
     /**
      * @param  Closure(list<string>, User): list<LinkedRecord>  $resolver
@@ -39,6 +44,45 @@ final class LinkedRecords
     public function registerSearch(string $morphType, string $label, Closure $search): void
     {
         $this->searches[$morphType] = ['label' => $label, 'search' => $search];
+    }
+
+    /**
+     * Found by the global search only: it cannot be picked as evidence or a deliverable.
+     *
+     * @param  string  $label  Translation key naming the kind of record.
+     * @param  Closure(string, User): list<LinkedRecord>  $search  What matches and the viewer may see.
+     */
+    public function registerGlobalSearch(string $morphType, string $label, Closure $search): void
+    {
+        $this->globalOnly[$morphType] = ['label' => $label, 'search' => $search];
+    }
+
+    /**
+     * Every kind of record matching the term, for the search in the page header.
+     *
+     * @return array<string, list<LinkedRecord>> Translated label => records, by label, without empty kinds.
+     */
+    public function searchEverywhere(string $term, User $viewer, int $perKind = 8): array
+    {
+        $term = trim(mb_substr($term, 0, 200));
+
+        if (mb_strlen($term) < self::MIN_SEARCH_LENGTH) {
+            return [];
+        }
+
+        $found = [];
+
+        foreach ([...$this->searches, ...$this->globalOnly] as $search) {
+            $records = array_slice($search['search']($term, $viewer), 0, $perKind);
+
+            if ($records !== []) {
+                $found[__($search['label'])] = $records;
+            }
+        }
+
+        ksort($found);
+
+        return $found;
     }
 
     /**

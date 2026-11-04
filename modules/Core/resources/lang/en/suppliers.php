@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 return [
+    'linked_kind' => 'Supplier',
     'menu' => 'Suppliers',
     'title' => 'Suppliers',
     'fields' => [
