@@ -6,6 +6,10 @@
 declare(strict_types=1);
 
 return [
+    'ola_title' => 'Team targets (OLA)',
+    'ola_team' => 'Team',
+    'ola_compliance' => 'Met',
+    'ola_counts' => 'Tickets',
     'title' => 'Ticketing reports',
     'menu' => 'Reports',
     'intro' => 'Incidents and service requests. Days are counted in :timezone.',

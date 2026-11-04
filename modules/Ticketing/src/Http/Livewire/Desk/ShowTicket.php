@@ -345,6 +345,7 @@ final class ShowTicket extends Component
             'attachments' => $ticket->attachments()->when(! $showInternal, fn (Builder $query) => $query->where('is_internal', false))->get(),
             'transitions' => $ticket->statusTransitions()->with('user')->get(),
             'slaTimers' => $ticket->slaTimers()->orderBy('metric', 'desc')->get(),
+            'olaTimers' => $ticket->olaTimers()->with('team')->orderBy('created_at')->get(),
             'monitoringAlerts' => MonitoringAlert::query()->where('ticket_id', $ticket->id)->orderByDesc('first_seen_at')->get(),
             'workingTargets' => array_values(array_filter(
                 $workflow->allowedFrom($ticket->status),

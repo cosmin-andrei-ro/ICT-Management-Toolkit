@@ -19,6 +19,7 @@ What each module does today.
 ## Ticketing
 - **Incidents and service requests**: self-service portal, service catalog with request forms, agent desk with queues, assignment, internal notes, attachments and full-text search.
 - **SLAs**: response and resolution clocks in working time, with warnings and breach notifications.
+- **Team targets (OLA)** per team, with compliance per team in the reports, and an **escalation contact** per queue told about targets missed and still open.
 - **Problems** and a **known error database**.
 - **Changes**: standard, normal and emergency, with CAB and emergency CAB (ECAB) approval, a change calendar, and post-implementation reviews.
 - **Email-to-ticket**: tickets and replies by email, from IMAP mailboxes (e.g. Exchange).

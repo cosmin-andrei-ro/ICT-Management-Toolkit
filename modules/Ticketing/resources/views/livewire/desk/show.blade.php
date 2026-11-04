@@ -266,7 +266,7 @@
             </section>
         @endif
 
-        @if ($slaTimers->isNotEmpty())
+        @if ($slaTimers->isNotEmpty() || $olaTimers->isNotEmpty())
             <section class="space-y-2 rounded-lg bg-white p-4 ring-1 ring-gray-200" aria-labelledby="sla-heading">
                 <h2 id="sla-heading" class="text-sm font-semibold">{{ __('ticketing::sla.title') }}</h2>
                 <dl class="space-y-2 text-sm">
@@ -277,6 +277,15 @@
                                 <span class="block text-xs text-gray-500">
                                     {{ __('ticketing::sla.target') }}: {{ $timer->target_minutes >= 60 ? __('ticketing::sla.hours', ['count' => round($timer->target_minutes / 60, 1)]) : __('ticketing::sla.minutes', ['count' => $timer->target_minutes]) }}
                                 </span>
+                            </dt>
+                            <dd><x-ticketing::sla-badge :timer="$timer" /></dd>
+                        </div>
+                    @endforeach
+                    @foreach ($olaTimers as $timer)
+                        <div wire:key="ola-{{ $timer->id }}" class="flex items-center justify-between gap-2">
+                            <dt>
+                                {{ __('ticketing::sla.ola') }}
+                                <span class="block text-xs text-gray-500">{{ __('ticketing::sla.ola_team', ['team' => $timer->team?->name ?? '—']) }} · {{ __('ticketing::sla.target') }}: {{ $timer->target_minutes }} {{ __('ticketing::sla.minutes_suffix') }}</span>
                             </dt>
                             <dd><x-ticketing::sla-badge :timer="$timer" /></dd>
                         </div>

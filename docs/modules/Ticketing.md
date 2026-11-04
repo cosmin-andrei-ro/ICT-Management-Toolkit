@@ -81,6 +81,7 @@ Each ticket gets two clocks, **first response** and **resolution**, counted in w
 - At 75 % of a target the assignee and the team lead are warned; at the due time the breach is recorded and they are notified again. If nobody owns the ticket, the whole queue team is notified.
 - The desk shows the current deadline in the list, can filter tickets at risk, and shows both clocks on the ticket page.
 - The scheduler must run for warnings and breaches (`ticketing:sla:check`, every minute).
+- **Team targets (OLA)** and **escalation** ([ADR 0074](../adr/0074-olas-and-escalation.md)): `ticketing_team_olas`, a clock per ticket and team in `ticketing_ola_timers` (`OlaClock`), and `EscalateOverdueTickets`, run by the same scheduled command. Nothing is reassigned automatically.
 
 ## Screens
 

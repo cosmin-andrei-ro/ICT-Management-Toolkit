@@ -33,6 +33,12 @@ Change any cell under **Priority matrix**. Only the cells you change are stored,
 
 Under **SLA targets**, set the first-response and resolution targets per priority, in working minutes (480 minutes = one working day). Resolution can never be shorter than first response. Working time follows the default **business calendar** (*Administration → Organization*).
 
+## Team targets and escalation
+
+**Administration → Ticketing → Team targets (OLA)** sets how long a ticket may stay with each team, in working minutes. Leave a team empty for no target. New values apply to tickets reaching the team afterwards.
+
+On a queue, **Escalation contact** and **Escalate after** decide who is told when a target is missed and the ticket is still open. Make sure teams have a lead, because the lead is told first. See *Service levels* for how it works.
+
 ## Service catalog
 
 Under **Service catalog**, each service has:

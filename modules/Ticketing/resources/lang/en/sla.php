@@ -6,6 +6,9 @@
 declare(strict_types=1);
 
 return [
+    'minutes_suffix' => 'minutes',
+    'ola' => 'Team target (OLA)',
+    'ola_team' => 'With :team',
     'metrics' => [
         'response' => 'First response',
         'resolution' => 'Resolution',

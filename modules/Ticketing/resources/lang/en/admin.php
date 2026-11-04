@@ -24,6 +24,9 @@ return [
         'team' => 'Team',
         'team_help' => 'Only members of this team can be assigned tickets in this queue.',
         'default' => 'Default queue',
+        'escalation_user' => 'Escalation contact',
+        'escalation_user_help' => 'Told when a target is missed and the ticket is still open after the delay below. Nothing is reassigned. Empty: no escalation.',
+        'escalate_after' => 'Escalate after',
         'default_help' => 'New tickets without a queue land here. Only one queue can be the default.',
     ],
     'services' => [
@@ -47,6 +50,10 @@ return [
         'plural_label' => 'Standard changes',
         'description_help' => 'When this routine change is appropriate. Agents read it before using the template.',
         'active_help' => 'Inactive templates cannot be used for new changes.',
+    ],
+    'ola_targets' => [
+        'title' => 'Team targets (OLA)',
+        'help' => 'How long a ticket may stay with a team, in working minutes counted with the organization\'s default business calendar. It stops while waiting for the requester, and ends when the ticket moves to another team or is resolved. Empty: no target. New values apply to tickets reaching the team afterwards.',
     ],
     'sla_targets' => [
         'title' => 'SLA targets',

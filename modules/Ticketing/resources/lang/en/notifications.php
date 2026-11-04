@@ -44,6 +44,14 @@ return [
         'subject' => '[:number] Resolution overdue',
         'line' => 'Ticket :number missed its resolution target.',
     ],
+    'ola_breached' => [
+        'subject' => '[:number] Team target missed',
+        'line' => 'Ticket :number has stayed with your team longer than the team\'s target.',
+    ],
+    'escalated' => [
+        'subject' => '[:number] Escalated to you',
+        'line' => 'Ticket :number missed a target and is still open. You are the escalation contact for its queue.',
+    ],
     'change_submitted' => [
         'subject' => '[:number] Change waiting for your approval',
         'line' => 'Change :number was submitted to your board and needs your decision.',

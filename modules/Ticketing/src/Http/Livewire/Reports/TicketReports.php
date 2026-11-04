@@ -74,6 +74,7 @@ final class TicketReports extends Component
             'period' => $period,
             'summary' => $period !== null ? $report->summary($period) : null,
             'sla' => $period !== null ? $report->sla($period) : [],
+            'ola' => $period !== null ? $report->ola($period) : [],
             'categories' => $period !== null ? $report->volumeByCategory($period) : collect(),
             'backlog' => $report->backlog(),
             'exports' => $exports,
