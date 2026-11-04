@@ -30,7 +30,7 @@ How the toolkit relates to the standards and regulations people ask about, for I
 | Audit trail | Yes | Append-only (enforced by a database trigger): every change to business data with old and new values, sign-ins, failed sign-ins, role changes, two-factor events, exports and downloads |
 | W3C WebAuthn Level 2 (FIDO2) | Yes | Security keys and passkeys as a second factor, and passkeys to sign in without a password; phishing resistant (bound to the site's domain); attestation not requested |
 | OpenID Connect 1.0 (single sign-on) | Yes | Per-organization identity providers: authorization code with PKCE, ID tokens verified against the provider's keys (asymmetric algorithms only), accounts created with roles from group mappings, the provider's second factor trusted when asserted |
-| SAML 2.0 Web Browser SSO | Yes | Per-organization identity providers, signed assertions required (SHA-256 and up), strict validation, each request answered once and only in the browser that made it; single logout not implemented |
+| SAML 2.0 Web Browser SSO | Yes | Per-organization identity providers, signed assertions required (SHA-256 and up), strict validation, each request answered once and only in the browser that made it; encrypted assertions can be required; single logout in both directions, with signed messages |
 
 ## Regulations and information security frameworks
 

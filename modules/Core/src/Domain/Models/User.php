@@ -49,6 +49,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property bool $is_active
  * @property ?string $current_organization_id
  * @property ?Carbon $last_login_at
+ * @property ?Carbon $sessions_revoked_at
  * @property ?string $remember_token
  * @property ?string $two_factor_secret
  * @property ?Carbon $two_factor_confirmed_at
@@ -152,7 +153,7 @@ final class User extends Authenticatable implements FilamentUser
     {
         // Two-factor changes have their own audit events (mfa_*).
         // Locks and unlocks too (account_locked, account_unlocked).
-        return ['last_login_at', 'directory_synced_at', 'two_factor_confirmed_at', 'two_factor_last_used_step', 'failed_logins', 'locked_at', 'anonymized_at'];
+        return ['sessions_revoked_at', 'last_login_at', 'directory_synced_at', 'two_factor_confirmed_at', 'two_factor_last_used_step', 'failed_logins', 'locked_at', 'anonymized_at'];
     }
 
     /**
@@ -168,6 +169,7 @@ final class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'sessions_revoked_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
             'auth_source' => AuthSource::class,

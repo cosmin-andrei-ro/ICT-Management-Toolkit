@@ -5,6 +5,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\DB;
 use Modules\Core\Application\Authorization\SyncPermissions;
 use Modules\Core\Application\Sso\Saml;
 use Modules\Core\Domain\Audit\AuditEvent;
@@ -155,4 +156,29 @@ it('applies the same account rules as OpenID Connect', function (): void {
     $this->post(route('login.saml.acs', $this->provider->id), ['SAMLResponse' => $answer])->assertRedirect(route('login'));
 
     expect(AuditLog::query()->where('event', AuditEvent::LoginDenied)->get()->map(fn (AuditLog $log) => $log->new_values['reason'] ?? null)->all())->toBe(['domain']);
+});
+
+it('reads an encrypted assertion with the key in its metadata, and can require encryption', function (): void {
+    $this->provider->update(['want_encrypted_assertions' => true]);
+    $metadata = (string) $this->get(route('login.saml.metadata', $this->provider->id))->assertOk()->getContent();
+    preg_match('/<ds:X509Certificate>([^<]+)</', $metadata, $match);
+    $certificate = "-----BEGIN CERTIFICATE-----\n".chunk_split(trim($match[1] ?? ''), 64, "\n").'-----END CERTIFICATE-----';
+    $attributes = ['email' => ['ana@company.test']];
+
+    $plain = samlAnswer($this, samlRequestId($this), $attributes);
+    $this->post(route('login.saml.acs', $this->provider->id), ['SAMLResponse' => $plain])->assertRedirect(route('login'));
+    $this->assertGuest();
+
+    $encrypted = samlAnswer($this, samlRequestId($this), $attributes, ['encryptFor' => $certificate]);
+    expect(base64_decode($encrypted, true))->not->toContain('ana@company.test');
+    $this->post(route('login.saml.acs', $this->provider->id), ['SAMLResponse' => $encrypted])->assertRedirect();
+    $this->assertAuthenticated();
+});
+
+it('never publishes the private key, and keeps it encrypted', function (): void {
+    $metadata = (string) $this->get(route('login.saml.metadata', $this->provider->id))->getContent();
+    $stored = DB::table('core_sso_providers')->where('id', $this->provider->id)->value('sp_private_key');
+
+    expect($metadata)->not->toContain('PRIVATE KEY')->and($stored)->toBeString()->not->toContain('PRIVATE KEY')
+        ->and($this->provider->fresh()->toArray())->not->toHaveKey('sp_private_key');
 });

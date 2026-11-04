@@ -98,7 +98,11 @@ The client secret is stored encrypted and never shown again; leave it empty when
 3. Have the identity provider send the person's **email** (the usual claim and LDAP attributes are recognised; otherwise name the attribute), their **name**, and their **groups** in the attribute you set.
 4. Assertions must be signed with SHA-256 or stronger.
 
-Signing out of the toolkit does not sign out of the identity provider.
+**Single logout (optional).** Enter the provider's **single logout URL**, and give the provider the **single logout service** address shown (HTTP-Redirect). Signing out of the toolkit then also signs out at the provider. When someone signs out at the provider, all their sessions here end, on every device, at their next click. The provider must sign its logout requests. Without this URL, signing out of the toolkit does not sign out of the provider.
+
+**Encrypted assertions (optional).** Turn on **Require encrypted assertions** after the provider has the encryption certificate from the metadata. Key encryption must use RSA-OAEP with SHA-1 (`rsa-oaep-mgf1p`); if sign-in fails with a decryption error in the log, check this setting at the provider.
+
+Single sign-on does not work with providers that require signed login requests.
 
 ### Who gets in, with which role
 

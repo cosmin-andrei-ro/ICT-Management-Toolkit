@@ -7,12 +7,15 @@ declare(strict_types=1);
 
 namespace Modules\Core\Application\Sso;
 
+use Closure;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Cookie\QueueingFactory as CookieJar;
 use Illuminate\Http\Request;
 use Modules\Core\Domain\Sso\SsoProvider;
+use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\AuthnRequest;
 use OneLogin\Saml2\Constants;
+use OneLogin\Saml2\LogoutRequest;
 use OneLogin\Saml2\Response;
 use OneLogin\Saml2\Settings;
 use OneLogin\Saml2\Utils;
@@ -60,6 +63,7 @@ final readonly class Saml
     public function __construct(
         private Cache $cache,
         private CookieJar $cookies,
+        private SamlServiceProviderKeys $keys,
     ) {}
 
     /**
@@ -107,8 +111,8 @@ final readonly class Saml
     {
         try {
             $response = new SamlResponse($this->settings($provider), $samlResponse);
-        } catch (Throwable) {
-            throw SsoFailed::because('saml_response');
+        } catch (Throwable $failure) {
+            throw SsoFailed::because('saml_response: '.$failure->getMessage());
         }
 
         $requestId = $response->getXMLDocument()->documentElement?->getAttribute('InResponseTo') ?? '';
@@ -142,7 +146,51 @@ final readonly class Saml
             'name' => $this->attribute($attributes, $provider->name_attribute, self::NAME_ATTRIBUTES),
             $provider->groups_claim => $attributes[$provider->groups_claim] ?? [],
             'amr' => array_intersect($response->authnContexts(), self::MFA_CONTEXTS) !== [] ? ['mfa'] : [],
+            'session_index' => $response->getSessionIndex(),
         ];
+    }
+
+    /**
+     * Where to send the browser to sign out at the provider too, or null when it
+     * has no single logout. Local sign-out never depends on this working.
+     */
+    public function logoutUrl(SsoProvider $provider, string $nameId, ?string $sessionIndex): ?string
+    {
+        if ($provider->slo_url === null || $provider->slo_url === '') {
+            return null;
+        }
+
+        try {
+            return (new Auth($this->settingsArray($provider)))->logout(route('login'), [], $nameId, $sessionIndex, true);
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * A logout request the provider sent through the browser. Only a request signed
+     * by the provider counts: a link alone must not be able to sign someone out.
+     *
+     * @return array{nameId: string, responseUrl: string}
+     *
+     * @throws SsoFailed
+     */
+    public function logoutRequest(SsoProvider $provider): array
+    {
+        $auth = new Auth($this->settingsArray($provider, signedMessages: true));
+
+        try {
+            $responseUrl = $this->atUrl($this->sloUrl($provider), true, fn (): mixed => $auth->processSLO(true, null, true, null, true));
+            $nameId = $auth->getErrors() === [] ? LogoutRequest::getNameId((string) $auth->getLastRequestXML()) : null;
+        } catch (Throwable $failure) {
+            throw SsoFailed::because('saml_logout: '.$failure->getMessage());
+        }
+
+        if (! is_string($responseUrl) || ! is_string($nameId) || $nameId === '') {
+            throw SsoFailed::because('saml_logout: '.(string) $auth->getLastErrorReason());
+        }
+
+        return ['nameId' => $nameId, 'responseUrl' => $responseUrl];
     }
 
     /**
@@ -169,24 +217,47 @@ final readonly class Saml
         return route('login.saml.acs', $provider->id);
     }
 
+    public function sloUrl(SsoProvider $provider): string
+    {
+        return route('login.saml.slo', $provider->id);
+    }
+
     private function settings(SsoProvider $provider): Settings
     {
-        return new Settings([
+        return new Settings($this->settingsArray($provider));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function settingsArray(SsoProvider $provider, bool $signedMessages = false): array
+    {
+        $this->keys->ensure($provider);
+        $singleLogout = $provider->slo_url !== null && $provider->slo_url !== '';
+
+        return [
             'strict' => true,
             'debug' => false,
             'sp' => [
                 'entityId' => $this->entityId($provider),
                 'assertionConsumerService' => ['url' => $this->acsUrl($provider), 'binding' => Constants::BINDING_HTTP_POST],
+                'singleLogoutService' => ['url' => $this->sloUrl($provider), 'binding' => Constants::BINDING_HTTP_REDIRECT],
                 'NameIDFormat' => Constants::NAMEID_UNSPECIFIED,
+                'x509cert' => (string) $provider->sp_certificate,
+                'privateKey' => (string) $provider->sp_private_key,
             ],
             'idp' => [
                 'entityId' => $provider->issuer,
                 'singleSignOnService' => ['url' => (string) $provider->sso_url, 'binding' => Constants::BINDING_HTTP_REDIRECT],
+                ...($singleLogout ? ['singleLogoutService' => ['url' => (string) $provider->slo_url, 'binding' => Constants::BINDING_HTTP_REDIRECT]] : []),
                 'x509cert' => (string) $provider->certificate,
             ],
             'security' => [
                 'wantAssertionsSigned' => true,
-                'wantMessagesSigned' => false,
+                'wantAssertionsEncrypted' => $provider->want_encrypted_assertions,
+                'wantMessagesSigned' => $signedMessages,
+                'logoutRequestSigned' => true,
+                'logoutResponseSigned' => true,
                 'wantNameId' => true,
                 'wantXMLValidation' => true,
                 'rejectUnsolicitedResponsesWithInResponseTo' => true,
@@ -196,26 +267,38 @@ final readonly class Saml
                 'signatureAlgorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
                 'digestAlgorithm' => 'http://www.w3.org/2001/04/xmlenc#sha256',
             ],
-        ]);
+        ];
+    }
+
+    private function validates(Response $response, string $requestId, string $acsUrl): bool
+    {
+        try {
+            return (bool) $this->atUrl($acsUrl, false, fn (): bool => $response->isValid($requestId));
+        } catch (Throwable) {
+            return false;
+        }
     }
 
     /**
-     * The library reads the current URL from the server globals; behind a
-     * proxy or in a queued context they may be wrong, so they are set to the
-     * consumer URL being validated, and put back afterwards.
+     * The library reads the current URL from the server globals; behind a proxy
+     * or in a queued context they may be wrong, so they are set to the URL being
+     * validated, and put back afterwards. A logout message keeps its query string:
+     * its signature covers the exact text.
      */
-    private function validates(Response $response, string $requestId, string $acsUrl): bool
+    private function atUrl(string $url, bool $keepQuery, Closure $check): mixed
     {
-        $parts = parse_url($acsUrl);
+        $parts = parse_url($url);
         $saved = ['REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? null, 'QUERY_STRING' => $_SERVER['QUERY_STRING'] ?? null];
         $_SERVER['REQUEST_URI'] = is_array($parts) ? ($parts['path'] ?? '/') : '/';
-        unset($_SERVER['QUERY_STRING']);
-        Utils::setBaseURL(is_array($parts) ? ($parts['scheme'] ?? 'https').'://'.($parts['host'] ?? '').(isset($parts['port']) ? ':'.$parts['port'] : '').'/' : '');
+
+        if (! $keepQuery) {
+            unset($_SERVER['QUERY_STRING']);
+        }
+
+        Utils::setBaseURL(is_array($parts) ? ($parts['scheme'] ?? 'https').'://'.($parts['host'] ?? '').(isset($parts['port']) ? ':'.$parts['port'] : '') : '');
 
         try {
-            return $response->isValid($requestId);
-        } catch (Throwable) {
-            return false;
+            return $check();
         } finally {
             Utils::setBaseURL('');
 

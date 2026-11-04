@@ -79,6 +79,10 @@ final class SsoProviderResource extends Resource
                 ->dehydrated(fn (?string $state): bool => filled($state)),
             TextInput::make('sso_url')->label(__('core::sso.provider.sso_url'))->helperText(__('core::sso.provider.sso_url_help'))
                 ->visible($saml)->required($saml)->maxLength(500)->url()->startsWith(['https://']),
+            TextInput::make('slo_url')->label(__('core::sso.provider.slo_url'))->helperText(__('core::sso.provider.slo_url_help'))
+                ->visible($saml)->maxLength(500)->url()->startsWith(['https://']),
+            Toggle::make('want_encrypted_assertions')->label(__('core::sso.provider.want_encrypted'))->helperText(__('core::sso.provider.want_encrypted_help'))
+                ->visible($saml)->default(false),
             Textarea::make('certificate')->label(__('core::sso.provider.certificate'))->helperText(__('core::sso.provider.certificate_help'))
                 ->visible($saml)->required($saml)->rows(6)->maxLength(20000)
                 ->rule(fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
@@ -109,6 +113,9 @@ final class SsoProviderResource extends Resource
             TextInput::make('sp_acs')->label(__('core::sso.provider.sp_acs'))
                 ->visible(fn (string $operation, Get $get): bool => $operation === 'edit' && $saml($get))->disabled()->dehydrated(false)
                 ->formatStateUsing(fn (?SsoProvider $record): ?string => $record !== null ? route('login.saml.acs', $record->id) : null),
+            TextInput::make('sp_slo')->label(__('core::sso.provider.sp_slo'))
+                ->visible(fn (string $operation, Get $get): bool => $operation === 'edit' && $saml($get))->disabled()->dehydrated(false)
+                ->formatStateUsing(fn (?SsoProvider $record): ?string => $record !== null ? route('login.saml.slo', $record->id) : null),
         ]);
     }
 

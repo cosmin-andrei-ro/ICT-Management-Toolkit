@@ -10,6 +10,7 @@ namespace Modules\Core\Tests\Support;
 use DOMDocument;
 use DOMElement;
 use OpenSSLAsymmetricKey;
+use RobRichards\XMLSecLibs\XMLSecEnc;
 use RobRichards\XMLSecLibs\XMLSecurityDSig;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 use RuntimeException;
@@ -45,7 +46,7 @@ final class FakeSamlIdentityProvider
      * A base64 SAMLResponse for the given request, as posted to the consumer.
      *
      * @param  array<string, list<string>>  $attributes
-     * @param  array{audience?: string, destination?: string, issuer?: string, notOnOrAfter?: int, authnContext?: string, sign?: bool, signingKey?: string, extensions?: string}  $overrides
+     * @param  array{audience?: string, destination?: string, issuer?: string, notOnOrAfter?: int, encryptFor?: string, authnContext?: string, sign?: bool, signingKey?: string, extensions?: string}  $overrides
      */
     public function response(string $requestId, string $acsUrl, string $audience, string $nameId, array $attributes, array $overrides = []): string
     {
@@ -103,7 +104,38 @@ final class FakeSamlIdentityProvider
             $this->signAssertion($document, $overrides['signingKey'] ?? $this->privateKey);
         }
 
+        if (isset($overrides['encryptFor'])) {
+            $this->encryptAssertion($document, $overrides['encryptFor']);
+        }
+
         return base64_encode((string) $document->saveXML());
+    }
+
+    /**
+     * The query string of a logout request sent through the browser, signed unless told otherwise.
+     *
+     * @param  array{sign?: bool, signingKey?: string, issuer?: string}  $overrides
+     */
+    public function logoutRequest(string $sloUrl, string $nameId, array $overrides = []): string
+    {
+        $issuer = htmlspecialchars($overrides['issuer'] ?? self::ENTITY_ID, ENT_XML1);
+        $destination = htmlspecialchars($sloUrl, ENT_XML1);
+        $name = htmlspecialchars($nameId, ENT_XML1);
+        $id = '_l'.bin2hex(random_bytes(16));
+        $now = gmdate('Y-m-d\TH:i:s\Z');
+        $xml = '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" '
+            ."ID=\"{$id}\" Version=\"2.0\" IssueInstant=\"{$now}\" Destination=\"{$destination}\"><saml:Issuer>{$issuer}</saml:Issuer>"
+            ."<saml:NameID>{$name}</saml:NameID></samlp:LogoutRequest>";
+        $query = 'SAMLRequest='.rawurlencode(base64_encode((string) gzdeflate($xml)));
+
+        if (! ($overrides['sign'] ?? true)) {
+            return $query;
+        }
+
+        $query .= '&SigAlg='.rawurlencode(XMLSecurityKey::RSA_SHA256);
+        openssl_sign($query, $signature, $overrides['signingKey'] ?? $this->privateKey, OPENSSL_ALGO_SHA256);
+
+        return $query.'&Signature='.rawurlencode(base64_encode($signature));
     }
 
     public function otherKey(): string
@@ -113,6 +145,26 @@ final class FakeSamlIdentityProvider
         openssl_pkey_export($key, $pem);
 
         return (string) $pem;
+    }
+
+    private function encryptAssertion(DOMDocument $document, string $certificate): void
+    {
+        $assertion = $document->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')->item(0);
+        $assertion instanceof DOMElement || throw new RuntimeException('No assertion.');
+        $sessionKey = new XMLSecurityKey(XMLSecurityKey::AES256_CBC);
+        $sessionKey->generateSessionKey();
+        $publicKey = new XMLSecurityKey(XMLSecurityKey::RSA_OAEP_MGF1P, ['type' => 'public']);
+        $publicKey->loadKey($certificate, false, true);
+        $encryption = new XMLSecEnc;
+        $encryption->setNode($assertion);
+        $encryption->type = XMLSecEnc::Element;
+        $encryption->encryptKey($publicKey, $sessionKey);
+        $encrypted = $encryption->encryptNode($sessionKey, false);
+        $wrapper = $document->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:EncryptedAssertion');
+        $parent = $assertion->parentNode;
+        $parent instanceof DOMElement || throw new RuntimeException('No parent.');
+        $parent->replaceChild($wrapper, $assertion);
+        $wrapper->appendChild($document->importNode($encrypted, true));
     }
 
     private function signAssertion(DOMDocument $document, string $privateKey): void

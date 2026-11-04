@@ -43,5 +43,4 @@ OpenID Connect sign-in (ADR 0038) covers modern identity providers. Many compani
 ## Consequences
 
 - Tests sign assertions with a certificate made on the spot (`FakeSamlIdentityProvider`) and cover forged, unsigned, re-signed, replayed, unsolicited, mis-addressed and expired answers.
-- Single logout (SLO) is not implemented: signing out of the toolkit does not sign out of the identity provider, and the reverse.
-- Encrypted assertions are not supported yet (they need an SP key pair).
+- Single logout and encrypted assertions came later: see [ADR 0071](0071-saml-single-logout-and-encrypted-assertions.md).
