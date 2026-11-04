@@ -16,6 +16,10 @@ return [
 
     'max_kilobytes' => (int) env('ATTACHMENTS_MAX_KB', 20 * 1024),
 
+    // Optional ClamAV daemon that scans every file (ADR 0073), e.g. tcp://clamav:3310. Empty: no scan.
+    'clamd_address' => (string) env('ATTACHMENTS_CLAMD_ADDRESS', ''),
+    'clamd_timeout' => (int) env('ATTACHMENTS_CLAMD_TIMEOUT', 30),
+
     'allowed_mime_types' => [
         'application/pdf',
         'image/png',

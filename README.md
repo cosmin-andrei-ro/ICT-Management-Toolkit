@@ -67,7 +67,7 @@ From the demo described below, with made-up data. Click a picture to see it full
 | **Access control** | Permissions checked on every action, 13 default roles, nobody approves their own work, organizations kept apart | NIS2 Art. 21(2)(i), ISO/IEC 27001 A.5.15-5.18 |
 | **Audit trail** | Every change, sign-in, role change and export, with old and new values; the database refuses edits and deletions | ISO/IEC 27001 A.8.15 |
 | **Secrets** | Mailbox passwords, licence keys, two-factor and single sign-on secrets encrypted at rest and never logged; a licence key is shown only after a fresh code, and that is recorded | OWASP ASVS (design target) |
-| **Web protections** | Strict Content Security Policy, HSTS and other security headers, CSRF protection, uploads checked by content, outgoing connections kept off internal addresses | OWASP Top 10 |
+| **Web protections** | Strict Content Security Policy, HSTS and other security headers, CSRF protection, uploads checked by content and optionally scanned for viruses, outgoing connections kept off internal addresses | OWASP Top 10 |
 | **Personal data** | Export of what is held about a person, anonymization, retention periods per organization | GDPR Art. 15, 17, 20 |
 
 Following a standard here means built to its requirements. Nothing has been certified or audited by a third party: see [Standards and compliance](docs/compliance.md). NIS2 and DORA set obligations for your organization, not password rules; these features help you meet them.

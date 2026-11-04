@@ -29,6 +29,7 @@ final readonly class StoreAttachment
     public function __construct(
         private Config $config,
         private Filesystem $filesystem,
+        private VirusScanner $scanner,
     ) {}
 
     /**
@@ -101,6 +102,7 @@ final readonly class StoreAttachment
     {
         $mimeType = $this->detectMimeType($file);
         $this->validate($file, $mimeType);
+        $this->scanner->assertClean($file->getRealPath());
 
         return $mimeType;
     }

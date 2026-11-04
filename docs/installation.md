@@ -40,6 +40,8 @@ The simplest way on a server: only [Docker Engine](https://docs.docker.com/engin
 
 **Other settings** from this page go in the same `.env` file; then run `up -d` again. For PDF documents, set `GOTENBERG_URL=http://gotenberg:3000` and add `--profile pdf` to the `up -d` command. For Active Directory, also mount the CA certificate into the `app`, `worker` and `scheduler` services.
 
+For antivirus scanning of uploads, set `ATTACHMENTS_CLAMD_ADDRESS=tcp://clamav:3310` and add `--profile antivirus`; it needs about 2 GB of memory and takes minutes to start.
+
 **Update:** run `git pull`, then `build`, then `up -d`. Migrations run by themselves. Back up first.
 
 **Back up** the database, the uploaded files and `docker/production/.env`:
@@ -356,6 +358,8 @@ Settings, for special cases:
 | `AUTH_LOCKOUT_AFTER` | `10` | Consecutive failures that lock a local account; `0` disables |
 | `AUTH_CHECK_BREACHED_PASSWORDS` | `true` | Refuse passwords known from breaches (Have I Been Pwned, k-anonymity) |
 | `ATTACHMENTS_MAX_KB` | `20480` | Largest attachment, in kilobytes |
+| `ATTACHMENTS_CLAMD_ADDRESS` | empty | Optional [ClamAV](https://www.clamav.net) daemon scanning every uploaded file, e.g. `tcp://127.0.0.1:3310`. When set, a file that cannot be scanned is refused, so uploads stop if the scanner is down |
+| `ATTACHMENTS_CLAMD_TIMEOUT` | `30` | Seconds to wait for the scanner |
 | `AUDIT_TEST_REMINDER_DAYS` | `14` | Days before a control's next test when its owner is emailed |
 | `PROJECTS_REPORT_EVERY_DAYS` | `14` | Age at which a project's status report is due again |
 | `DCIM_POWER_WARN_PERCENT` | `80` | Load of a UPS or PDU that needs attention |
