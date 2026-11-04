@@ -6,7 +6,7 @@
 declare(strict_types=1);
 
 return [
-    'sheet' => 'Service desk',
+    'sheet' => 'Ticketing',
     'roles' => [
         'requester' => 'Requester',
         'assignee' => 'Assigned to',

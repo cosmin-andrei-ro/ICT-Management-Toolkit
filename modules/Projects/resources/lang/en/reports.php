@@ -15,7 +15,7 @@ return [
         'gates_waiting' => 'Stage gates waiting for a sponsor',
     ],
     'export' => [
-        'button' => 'Export to Excel',
+        'button' => 'Export to spreadsheet',
         'of' => 'Project portfolio of :date',
         'projects' => 'Projects',
         'costs' => 'Costs',

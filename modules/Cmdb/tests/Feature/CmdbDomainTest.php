@@ -65,10 +65,10 @@ describe('items', function (): void {
 
     it('stores attribute values validated against the type, dropping unknown keys, and audits changes', function (): void {
         $item = app(SaveConfigurationItem::class)->handle(null, $this->server, ['name' => ' srv-db-01 ', 'identifier' => 'SRV-DB-01', 'environment' => 'production', 'owner_id' => $this->cmdb->lead->id],
-            ['operating_system' => 'Debian 13', 'memory_gb' => '64', 'injected' => 'x']);
+            ['operating_system' => 'Linux 13', 'memory_gb' => '64', 'injected' => 'x']);
 
         expect($item->name)->toBe('srv-db-01')
-            ->and($item->properties)->toBe(['operating_system' => 'Debian 13', 'memory_gb' => 64])
+            ->and($item->properties)->toBe(['operating_system' => 'Linux 13', 'memory_gb' => 64])
             ->and(AuditLog::query()->where('auditable_id', $item->id)->exists())->toBeTrue();
 
         expect(fn () => app(SaveConfigurationItem::class)->handle($item, $this->server, ['name' => 'srv'], ['memory_gb' => 'lots']))

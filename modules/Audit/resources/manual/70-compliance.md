@@ -43,7 +43,7 @@ Retired controls no longer count.
 
 Under **Evidence** on the control's page, the owner or a compliance manager shows that the control works:
 
-- **Link a record of the toolkit**: choose the kind - risk, application, continuity plan, exercise or recovery test, business process, contract, service desk ticket - search it by name or number and **Link** it, saying what it shows. Only records you may open are offered. People who may not open a record still see its title.
+- **Link a record of the toolkit**: choose the kind - risk, application, continuity plan, exercise or recovery test, business process, contract, ticket - search it by name or number and **Link** it, saying what it shows. Only records you may open are offered. People who may not open a record still see its title.
 - **Upload a document**: a report, a configuration export, a signed policy. Give it a title and, if it expires (a certificate, a yearly report), the date it is **valid until**; expired documents are shown in red.
 
 Auditors and everyone who reads compliance see the evidence and download the documents. **Remove** takes evidence off the control; it stays in the history.
@@ -75,7 +75,7 @@ Compliance managers record what an audit found with **New finding** on the audit
 The finding's owner, on its page:
 
 1. records the **root cause** - why it happened, not only what;
-2. adds **corrective actions**, each with an owner and a due date. The owner of an action marks it started, done or cancelled; **Track in the service desk** opens a problem for IT;
+2. adds **corrective actions**, each with an owner and a due date. The owner of an action marks it started, done or cancelled; **Track in Ticketing** opens a problem for IT;
 3. once every action is done or cancelled, clicks **Submit for verification**.
 
 A nonconformity cannot be submitted without a root cause and at least one corrective action; an observation or an opportunity can.
@@ -86,7 +86,7 @@ A compliance manager - not the owner, and not whoever submitted it - then checks
 
 - **Compliance report** on the Compliance page: how far each framework is met, controls by status, overdue tests, controls meeting no requirement, expired evidence, the audits of the last 12 months and the findings not closed. Print it, or **Download PDF** where the PDF service is installed.
 - **Statement of Applicability** on the page of ISO/IEC 27001 (and of your own frameworks that keep one): every requirement, whether it applies and why, the controls meeting it and its state - the document certification auditors ask for. Print it or download it as PDF.
-- **Export to Excel**: applicability of every requirement with its controls, the controls, their tests and evidence, the findings and their corrective actions. The file is prepared in the background and kept 7 days.
+- **Export to spreadsheet**: applicability of every requirement with its controls, the controls, their tests and evidence, the findings and their corrective actions. The file is prepared in the background and kept 7 days.
 
 Every Monday, compliance managers receive an email with what needs attention: findings to verify, major nonconformities not closed, overdue findings and tests, evidence that expired, applicable requirements without a control. Nothing is sent when there is nothing to chase.
 

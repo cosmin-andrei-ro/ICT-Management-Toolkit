@@ -16,7 +16,7 @@ The register of the company's applications and their technical documentation, fo
 - **Certificates** (8.1): an *Expires on* date, not in the template, drives the reminders.
 - **Decommissioning** (15.2): the template's twelve steps added with one click; **glossary** (16): the template's standard terms shown, application terms added.
 - **Permissions matrix** (3.4): rows are the functionalities of 2.3, columns the roles of 3.3; stored by name.
-- **Excel export** (`applications.portfolio`): applications, data processed, integrations, components and certificates of the versions in force; never secrets or technical accounts.
+- **XLSX export** (`applications.portfolio`): applications, data processed, integrations, components and certificates of the versions in force; never secrets or technical accounts.
 - **Dropdown values** (`applications_option_values`): per organization and list; defaults on first use; deactivated, never deleted.
 
 ## Screens
@@ -57,7 +57,7 @@ Owners and deputies write their applications' sheets without a permission. Nobod
 2. Chapters 2–3: data categories, functionalities, integrations, authentication, roles and permission matrix; data-flow diagram drawn from the integrations, plus upload — **done**.
 3. Chapters 4–7: network, firewall rules, hosting, components linked to the CMDB, software, databases, technical accounts; network diagram, ERD upload — **done**.
 4. Chapters 8–16: certificates with expiry reminders, secrets (vault location only), compliance, logging and alerts, continuity from the BIA and BCM, deployment, jobs, runbook, troubleshooting, decommissioning, glossary — **done**.
-5. Full document and PDF through Gotenberg (ADR 0030), the application's CMDB item created on approval, yearly review reminders, weekly digest, Excel export — **done**.
+5. Full document and PDF through Gotenberg (ADR 0030), the application's CMDB item created on approval, yearly review reminders, weekly digest, XLSX export — **done**.
 
 ## Documentation page
 

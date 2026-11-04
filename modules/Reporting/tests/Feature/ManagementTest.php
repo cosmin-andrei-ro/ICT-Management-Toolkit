@@ -147,7 +147,7 @@ it('emails the report of the month that ended to subscribers who may still see i
         && str_contains($mail->url, 'month=2026-10'));
     Notification::assertNotSentTo($former, MonthlyReportReady::class);
 
-    $mail = (new MonthlyReportReady('Acme', 'October 2026', ['alert' => 1, 'warning' => 2], 'https://example.test/report', base64_encode('%PDF-1.7'), 'management-report-2026-10.pdf'))->toMail($manager);
+    $mail = (new MonthlyReportReady('Sample', 'October 2026', ['alert' => 1, 'warning' => 2], 'https://example.test/report', base64_encode('%PDF-1.7'), 'management-report-2026-10.pdf'))->toMail($manager);
     expect($mail->rawAttachments)->toHaveCount(1)
         ->and($mail->introLines)->toContain('One indicator needs action now.', '2 indicators need attention.');
 });

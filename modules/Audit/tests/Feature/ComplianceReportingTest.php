@@ -78,7 +78,7 @@ it('prints the Statement of Applicability and the compliance report, also as PDF
     $this->get(route('audit.report.pdf'))->assertForbidden();
 });
 
-it('exports applicability, controls, tests, evidence, findings and actions to Excel', function (): void {
+it('exports applicability, controls, tests, evidence, findings and actions to XLSX', function (): void {
     $this->actingAs($this->compliance->auditor);
     Livewire::test(ComplianceIndex::class)->call('export', 'xlsx');
     expect(Export::query()->where('type', ComplianceExport::TYPE)->exists())->toBeTrue();

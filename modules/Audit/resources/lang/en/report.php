@@ -26,7 +26,7 @@ return [
     'no' => 'No',
     'undecided' => 'Not decided',
     'export' => [
-        'button' => 'Export to Excel',
+        'button' => 'Export to spreadsheet',
         'of' => 'Compliance export of :date',
         'applicability' => 'Applicability',
         'last_tested' => 'Last tested',
@@ -41,7 +41,7 @@ return [
         'added_on' => 'Added on',
         'verified_by' => 'Verified by',
         'closed_on' => 'Closed on',
-        'ticket' => 'Service desk ticket',
+        'ticket' => 'Ticket',
     ],
     'digest' => [
         'subject' => 'Compliance this week',

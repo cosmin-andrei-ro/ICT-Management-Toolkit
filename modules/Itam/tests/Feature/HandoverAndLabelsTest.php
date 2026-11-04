@@ -21,7 +21,7 @@ use Modules\Itam\Tests\Support\ItamScenario;
 beforeEach(function (): void {
     Notification::fake();
     $this->itam = ItamScenario::create();
-    $this->laptop = $this->itam->laptop(['asset_tag' => 'AST-HO', 'manufacturer' => 'Dell', 'model' => 'Latitude', 'serial_number' => 'SN-HO']);
+    $this->laptop = $this->itam->laptop(['asset_tag' => 'AST-HO', 'manufacturer' => 'Alpha', 'model' => 'Model L', 'serial_number' => 'SN-HO']);
     app(AssignAsset::class)->handle($this->laptop, $this->itam->employee, $this->itam->manager, notes: 'With charger');
     $this->assignment = AssetAssignment::query()->sole();
 });

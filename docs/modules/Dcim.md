@@ -23,7 +23,7 @@ Data centre infrastructure: racks and what is mounted in them; then cabling, pow
 - `/dcim/racks/new[?location=]`, `/dcim/racks/{id}/edit`: the rack form.
 - `/dcim/racks/{id}`: the rack from the front and from the rear; mounted equipment; mount, move, take out.
 - `/dcim/racks/{id}/print` and `/pdf`: the rack sheet (both sides, equipment with serials, draw and supplies, cables).
-- **Export to Excel** on the Racks page: racks, equipment, cables, power and IP addresses (`dcim.inventory`).
+- **Export to spreadsheet** on the Racks page: racks, equipment, cables, power and IP addresses (`dcim.inventory`).
 - `/dcim/equipment/{mount}`: a device's ports, their cables and far ends, trace, connect / edit / disconnect, add ports (series, patch panel).
 - `/dcim/power` (**Configuration & assets → Power**): the chain by room with load bars; `/dcim/power/new`, `/{id}`, `/{id}/edit`: a source, what it feeds, its load, what fails with it (equipment and CMDB items).
 - The equipment page has a **Power** section: supplies, redundancy, plug in / unplug.

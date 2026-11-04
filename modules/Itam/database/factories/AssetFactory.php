@@ -24,7 +24,7 @@ final class AssetFactory extends Factory
             'category_id' => Category::factory(),
             'organization_id' => fn (array $attributes): string => Category::query()->withoutGlobalScopes()->whereKey($attributes['category_id'])->firstOrFail()->organization_id,
             'asset_tag' => 'T-'.fake()->unique()->numerify('######'),
-            'manufacturer' => fake()->randomElement(['Dell', 'Lenovo', 'HP']),
+            'manufacturer' => fake()->randomElement(['Alpha', 'Beta', 'Gamma']),
             'model' => fake()->bothify('Model ##??'),
             'serial_number' => fake()->unique()->bothify('SN########'),
             'status' => 'in_stock',

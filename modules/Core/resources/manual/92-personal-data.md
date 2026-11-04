@@ -37,7 +37,7 @@ What happens:
 
 - **The account:** the name becomes "Former user #…", the e-mail address is removed, and every way to sign in ends. That covers the password, two-factor authentication, passkeys, single sign-on, API tokens and open sessions. The person leaves the organization and their teams.
 - **Records:** tickets, risks, audits, projects and the rest stay, with "Former user" where the name was, so their history remains complete. The text the person wrote in them stays, as part of the organization's records.
-- **Purely personal data goes:** the sender address of the e-mails they sent to the service desk, the IP address of their equipment handover acknowledgements, and their dashboard preferences and report subscription.
+- **Purely personal data goes:** the sender address of the e-mails they sent to IT support, the IP address of their equipment handover acknowledgements, and their dashboard preferences and report subscription.
 - **The audit log** keeps who did what and when, but their name, e-mail address, IP addresses and browser are removed from it.
 
 Anonymization cannot be undone. It is not possible for:

@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Modules\Core\Domain\Links;
 
 /**
- * A service desk ticket as other modules show it.
+ * A ticket as other modules show it.
  */
 final readonly class TicketSummary
 {

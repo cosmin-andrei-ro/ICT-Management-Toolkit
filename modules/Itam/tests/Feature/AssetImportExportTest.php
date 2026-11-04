@@ -37,15 +37,15 @@ function assetCsv(string $content): UploadedFile
 it('creates assets, hands them to their holders without emailing them, and updates by tag or serial number', function (): void {
     $site = Location::factory()->create(['name' => 'HQ']);
     Location::factory()->create(['name' => 'Store room', 'kind' => 'room', 'parent_id' => $site->id]);
-    Supplier::factory()->create(['name' => 'Acme']);
+    Supplier::factory()->create(['name' => 'Sample']);
     $existing = $this->itam->laptop(['asset_tag' => 'AST-OLD', 'serial_number' => 'SN-OLD', 'model' => 'Old model']);
     $bySerial = $this->itam->laptop(['asset_tag' => 'AST-S', 'serial_number' => 'SN-BY-SERIAL']);
 
     $csv = "category;asset_tag;serial_number;manufacturer;model;holder;location;supplier;purchase_date;purchase_cost;currency;memory_gb\n"
-        ."laptop;;SN-NEW-1;Dell;Latitude 5440;{$this->itam->employee->email};HQ > Store room;acme;2026-01-15;1200,50;EUR;16\n"
-        ."Laptop;LBL-77;;HP;EliteBook;;Store room;;;;;\n"
+        ."laptop;;SN-NEW-1;Alpha;Model 5440;{$this->itam->employee->email};HQ > Store room;sample;2026-01-15;1200,50;EUR;16\n"
+        ."Laptop;LBL-77;;Gamma;Model E;;Store room;;;;;\n"
         .";ast-old;;;New model;;;;;;;32\n"
-        .";;sn-by-serial;Lenovo;;;;;;;;\n";
+        .";;sn-by-serial;Beta;;;;;;;;\n";
 
     $page = Livewire::test(ImportAssets::class)->set('file', assetCsv($csv))->call('analyse')->assertHasNoErrors();
     expect(array_column($page->get('preview'), 'action'))->toBe(['create', 'create', 'update', 'update'])
@@ -62,7 +62,7 @@ it('creates assets, hands them to their holders without emailing them, and updat
         ->and(Asset::query()->where('asset_tag', 'LBL-77')->sole()->location?->name)->toBe('Store room')
         ->and($existing->fresh()->model)->toBe('New model')
         ->and($existing->fresh()->serial_number)->toBe('SN-OLD')
-        ->and($bySerial->fresh()->manufacturer)->toBe('Lenovo');
+        ->and($bySerial->fresh()->manufacturer)->toBe('Beta');
     Notification::assertNothingSent();
 });
 
@@ -97,7 +97,7 @@ it('keeps imports to the people who keep the register', function (): void {
 });
 
 it('exports the register with the import columns, so it can be imported back', function (): void {
-    $laptop = $this->itam->laptop(['asset_tag' => 'AST-9', 'serial_number' => 'SN-9', 'manufacturer' => 'Dell', 'model' => 'XPS', 'properties' => ['memory_gb' => 32]]);
+    $laptop = $this->itam->laptop(['asset_tag' => 'AST-9', 'serial_number' => 'SN-9', 'manufacturer' => 'Alpha', 'model' => 'Model X', 'properties' => ['memory_gb' => 32]]);
     app(AssignAsset::class)->handle($laptop, $this->itam->employee, $this->itam->manager);
     $export = Export::factory()->create(['type' => AssetExport::TYPE, 'user_id' => $this->itam->manager->id]);
 

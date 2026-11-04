@@ -27,7 +27,7 @@ beforeEach(function (): void {
     app(OrganizationContext::class)->set($this->organization);
     $this->provider = SsoProvider::query()->create([
         'protocol' => 'saml',
-        'name' => 'ADFS',
+        'name' => 'Company IdP',
         'issuer' => FakeSamlIdentityProvider::ENTITY_ID,
         'sso_url' => FakeSamlIdentityProvider::SSO_URL,
         'certificate' => $this->idp->certificate,
@@ -72,7 +72,7 @@ it('publishes the service provider metadata to give the identity provider', func
         ->assertHeader('Content-Type', 'application/samlmetadata+xml')
         ->assertSee('entityID="'.route('login.saml.metadata', $this->provider->id).'"', false)
         ->assertSee(route('login.saml.acs', $this->provider->id), false);
-    $this->get(route('login'))->assertSee('Sign in with ADFS');
+    $this->get(route('login'))->assertSee('Sign in with Company IdP');
 });
 
 it('signs in a new person from a signed assertion, with roles from groups and the provider\'s second factor', function (): void {

@@ -23,7 +23,7 @@ return [
             'review_overdue' => '{1} :count plan is overdue for review.|[2,*] :count plans are overdue for review.',
             'exercise_overdue' => '{1} :count plan is overdue for an exercise.|[2,*] :count plans are overdue for an exercise.',
             'awaiting_approval' => '{1} :count plan version waits for approval.|[2,*] :count plan versions wait for approval.',
-            'open_findings' => '{1} :count exercise finding was not handed to the service desk.|[2,*] :count exercise findings were not handed to the service desk.',
+            'open_findings' => '{1} :count exercise finding was not handed to IT support.|[2,*] :count exercise findings were not handed to IT support.',
             'open_activations' => '{1} :count plan activation is still open.|[2,*] :count plan activations are still open.',
             'action' => 'Open the coverage report',
         ],

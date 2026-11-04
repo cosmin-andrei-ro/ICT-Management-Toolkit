@@ -1,9 +1,9 @@
 ---
-title: Service desk reports
+title: Ticketing reports
 audience: agents
 ---
 
-**Service desk → Reports** in the menu shows how the service desk is doing. It is available to team leads and administrators. It counts incidents and service requests; problems and changes are left out.
+**Ticketing → Reports** in the menu shows how IT support is doing. It is available to team leads and administrators. It counts incidents and service requests; problems and changes are left out.
 
 ## Choosing the period
 
@@ -26,6 +26,6 @@ Below them:
 
 ## Exporting
 
-**Export to Excel** or **Export to CSV** prepares a file with one row per ticket created in the period: number, type, title, status, priority, queue, category, assignee, channel, dates, hours to resolve and SLA results. The Excel file has a second sheet with the indicators. Requesters are left out of the file.
+**Export to spreadsheet** or **Export to CSV** prepares a file with one row per ticket created in the period: number, type, title, status, priority, queue, category, assignee, channel, dates, hours to resolve and SLA results. The XLSX file has a second sheet with the indicators. Requesters are left out of the file.
 
 The file is prepared in the background and appears under the buttons when ready. Only you can download it, for 7 days; then it is deleted. Every export and every download is recorded in the audit trail.

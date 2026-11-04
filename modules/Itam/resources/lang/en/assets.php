@@ -123,7 +123,7 @@ return [
         'invalid_holder' => 'Choose an active person of this organization.',
         'invalid_item' => 'Choose a configuration item of this organization.',
         'not_now' => 'This is not possible in the asset\'s current status.',
-        'export' => 'Export to Excel',
+        'export' => 'Export to spreadsheet',
         'exports' => 'Exports',
         'export_of' => 'Asset register, :date',
         'yes' => 'Yes',
@@ -132,7 +132,7 @@ return [
     'my' => [
         'menu' => 'My equipment',
         'title' => 'My equipment',
-        'intro' => 'What IT has handed to you. If something is missing or wrong, or you no longer have it, tell the service desk.',
+        'intro' => 'What IT has handed to you. If something is missing or wrong, or you no longer have it, tell IT support.',
         'empty' => 'You have no equipment from IT.',
         'since' => 'Since',
     ],

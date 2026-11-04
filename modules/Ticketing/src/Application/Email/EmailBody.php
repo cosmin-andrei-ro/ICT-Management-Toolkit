@@ -58,7 +58,7 @@ final class EmailBody
                 || preg_match('/^-{2,}\s*Original Message\s*-{2,}$/i', $trimmed) === 1
                 || preg_match('/^_{20,}$/', $trimmed) === 1
                 || preg_match('/^On .{1,200}wrote:$/', $trimmed) === 1
-                // Outlook: "From: ..." followed by "Sent:" or "Date:".
+                // Desktop clients: "From: ..." followed by "Sent:" or "Date:".
                 || (preg_match('/^From:\s/i', $trimmed) === 1 && preg_match('/^(Sent|Date):\s/i', trim($lines[$index + 1] ?? '')) === 1)) {
                 break;
             }

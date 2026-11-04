@@ -12,7 +12,7 @@ return [
     'system' => 'System',
     'yes' => 'Yes',
     'no' => 'No',
-    'export' => 'Export to Excel',
+    'export' => 'Export to spreadsheet',
     'export_of' => 'Export of :date',
     'empty' => 'No entries match these filters.',
     'categories' => [

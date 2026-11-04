@@ -14,7 +14,7 @@ The toolkit already knows much that should feed the risk assessment: what applic
   - *Applications* (documentation in force): personal / special-category / payment card data; internet exposure without MFA; certificates expiring within 30 days; components past end of support.
   - *BIA*: recovery gaps (IT cannot meet the RTO/RPO); tier 1–2 processes depending on a supplier.
   - *BCM*: assessed processes without a plan in force; plans slower than the strictest RTO.
-  - *Service desk*: CMDB items with three incidents or more in 90 days.
+  - *Ticketing*: CMDB items with three incidents or more in 90 days.
   - *ITAM*: licences expiring within 30 days; deployed equipment out of warranty that runs CMDB items.
   - *Core*: contracts ending within 60 days that do not renew.
 - **Suggestions** (`risk_suggestions`, unique per organization and key): open → *registered* (a prefilled risk: scenario, owner, what it concerns, catalog entries, scores when both are known) or *dismissed* with a reason; *no longer applies* when the situation is gone (except for a source that failed that run), reopened if it comes back. A dismissed situation is not suggested again while it lasts.

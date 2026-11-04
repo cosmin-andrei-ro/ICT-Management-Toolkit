@@ -19,7 +19,7 @@ return [
     'print' => 'Print',
     'download_pdf' => 'Download PDF',
     'export' => [
-        'button' => 'Export to Excel',
+        'button' => 'Export to spreadsheet',
         'of' => 'Risk register of :date',
         'risks' => 'Risks',
         'actions' => 'Treatment actions',

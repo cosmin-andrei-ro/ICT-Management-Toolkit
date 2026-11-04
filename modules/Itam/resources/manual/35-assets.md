@@ -49,14 +49,14 @@ Every morning, asset managers and team leads receive one email listing the warra
 
 ## Importing and exporting
 
-**Import assets** fills the register from a spreadsheet (CSV or Excel), for the first inventory or a delivery. The page lists the columns; only the category is needed for a new asset.
+**Import assets** fills the register from a spreadsheet (CSV or XLSX), for the first inventory or a delivery. The page lists the columns; only the category is needed for a new asset.
 
 - A row whose **asset tag** exists updates that asset; without a tag, a row whose **serial number** exists does. Other rows create assets.
 - **holder** is the email of the person who has the device: the asset is handed to them, without an email. They confirm it next time they open **My equipment**.
 - **location** is the full name, as `HQ > Store room`, or a name used only once. Dates are written `2026-01-31`.
 - **Preview** shows what each row will do. If any row has an error, nothing is imported: fix the file and preview again.
 
-**Export to Excel** prepares the whole register in the background; it appears above the list, for you only, for 7 days. Its first columns are those of the import, so you can correct the file and import it back.
+**Export to spreadsheet** prepares the whole register in the background; it appears above the list, for you only, for 7 days. Its first columns are those of the import, so you can correct the file and import it back.
 
 ## Labels
 

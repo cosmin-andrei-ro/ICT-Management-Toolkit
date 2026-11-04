@@ -19,9 +19,9 @@ it('keeps only the new part of a reply', function (string $reply): void {
     expect(EmailBody::newPart($reply))->toBe("Still broken.\nPlease call me.");
 })->with([
     'our marker' => ["Still broken.\nPlease call me.\n\n".EmailBody::MARKER."\nTicket INC-000001 was resolved."],
-    'Outlook header' => ["Still broken.\nPlease call me.\n\nFrom: Service Desk <helpdesk@example.com>\nSent: Monday, 2 November 2026 10:00\nSubject: [INC-000001]"],
-    'Outlook separator' => ["Still broken.\nPlease call me.\n________________________________\nFrom: Service Desk"],
-    'Gmail style' => ["Still broken.\nPlease call me.\n\nOn Mon, 2 Nov 2026 at 10:00, Service Desk <helpdesk@example.com> wrote:\n> Resolved."],
+    'Desktop client header' => ["Still broken.\nPlease call me.\n\nFrom: IT Support <support@example.com>\nSent: Monday, 2 November 2026 10:00\nSubject: [INC-000001]"],
+    'Desktop client separator' => ["Still broken.\nPlease call me.\n________________________________\nFrom: IT Support"],
+    'Web mail style' => ["Still broken.\nPlease call me.\n\nOn Mon, 2 Nov 2026 at 10:00, IT Support <support@example.com> wrote:\n> Resolved."],
     'original message' => ["Still broken.\nPlease call me.\r\n-----Original Message-----\r\nFrom: x"],
 ]);
 

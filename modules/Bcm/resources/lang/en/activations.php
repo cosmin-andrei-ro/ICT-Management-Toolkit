@@ -19,7 +19,7 @@ return [
     ],
     'ui' => [
         'new' => 'Activate the plan',
-        'new_help' => 'Record that the plan was activated for a real disruption. The record keeps the version in force and the strictest RTO of this moment. Raise the incident in the service desk as usual.',
+        'new_help' => 'Record that the plan was activated for a real disruption. The record keeps the version in force and the strictest RTO of this moment. Raise the incident in Ticketing as usual.',
         'record' => 'Record the activation',
         'title' => 'Activation of :plan',
         'list' => 'Activations',

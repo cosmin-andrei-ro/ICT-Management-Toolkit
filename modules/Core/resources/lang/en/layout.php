@@ -10,7 +10,7 @@ return [
     'main_menu' => 'Main menu',
     'admin' => 'Administration',
     'groups' => [
-        'service_desk' => 'Service desk',
+        'ticketing' => 'Ticketing',
         'configuration' => 'Configuration & assets',
         'resilience' => 'Risk & continuity',
         'compliance' => 'Compliance & audit',

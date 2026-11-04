@@ -76,7 +76,7 @@ it('follows the organization\'s period, and keeps forever when it has none', fun
     expect($ticket->fresh()->anonymized_at)->toBeNull();
 });
 
-it('shows an anonymized ticket to the service desk without a requester', function (): void {
+it('shows an anonymized ticket to IT support without a requester', function (): void {
     $ticket = closedTicket($this->desk, 'To be forgotten', 4);
     app(ApplyRetention::class)->handle();
 

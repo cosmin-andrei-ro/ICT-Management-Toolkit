@@ -35,7 +35,7 @@ final readonly class TicketController
 
     /**
      * List tickets visible to the token's user: all tickets of the organization for
-     * service desk staff, otherwise the user's own and watched tickets.
+     * IT support staff, otherwise the user's own and watched tickets.
      *
      * Filters: `filter[status]` (open, closed or a status), `filter[type]`, `filter[priority]`,
      * `filter[queue_id]`, `filter[assignee_id]`, `filter[search]`. Sorts: `created_at`,
@@ -104,7 +104,7 @@ final readonly class TicketController
     }
 
     /**
-     * A ticket with its conversation; internal notes only for service desk staff.
+     * A ticket with its conversation; internal notes only for IT support staff.
      */
     public function show(Request $request, Ticket $ticket): TicketResource
     {

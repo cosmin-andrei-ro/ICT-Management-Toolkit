@@ -12,7 +12,7 @@ On an incident, use the **Problem** panel on the right:
 - choose an open problem and click **Link**;
 - or click **Open a problem from this incident** to create a new problem. It starts with the incident's summary and details, and the incident is linked to it.
 
-**Unlink** removes the link. Problems get numbers such as `PRB-000003`, and you find them on the service desk page with the **Type** filter.
+**Unlink** removes the link. Problems get numbers such as `PRB-000003`, and you find them on the **All tickets** page with the **Type** filter.
 
 ## Investigating
 
@@ -25,7 +25,7 @@ Click **Mark as known error** once the workaround is documented. A known error m
 
 ## The known error database
 
-**Service desk → Known errors** in the menu lists every open known error with its workaround, most widespread first. Search with the symptom or the error text the user reports.
+**Ticketing → Known errors** in the menu lists every open known error with its workaround, most widespread first. Search with the symptom or the error text the user reports.
 
 When you link an incident to a known error, its workaround is added to the incident as an **internal note**, ready for you to apply or pass on.
 

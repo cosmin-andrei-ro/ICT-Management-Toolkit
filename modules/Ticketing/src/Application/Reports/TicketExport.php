@@ -20,7 +20,7 @@ use Modules\Ticketing\Domain\Sla\SlaMetric;
 /**
  * Incidents and service requests created in a period, one row each, plus the
  * period's indicators. Requesters are left out (data minimization): the export
- * is for measuring the service desk, not for following people.
+ * is for measuring IT support, not for following people.
  */
 final readonly class TicketExport implements ExportSource
 {

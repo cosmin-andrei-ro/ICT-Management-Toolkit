@@ -21,7 +21,7 @@ enum TicketStatus: string
     case Cancelled = 'cancelled';
 
     /**
-     * Open tickets still need work from the service desk or the requester.
+     * Open tickets still need work from IT support or the requester.
      */
     public function isOpen(): bool
     {

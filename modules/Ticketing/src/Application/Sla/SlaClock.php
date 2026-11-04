@@ -84,7 +84,7 @@ final readonly class SlaClock
     }
 
     /**
-     * The service desk answered the requester for the first time.
+     * IT support answered the requester for the first time.
      */
     public function responded(Ticket $ticket): void
     {

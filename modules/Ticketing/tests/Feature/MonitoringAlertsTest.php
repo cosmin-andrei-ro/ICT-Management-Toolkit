@@ -44,7 +44,7 @@ function monitoringHeaders(User $user, array $abilities = ['monitoring:write']):
 
 function firing(array $overrides = []): array
 {
-    return ['key' => 'srv-db-01:disk', 'status' => 'firing', 'title' => 'Disk almost full on srv-db-01', 'severity' => 'critical', 'item' => 'SRV-DB-01', 'source' => 'Zabbix', ...$overrides];
+    return ['key' => 'srv-db-01:disk', 'status' => 'firing', 'title' => 'Disk almost full on srv-db-01', 'severity' => 'critical', 'item' => 'SRV-DB-01', 'source' => 'MonitorTool', ...$overrides];
 }
 
 it('opens an incident linked to the item the alert names, and counts repeats on it', function (): void {
@@ -58,7 +58,7 @@ it('opens an incident linked to the item the alert names, and counts repeats on 
         ->channel->toBe(TicketChannel::Monitoring)
         ->priority->toBe(Priority::Critical)
         ->requester_id->toBe($this->monitor->id)
-        ->and($ticket->description)->toContain('/var at 95%')->toContain('Zabbix')->toContain('Payroll database server')
+        ->and($ticket->description)->toContain('/var at 95%')->toContain('MonitorTool')->toContain('Payroll database server')
         ->and(array_map(fn ($item): string => $item->id, app(ConfigurationItems::class)->linkedTo($ticket)))->toBe([$this->server->id])
         ->and($created->json('data.alert.ticket.number'))->toBe($ticket->number);
 
@@ -172,5 +172,5 @@ it('shows the alert on the incident for agents', function (): void {
     $this->actingAs($this->desk->agent);
 
     Livewire::test(ShowTicket::class, ['ticket' => Ticket::query()->sole()])
-        ->assertSee('Monitoring alert')->assertSee('srv-db-01:disk')->assertSee('Zabbix')->assertSee('Firing');
+        ->assertSee('Monitoring alert')->assertSee('srv-db-01:disk')->assertSee('MonitorTool')->assertSee('Firing');
 });

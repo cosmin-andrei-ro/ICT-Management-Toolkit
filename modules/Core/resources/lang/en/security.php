@@ -10,7 +10,7 @@ return [
     'required' => 'Your role requires two-factor authentication. Set it up to continue.',
     'mfa' => [
         'title' => 'Two-factor authentication',
-        'intro' => 'After your password, you also give a 6-digit code from an authenticator app on your phone (Microsoft Authenticator, Google Authenticator or similar). A stolen password alone is then not enough.',
+        'intro' => 'After your password, you also give a 6-digit code from an authenticator app on your phone (any app that supports standard 6-digit codes). A stolen password alone is then not enough.',
         'set_up' => 'Set up two-factor authentication',
         'step_install' => 'Install an authenticator app on your phone, if you do not have one.',
         'step_scan' => 'In the app, add an account and scan this code:',

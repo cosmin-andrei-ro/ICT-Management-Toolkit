@@ -21,7 +21,7 @@ Reports must be exportable to CSV and XLSX (CLAUDE.md §3, Reporting). An export
 ## Alternatives considered
 
 - **Streaming the file in the web request:** simpler, but long requests time out and nothing records what left the application.
-- **Filament's export actions:** tied to the admin panel's tables and users; the service desk screens are Livewire pages outside it.
+- **Filament's export actions:** tied to the admin panel's tables and users; the ticket screens are Livewire pages outside it.
 
 ## Consequences
 

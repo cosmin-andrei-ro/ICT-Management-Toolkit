@@ -31,6 +31,6 @@ By default it shows **security events**:
 
 Choose **Changes to records** or **Everything** to see changes to records as well. You can narrow the list by event, by person (name or e-mail), by record type and by date. Failed sign-ins are shown in red.
 
-**Export to Excel** prepares a workbook of what the filters show, one row per changed field, with the IP address and the request identifier. The export itself is recorded in the log. When it is ready, a download link appears at the top of the page for seven days.
+**Export to spreadsheet** prepares a workbook of what the filters show, one row per changed field, with the IP address and the request identifier. The export itself is recorded in the log. When it is ready, a download link appears at the top of the page for seven days.
 
 Failed sign-ins for accounts that do not exist belong to no organization, so only administrators see them.

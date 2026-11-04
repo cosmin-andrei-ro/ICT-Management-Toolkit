@@ -30,13 +30,13 @@ function applicationHeaders(User $user, array $abilities = ['applications:read',
 }
 
 it('lists the portfolio and gives the documentation sheet in force', function (): void {
-    Sheet::factory()->create(['application_id' => $this->apps->ticketing->id, 'status' => 'approved', 'major' => 1, 'minor' => 0, 'approved_at' => now(), 'content' => ['1_1' => ['description' => 'Service desk platform']]]);
+    Sheet::factory()->create(['application_id' => $this->apps->ticketing->id, 'status' => 'approved', 'major' => 1, 'minor' => 0, 'approved_at' => now(), 'content' => ['1_1' => ['description' => 'Ticketing platform']]]);
     $headers = applicationHeaders($this->apps->manager, ['applications:read']);
 
     $this->getJson('/api/v1/applications?filter[search]=TKT', $headers)->assertOk()->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.code', 'APP-TKT')->assertJsonPath('data.0.business_owner.id', $this->apps->businessOwner->id);
     $this->getJson("/api/v1/applications/{$this->apps->ticketing->id}/sheet", $headers)->assertOk()
-        ->assertJsonPath('data.version', '1.0')->assertJsonPath('data.content.1_1.description', 'Service desk platform');
+        ->assertJsonPath('data.version', '1.0')->assertJsonPath('data.content.1_1.description', 'Ticketing platform');
 
     $undocumented = Application::factory()->create(['code' => 'APP-NEW', 'business_owner_id' => $this->apps->businessOwner->id, 'technical_owner_id' => $this->apps->technicalOwner->id]);
     $this->getJson("/api/v1/applications/{$undocumented->id}/sheet", $headers)->assertNotFound();

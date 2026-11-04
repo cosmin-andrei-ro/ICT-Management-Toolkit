@@ -12,7 +12,7 @@ Compliance with regulations and standards: frameworks and their requirements, th
 - **Control test** (`audit_control_tests`): tested on, tester, result (effective, partially effective, ineffective), method, findings. The control's `test_interval_months`, `last_tested_on`, `next_test_on` (and `test_reminded_for`, reminder bookkeeping).
 - **Audit** (`audit_audits`): AUD-001 per organization, title, internal or external (audit body), scope, frameworks covered (`audit_audit_framework`), lead auditor, dates, status (planned, in progress, completed with a conclusion, cancelled); soft deleted.
 - **Finding** (`audit_findings`): F-001 per organization, from an audit or a control test, severity (major or minor nonconformity, observation, opportunity), control and requirement concerned, owner, due date, root cause, status (open, verification, closed), who submitted it and who verified and closed it, with notes.
-- **Corrective action** (`audit_finding_actions`): title, owner, due date, status (planned, in progress, done, cancelled), the service desk problem raised for it.
+- **Corrective action** (`audit_finding_actions`): title, owner, due date, status (planned, in progress, done, cancelled), IT support problem raised for it.
 - **Requirement state** (computed, `RequirementState`): undecided, not applicable, no control, controls planned, partly met, met. **Coverage** (`Coverage`): requirements by state, and met / applicable.
 
 ## Screens
@@ -26,7 +26,7 @@ Compliance with regulations and standards: frameworks and their requirements, th
 - `/compliance/audits`, `/compliance/audits/new`, `/compliance/audits/{id}` (`/edit`): audits; start, complete with a conclusion, cancel, reopen; their findings.
 - `/compliance/findings`: findings not closed, closed or all; by severity; overdue.
 - `/compliance/findings/new?audit=` or `?test=`, `/compliance/findings/{id}/edit`: a finding (compliance managers); from a test, prefilled with the control and its owner.
-- `/compliance/findings/{id}`: root cause and corrective actions (owner or compliance manager; action owners report progress; *Track in the service desk*), submit for verification, close or reopen (a compliance manager other than the owner and the submitter).
+- `/compliance/findings/{id}`: root cause and corrective actions (owner or compliance manager; action owners report progress; *Track in Ticketing*), submit for verification, close or reopen (a compliance manager other than the owner and the submitter).
 - Control page: *Raise a finding* on a test that was not fully effective.
 - `/compliance/controls/mine` (*My compliance tasks*): controls, open findings and corrective actions of the signed-in person, for those without `audit.compliance.view`.
 
@@ -34,7 +34,7 @@ Compliance with regulations and standards: frameworks and their requirements, th
 
 - `/compliance/report` (and `/compliance/report/pdf` through Gotenberg, throttled and audited): coverage of each framework, controls by status, overdue tests, controls meeting no requirement, expired evidence, audits of the last 12 months, findings not closed by severity.
 - `/compliance/frameworks/{id}/soa` (and `/soa/pdf`): the Statement of Applicability of a framework that keeps one - each requirement, applicable or not, justification, controls and state.
-- Compliance → **Export to Excel** (`audit.compliance`): applicability of every requirement with its controls; controls; tests; evidence; findings; corrective actions.
+- Compliance → **Export to spreadsheet** (`audit.compliance`): applicability of every requirement with its controls; controls; tests; evidence; findings; corrective actions.
 - Risk signals (source `audit`, Core's `RiskSignals`): every major nonconformity not closed (`audit.major:<finding>`), every active framework with applicable requirements no control meets (`audit.uncovered:<framework>`). Raising or closing a finding dispatches `RiskSignalsChanged`.
 
 ## Records evidence can link to
@@ -59,8 +59,8 @@ A control's owner updates its status and implementation notes, adds evidence and
 
 1. Frameworks (ISO/IEC 27001 Annex A, NIS2, GDPR, DORA, your own), applicability, controls mapped across frameworks, coverage — **done**.
 2. Evidence: links to toolkit records, uploaded documents, periodic control tests with reminders to owners — **done**.
-3. Audits (internal and external), findings, corrective action plans (optionally service desk tickets), closure verified by someone other than the owner — **done**.
-4. Reporting: Statement of Applicability in Excel and PDF, compliance report, weekly digest, compliance gaps as risk signals — **done**.
+3. Audits (internal and external), findings, corrective action plans (optionally tickets), closure verified by someone other than the owner — **done**.
+4. Reporting: Statement of Applicability in XLSX and PDF, compliance report, weekly digest, compliance gaps as risk signals — **done**.
 
 ## API (ADR 0063)
 

@@ -35,12 +35,12 @@ it('reads the directory, suppliers, data centre, documentation, projects and ind
     $admin = readOnlyHeaders('admin@example.com', ['directory:read', 'suppliers:read', 'dcim:read', 'documentation:read', 'projects:read', 'metrics:read']);
 
     $this->getJson('/api/v1/directory/people?filter[search]=agent@', $admin)->assertOk()->assertJsonPath('data.0.name', 'Andrei Pop')->assertJsonMissingPath('data.0.password');
-    $this->getJson('/api/v1/directory/teams', $admin)->assertOk()->assertJsonFragment(['name' => 'Service Desk']);
+    $this->getJson('/api/v1/directory/teams', $admin)->assertOk()->assertJsonFragment(['name' => 'IT Support']);
     $this->getJson('/api/v1/directory/departments', $admin)->assertOk();
     $this->getJson('/api/v1/directory/locations?filter[kind]=room', $admin)->assertOk()->assertJsonCount(2, 'data');
 
-    $supplier = $this->getJson('/api/v1/suppliers?filter[search]=Northwind', $admin)->assertOk()->json('data.0.id');
-    $this->getJson("/api/v1/suppliers/{$supplier}", $admin)->assertOk()->assertJsonPath('data.name', 'Northwind Hardware');
+    $supplier = $this->getJson('/api/v1/suppliers?filter[search]=Hardware', $admin)->assertOk()->json('data.0.id');
+    $this->getJson("/api/v1/suppliers/{$supplier}", $admin)->assertOk()->assertJsonPath('data.name', 'Demo Hardware');
     $this->getJson('/api/v1/contracts?sort=end_date', $admin)->assertOk()->assertJsonStructure(['data' => [['id', 'supplier', 'end_date', 'value']], 'meta']);
 
     $rack = Rack::query()->where('name', 'BUC-R01')->sole();

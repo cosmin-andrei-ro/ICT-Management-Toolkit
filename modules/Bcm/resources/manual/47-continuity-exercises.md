@@ -14,7 +14,7 @@ On a plan with an approved version, click **Plan an exercise** under **Exercises
 - **Tabletop exercise:** the team talks through the scenario and the plan around a table; nothing is switched off.
 - **Walkthrough:** each step is checked where it happens (access, contacts, documents), without recovering anything.
 - **Technical recovery test:** systems are actually restored, in a test environment or the recovery site, while production keeps running.
-- **Full interruption test:** production is switched to the recovery arrangements for real. Plan it as a change in the service desk too.
+- **Full interruption test:** production is switched to the recovery arrangements for real. Plan it as a change in Ticketing too.
 
 Add a title, the scenario, the date, the facilitator and the participants.
 
@@ -28,7 +28,7 @@ The page adds up the activation and recovery steps and compares the time measure
 
 ## Findings
 
-Write down everything that has to be fixed — a missing backup, a wrong phone number, a step nobody knew how to do — with its severity and, if it applies, the step. **Raise a problem** sends it to the service desk as a problem, with the system of the step linked; the page then shows the problem number and its status. A problem can be raised only once per finding, also after the exercise is completed.
+Write down everything that has to be fixed — a missing backup, a wrong phone number, a step nobody knew how to do — with its severity and, if it applies, the step. **Raise a problem** sends it to IT support as a problem, with the system of the step linked; the page then shows the problem number and its status. A problem can be raised only once per finding, also after the exercise is completed.
 
 ## Complete it
 

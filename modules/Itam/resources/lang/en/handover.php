@@ -27,6 +27,6 @@ return [
         'subject' => 'You received :name (:tag)',
         'line' => 'IT has handed :name (asset tag :tag) to you. Please confirm in the portal that you received it.',
         'action' => 'Confirm receipt',
-        'not_you' => 'If you did not receive it, tell the service desk.',
+        'not_you' => 'If you did not receive it, tell IT support.',
     ],
 ];

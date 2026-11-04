@@ -239,12 +239,12 @@ it('lets administrators set up providers and mappings of their organization only
     Livewire::test(ManageSsoProviders::class)
         ->assertCanSeeTableRecords([$this->provider])->assertCanNotSeeTableRecords([$foreign])
         ->callAction('create', data: [
-            'name' => 'Microsoft', 'issuer' => 'https://login.example.test/tenant/v2.0', 'client_id' => 'app', 'client_secret' => 'secret-2',
+            'name' => 'Second provider', 'issuer' => 'https://login.example.test/tenant/v2.0', 'client_id' => 'app', 'client_secret' => 'secret-2',
             'allowed_domains' => ['Company.test'], 'scopes' => 'openid email profile', 'groups_claim' => 'groups', 'trust_mfa' => true, 'is_enabled' => true,
         ])->assertHasNoFormErrors()
         ->callAction('create', data: ['name' => 'Bad', 'issuer' => 'https://x.test', 'client_id' => 'a', 'client_secret' => 'b', 'allowed_domains' => ['not a domain'], 'scopes' => 'email', 'groups_claim' => 'groups'])
         ->assertHasFormErrors(['scopes']);
-    expect(SsoProvider::query()->where('name', 'Microsoft')->sole()->allowed_domains)->toBe(['company.test']);
+    expect(SsoProvider::query()->where('name', 'Second provider')->sole()->allowed_domains)->toBe(['company.test']);
 
     Livewire::test(ManageSsoGroupMappings::class)->assertCanSeeTableRecords(SsoGroupMapping::query()->get());
 

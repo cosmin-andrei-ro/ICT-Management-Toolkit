@@ -57,7 +57,7 @@ The commands below run on the server, in the application directory, as the web s
    MAIL_PORT=587
    MAIL_USERNAME=…
    MAIL_PASSWORD=…
-   MAIL_FROM_ADDRESS=servicedesk@example.com
+   MAIL_FROM_ADDRESS=support@example.com
    ```
 
    `APP_URL` must be the address people really use: requests for any other host, except its subdomains, are refused, and passkeys are tied to it.
@@ -250,10 +250,10 @@ Providers are set up per organization in the application: user manual, *Access a
 **Incoming** (email-to-ticket), optional:
 
 1. Enable IMAP on the server for the support mailbox (on Exchange: the IMAP4 service and IMAP for that mailbox), and create its credentials.
-2. Sign in as the administrator, open **Administration → Service desk → Mailboxes**, add the mailbox (usually port 993 with SSL/TLS), and click **Test connection**.
+2. Sign in as the administrator, open **Administration → Ticketing → Mailboxes**, add the mailbox (usually port 993 with SSL/TLS), and click **Test connection**.
 3. Make sure the scheduler and the queue worker run.
 
-Only people with an account in the organization can raise tickets by email; other senders are ignored. Ticket emails then use the mailbox as their reply address, so replies come back to the ticket. Details: user manual, *Tickets by email* and *Service desk setup*, and [ADR 0015](adr/0015-email-to-ticket.md).
+Only people with an account in the organization can raise tickets by email; other senders are ignored. Ticket emails then use the mailbox as their reply address, so replies come back to the ticket. Details: user manual, *Tickets by email* and *Ticketing setup*, and [ADR 0015](adr/0015-email-to-ticket.md).
 
 Staff messages by email count as verified only with a DMARC pass, or an SPF pass for the domain of the sender's address; otherwise they stay internal notes. Check a real message's `Authentication-Results` header before relying on this.
 

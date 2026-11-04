@@ -13,9 +13,9 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 function runSetup(object $test, string $password = 'correct horse battery', ?string $repeat = null): mixed
 {
     return $test->artisan('core:setup')
-        ->expectsQuestion('Organization name', 'Acme Industries')
+        ->expectsQuestion('Organization name', 'Sample Industries')
         ->expectsQuestion('Administrator full name', 'Ana Admin')
-        ->expectsQuestion('Administrator email (used to sign in)', 'Ana@Acme.example')
+        ->expectsQuestion('Administrator email (used to sign in)', 'Ana@Sample.example')
         ->expectsQuestion('Password (at least 12 characters)', $password)
         ->expectsQuestion('Repeat the password', $repeat ?? $password);
 }
@@ -23,13 +23,13 @@ function runSetup(object $test, string $password = 'correct horse battery', ?str
 it('creates the first organization and an administrator who can sign in', function (): void {
     runSetup($this)->assertSuccessful();
 
-    $user = User::query()->where('email', 'ana@acme.example')->sole();
+    $user = User::query()->where('email', 'ana@sample.example')->sole();
     $organization = Organization::query()->sole();
 
     expect(Hash::check('correct horse battery', $user->password))->toBeTrue()
         ->and($user->isMemberOf($organization->id))->toBeTrue()
         ->and(app(OrganizationContext::class)->runAs($organization, fn (): bool => $user->hasRole('administrator')))->toBeTrue()
-        ->and($organization->slug)->toBe('acme-industries');
+        ->and($organization->slug)->toBe('sample-industries');
 });
 
 it('refuses short passwords and mismatches, creating nothing', function (): void {

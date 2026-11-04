@@ -123,7 +123,7 @@ describe('portal', function (): void {
     });
 });
 
-describe('service desk', function (): void {
+describe('ticketing', function (): void {
     it('is forbidden to requesters', function (): void {
         $this->actingAs($this->desk->requester)->get(route('ticketing.desk.index'))->assertForbidden();
         $this->actingAs($this->desk->requester)->get(route('ticketing.desk.show', $this->desk->ticket()))->assertForbidden();

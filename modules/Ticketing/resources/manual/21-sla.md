@@ -5,7 +5,7 @@ audience: agents
 
 Every incident and service request has two clocks:
 
-- **First response:** time until the service desk first replies publicly.
+- **First response:** time until IT support first replies publicly.
 - **Resolution:** time until the ticket is resolved.
 
 The clocks count **working time** only, using your organization's business calendar. By default that is Monday–Friday 09:00–17:00 (Bucharest time), without Romanian public holidays.
@@ -28,7 +28,7 @@ Administrators can change these targets for your organization.
 | Ticket created | Both start. |
 | Status *Pending* (waiting for the requester) | Both pause. |
 | Requester replies, or you move it out of *Pending* | Both resume. |
-| First public reply from the service desk | First response stops. |
+| First public reply from IT support | First response stops. |
 | Ticket resolved | Both stop: *Met* or *Missed*. |
 | Ticket reopened | Resolution resumes, with the time already used. |
 | Ticket cancelled | Both stop as *Not applicable* (never counted as missed). |
@@ -40,4 +40,4 @@ Administrators can change these targets for your organization.
 - When a target is **missed**, they get another one.
 - If nobody is assigned, the whole queue team is warned.
 
-Each warning is sent once per clock. Use the **SLA** filter on the service desk page to see what needs attention now.
+Each warning is sent once per clock. Use the **SLA** filter on the **All tickets** page to see what needs attention now.

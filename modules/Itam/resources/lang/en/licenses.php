@@ -80,7 +80,7 @@ return [
         'delete_confirm' => 'Delete this licence and its seats?',
         'model_has_seats' => 'Release the seats before switching between people and devices.',
         'invalid_reference' => 'Choose a product, supplier and contract of this organization.',
-        'export' => 'Export to Excel',
+        'export' => 'Export to spreadsheet',
         'export_of' => 'Licences, :date',
         'import' => 'Import licences',
         'on_device' => 'Software licences on this device',

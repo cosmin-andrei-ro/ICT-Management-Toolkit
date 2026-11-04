@@ -13,14 +13,14 @@ CLAUDE.md §6 asks for the export of personal data on request (GDPR Art. 15, rig
   - Each module registers a collector under a translated sheet name: `fn (User $person): iterable<PersonalDataEntry>`.
   - An entry gives the record, its reference, its title, the person's part in it, a date, and the personal content it holds, such as the text the person wrote.
   - Collectors run in the organization being exported, so their global scopes apply.
-- **One export type, `core.personal_data`** (Excel workbook, queued, audited like every export, ADR 0016). Its sheets:
+- **One export type, `core.personal_data`** (XLSX workbook, queued, audited like every export, ADR 0016). Its sheets:
   - **Account:** name, e-mail, source, roles in this organization, dates, two-factor and lock status.
   - one sheet per module that names the person;
   - the comments and files they wrote or uploaded;
   - their **activity:** audit log entries they made, or that concern their account, in this organization or outside any organization (sign-ins).
 - **Per organization.** Each organization (legal entity) is the controller of its own data. The export covers one organization, and the person must be a member of it, which is checked both when requesting and when generating.
 - **Who:** `core.personal_data.manage`, held by administrators. The page is Administration → Access → Personal data. It lists the administrator's own recent exports with their download links; the export system already restricts downloads to whoever requested them.
-- **Format:** an Excel workbook is readable by the person and machine-readable for Art. 20 ("structured, commonly used"). It reuses the existing writer, including its protection against formula injection.
+- **Format:** an XLSX workbook is readable by the person and machine-readable for Art. 20 ("structured, commonly used"). It reuses the existing writer, including its protection against formula injection.
 
 ## Alternatives
 

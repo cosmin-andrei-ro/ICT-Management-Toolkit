@@ -18,7 +18,7 @@ use Modules\Core\Domain\Models\User;
 
 /**
  * Something an exercise showed must be fixed. It can become a problem in the
- * service desk, which then tracks the fix.
+ * ticketing, which then tracks the fix.
  *
  * @property string $id
  * @property string $organization_id

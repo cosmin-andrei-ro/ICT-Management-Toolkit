@@ -13,7 +13,7 @@ With two-factor authentication, signing in takes your password **and** a 6-digit
 
 ### Setting it up
 
-1. Install an authenticator app on your phone: Microsoft Authenticator, Google Authenticator or any app that supports standard 6-digit codes.
+1. Install an authenticator app on your phone: any app that supports standard 6-digit codes.
 2. On **Account security**, click **Set up two-factor authentication**.
 3. In the app, add an account and scan the QR code. If you cannot scan it, type the key shown under it.
 4. Enter the 6-digit code the app shows and click **Turn on**.

@@ -1,9 +1,9 @@
 ---
-title: Configuring the service desk
+title: Configuring Ticketing
 audience: administrators
 ---
 
-Team leads and administrators configure the service desk in **Administration → Service desk**.
+Team leads and administrators configure Ticketing in **Administration → Ticketing**.
 
 ## Queues
 
@@ -19,7 +19,7 @@ Categories classify tickets for routing and reporting. They have two levels, for
 
 ## Priority matrix
 
-Priority comes from **impact × urgency**. The default follows ITIL:
+Priority comes from **impact × urgency**. The default is the usual matrix:
 
 | Impact \ Urgency | High | Medium | Low |
 |---|---|---|---|

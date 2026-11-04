@@ -3,7 +3,7 @@ title: Changes
 audience: agents
 ---
 
-A **change** is planned work on a live system: a firmware upgrade, a new firewall rule, a server migration. Recording the plan and getting it authorized first means fewer surprises and a clear way back if something goes wrong. Changes get numbers such as `CHG-000012`. Only service desk staff create them, and requesters never see them.
+A **change** is planned work on a live system: a firmware upgrade, a new firewall rule, a server migration. Recording the plan and getting it authorized first means fewer surprises and a clear way back if something goes wrong. Changes get numbers such as `CHG-000012`. Only IT support staff create them, and requesters never see them.
 
 ## Three kinds of change
 
@@ -15,7 +15,7 @@ A **change** is planned work on a live system: a firmware upgrade, a new firewal
 
 ## Creating a change
 
-Open **Service desk → Change calendar** in the menu and click **New change**.
+Open **Ticketing → Change calendar** in the menu and click **New change**.
 
 - **Standard:** choose the template and the planned window. The plans come from the template, and the change is authorized at once.
 - **Normal** or **Emergency:** give a title, why the change is needed, the risk, and the plan:

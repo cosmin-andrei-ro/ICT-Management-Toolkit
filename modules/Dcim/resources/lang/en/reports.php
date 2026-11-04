@@ -15,7 +15,7 @@ return [
         'subnets_full' => 'IPv4 subnets 90% full or more',
     ],
     'export' => [
-        'button' => 'Export to Excel',
+        'button' => 'Export to spreadsheet',
         'of' => 'Data centre workbook of :date',
         'racks' => 'Racks',
         'equipment' => 'Equipment',

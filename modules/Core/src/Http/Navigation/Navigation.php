@@ -21,7 +21,7 @@ use Modules\Core\Domain\Models\User;
 final class Navigation
 {
     /** Shared groups, declared here so modules can rely on them. */
-    public const string SERVICE_DESK = 'service_desk';
+    public const string TICKETING = 'ticketing';
 
     public const string CONFIGURATION = 'configuration';
 
@@ -33,7 +33,7 @@ final class Navigation
 
     /** @var array<string, array{label: string, order: int}> */
     private array $groups = [
-        self::SERVICE_DESK => ['label' => 'core::layout.groups.service_desk', 'order' => 30],
+        self::TICKETING => ['label' => 'core::layout.groups.ticketing', 'order' => 30],
         self::CONFIGURATION => ['label' => 'core::layout.groups.configuration', 'order' => 40],
         self::RESILIENCE => ['label' => 'core::layout.groups.resilience', 'order' => 45],
         self::COMPLIANCE => ['label' => 'core::layout.groups.compliance', 'order' => 47],

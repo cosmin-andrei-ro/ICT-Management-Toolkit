@@ -15,7 +15,7 @@ use Modules\Ticketing\Domain\Models\Ticket;
 use Modules\Ticketing\Domain\Workflow\PriorityMatrix;
 
 /**
- * Triage by the service desk: wording, category, impact and urgency. Priority is
+ * Triage by IT support: wording, category, impact and urgency. Priority is
  * always recomputed, never set by hand.
  */
 final readonly class UpdateTicketDetails

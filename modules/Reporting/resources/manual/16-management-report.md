@@ -3,7 +3,7 @@ title: Management overview and monthly report
 audience: everyone
 ---
 
-People who were given access to the **management overview** see **Management** in the menu. It brings together the figures of every module — service desk, assets, business impact analysis, continuity, applications, risks, compliance, documentation — even modules you do not work in. You see figures only, never the records behind them.
+People who were given access to the **management overview** see **Management** in the menu. It brings together the figures of every module — ticketing, assets, business impact analysis, continuity, applications, risks, compliance, documentation — even modules you do not work in. You see figures only, never the records behind them.
 
 For each figure:
 

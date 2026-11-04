@@ -29,7 +29,7 @@ enum TicketType: string
 
     /**
      * Types people may raise themselves (portal, API). Problems and changes are
-     * opened by the service desk only.
+     * opened by IT support only.
      *
      * @return list<self>
      */

@@ -61,7 +61,7 @@ it('builds the demo company with an account per role and three months of history
     }
     expect(User::query()->where('email', 'agent@example.com')->sole()->two_factor_confirmed_at)->not->toBeNull();
 
-    // The service desk over 90 days, at every stage, with late SLAs.
+    // IT support over 90 days, at every stage, with late SLAs.
     $tickets = Ticket::query()->get();
     expect($tickets->where('type', TicketType::Incident)->count() + $tickets->where('type', TicketType::ServiceRequest)->count())->toBe(60)
         ->and($tickets->min('created_at')->lt(now()->subDays(80)))->toBeTrue()
@@ -126,7 +126,7 @@ it('builds the demo company with an account per role and three months of history
         ->and(ReportSubscription::query()->count())->toBe(1);
 
     // The export of a person's data reads every module: a busy team lead and an employee.
-    foreach (['teamlead@example.com' => ['Organization', 'Service desk', 'CMDB', 'Continuity', 'Risks', 'Projects', 'Activity'], 'finance@example.com' => ['Service desk', 'Assets and licences', 'Applications', 'Business impact analysis']] as $email => $expected) {
+    foreach (['teamlead@example.com' => ['Organization', 'Ticketing', 'CMDB', 'Continuity', 'Risks', 'Projects', 'Activity'], 'finance@example.com' => ['Ticketing', 'Assets and licences', 'Applications', 'Business impact analysis']] as $email => $expected) {
         $export = new Export;
         $export->forceFill(['organization_id' => $organization->id, 'user_id' => User::query()->where('email', 'admin@example.com')->sole()->id, 'type' => PersonalDataExport::TYPE, 'format' => 'xlsx', 'status' => 'pending', 'parameters' => ['person_id' => User::query()->where('email', $email)->sole()->id]])->save();
         $sheets = app(PersonalDataExport::class)->sheets($export);

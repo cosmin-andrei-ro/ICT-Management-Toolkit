@@ -10,7 +10,7 @@ ISO/IEC 27001:2022 §6.1.3 and §8.3 ask for a risk treatment plan and for risk 
 ## Decision
 
 - **Treatment on the risk:** option (mitigate, transfer, avoid, accept), plan, and the **residual** likelihood × impact expected once treated. Levels and the register use the residual score when assessed.
-- **Actions** (`risk_actions`): title, owner, due date, planned → in progress → done or cancelled; overdue shown; optionally tracked as a **problem** in the service desk through Core's `ServiceDeskTickets` (impact from the risk's level, the risk's CMDB items linked), as for exercise findings (ADR 0027).
+- **Actions** (`risk_actions`): title, owner, due date, planned → in progress → done or cancelled; overdue shown; optionally tracked as a **problem** in Ticketing through Core's `ProblemTickets` (impact from the risk's level, the risk's CMDB items linked), as for exercise findings (ADR 0027).
 - **Acceptance** (`risk_acceptances`) of the residual risk with a justification:
   - residual score **below** the approval threshold: accepted at once by the owner (or a risk manager);
   - **from** the threshold: pending until a holder of `risk.acceptance.approve` (risk managers) approves or rejects it (reason required) — **never the risk's owner nor the requester**, re-checked under a row lock; one pending request per risk; risk managers are emailed, owner and requester told of the decision.

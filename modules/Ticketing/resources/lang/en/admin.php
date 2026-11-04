@@ -6,7 +6,7 @@
 declare(strict_types=1);
 
 return [
-    'navigation_group' => 'Service desk',
+    'navigation_group' => 'Ticketing',
     'name' => 'Name',
     'description' => 'Description',
     'active' => 'Active',

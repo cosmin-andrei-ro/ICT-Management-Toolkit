@@ -22,7 +22,7 @@ use Modules\Ticketing\Domain\Sla\SlaMetric;
 use Modules\Ticketing\Domain\Sla\SlaOutcome;
 
 /**
- * Service desk indicators for the current organization: incidents and service
+ * Ticketing indicators for the current organization: incidents and service
  * requests only (problems and changes are measured differently). Aggregated in
  * the database, so the cost does not grow with the number of tickets loaded.
  */

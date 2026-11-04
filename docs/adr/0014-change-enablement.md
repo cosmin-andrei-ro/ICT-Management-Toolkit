@@ -5,7 +5,7 @@
 
 ## Context
 
-ITIL 4 change enablement makes changes to live systems safe: each change has a plan, a rollback plan and a window, and the right people authorize it before work starts. Routine work should not wait for a board. Urgent work, such as a critical security patch, cannot wait for the regular board, but still needs authorization and a look back afterwards.
+Change enablement makes changes to live systems safe: each change has a plan, a rollback plan and a window, and the right people authorize it before work starts. Routine work should not wait for a board. Urgent work, such as a critical security patch, cannot wait for the regular board, but still needs authorization and a look back afterwards.
 
 ## Decision
 

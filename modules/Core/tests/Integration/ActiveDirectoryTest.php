@@ -62,7 +62,7 @@ it('resolves nested group membership', function (): void {
 
     expect($this->directory->groupsOf($bo))->toEqualCanonicalizing([
         'cn=it-l2,ou=groups,dc=corp,dc=example',
-        'cn=it-servicedesk,ou=groups,dc=corp,dc=example',
+        'cn=it-support,ou=groups,dc=corp,dc=example',
     ]);
 })->group('active-directory');
 
@@ -70,7 +70,7 @@ it('signs in through a nested group mapping end to end', function (): void {
     app(SyncPermissions::class)->handle();
     $organization = Organization::factory()->create();
     DirectoryGroupMapping::factory()->for($organization)->forRole(DefaultRole::Agent)
-        ->create(['group_dn' => 'CN=IT-ServiceDesk,OU=Groups,DC=corp,DC=example']);
+        ->create(['group_dn' => 'CN=IT-Support,OU=Groups,DC=corp,DC=example']);
 
     Livewire::test(Login::class)
         ->set('login', 'bo.nested@corp.example')
@@ -88,7 +88,7 @@ it('signs in through a nested group mapping end to end', function (): void {
 it('rejects disabled accounts and users without a mapped group', function (string $login, AuditEvent $event): void {
     app(SyncPermissions::class)->handle();
     DirectoryGroupMapping::factory()->for(Organization::factory()->create())->forRole(DefaultRole::Agent)
-        ->create(['group_dn' => 'CN=IT-ServiceDesk,OU=Groups,DC=corp,DC=example']);
+        ->create(['group_dn' => 'CN=IT-Support,OU=Groups,DC=corp,DC=example']);
 
     Livewire::test(Login::class)
         ->set('login', $login)

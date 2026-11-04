@@ -16,7 +16,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Risk\Application\Actions\AcceptRisk;
@@ -274,7 +274,7 @@ final class ShowRisk extends Component
             'treatments' => Treatment::cases(),
             'actions' => $risk->actions()->with('owner')->get(),
             'actionStatuses' => ActionStatus::cases(),
-            'ticketsAvailable' => app(ServiceDeskTickets::class)->isAvailable(),
+            'ticketsAvailable' => app(ProblemTickets::class)->isAvailable(),
             'pending' => $pending,
             'canDecide' => $pending !== null && $accept->mayDecide($user, $pending, $risk),
             'acceptances' => $risk->acceptances()->with(['requester', 'decider'])->limit(10)->get(),

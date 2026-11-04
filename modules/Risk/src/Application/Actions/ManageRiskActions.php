@@ -11,7 +11,7 @@ use Carbon\CarbonImmutable;
 use InvalidArgumentException;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Links\TicketSummary;
 use Modules\Core\Domain\Models\User;
 use Modules\Risk\Domain\Enums\ActionStatus;
@@ -23,13 +23,13 @@ use Modules\Risk\Domain\Models\RiskSettings;
 
 /**
  * The actions that carry out a risk's treatment, each with an owner and a due
- * date, and optionally tracked as a problem in the service desk. Audited on
+ * date, and optionally tracked as a problem in Ticketing. Audited on
  * the risk.
  */
 final readonly class ManageRiskActions
 {
     public function __construct(
-        private ServiceDeskTickets $tickets,
+        private ProblemTickets $tickets,
         private AuditTrail $trail,
     ) {}
 
@@ -67,14 +67,14 @@ final readonly class ManageRiskActions
     }
 
     /**
-     * Raises the action as a problem in the service desk, once, with the risk's CMDB items.
+     * Raises the action as a problem in Ticketing, once, with the risk's CMDB items.
      *
-     * @throws InvalidArgumentException when already raised or there is no service desk
+     * @throws InvalidArgumentException when already raised or Ticketing is not available
      */
     public function raiseTicket(RiskAction $action, User $actor): TicketSummary
     {
         if ($action->ticket_id !== null || ! $this->tickets->isAvailable()) {
-            throw new InvalidArgumentException('Already raised, or there is no service desk.');
+            throw new InvalidArgumentException('Already raised, or Ticketing is not available.');
         }
 
         $risk = Risk::query()->findOrFail($action->risk_id);

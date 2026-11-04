@@ -50,7 +50,7 @@ it('records the treatment, the residual risk and the history of scores', functio
     Livewire::test(ShowRisk::class, ['risk' => $this->risk])->assertSee('Medium · 8')->assertSee('Critical · 20');
 });
 
-it('tracks treatment actions, overdue ones and their problem in the service desk', function (): void {
+it('tracks treatment actions, overdue ones and their problem in Ticketing', function (): void {
     (new CiLink)->forceFill(['organization_id' => $this->risk->organization_id, 'configuration_item_id' => $this->risks->payrollDb->id, 'linkable_type' => 'x', 'linkable_id' => $this->risk->id]);
     $this->actingAs($this->risks->owner);
     Livewire::test(ShowRisk::class, ['risk' => $this->risk])->call('addAsset', 'configuration_item', $this->risks->payrollDb->id)

@@ -32,4 +32,4 @@ Organizations under NIS2, DORA or GDPR, or certified against ISO/IEC 27001, must
 ## Consequences
 
 - Updating a shipped framework (a new version of a regulation) means adding it again under a new key or adding the new requirements; existing decisions and mappings stay.
-- Parts B–D add evidence (links to toolkit records, uploads, periodic tests with reminders), audits with findings and corrective plans, and reports: the Statement of Applicability in Excel and PDF, a digest, and compliance gaps as risk signals.
+- Parts B–D add evidence (links to toolkit records, uploads, periodic tests with reminders), audits with findings and corrective plans, and reports: the Statement of Applicability in XLSX and PDF, a digest, and compliance gaps as risk signals.

@@ -5,7 +5,7 @@
 
 ## Context
 
-Integrations (chat, monitoring, an external service desk, a SIEM) want to hear when something happens instead of polling the API. On 2026-11-03 the owner chose:
+Integrations (chat, monitoring, an external ticketing system, a SIEM) want to hear when something happens instead of polling the API. On 2026-11-03 the owner chose:
 
 - **Events:** tickets and changes, CMDB items and assets, risks and compliance, continuity.
 - **Who configures them:** administrators only, per organization.

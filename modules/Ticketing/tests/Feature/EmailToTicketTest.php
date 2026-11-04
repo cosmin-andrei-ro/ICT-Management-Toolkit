@@ -36,7 +36,7 @@ const PNG_PIXEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+
 beforeEach(function (): void {
     Notification::fake();
     $this->desk = TicketingScenario::create();
-    $this->mailbox = Mailbox::factory()->create(['address' => 'helpdesk@example.com']);
+    $this->mailbox = Mailbox::factory()->create(['address' => 'support@example.com']);
 });
 
 /**
@@ -69,7 +69,7 @@ describe('new tickets', function (): void {
             ->and($ticket->queue_id)->toBe($this->desk->queue->id)
             ->and($ticket->description)->toBe('The printer on floor 2 is offline.');
 
-        Notification::assertSentTo($this->desk->requester, TicketUpdate::class, fn (TicketUpdate $n): bool => $n->kind === 'created' && $n->replyTo === 'helpdesk@example.com');
+        Notification::assertSentTo($this->desk->requester, TicketUpdate::class, fn (TicketUpdate $n): bool => $n->kind === 'created' && $n->replyTo === 'support@example.com');
     });
 
     it('handles each message once', function (): void {
@@ -99,7 +99,7 @@ describe('replies', function (): void {
     it('adds a reply to the ticket in the subject, without the quoted conversation', function (): void {
         $ticket = $this->desk->ticket();
 
-        $entry = intake($this->mailbox, email($this->desk->requester->email, "RE: [{$ticket->number}] Reply from the service desk", "It works now, thanks.\n\n".EmailBody::MARKER."\nold text"));
+        $entry = intake($this->mailbox, email($this->desk->requester->email, "RE: [{$ticket->number}] Reply from IT support", "It works now, thanks.\n\n".EmailBody::MARKER."\nold text"));
 
         $comment = Comment::query()->where('commentable_id', $ticket->id)->sole();
         expect($entry->outcome)->toBe(InboundOutcome::Commented)
@@ -189,7 +189,7 @@ describe('ignored messages', function (): void {
         'mailing list' => [['list-id' => ['<it.lists.example.com>']]],
         'bounce' => [['return-path' => ['<>']]],
         'delivery report' => [['content-type' => ['multipart/report; report-type=delivery-status']]],
-        'our own mailbox' => [[], 'helpdesk@example.com'],
+        'our own mailbox' => [[], 'support@example.com'],
     ]);
 
     it('accepts messages that say they are not automatic', function (): void {
@@ -295,9 +295,9 @@ it('prunes the message log after the retention period', function (): void {
 });
 
 it('puts the reply marker and anti-loop headers in ticket emails', function (): void {
-    $mail = (new TicketUpdate('created', 'INC-000001', 'Printer', 'https://example.com', 'helpdesk@example.com'))->toMail($this->desk->requester);
+    $mail = (new TicketUpdate('created', 'INC-000001', 'Printer', 'https://example.com', 'support@example.com'))->toMail($this->desk->requester);
 
-    expect($mail->replyTo)->toBe([['helpdesk@example.com', null]])
+    expect($mail->replyTo)->toBe([['support@example.com', null]])
         ->and($mail->introLines[0])->toBe(EmailBody::MARKER)
         ->and($mail->callbacks)->toHaveCount(1);
 });

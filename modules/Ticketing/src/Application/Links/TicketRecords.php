@@ -16,7 +16,7 @@ use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * Tickets of the service desk (e.g. an approved change), as other modules link to them (LinkedRecords): only those the viewer may see.
+ * Tickets of IT support (e.g. an approved change), as other modules link to them (LinkedRecords): only those the viewer may see.
  */
 final class TicketRecords
 {

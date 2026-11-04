@@ -11,7 +11,7 @@ return [
         'label' => 'AD group mapping',
         'plural_label' => 'AD group mappings',
         'group_dn' => 'AD group (distinguished name)',
-        'group_dn_help' => 'For example: CN=IT-ServiceDesk,OU=Groups,DC=corp,DC=example. Members of nested groups are included.',
+        'group_dn_help' => 'For example: CN=IT-Support,OU=Groups,DC=corp,DC=example. Members of nested groups are included.',
         'role' => 'Role in this organization',
         'updated_at' => 'Last changed',
         'duplicate' => 'This group is already mapped to this role.',

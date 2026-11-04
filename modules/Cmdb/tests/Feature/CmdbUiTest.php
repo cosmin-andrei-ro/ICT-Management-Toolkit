@@ -51,7 +51,7 @@ it('creates an item with the attributes of its type, and gives the default types
         ->assertSee('Operating system')
         ->set('name', 'srv-app-01')
         ->set('identifier', 'SRV-APP-01')
-        ->set('properties.operating_system', 'Debian 13')
+        ->set('properties.operating_system', 'Linux 13')
         ->set('properties.memory_gb', 'many')
         ->call('save')
         ->assertHasErrors(['properties.memory_gb'])
@@ -60,7 +60,7 @@ it('creates an item with the attributes of its type, and gives the default types
         ->assertHasNoErrors()
         ->assertRedirect();
 
-    expect(ConfigurationItem::query()->where('identifier', 'SRV-APP-01')->sole()->properties)->toEqual(['operating_system' => 'Debian 13', 'memory_gb' => 32]);
+    expect(ConfigurationItem::query()->where('identifier', 'SRV-APP-01')->sole()->properties)->toEqual(['operating_system' => 'Linux 13', 'memory_gb' => 32]);
 });
 
 it('refuses duplicate identifiers in the form', function (): void {

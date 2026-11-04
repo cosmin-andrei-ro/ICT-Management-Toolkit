@@ -1,6 +1,6 @@
 # Documentation module
 
-Procedures, how-tos and reference pages, organised in spaces. Code: `modules/Documentation/`. Decisions: [ADR 0040](../adr/0040-documentation-spaces-and-pages.md), [ADR 0041](../adr/0041-documentation-publishing-and-review.md), [ADR 0042](../adr/0042-knowledge-articles-for-the-service-desk.md), [ADR 0043](../adr/0043-generated-application-pages.md).
+Procedures, how-tos and reference pages, organised in spaces. Code: `modules/Documentation/`. Decisions: [ADR 0040](../adr/0040-documentation-spaces-and-pages.md), [ADR 0041](../adr/0041-documentation-publishing-and-review.md), [ADR 0042](../adr/0042-knowledge-articles-for-tickets.md), [ADR 0043](../adr/0043-generated-application-pages.md).
 
 ## Concepts
 
@@ -28,7 +28,7 @@ Procedures, how-tos and reference pages, organised in spaces. Code: `modules/Doc
 
 - Core `KnowledgeArticles` (implemented by `DocumentationArticles`): `suggest()` published pages matching any word of a text, `about()` pages linked to a record; only pages the viewer reads.
 - `LinkedRecords` type `documentation.page` (resolve and search): other modules link published pages.
-- The service desk shows them on the portal request form, the requester's ticket page and the agent's ticket page.
+- IT support shows them on the portal request form, the requester's ticket page and the agent's ticket page.
 
 ## Application pages
 

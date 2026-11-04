@@ -32,14 +32,14 @@ beforeEach(function (): void {
 
 it('reminds the owners of certificates of the documentation in force, once per expiry date', function (): void {
     $certificates = fn (string $expiry): array => ['8_1' => ['certificates' => [
-        ['name' => 'servicedesk.company.local', 'expires_on' => $expiry],
+        ['name' => 'ticketing.company.local', 'expires_on' => $expiry],
         ['name' => 'sdapp01.company.local', 'expires_on' => today()->addDays(100)->toDateString()],
         ['name' => 'SD-Graph-Client', 'expires_on' => null],
     ]]];
     $this->sheet->forceFill(['status' => 'approved', 'major' => 1, 'minor' => 0, 'approved_at' => now(), 'content' => $certificates(today()->addDays(10)->toDateString())])->save();
 
     expect(app(SendCertificateReminders::class)->handle())->toBe(1);
-    Notification::assertSentTo($this->apps->technicalOwner, CertificateExpiring::class, fn (CertificateExpiring $mail): bool => $mail->certificate === 'servicedesk.company.local');
+    Notification::assertSentTo($this->apps->technicalOwner, CertificateExpiring::class, fn (CertificateExpiring $mail): bool => $mail->certificate === 'ticketing.company.local');
     Notification::assertNotSentTo($this->apps->businessOwner, CertificateExpiring::class);
     expect(app(SendCertificateReminders::class)->handle())->toBe(0);
 
@@ -54,7 +54,7 @@ it('shows what the BIA, the CMDB and the recovery plans know in the continuity c
     $app = ConfigurationItem::factory()->create(['type_id' => $type->id, 'name' => 'SDAPP01']);
     $db = ConfigurationItem::factory()->create(['type_id' => $type->id, 'name' => 'SDDB01', 'recovery_time_minutes' => 120]);
     app(ManageRelationships::class)->add($app, RelationshipType::DependsOn, $db);
-    $plan = Plan::factory()->create(['name' => 'Service desk DRP', 'owner_id' => $this->apps->technicalOwner->id]);
+    $plan = Plan::factory()->create(['name' => 'Ticketing DRP', 'owner_id' => $this->apps->technicalOwner->id]);
     $version = PlanVersion::factory()->create(['plan_id' => $plan->id, 'status' => 'approved', 'decided_at' => now()]);
     (new CiLink)->forceFill(['organization_id' => $app->organization_id, 'configuration_item_id' => $app->id, 'linkable_type' => 'bcm.plan_version', 'linkable_id' => $version->id])->save();
 
@@ -66,7 +66,7 @@ it('shows what the BIA, the CMDB and the recovery plans know in the continuity c
         ->assertSee('Incident handling: RTO 4 hours, RPO 1 hour, tier 2')
         ->assertSee('The application must be back within 4 hours and lose at most 1 hour of data.')
         ->assertSee('SDDB01')->assertSee('can be back within 2 hours')
-        ->assertSee('Service desk DRP');
+        ->assertSee('Ticketing DRP');
 
     expect($this->sheet->fresh()->section('10_1')['processes'])->toBe([$payroll->id]);
 });

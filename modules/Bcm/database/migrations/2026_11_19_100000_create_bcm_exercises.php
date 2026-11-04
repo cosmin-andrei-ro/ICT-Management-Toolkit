@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Schema;
  * Exercises and recovery tests of approved plans (ADR 0027): the runbook as it
  * was when the exercise started, the result of each step, which configuration
  * items were brought back and in how long, and the findings, each of which can
- * become a problem in the service desk (referenced by id, without a foreign key).
+ * become a problem in Ticketing (referenced by id, without a foreign key).
  */
 return new class extends Migration
 {
@@ -112,7 +112,7 @@ return new class extends Migration
             $table->uuid('exercise_step_id')->nullable();
             $table->text('description');
             $table->string('severity', 16);
-            // The problem raised in the service desk (through Core's ServiceDeskTickets contract).
+            // The problem raised in Ticketing (through Core's ProblemTickets contract).
             $table->uuid('ticket_id')->nullable();
             $table->string('ticket_number', 32)->nullable();
             $table->foreignUuid('created_by')->nullable()->constrained('users')->nullOnDelete();

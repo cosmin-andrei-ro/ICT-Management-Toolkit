@@ -21,7 +21,7 @@ Every part of the template is built in the toolkit; the notes say where the tool
 
 - **1.1 Application Description** — two or three sentences: what it does, who uses it, which business process it supports.
 - **1.2 Support & Escalation** — internal teams first, then the vendor.
-  - **1.2.1 Internal Support** — a contact per team: Business Owner Team, Service Desk (L1), Application Support (L2/L3), Technical Business Analysts Team, Development Team, Architecture Team, Robotic Process Automation (RPA) Team, Infrastructure Team, Network Team, Database Team, Identity & Access Management (IAM) Team, Security Operations (SOC) Team, Security Governance, Risk & Compliance (GRC) Team, Audit Team, Legal Team.
+  - **1.2.1 Internal Support** — a contact per team: Business Owner Team, IT Support (L1), Application Support (L2/L3), Technical Business Analysts Team, Development Team, Architecture Team, Robotic Process Automation (RPA) Team, Infrastructure Team, Network Team, Database Team, Identity & Access Management (IAM) Team, Security Operations (SOC) Team, Security Governance, Risk & Compliance (GRC) Team, Audit Team, Legal Team.
   - **1.2.2 Vendor Support** — Vendor Company, Contract Number, Support Portal, Support Email (vendor and contract from Core's suppliers and contracts).
 - **1.3 Service Classification** — Application Status*, Business Criticality*, Exposure (☐ Internal ☐ Internet-facing ☐ External 3rd Party), Application Cartography Profile*.
 - **1.4 Environments** — table: Environment*, URL, Purpose, Access Notes. Every environment, including Production and Test.

@@ -60,7 +60,7 @@ return new class extends Migration
             $table->foreignUuid('organization_id')->constrained('core_organizations')->cascadeOnDelete();
             $table->text('root_cause')->nullable();
             $table->text('workaround')->nullable();
-            // Set when the root cause and a workaround are documented (ITIL "known error").
+            // Set when the root cause and a workaround are documented (a "known error").
             $table->timestampTz('known_error_at')->nullable();
             $table->timestampsTz();
         });

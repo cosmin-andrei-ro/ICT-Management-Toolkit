@@ -48,7 +48,7 @@ return new class extends Migration
             $table->date('due_on')->nullable();
             $table->string('status', 16)->default('planned');
             $table->timestampTz('completed_at')->nullable();
-            // The problem raised in the service desk (through Core's ServiceDeskTickets contract).
+            // The problem raised in Ticketing (through Core's ProblemTickets contract).
             $table->uuid('ticket_id')->nullable();
             $table->string('ticket_number', 32)->nullable();
             $table->foreignUuid('created_by')->nullable()->constrained('users')->nullOnDelete();

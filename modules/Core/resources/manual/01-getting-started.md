@@ -3,14 +3,14 @@ title: Getting started
 audience: everyone
 ---
 
-ICT Management Toolkit brings your organization's IT information together in one place. Today it covers the **service desk**: you report problems and request services, and the IT team tracks, prioritizes and resolves them.
+ICT Management Toolkit brings your organization's IT information together in one place. Today it covers **tickets**: you report problems and request services, and the IT team tracks, prioritizes and resolves them.
 
 ## Signing in
 
 Open the application and enter your credentials on the sign-in page.
 
 - **Company (Active Directory) account:** use your usual Windows username, for example `jdoe`, `CORP\jdoe` or `jdoe@corp.example`, and your Windows password. Your account is created automatically the first time you sign in, as long as IT has given your group access.
-- **Company single sign-on:** when your organization connected its identity provider (Microsoft, Google, Okta, Keycloak…), click **Sign in with** and its name, under the sign-in form, and sign in there as you do for your other company applications. If the page asks for your work email instead, enter it and click **Continue with single sign-on**. Your account is created the first time.
+- **Company single sign-on:** when your organization connected its identity provider, click **Sign in with** and its name, under the sign-in form, and sign in there as you do for your other company applications. If the page asks for your work email instead, enter it and click **Continue with single sign-on**. Your account is created the first time.
 - **Local account:** use your email address and your password. You choose it yourself, from the invitation email you receive when your account is created.
 
 You cannot use your Windows password on a local account, or a local password on an Active Directory account. Each account has exactly one way of signing in.
@@ -42,7 +42,7 @@ The menu at the top shows only what you are allowed to use. Entries marked **▾
 | **My tickets** | everyone | Report a problem and follow your requests. |
 | **My equipment** | people who have IT equipment or software | The devices IT handed to you, and your software. |
 | **My processes** | owners of business processes | The processes you own and their impact analysis. |
-| **Service desk ▾** | IT staff | Work on tickets (**Service desk**), find documented workarounds (**Known errors**), plan changes (**Change calendar**), approve them (**Approvals**, CAB members) and see **Reports** (team leads). |
+| **Ticketing ▾** | IT staff | Work on tickets (**All tickets**), find documented workarounds (**Known errors**), plan changes (**Change calendar**), approve them (**Approvals**, CAB members) and see **Reports** (team leads). |
 | **Configuration & assets ▾** | IT staff | What IT runs and how it depends on each other (**CMDB**), the equipment register (**Assets**), software **Licences** and the **Application portfolio** with each application's technical documentation. |
 | **My applications** | owners of applications | The applications whose documentation you keep up to date. |
 | **My risks** | owners of risks | The risks you assess. |

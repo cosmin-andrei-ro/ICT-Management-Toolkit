@@ -44,7 +44,7 @@ This first step covers projects, phases, team and tasks.
 
 - **Phases defined per project or per template:** flexible, but gates and reports are easier to read when every project has the same four. Names can be extended later.
 - **Drag-and-drop with a JavaScript library:** nicer to use, but it adds a dependency and needs CSP work. Buttons move cards and stay accessible.
-- **Tasks as service desk tickets:** the desk is for operations; project work has its own lifecycle and audience.
+- **Tasks as tickets:** the desk is for operations; project work has its own lifecycle and audience.
 
 ## Consequences
 

@@ -5,7 +5,7 @@
 
 ## Context
 
-Monitoring tools (Zabbix, Nagios, Prometheus) detect most infrastructure failures before users do. An agent should not have to copy the alert into a ticket. On 2026-11-03 the owner chose:
+Monitoring tools detect most infrastructure failures before users do. An agent should not have to copy the alert into a ticket. On 2026-11-03 the owner chose:
 
 - **Item:** match the CMDB item by identifier, then by exact name (the host name the tool already knows). Optionally the tool can send the item's id.
 - **Recovery:** when the alert clears, the incident is resolved automatically, but only if nobody has started work on it. Otherwise an internal note is added and the agent decides.
@@ -43,7 +43,7 @@ Monitoring tools (Zabbix, Nagios, Prometheus) detect most infrastructure failure
 
 - **A new incident for every alert:** rejected. A flapping check would flood the queue.
 - **Never resolving automatically:** rejected by the owner. Most alerts that clear by themselves need no work. When someone is working on the incident, the agent still decides.
-- **Adapters for every tool:** only Alertmanager has a fixed payload. Zabbix, Nagios and others build their webhook body from templates, so they can send the own format.
+- **Adapters for every tool:** only Alertmanager has a fixed payload. Other tools build their webhook body from templates, so they can send the own format.
 
 ## Consequences
 

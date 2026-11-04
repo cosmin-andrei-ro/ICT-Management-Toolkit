@@ -154,7 +154,7 @@ final class BcmDemoSeeder extends Seeder
 
         $this->content->addMember($version, ['role' => 'Crisis lead', 'user_id' => $owner->id, 'responsibilities' => 'Declares the crisis and decides.'], $owner);
         $this->content->addMember($version, ['role' => 'IT recovery', 'user_id' => $company->user('agent2')->id, 'is_deputy' => false, 'responsibilities' => 'Runs the technical recovery.'], $owner);
-        $this->content->addMember($version, ['role' => 'Supplier contact', 'contact_name' => 'Northwind Hardware support', 'contact_phone' => '+40 21 000 0001', 'responsibilities' => 'Hardware replacement within 4 hours.'], $owner);
+        $this->content->addMember($version, ['role' => 'Supplier contact', 'contact_name' => 'Demo Hardware support', 'contact_phone' => '+40 21 000 0001', 'responsibilities' => 'Hardware replacement within 4 hours.'], $owner);
 
         foreach ($steps as [$phase, $action, $minutes, $item]) {
             $this->content->saveStep($version, null, ['phase' => $phase, 'action' => $action, 'responsible_user_id' => $company->user('agent2')->id, 'estimated_minutes' => $minutes, 'configuration_item_id' => $item !== null ? $company->ref('cmdb.'.$item) : null], $owner);

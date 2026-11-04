@@ -23,7 +23,7 @@ use Modules\Ticketing\Domain\Models\Queue;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * A service desk ready to use: an organization with a team and default queue,
+ * An IT support setup ready to use: an organization with a team and default queue,
  * an agent in that team, a team lead and a requester. The context is set.
  */
 final class TicketingScenario
@@ -52,7 +52,7 @@ final class TicketingScenario
         $scenario->lead = $scenario->member(DefaultRole::TeamLead);
         $scenario->requester = $scenario->member(DefaultRole::Requester);
 
-        $scenario->team = Team::factory()->create(['name' => 'Service Desk']);
+        $scenario->team = Team::factory()->create(['name' => 'IT Support']);
         app(SyncTeamMembers::class)->handle($scenario->team, [$scenario->agent->id, $scenario->lead->id]);
         $scenario->queue = Queue::factory()->default()->create(['team_id' => $scenario->team->id, 'name' => 'First line']);
 

@@ -18,7 +18,7 @@ Since ADR 0005, every change to a business record and every security event (sign
   - Filters: event, person, record type and dates.
 - **Organization scoping:** the log has no global scope (ADR 0005). `AuditLogQuery` returns the entries of the organization, plus organization-less entries (sign-ins, changes to people) whose actor or subject is one of its members. Failed sign-ins for unknown accounts belong to no organization and are shown to administrators only.
 - **Presentation:** `AuditChanges` turns an entry into rows (field label, before, after). The ids of people are shown as names; other references stay as short ids, because the log keeps what was stored, not what it pointed to.
-- **Export:** `core.audit_log` exports what the filters show to Excel, one row per changed field with IP address and request id. It is queued and audited like every export (ADR 0016), and capped at 50,000 entries.
+- **Export:** `core.audit_log` exports what the filters show to XLSX, one row per changed field with IP address and request id. It is queued and audited like every export (ADR 0016), and capped at 50,000 entries.
 
 ## Alternatives
 

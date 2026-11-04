@@ -24,7 +24,7 @@ Hardware assets (who has them, where they are, their warranty and how they left 
 - `/assets/labels`: printable QR labels for the assets the list shows.
 - `/assets/handovers/{assignment}`: printable handover (and return) protocol, for the holder and IT staff.
 - `/my-equipment`: the signed-in person's equipment, with **I received it** to confirm a hand-out (menu entry shown only to people who have some).
-- The asset list exports the register to Excel or CSV, with the import's columns.
+- The asset list exports the register to XLSX or CSV, with the import's columns.
 - `/licenses`: licences grouped by product with seats bought and used, over-used products flagged; `/licenses/new`, `/licenses/{id}` (seats, key on request, documents), `/licenses/{id}/edit`. Import and export as for assets.
 - Administration → Asset management → Software products.
 - Administration → Asset management → Asset categories.

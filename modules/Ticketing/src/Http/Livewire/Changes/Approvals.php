@@ -19,7 +19,7 @@ use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
  * CAB/ECAB inbox: changes waiting for this person's decision. Usable by board
- * members who do not work in the service desk.
+ * members who do not work in Ticketing.
  */
 #[Layout('core::components.layouts.app')]
 final class Approvals extends Component

@@ -92,13 +92,13 @@ services:
                 aliases:
                     - dc1.corp.example
     # Optional mail server for development (SMTP 3025, IMAP 3143): COMPOSE_PROFILES=mail ./vendor/bin/sail up -d
-    # Test mailbox helpdesk@corp.example; see docs/development/email-to-ticket.md.
+    # Test mailbox support@corp.example; see docs/development/email-to-ticket.md.
     greenmail:
         image: 'greenmail/standalone:2.1.14'
         profiles:
             - mail
         environment:
-            GREENMAIL_OPTS: '-Dgreenmail.setup.test.smtp -Dgreenmail.setup.test.imap -Dgreenmail.hostname=0.0.0.0 -Dgreenmail.users=helpdesk:helpdesk-dev-only@corp.example -Dgreenmail.users.login=email -Dgreenmail.verbose'
+            GREENMAIL_OPTS: '-Dgreenmail.setup.test.smtp -Dgreenmail.setup.test.imap -Dgreenmail.hostname=0.0.0.0 -Dgreenmail.users=support:support-dev-only@corp.example -Dgreenmail.users.login=email -Dgreenmail.verbose'
         networks:
             - sail
     # Optional PDF service (ADR 0030): COMPOSE_PROFILES=pdf ./vendor/bin/sail up -d, then GOTENBERG_URL=http://gotenberg:3000.

@@ -44,7 +44,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('organization_id');
             $table->uuid('provider_id');
-            // The group as the provider sends it (an Entra object id, a Keycloak group path…).
+            // The group as the provider sends it (a group id or path…).
             $table->string('group', 500);
             $table->foreignUuid('role_id')->constrained('core_roles')->cascadeOnDelete();
             $table->timestampsTz();

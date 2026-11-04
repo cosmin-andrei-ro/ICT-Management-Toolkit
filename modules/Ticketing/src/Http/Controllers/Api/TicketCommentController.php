@@ -18,7 +18,7 @@ use Modules\Ticketing\Http\Resources\CommentResource;
 final readonly class TicketCommentController
 {
     /**
-     * Add a comment. Internal notes require service desk permissions.
+     * Add a comment. Internal notes require ticketing permissions.
      */
     public function store(StoreTicketCommentRequest $request, Ticket $ticket, AddTicketComment $addComment): JsonResponse
     {

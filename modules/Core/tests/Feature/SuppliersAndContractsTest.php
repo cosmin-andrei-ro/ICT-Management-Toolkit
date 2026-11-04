@@ -34,14 +34,14 @@ beforeEach(function (): void {
 describe('suppliers', function (): void {
     it('are created and edited by asset managers, with unique names regardless of case', function (): void {
         Livewire::test(SupplierForm::class)
-            ->set('name', 'acme support')->call('save')->assertHasErrors(['name'])
-            ->set('name', 'Contoso')->set('supportEmail', 'not-an-email')->set('website', 'javascript:alert(1)')->call('save')
+            ->set('name', 'sample support')->call('save')->assertHasErrors(['name'])
+            ->set('name', 'Fabrica')->set('supportEmail', 'not-an-email')->set('website', 'javascript:alert(1)')->call('save')
             ->assertHasErrors(['supportEmail', 'website'])
-            ->set('supportEmail', 'help@contoso.example')->set('website', 'https://contoso.example')->set('supportPhone', '+40 21 000 0000')
+            ->set('supportEmail', 'help@fabrica.example')->set('website', 'https://fabrica.example')->set('supportPhone', '+40 21 000 0000')
             ->call('save')->assertHasNoErrors();
 
-        $supplier = Supplier::query()->where('name', 'Contoso')->sole();
-        expect($supplier->support_email)->toBe('help@contoso.example')
+        $supplier = Supplier::query()->where('name', 'Fabrica')->sole();
+        expect($supplier->support_email)->toBe('help@fabrica.example')
             ->and(AuditLog::query()->where('event', AuditEvent::Created)->where('auditable_id', $supplier->id)->exists())->toBeTrue();
 
         Livewire::test(SupplierForm::class, ['supplier' => $supplier])->set('isActive', false)->call('save')->assertHasNoErrors();
@@ -50,7 +50,7 @@ describe('suppliers', function (): void {
 
     it('are seen by agents, who cannot change them; requesters do not see them', function (): void {
         $this->actingAs($this->scenario->agent);
-        $this->get(route('core.suppliers.index'))->assertOk()->assertSee('Acme Support');
+        $this->get(route('core.suppliers.index'))->assertOk()->assertSee('Sample Support');
         $this->get(route('core.suppliers.show', $this->scenario->supplier))->assertOk();
         $this->get(route('core.suppliers.create'))->assertForbidden();
         $this->get(route('core.suppliers.edit', $this->scenario->supplier))->assertForbidden();
@@ -62,14 +62,14 @@ describe('suppliers', function (): void {
     it('stay inside their organization', function (): void {
         $theirs = app(OrganizationContext::class)->runAs(Organization::factory()->create(), fn () => Supplier::factory()->create(['name' => 'Their Vendor']));
 
-        Livewire::test(SupplierIndex::class)->assertSee('Acme Support')->assertDontSee('Their Vendor');
+        Livewire::test(SupplierIndex::class)->assertSee('Sample Support')->assertDontSee('Their Vendor');
         $this->get(route('core.suppliers.show', $theirs))->assertNotFound();
     });
 
     it('keep contacts, added, edited and removed on the supplier page', function (): void {
         $page = Livewire::test(ShowSupplier::class, ['supplier' => $this->scenario->supplier])
             ->call('startContact')
-            ->set('contactName', 'Ana Pop')->set('contactRole', 'Account manager')->set('contactEmail', 'ana@acme.example')
+            ->set('contactName', 'Ana Pop')->set('contactRole', 'Account manager')->set('contactEmail', 'ana@sample.example')
             ->call('saveContact')->assertHasNoErrors()
             ->assertSee('Ana Pop')->assertSee('Account manager');
 

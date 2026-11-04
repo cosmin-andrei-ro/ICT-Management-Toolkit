@@ -51,11 +51,11 @@ Cycles (A needs B, B needs A) are handled, and the analysis stops after 10 steps
 
 ## Tickets
 
-On a ticket in the service desk, **Configuration items** links the affected items: type a name or an identifier and click the item. The panel then shows what their failure affects. This is how an incident on a server shows the services it takes down, and how a change shows the CAB what it touches. Each item's page lists its tickets.
+On a ticket, **Configuration items** links the affected items: type a name or an identifier and click the item. The panel then shows what their failure affects. This is how an incident on a server shows the services it takes down, and how a change shows the CAB what it touches. Each item's page lists its tickets.
 
 ## Importing
 
-**Import** fills the CMDB from a CSV or Excel file. Choose what the file contains:
+**Import** fills the CMDB from a CSV or XLSX file. Choose what the file contains:
 
 - **Items**, one row per item. The first row holds the column names: `type`, `name`, `identifier`, `status`, `environment`, `criticality`, `owner` (an email), `team` (a team name), `description`, and the keys of the type's attributes (the import page lists them). A row whose identifier exists updates that item, and an empty cell keeps its current value; the other rows create items.
 - **Relationships**, with the columns `source`, `relationship` and `target`: the identifiers of two existing items and the relationship (for example `runs on`).

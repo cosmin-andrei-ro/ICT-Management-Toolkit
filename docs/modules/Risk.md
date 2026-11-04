@@ -9,7 +9,7 @@ The risk register and the organization's scoring method. Code: `modules/Risk/`. 
 - **Risk** (`risk_risks`): reference R-0001 per organization, scenario title and description, category, owner, status (open / closed), inherent likelihood and impact, controls in place, next review. Threats and vulnerabilities in `risk_risk_catalog`; what it concerns in `risk_risk_assets` (application, CMDB item, business process, supplier — by id, checked through Core contracts `Applications`, `ConfigurationItems`, `BusinessProcesses` or Core's suppliers).
 
 - **Treatment** (on the risk): option (mitigate, transfer, avoid, accept), plan, residual likelihood and impact; `assessed_at`.
-- **Actions** (`risk_actions`): title, owner, due date, status; optionally a problem in the service desk (ticket id and number).
+- **Actions** (`risk_actions`): title, owner, due date, status; optionally a problem in Ticketing (ticket id and number).
 - **Acceptances** (`risk_acceptances`): residual score accepted, justification, pending / approved / rejected / withdrawn / lapsed, requester and decider, valid until; `risk_risks.accepted_until` while valid.
 - **Score history** (`risk_score_history`): inherent and residual scores at each change.
 
@@ -22,7 +22,7 @@ The risk register and the organization's scoring method. Code: `modules/Risk/`. 
 - `/risks/{id}`: what it concerns, threats and vulnerabilities, controls, inherent score with the meaning of each level; treatment and residual risk; actions; acceptance (ask, approve, reject); score history.
 - `/risks/suggestions`: suggested risks by status and source; register one as a prefilled risk or dismiss it; **Check now** (risk managers).
 - `/risks/report` (and `/risks/report/pdf` through Gotenberg, throttled and audited): method, heat maps before and after treatment, risks by level, every open risk with its treatment and actions.
-- Register → **Export to Excel** (`risk.register`): risks with inherent and residual scores, treatment, acceptance; actions; acceptances.
+- Register → **Export to spreadsheet** (`risk.register`): risks with inherent and residual scores, treatment, acceptance; actions; acceptances.
 - Application pages list their open risks through Core's `Risks` contract (implemented here), for viewers who may read the register.
 - `/risks/mine`: risks the signed-in person owns, for owners without `risk.risk.view`.
 - Administration → Risk → Risk method; Threats and vulnerabilities.
@@ -47,9 +47,9 @@ A risk's owner assesses it without a permission.
 ## Plan
 
 1. Register, method, catalog, heat map — **done**.
-2. Treatment: options, actions (optionally service desk tickets), residual risk, acceptance with risk manager approval above the threshold, score history, reassessment reminders — **done**.
+2. Treatment: options, actions (optionally tickets), residual risk, acceptance with risk manager approval above the threshold, score history, reassessment reminders — **done**.
 3. Suggestions from the other modules (applications, continuity, operations, suppliers, and later compliance), including initial risks when an application's documentation is approved — **done**.
-4. Reporting: inherent vs residual heat maps, risks on application pages, Excel register, PDF report, weekly digest — **done**.
+4. Reporting: inherent vs residual heat maps, risks on application pages, XLSX register, PDF report, weekly digest — **done**.
 
 ## API (ADR 0063)
 

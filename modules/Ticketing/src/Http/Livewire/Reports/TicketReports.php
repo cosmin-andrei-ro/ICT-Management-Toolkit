@@ -23,7 +23,7 @@ use Modules\Ticketing\Application\Reports\TicketExport;
 use Modules\Ticketing\Application\Reports\TicketReport;
 
 /**
- * Service desk indicators for a period, and exports of the period's tickets.
+ * Ticketing indicators for a period, and exports of the period's tickets.
  */
 #[Layout('core::components.layouts.app')]
 final class TicketReports extends Component

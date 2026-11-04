@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 return [
 
-    // Plain HTTP identity providers, for a development Keycloak only. Never in production.
+    // Plain HTTP identity providers, for a development identity provider only. Never in production.
     'allow_http' => (bool) env('SSO_ALLOW_HTTP', false),
 
 ];

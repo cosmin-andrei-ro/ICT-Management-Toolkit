@@ -1,9 +1,9 @@
 ---
-title: Working in the service desk
+title: Working in Ticketing
 audience: agents
 ---
 
-The **Service desk** page is the agent's working list. It shows every ticket of your organization; open tickets come first, most urgent first.
+The **All tickets** page is the agent's working list. It shows every ticket of your organization; open tickets come first, most urgent first.
 
 ## Finding tickets
 

@@ -3,11 +3,11 @@ title: Approving changes (CAB and ECAB)
 audience: everyone
 ---
 
-If you sit on a **change advisory board** (CAB) or on the **emergency CAB** (ECAB), you authorize changes to IT systems before they are made. You do not need to work in the service desk to do this.
+If you sit on a **change advisory board** (CAB) or on the **emergency CAB** (ECAB), you authorize changes to IT systems before they are made. You do not need to work in Ticketing to do this.
 
 ## What waits for you
 
-You get an email when a change is submitted to your board. **Service desk → Approvals** in the menu lists every change waiting for your decision, earliest window first.
+You get an email when a change is submitted to your board. **Ticketing → Approvals** in the menu lists every change waiting for your decision, earliest window first.
 
 Open a change to see:
 

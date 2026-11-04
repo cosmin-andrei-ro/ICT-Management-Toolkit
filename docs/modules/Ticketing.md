@@ -1,6 +1,6 @@
 # Ticketing module
 
-Service desk following ITIL 4. Code: `modules/Ticketing/`. Data model: [ADR 0008](../adr/0008-ticketing-data-model.md).
+Ticket handling following common IT service management practice. Code: `modules/Ticketing/`. Data model: [ADR 0008](../adr/0008-ticketing-data-model.md).
 
 ## Concepts
 
@@ -61,7 +61,7 @@ Support mailboxes are read over IMAP every minute ([ADR 0015](../adr/0015-email-
 ## Service catalog
 
 - **Portal** (`/catalog`): people pick a service (new laptop, VPN access, …), answer its form and send a **service request**. Title, queue, category, impact and urgency come from the service. If the service's queue was deactivated, the request goes to the default queue.
-- **Forms** are built per service in Administration → Service desk → Service catalog, with short text, long text, number, date, choice and checkbox fields ([ADR 0011](../adr/0011-form-schemas.md)).
+- **Forms** are built per service in Administration → Ticketing → Service catalog, with short text, long text, number, date, choice and checkbox fields ([ADR 0011](../adr/0011-form-schemas.md)).
 - Answers are stored with the ticket together with the field labels of that moment, so editing a form never changes past requests. They are shown on the ticket in the portal, the desk and the API (`service_answers`).
 - Approval workflows for services are not implemented yet.
 
@@ -76,7 +76,7 @@ Each ticket gets two clocks, **first response** and **resolution**, counted in w
 | Medium | 4 h | 3 working days |
 | Low | 8 h | 5 working days |
 
-- Defaults can be changed per organization in Administration → Service desk → SLA targets.
+- Defaults can be changed per organization in Administration → Ticketing → SLA targets.
 - Clocks pause while a ticket is pending (waiting for the requester), and restart when it is reopened.
 - At 75 % of a target the assignee and the team lead are warned; at the due time the breach is recorded and they are notified again. If nobody owns the ticket, the whole queue team is notified.
 - The desk shows the current deadline in the list, can filter tickets at risk, and shows both clocks on the ticket page.
@@ -85,9 +85,9 @@ Each ticket gets two clocks, **first response** and **resolution**, counted in w
 ## Screens
 
 - **Self-service portal** (`/tickets`): my tickets, new ticket with attachments and knowledge articles suggested from its title, ticket page with the public conversation and the articles linked to it, reply, confirm or reopen a resolution, withdraw a new ticket.
-- **Service desk** (`/desk`): every ticket of the organization, most urgent first, filtered by status, queue, assignee and full-text search. The ticket page adds the knowledge base (articles linked to the ticket and suggested from its title, through Core's `KnowledgeArticles`), internal notes, assignment (limited to members of the queue's team), working states, resolution and triage.
+- **All tickets** (`/desk`): every ticket of the organization, most urgent first, filtered by status, queue, assignee and full-text search. The ticket page adds the knowledge base (articles linked to the ticket and suggested from its title, through Core's `KnowledgeArticles`), internal notes, assignment (limited to members of the queue's team), working states, resolution and triage.
 - **Change calendar** (`/desk/changes`), **new change** (`/desk/changes/new`) and **approvals** (`/approvals`) for board members.
-- **Administration** (`/admin`, Service desk group): categories, queues, priority matrix, SLA targets, service catalog, CAB boards, standard changes. Teams are under Access.
+- **Administration** (`/admin`, Ticketing group): categories, queues, priority matrix, SLA targets, service catalog, CAB boards, standard changes. Teams are under Access.
 - **Email notifications** (queued): ticket received, assigned to you, resolved, new reply, SLA warnings; change waiting for your approval, change authorized or rejected. They contain the number, title and a link, never the comment text. Nobody is notified about their own action, and internal notes never reach requesters.
 
 ## API

@@ -58,7 +58,7 @@
                                     <button type="button" wire:click="setActionStatus('{{ $action->id }}', '{{ $option->value }}')" wire:key="action-{{ $action->id }}-{{ $option->value }}" class="rounded-md bg-white px-2 py-1 font-semibold ring-1 ring-gray-300">{{ $option->label() }}</button>
                                 @endif
                             @endforeach
-                            @if ($serviceDesk && ! $action->ticket_id)
+                            @if ($ticketingAvailable && ! $action->ticket_id)
                                 <button type="button" wire:click="raiseTicket('{{ $action->id }}')" class="rounded-md bg-white px-2 py-1 font-semibold ring-1 ring-gray-300">{{ __('audit::audits.findings.raise_ticket') }}</button>
                             @endif
                         </div>

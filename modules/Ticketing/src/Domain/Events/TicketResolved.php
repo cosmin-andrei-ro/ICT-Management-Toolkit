@@ -13,7 +13,7 @@ use Modules\Core\Domain\Models\User;
 use Modules\Ticketing\Domain\Models\Ticket;
 
 /**
- * The service desk considers the ticket solved; the requester may reopen it. Dispatched after the transaction commits.
+ * IT support considers the ticket solved; the requester may reopen it. Dispatched after the transaction commits.
  */
 final readonly class TicketResolved implements ShouldDispatchAfterCommit
 {

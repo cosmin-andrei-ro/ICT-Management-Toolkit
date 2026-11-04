@@ -32,7 +32,7 @@ function csvUpload(string $content, string $name = 'items.csv'): UploadedFile
 
 it('previews without saving, then imports every row', function (): void {
     $csv = "type;name;identifier;criticality;owner;operating_system;memory_gb\n"
-        ."server;srv-db-01;SRV-DB-01;Critical;{$this->cmdb->lead->email};Debian 13;64\n"
+        ."server;srv-db-01;SRV-DB-01;Critical;{$this->cmdb->lead->email};Linux 13;64\n"
         ."Server;srv-app-01;SRV-APP-01;;;Windows Server 2025;\n";
 
     $page = Livewire::test(ImportPage::class)
@@ -49,11 +49,11 @@ it('previews without saving, then imports every row', function (): void {
     $db = ConfigurationItem::query()->where('identifier', 'SRV-DB-01')->sole();
     expect($db->criticality->value)->toBe('critical')
         ->and($db->owner_id)->toBe($this->cmdb->lead->id)
-        ->and($db->properties)->toEqual(['operating_system' => 'Debian 13', 'memory_gb' => 64]);
+        ->and($db->properties)->toEqual(['operating_system' => 'Linux 13', 'memory_gb' => 64]);
 });
 
 it('updates items by identifier and keeps values for empty cells', function (): void {
-    $existing = ConfigurationItem::factory()->create(['type_id' => $this->server->id, 'name' => 'old', 'identifier' => 'SRV-01', 'properties' => ['operating_system' => 'Debian 12', 'memory_gb' => 16]]);
+    $existing = ConfigurationItem::factory()->create(['type_id' => $this->server->id, 'name' => 'old', 'identifier' => 'SRV-01', 'properties' => ['operating_system' => 'Linux 12', 'memory_gb' => 16]]);
 
     Livewire::test(ImportPage::class)
         ->set('file', csvUpload("identifier,name,memory_gb\nsrv-01,srv-01,32\n"))
@@ -62,12 +62,12 @@ it('updates items by identifier and keeps values for empty cells', function (): 
         ->call('import');
 
     expect($existing->fresh()->name)->toBe('srv-01')
-        ->and($existing->fresh()->properties)->toEqual(['operating_system' => 'Debian 12', 'memory_gb' => 32]);
+        ->and($existing->fresh()->properties)->toEqual(['operating_system' => 'Linux 12', 'memory_gb' => 32]);
 });
 
 it('imports nothing while any row has an error, and says why', function (): void {
     $csv = "type;name;identifier;status;operating_system\n"
-        ."server;good;GOOD-1;;Debian\n"
+        ."server;good;GOOD-1;;Linux\n"
         ."printer;bad-type;BAD-1;;x\n"
         ."server;no-os;BAD-2;;\n"
         ."server;bad-status;BAD-3;broken;x\n"
@@ -83,7 +83,7 @@ it('imports nothing while any row has an error, and says why', function (): void
     expect(ConfigurationItem::query()->count())->toBe(0);
 });
 
-it('reads Excel files', function (): void {
+it('reads XLSX files', function (): void {
     $path = tempnam(sys_get_temp_dir(), 'xlsx').'.xlsx';
     $writer = new Writer;
     $writer->openToFile($path);

@@ -42,19 +42,19 @@ beforeEach(function (): void {
 
     $this->desk = TicketingScenario::create();
     $this->mailbox = Mailbox::factory()->create([
-        'address' => 'helpdesk@corp.example', 'host' => 'greenmail', 'port' => 3143, 'encryption' => 'none',
-        'username' => 'helpdesk@corp.example', 'password' => 'helpdesk-dev-only',
+        'address' => 'support@corp.example', 'host' => 'greenmail', 'port' => 3143, 'encryption' => 'none',
+        'username' => 'support@corp.example', 'password' => 'support-dev-only',
     ]);
 });
 
-function sendToHelpdesk(string $from, string $subject, string $body): void
+function sendToSupport(string $from, string $subject, string $body): void
 {
-    Mail::raw($body, fn (Message $message) => $message->from($from)->to('helpdesk@corp.example')->subject($subject));
+    Mail::raw($body, fn (Message $message) => $message->from($from)->to('support@corp.example')->subject($subject));
 }
 
 it('reads a real message over IMAP and marks it as read', function (): void {
     $subject = 'Integration '.uniqid();
-    sendToHelpdesk($this->desk->requester->email, $subject, 'Monitor flickers.');
+    sendToSupport($this->desk->requester->email, $subject, 'Monitor flickers.');
 
     $seen = [];
     app(MailboxReader::class)->read($this->mailbox, 50, function (InboundMessage $message) use (&$seen): void {
@@ -75,7 +75,7 @@ it('reads a real message over IMAP and marks it as read', function (): void {
 it('turns a real message into a ticket', function (): void {
     Notification::fake();
     $subject = 'Ticket '.uniqid();
-    sendToHelpdesk($this->desk->requester->email, $subject, 'Keyboard missing keys.');
+    sendToSupport($this->desk->requester->email, $subject, 'Keyboard missing keys.');
 
     FetchMailbox::dispatchSync($this->mailbox->id);
 
@@ -92,11 +92,11 @@ it('reports a wrong password as an authentication failure', function (): void {
 });
 
 it('moves processed messages to the configured folder', function (): void {
-    $imap = new DirectoryTree\ImapEngine\Mailbox(['host' => 'greenmail', 'port' => 3143, 'encryption' => '', 'username' => 'helpdesk@corp.example', 'password' => 'helpdesk-dev-only']);
+    $imap = new DirectoryTree\ImapEngine\Mailbox(['host' => 'greenmail', 'port' => 3143, 'encryption' => '', 'username' => 'support@corp.example', 'password' => 'support-dev-only']);
     $imap->folders()->firstOrCreate('Processed');
     $this->mailbox->forceFill(['processed_folder' => 'Processed'])->save();
     $subject = 'Moved '.uniqid();
-    sendToHelpdesk($this->desk->requester->email, $subject, 'Move me.');
+    sendToSupport($this->desk->requester->email, $subject, 'Move me.');
 
     app(MailboxReader::class)->read($this->mailbox, 50, fn () => null);
 

@@ -14,7 +14,7 @@ use Modules\Ticketing\Domain\Enums\Urgency;
 
 /**
  * Priority from impact × urgency. Organizations may override single cells
- * (ticketing_priority_matrix); the rest falls back to the ITIL default below.
+ * (ticketing_priority_matrix); the rest falls back to the default below.
  */
 final readonly class PriorityMatrix
 {

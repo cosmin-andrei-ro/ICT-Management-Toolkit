@@ -17,7 +17,7 @@ use Modules\Bcm\Domain\Models\ExerciseItem;
 use Modules\Bcm\Domain\Models\ExerciseStep;
 use Modules\Core\Application\Pdf\PdfDownload;
 use Modules\Core\Domain\Links\ConfigurationItems;
-use Modules\Core\Domain\Links\ServiceDeskTickets;
+use Modules\Core\Domain\Links\ProblemTickets;
 use Modules\Core\Domain\Models\Organization;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
@@ -34,7 +34,7 @@ final readonly class ExerciseReportController
     public function __construct(
         private Gate $gate,
         private ConfigurationItems $items,
-        private ServiceDeskTickets $tickets,
+        private ProblemTickets $tickets,
         private OrganizationContext $context,
         private PdfDownload $pdf,
     ) {}

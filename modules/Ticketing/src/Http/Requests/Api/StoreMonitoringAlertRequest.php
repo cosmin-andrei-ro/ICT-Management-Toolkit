@@ -12,7 +12,7 @@ use Illuminate\Validation\Rule;
 use Modules\Ticketing\Application\Monitoring\AlertSignal;
 
 /**
- * An alert in the toolkit's own format, which Zabbix, Nagios and others send
+ * An alert in the toolkit's own format, which most monitoring tools can send
  * through their webhook templates (ADR 0067).
  */
 final class StoreMonitoringAlertRequest extends FormRequest

@@ -6,7 +6,7 @@
 declare(strict_types=1);
 
 return [
-    'source' => 'Service desk',
+    'source' => 'Ticketing',
     'recurring' => [
         'title' => 'Recurring failures of :item',
         'description' => ':count incidents concerned :item in the last :days days: an underlying cause may not be fixed.',

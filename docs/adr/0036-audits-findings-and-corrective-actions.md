@@ -20,7 +20,7 @@ ISO/IEC 27001 asks for internal audits at planned intervals (9.2) and for noncon
   - raised in an audit, or from a control test that was not fully effective (prefilled with the control, its owner and a severity following the result);
   - severity: major or minor nonconformity, observation, opportunity for improvement;
   - the control and the requirement concerned, an owner and a due date.
-- **Corrective actions** (`audit_finding_actions`): title, owner, due date, status; optionally raised as a problem in the service desk through Core's `ServiceDeskTickets`, as risk treatment actions are.
+- **Corrective actions** (`audit_finding_actions`): title, owner, due date, status; optionally raised as a problem in Ticketing through Core's `ProblemTickets`, as risk treatment actions are.
 - **Closure (ISO/IEC 27001 10.2):**
   1. The finding's owner records the root cause. For a nonconformity, the root cause and at least one corrective action are required.
   2. Every action is done or cancelled.
