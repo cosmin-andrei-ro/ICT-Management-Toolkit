@@ -55,6 +55,10 @@ From the demo described below, with made-up data. Click a picture to see it full
     <td width="50%"><a href="docs/screenshots/projects.png"><img src="docs/screenshots/projects.png" alt="Projects: phases, sponsor gates and status reports"></a><br><b>Projects</b><br>Phases, sponsor gates and status reports</td>
     <td width="50%"><a href="docs/screenshots/reporting.png"><img src="docs/screenshots/reporting.png" alt="Reporting: every indicator, now and over the last 90 days"></a><br><b>Reporting</b><br>Every indicator, now and over the last 90 days</td>
   </tr>
+  <tr>
+    <td width="50%"><a href="docs/screenshots/privileged-access.png"><img src="docs/screenshots/privileged-access.png" alt="Privileged access: a credential with an approval that is still valid"></a></td>
+    <td width="50%"></td>
+  </tr>
 </table>
 
 ## Security
