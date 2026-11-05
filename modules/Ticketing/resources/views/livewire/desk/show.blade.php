@@ -418,6 +418,8 @@
         @endcan
     </aside>
 
+    <x-core::record-custom-fields :record="$ticket" ability="work" />
+
     <x-core::record-tags :record="$ticket" ability="work" />
 
     <x-core::record-history :record="$ticket" :can-change="auth()->user()->can('work', $ticket)" />

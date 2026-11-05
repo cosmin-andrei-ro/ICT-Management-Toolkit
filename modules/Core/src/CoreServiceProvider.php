@@ -54,6 +54,8 @@ use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\Permission;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
 use Modules\Core\Domain\Authorization\Role;
+use Modules\Core\Domain\CustomFields\CustomFieldSchema;
+use Modules\Core\Domain\CustomFields\CustomFieldTypes;
 use Modules\Core\Domain\Directory\Directory;
 use Modules\Core\Domain\Directory\DirectoryGroupMapping;
 use Modules\Core\Domain\Exports\ExportRegistry;
@@ -146,6 +148,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->singleton(Navigation::class);
         $this->app->singleton(HomePanels::class);
         $this->app->singleton(Manual::class);
+        $this->app->singleton(CustomFieldTypes::class);
         // A short timeout: when the breach service does not answer, the password is accepted (fail open).
         // Extended, not bound: the validation provider is deferred and would replace a binding when it loads.
         $this->app->extend(UncompromisedVerifier::class, fn (UncompromisedVerifier $verifier, Application $app): NotPwnedVerifier => new NotPwnedVerifier($app->make(HttpFactory::class), config()->integer('core.authentication.breached_passwords_timeout')));
@@ -186,6 +189,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
         $this->app->bindIf(SoftwareLicences::class, NoSoftwareLicences::class);
         $this->app->bindIf(RackPlacements::class, NoRackPlacements::class);
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
+        $this->callAfterResolving(CustomFieldTypes::class, fn (CustomFieldTypes $types) => $types->register('core.supplier', 'core::suppliers.linked_kind'));
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
             $records->register('core.contract', ContractRecords::resolve(...));
             $records->registerSearch('core.contract', 'core::contracts.linked_kind', ContractRecords::search(...));
@@ -275,6 +279,7 @@ final class CoreServiceProvider extends ModuleServiceProvider
             'core.location' => Location::class,
             'core.supplier' => Supplier::class,
             'core.tag' => Tag::class,
+            'core.custom_field_schema' => CustomFieldSchema::class,
             'core.supplier_contact' => SupplierContact::class,
             'core.contract' => Contract::class,
             'core.security_settings' => SecuritySettings::class,
@@ -361,6 +366,8 @@ final class CoreServiceProvider extends ModuleServiceProvider
             // Tags: IT staff see them and put them on what they may change; administrators tidy the list.
             'core.tag.view',
             'core.tag.manage',
+            // Which extra fields each kind of record has: administrators only.
+            'core.custom_fields.manage',
         ]);
 
         $directory = ['core.user.view', 'core.department.view', 'core.team.view', 'core.tag.view'];

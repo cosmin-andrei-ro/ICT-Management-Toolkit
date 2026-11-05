@@ -28,6 +28,7 @@ use Modules\Applications\Infrastructure\Console\SendReviewRemindersCommand;
 use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\CustomFields\CustomFieldTypes;
 use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\Applications;
 use Modules\Core\Domain\Links\LinkedRecord;
@@ -59,6 +60,7 @@ final class ApplicationsServiceProvider extends ModuleServiceProvider
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(RiskSignals::class, fn (RiskSignals $signals) => $signals->register('applications', fn (): array => (new ApplicationRiskSignals)()));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(PortfolioExport::TYPE, PortfolioExport::class, 'applications.application.view'));
+        $this->callAfterResolving(CustomFieldTypes::class, fn (CustomFieldTypes $types) => $types->register('applications.application', 'applications::applications.linked_kind'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         // The CMDB item page lists the applications built on the item (5.2 Components); compliance evidence links to applications.
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {

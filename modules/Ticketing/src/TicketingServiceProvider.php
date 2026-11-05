@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Event;
 use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\CustomFields\CustomFieldTypes;
 use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Links\ProblemTickets;
@@ -106,6 +107,7 @@ final class TicketingServiceProvider extends ModuleServiceProvider
             $records->register('ticketing.ticket', TicketRecords::resolve(...));
             $records->registerSearch('ticketing.ticket', 'ticketing::tickets.linked_kind', TicketRecords::search(...));
         });
+        $this->callAfterResolving(CustomFieldTypes::class, fn (CustomFieldTypes $types) => $types->register('ticketing.ticket', 'ticketing::tickets.linked_kind'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
 
         ApiAbility::register('tickets:read', 'ticketing::api.abilities.read');

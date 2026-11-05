@@ -178,3 +178,7 @@ A strict CSP with a per-request nonce, plus the standard hardening headers on ev
 ## Tags
 
 A record uses `HasTags` and implements `Taggable`, and its page includes `<x-core::record-tags :record />` ([ADR 0072](../adr/0072-tags.md)). To tag another kind of record, also register a resolver in `LinkedRecords`, so the tag's page can list it.
+
+## Custom fields
+
+A record uses `HasCustomFields`, registers its kind in `CustomFieldTypes` and includes `<x-core::record-custom-fields :record />` ([ADR 0077](../adr/0077-custom-fields.md)). Schemas use `FormSchema`, as service forms do.

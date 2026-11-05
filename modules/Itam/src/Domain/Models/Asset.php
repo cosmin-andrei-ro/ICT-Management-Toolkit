@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\HasAttachments;
+use Modules\Core\Domain\Concerns\HasCustomFields;
 use Modules\Core\Domain\Concerns\HasTags;
 use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
@@ -85,6 +86,7 @@ final class Asset extends Model implements Taggable
     use Auditable;
     use BelongsToOrganization;
     use HasAttachments;
+    use HasCustomFields;
 
     /** @use HasFactory<AssetFactory> */
     use HasFactory;

@@ -134,3 +134,7 @@ Other systems (monitoring, scripts) use the REST API at `/api/v1` with a persona
 ## Audit trail
 
 Every change to configuration and tickets is recorded: who, when, which field, the old value and the new value. Sign-ins, failed sign-ins and role changes are recorded too. Nobody can edit or delete these records, not even administrators.
+
+## Custom fields
+
+**Administration → Custom fields** adds fields to a kind of record: pick the kind, then the fields, with a label, a type and whether they are required. They appear in a **More details** box on the record's page, for everyone who can open it, so do not ask for anything that not all of them should read, and avoid personal data: these fields are not part of the personal data export. A required field is checked when someone edits the box. Removing a field hides it, and its values stay, in case you add it back with the same key.

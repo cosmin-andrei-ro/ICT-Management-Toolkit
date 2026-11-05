@@ -86,7 +86,8 @@ final class RecordTags extends Component
         $class = Relation::getMorphedModel($this->type);
         abort_unless(is_string($class) && is_subclass_of($class, Taggable::class), 404);
         $record = $class::query()->findOrFail($this->recordId);
-        $this->authorize('view', $record);
+        // A custom role can work on a ticket without the right to read every ticket.
+        abort_unless(Gate::any(['view', $this->ability], $record), 403);
 
         return $record;
     }

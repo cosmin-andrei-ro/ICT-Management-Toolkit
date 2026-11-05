@@ -22,6 +22,7 @@ use Modules\Core\Application\Policies\SupplierPolicy;
 use Modules\Core\Database\Factories\SupplierFactory;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
+use Modules\Core\Domain\Concerns\HasCustomFields;
 use Modules\Core\Domain\Concerns\HasTags;
 use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
@@ -53,6 +54,7 @@ final class Supplier extends Model implements Taggable
 {
     use Auditable;
     use BelongsToOrganization;
+    use HasCustomFields;
 
     /** @use HasFactory<SupplierFactory> */
     use HasFactory;

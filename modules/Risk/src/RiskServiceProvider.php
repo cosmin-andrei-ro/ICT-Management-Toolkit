@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Event;
 use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\CustomFields\CustomFieldTypes;
 use Modules\Core\Domain\Events\RiskSignalsChanged;
 use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecords;
@@ -58,6 +59,7 @@ final class RiskServiceProvider extends ModuleServiceProvider
 
         $this->callAfterResolving(PermissionRegistry::class, $this->registerPermissions(...));
         $this->callAfterResolving(ExportRegistry::class, fn (ExportRegistry $exports) => $exports->register(RiskRegisterExport::TYPE, RiskRegisterExport::class, 'risk.risk.view'));
+        $this->callAfterResolving(CustomFieldTypes::class, fn (CustomFieldTypes $types) => $types->register('risk.risk', 'risk::risks.linked_kind'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         $this->callAfterResolving(LinkedRecords::class, function (LinkedRecords $records): void {
             $records->register('risk.risk', RiskRecords::resolve(...));
