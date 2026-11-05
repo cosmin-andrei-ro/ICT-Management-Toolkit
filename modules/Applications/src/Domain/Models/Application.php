@@ -18,10 +18,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Applications\Application\Policies\ApplicationPolicy;
 use Modules\Applications\Database\Factories\ApplicationFactory;
+use Modules\Applications\Domain\Enums\SheetStatus;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\HasCustomFields;
@@ -115,6 +117,16 @@ final class Application extends Model implements Taggable
     public function deputy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'deputy_id');
+    }
+
+    /**
+     * The documentation version in force.
+     *
+     * @return HasOne<Sheet, $this>
+     */
+    public function sheetInForce(): HasOne
+    {
+        return $this->hasOne(Sheet::class)->where('status', SheetStatus::Approved);
     }
 
     /**

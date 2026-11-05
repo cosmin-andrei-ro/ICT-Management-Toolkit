@@ -60,6 +60,11 @@ When a version comes into force it gets its number — 1.0 for the first, then 1
 **Full document** (on the application and on each version) shows the documentation as the company's template lays it out: cover, change history, document control and approvals, contents, then every chapter. **Print** it, or **Download PDF** when your administrator has set up the PDF service - the PDF is what auditors expect. A version that is not in force is marked as such.
 
 
+
+## Finding applications
+
+The portfolio list shows, from the version in force, each application's exposure, hosting and data classification, next to its status, criticality and next review, and you can filter by all of them. An application whose documentation is not approved yet shows a dash, and filters on these fields leave it out.
+
 ## Next steps after approval
 
 When a version comes into force, the application gets its CMDB item and documentation page, and the risk register offers suggested risks. Its page may also show **Next steps**: assess a business process, if the documentation names none, and record a licence for each commercial product in chapter 6.6 that the licence register does not know. A link opens the form already filled in. Nothing is created until you save it. Choose **Does not apply** when a step is not needed.
