@@ -14,6 +14,7 @@ use Modules\Core\CoreServiceProvider;
 use Modules\Dcim\DcimServiceProvider;
 use Modules\Documentation\DocumentationServiceProvider;
 use Modules\Itam\ItamServiceProvider;
+use Modules\Pam\PamServiceProvider;
 use Modules\Projects\ProjectsServiceProvider;
 use Modules\Reporting\ReportingServiceProvider;
 use Modules\Risk\RiskServiceProvider;
@@ -77,6 +78,10 @@ return [
         ],
         'dcim' => [
             'provider' => DcimServiceProvider::class,
+            'enabled' => true,
+        ],
+        'pam' => [
+            'provider' => PamServiceProvider::class,
             'enabled' => true,
         ],
         'projects' => [

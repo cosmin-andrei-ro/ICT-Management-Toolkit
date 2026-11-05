@@ -35,6 +35,7 @@ it('groups the menu of IT staff, in a fixed order whatever the module order', fu
         ['Ticketing' => ['All tickets', 'Known errors', 'Change calendar', 'Approvals', 'Reports']],
         'Documentation',
         'Projects',
+        'Privileged access',
         ['Configuration & assets' => ['CMDB', 'Assets', 'Licences', 'Application portfolio', 'Racks', 'Power', 'IP addresses', 'Cables']],
         ['Risk & continuity' => ['Business impact analysis', 'Recovery gaps', 'Continuity plans', 'Continuity coverage', 'Risk register']],
         'Audit log',

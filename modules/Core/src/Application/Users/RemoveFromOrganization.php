@@ -7,9 +7,11 @@ declare(strict_types=1);
 
 namespace Modules\Core\Application\Users;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
+use Modules\Core\Domain\Events\PersonLeftOrganization;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
 
@@ -24,6 +26,7 @@ final readonly class RemoveFromOrganization
         private ConnectionInterface $db,
         private OrganizationContext $context,
         private AuditTrail $trail,
+        private Dispatcher $events,
     ) {}
 
     public function handle(User $user): void
@@ -39,6 +42,7 @@ final readonly class RemoveFromOrganization
             }
 
             // Pivot writes bypass the model observer.
+            $this->events->dispatch(new PersonLeftOrganization($user, $organizationId));
             $this->trail->record(AuditEvent::Updated, $user, ['organizations' => [$organizationId]], ['organizations' => []]);
         });
     }

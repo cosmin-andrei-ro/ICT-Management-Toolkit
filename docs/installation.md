@@ -357,6 +357,10 @@ Settings, for special cases:
 | `WEBHOOKS_TIMEOUT` | `10` | Seconds to wait for a webhook receiver |
 | `AUTH_LOCKOUT_AFTER` | `10` | Consecutive failures that lock a local account; `0` disables |
 | `AUTH_CHECK_BREACHED_PASSWORDS` | `true` | Refuse passwords known from breaches (Have I Been Pwned, k-anonymity) |
+| `PAM_KEY` | empty | Key of the privileged access vault, from `php artisan pam:key`. Must differ from `APP_KEY`. **Back it up apart from the database:** without it, stored credentials are lost. See [ADR 0078](adr/0078-privileged-access-vault.md) |
+| `PAM_PREVIOUS_KEYS` | empty | Old vault keys, comma separated, while `php artisan pam:rekey` moves credentials to the new one |
+| `PAM_REVEAL_SECONDS` | `60` | How long a shown credential stays on screen |
+| `PAM_SECOND_FACTOR_SETTLE_HOURS` | `24` | Hours a newly set up authenticator app must wait before it can show credentials |
 | `ATTACHMENTS_MAX_KB` | `20480` | Largest attachment, in kilobytes |
 | `ATTACHMENTS_CLAMD_ADDRESS` | empty | Optional [ClamAV](https://www.clamav.net) daemon scanning every uploaded file, e.g. `tcp://127.0.0.1:3310`. When set, a file that cannot be scanned is refused, so uploads stop if the scanner is down |
 | `ATTACHMENTS_CLAMD_TIMEOUT` | `30` | Seconds to wait for the scanner |

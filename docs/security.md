@@ -7,7 +7,7 @@ This describes the design. It has not been audited or tested by an independent t
 ## What needs protecting
 
 - **Business records:** assets, risks, audit findings, continuity plans, tickets. Together they are a map of the company's weak points.
-- **Credentials and secrets:** passwords, second factors, mailbox passwords, licence keys, single sign-on and webhook secrets, API tokens.
+- **Credentials and secrets:** passwords, second factors, mailbox passwords, licence keys, single sign-on and webhook secrets, API tokens, and the credentials in the privileged access vault.
 - **Personal data:** employees' names and contact details, ticket contents, sign-in history.
 - **The audit trail:** it is evidence, so it must be hard to alter.
 - **The separation between organizations** in one installation.
@@ -51,6 +51,7 @@ An attacker who controls the server, the database or the application key is outs
 - **Single sign-on logout:** single logout exists for SAML, when the provider's address is set. For OpenID Connect, a session already open here survives the end of the provider's session.
 - **Real identity providers:** automated tests use simulated providers. OpenID Connect and SAML, including encrypted assertions and single logout, were also tried by hand against one open-source identity provider in a local setup (2026-11-04); other providers are untested.
 - **Older passwords:** passwords shorter than the current minimum stay valid until changed. Someone who stops using a second factor keeps a password that was only allowed with one.
+- **Privileged access vault:** its key is separate from `APP_KEY`, but it sits in the environment of the same server. It protects against leaked backups and database access, not against a compromised server. Shown credentials reach the browser. The module has not been independently reviewed; assess it before storing production credentials.
 - **Who has an account:** someone allowed to invite people can tell from the lists whether an email already has an account.
 - **Item search:** the configuration item pickers in other modules search item names even for people without the right to view the CMDB, because owners must be able to pick items.
 - **API rights:** `core.api.use` controls who may issue tokens. A token issued by an operator works for its owner without that right.
@@ -61,7 +62,7 @@ An attacker who controls the server, the database or the application key is outs
 
 - **Serve over HTTPS only**, and keep the database, Redis and internal services off the internet.
 - **Never run the demo data on a reachable server:** its passwords and two-factor secret are public.
-- **Protect `.env`.** Back it up with the database: without its key, stored secrets cannot be read. Anyone holding it can read them.
+- **Protect `.env`.** Back it up: without its keys, stored secrets cannot be read, and anyone holding them can read them. Keep `PAM_KEY` apart from database backups, or the vault's separate key gains nothing.
 - **Keep the system updated:** the operating system, PHP, PostgreSQL, and this application.
 - **Run and test backups.** Keep them as protected as the live data.
 - **Limit administrators,** and keep two-factor authentication required for IT staff.

@@ -92,6 +92,11 @@ return [
         'done' => 'Your password is saved. You can sign in.',
     ],
     'mail' => [
+        'second_factor' => [
+            'subject' => 'A new authenticator app on your :app account',
+            'line' => 'An authenticator app was just set up for two-factor authentication on your :app account.',
+            'not_you' => 'If this was not you, tell your administrator at once: someone may have access to your account.',
+        ],
         'reset' => [
             'subject' => 'Choose a new password for :app',
             'line' => 'Someone asked to reset the password of your :app account.',
