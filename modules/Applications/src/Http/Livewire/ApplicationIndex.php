@@ -27,6 +27,8 @@ final class ApplicationIndex extends Component
 {
     use WithPagination;
 
+    private const array EXPOSURES = ['internal', 'internet', 'third_party'];
+
     #[Url]
     public string $search = '';
 
@@ -35,6 +37,15 @@ final class ApplicationIndex extends Component
 
     #[Url]
     public string $criticality = '';
+
+    #[Url]
+    public string $exposure = '';
+
+    #[Url]
+    public string $hosting = '';
+
+    #[Url]
+    public string $classification = '';
 
     #[Url]
     public bool $due = false;
@@ -46,7 +57,7 @@ final class ApplicationIndex extends Component
 
     public function updated(string $property): void
     {
-        if (in_array($property, ['search', 'status', 'criticality', 'due'], true)) {
+        if (in_array($property, ['search', 'status', 'criticality', 'exposure', 'hosting', 'classification', 'due'], true)) {
             $this->resetPage();
         }
     }
@@ -71,10 +82,14 @@ final class ApplicationIndex extends Component
         $like = '%'.str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], trim(mb_substr($this->search, 0, 200))).'%';
 
         $applications = Application::query()
-            ->with(['department', 'businessOwner', 'technicalOwner'])
+            ->with(['department', 'businessOwner', 'technicalOwner', 'sheetInForce'])
             ->when(trim($this->search) !== '', fn ($query) => $query->where(fn ($inner) => $inner->whereLike('name', $like)->orWhereLike('code', $like)))
             ->when($this->status !== '', fn ($query) => $query->where('status', $this->status))
             ->when($this->criticality !== '', fn ($query) => $query->where('criticality', $this->criticality))
+            // These live in the version in force: an application without one matches none of them.
+            ->when($this->exposure !== '', fn ($query) => $query->whereHas('sheetInForce', fn ($sheet) => $sheet->whereJsonContains('content->1_3->exposure', $this->exposure)))
+            ->when($this->hosting !== '', fn ($query) => $query->whereHas('sheetInForce', fn ($sheet) => $sheet->where('content->5_1->hosting_model', $this->hosting)))
+            ->when($this->classification !== '', fn ($query) => $query->whereHas('sheetInForce', fn ($sheet) => $sheet->where('content->2_1->classification', $this->classification)))
             ->when($this->due, fn ($query) => $query->where(fn ($inner) => $inner->whereNull('approved_at')->orWhere('next_review_on', '<', today()->toDateString())))
             ->orderBy('name')
             ->paginate(25);
@@ -84,6 +99,9 @@ final class ApplicationIndex extends Component
             'open' => Sheet::query()->whereIn('application_id', $applications->getCollection()->modelKeys())->whereIn('status', ['draft', 'submitted', 'returned'])->get()->keyBy('application_id'),
             'statuses' => $options->choices('application_status'),
             'criticalities' => $options->choices('business_criticality'),
+            'exposures' => array_combine(self::EXPOSURES, array_map(fn (string $exposure): string => __('applications::sheet.choices.exposure.'.$exposure), self::EXPOSURES)),
+            'hostings' => $options->choices('hosting_models'),
+            'classifications' => $options->choices('data_classification'),
             'options' => $options,
             'exports' => $exports = Export::query()->where('user_id', auth()->id())->where('type', PortfolioExport::TYPE)->latest()->limit(3)->get(),
             'preparing' => $exports->contains(fn (Export $export): bool => $export->status === ExportStatus::Pending),

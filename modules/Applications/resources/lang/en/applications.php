@@ -23,6 +23,9 @@ return [
         'security' => 'Security officer',
     ],
     'fields' => [
+        'exposure' => 'Exposure',
+        'hosting' => 'Hosting',
+        'classification' => 'Data classification',
         'name' => 'Application name',
         'code' => 'Application code',
         'department' => 'Department',
