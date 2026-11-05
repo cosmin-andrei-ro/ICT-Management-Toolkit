@@ -85,6 +85,8 @@
             "Modules\\Reporting\\Database\\Factories\\": "modules/Reporting/database/factories/",
             "Modules\\Dcim\\": "modules/Dcim/src/",
             "Modules\\Dcim\\Database\\Factories\\": "modules/Dcim/database/factories/",
+            "Modules\\Pam\\": "modules/Pam/src/",
+            "Modules\\Pam\\Database\\Factories\\": "modules/Pam/database/factories/",
             "Modules\\Projects\\": "modules/Projects/src/",
             "Modules\\Projects\\Database\\Factories\\": "modules/Projects/database/factories/"
         }
@@ -105,6 +107,7 @@
             "Modules\\Documentation\\Tests\\": "modules/Documentation/tests/",
             "Modules\\Reporting\\Tests\\": "modules/Reporting/tests/",
             "Modules\\Dcim\\Tests\\": "modules/Dcim/tests/",
+            "Modules\\Pam\\Tests\\": "modules/Pam/tests/",
             "Modules\\Projects\\Tests\\": "modules/Projects/tests/"
         }
     },

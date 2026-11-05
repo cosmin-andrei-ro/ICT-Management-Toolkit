@@ -59,7 +59,7 @@ final class CoreDemoSeeder extends Seeder
 
         foreach (self::PEOPLE as $key => [$name, $email, $role]) {
             $factory = User::factory()->memberOf($organization);
-            $user = ($role === DefaultRole::Requester ? $factory : $factory->withTwoFactor())->create(['name' => $name, 'email' => $email]);
+            $user = ($role === DefaultRole::Requester ? $factory : $factory->withTwoFactor()->state(['two_factor_confirmed_at' => now()->subDays(90)]))->create(['name' => $name, 'email' => $email]);
             $context->runAs($organization, fn () => $user->assignRole($role->value));
             $company->users[$key] = User::query()->findOrFail($user->id);
         }

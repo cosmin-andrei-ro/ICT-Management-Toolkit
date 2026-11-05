@@ -1,0 +1,86 @@
+<?php
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 ICT Management Toolkit contributors
+
+declare(strict_types=1);
+
+return [
+    'menu' => 'Privileged access',
+    'title' => 'Privileged access',
+    'types' => [
+        'administrator' => 'Administrator account',
+        'service' => 'Service account',
+        'root' => 'Root or built-in account',
+        'api_key' => 'API key',
+        'ssh_key' => 'SSH key',
+        'other' => 'Other',
+    ],
+    'fields' => [
+        'name' => 'Name',
+        'username' => 'Username',
+        'type' => 'Type',
+        'owner' => 'Owner',
+        'description' => 'Description',
+        'item' => 'Configuration item',
+        'application' => 'Application',
+        'secret_changed' => 'Credential changed',
+    ],
+    'ui' => [
+        'intro' => 'Privileged accounts and their credentials, shown only to people granted access, with a fresh code and a reason.',
+        'search' => 'Search by name or username',
+        'none' => 'No accounts you may see.',
+        'new' => 'New account',
+        'edit' => 'Edit',
+        'save' => 'Save',
+        'delete' => 'Delete',
+        'delete_confirm' => 'Delete this account and destroy its stored credential? This cannot be undone.',
+        'remove' => 'Remove',
+        'details' => 'Details',
+        'description_help' => 'What it is for. Never write a credential here: this text is not encrypted.',
+        'secret' => 'Credential',
+        'no_secret' => 'No credential stored yet.',
+        'not_granted' => 'You have not been granted access to this credential.',
+        'reveal' => 'Show the credential',
+        'reveal_help' => 'Recorded, with your reason, for the people who review access.',
+        'reason' => 'Why do you need it?',
+        'code' => 'Code from your authenticator app',
+        'revealed_help' => 'Hidden after :seconds seconds. Do not copy it where others can read it.',
+        'hide' => 'Hide',
+        'set_secret' => 'Store a credential',
+        'change_secret' => 'Replace the credential',
+        'change_help' => 'This only updates what is stored here. Change it on the system itself as well.',
+        'grants' => 'Who may ask for it',
+        'grants_help' => 'Only people with the right to use the vault can be chosen. Nobody can grant themselves access.',
+        'no_grants' => 'Nobody yet.',
+        'grant_to' => 'Give access to',
+        'grant' => 'Give access',
+        'revoke' => 'Remove',
+        'action_code' => 'Code from your authenticator app',
+        'action_code_help' => 'Needed to store or replace the credential, give access, or delete the account.',
+        'delete_help' => 'Destroys the stored credential for good. Enter your code above first.',
+    ],
+    'errors' => [
+        'not_configured' => 'The vault is not set up: its own key (PAM_KEY) is missing, invalid or the same as the application key. Ask the operator.',
+        'no_secret' => 'No credential is stored for this account.',
+        'second_factor_too_new' => 'Your authenticator app was set up recently. For safety, it can show credentials :hours hours after it was set up.',
+        'unreadable' => 'This credential cannot be read with the vault\'s current key. Ask the operator.',
+    ],
+    'log' => [
+        'title' => 'Access log',
+        'intro' => 'Who was shown which credential, when and why.',
+        'when' => 'When',
+        'who' => 'Who',
+        'account' => 'Account',
+        'reason' => 'Reason',
+        'none' => 'No credential has been shown yet.',
+    ],
+    'mail' => [
+        'granted' => [
+            'subject' => 'Access to a privileged credential was given',
+            'line' => ':by gave :to access to the credential of :account.',
+            'action' => 'Open the account',
+            'not_expected' => 'If you did not expect this, tell your security contact.',
+        ],
+    ],
+];

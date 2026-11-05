@@ -53,6 +53,7 @@ Fiecare modul este izolat (propriile modele, migrații, rute, politici, teste, t
 | **BCM / DRP** | Continuitate și recuperare | Planuri BCP/DRP, scenarii, runbook-uri, teste/exerciții, lecții învățate |
 | **Risk Assessment** | Managementul riscurilor | Registru de riscuri, amenințări, vulnerabilități, probabilitate × impact, tratamente, risc rezidual, owneri, reevaluare periodică |
 | **Audit & Compliance** | Conformitate și audit | Framework-uri (ISO 27001 Anexa A, NIS2, GDPR, CIS…), controale, mapare control ↔ risc ↔ activ, dovezi, constatări, planuri de acțiune |
+| **Privileged Access (PAM)** | Seif pentru conturi privilegiate | Conturi legate de CI-uri și aplicații, credențiale sub cheie proprie, acces acordat, afișare cu al doilea factor și motiv, jurnal; fără conectare la sisteme, rotație automată sau înregistrare de sesiuni (ADR 0078) |
 | **Projects** | Proiecte IT | Proiecte, faze, sarcini, livrabile, legături către entitățile produse de proiect |
 | **Reporting / Dashboards** | Vizibilitate | Dashboard-uri pe rol, rapoarte exportabile (PDF/XLSX/CSV), KPI-uri |
 
@@ -98,6 +99,7 @@ modules/
   Bcm/
   Risk/
   Audit/
+  Pam/
   Projects/
   Reporting/
     ├── src/

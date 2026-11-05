@@ -18,6 +18,7 @@ An incident links to the server it took down, the server to the application it r
 | **Risk** | Risk register with a configurable method, heat maps, treatment, risks suggested by the other modules |
 | **Audit & compliance** | ISO/IEC 27001, NIS2, GDPR and DORA requirements, controls, evidence, audits and findings |
 | **Documentation** | Versioned pages, approval for controlled spaces, help articles for employees |
+| **Privileged access** | A vault for privileged accounts: credentials under their own key, shown only to people granted access, with a fresh code and a reason, all recorded |
 | **Projects** | Phases, task boards, sponsor gates, status reports, budget |
 | **Reporting** | Dashboards by role, trends, a monthly management report |
 

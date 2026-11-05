@@ -26,6 +26,7 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="PAM_KEY" value="base64:dGVzdC1vbmx5LXZhdWx0LWtleS1ub3QtYS1zZWNyZXQ="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="AUTH_CHECK_BREACHED_PASSWORDS" value="false"/>

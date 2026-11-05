@@ -95,6 +95,11 @@ What each module does today.
 - **IP addresses**: VLANs, IPv4 and IPv6 subnets nested by containment with gateway and purpose, addresses given to equipment or CMDB items; utilisation, the next free address, and no duplicates (checked by [PostgreSQL](https://www.postgresql.org)'s own network types).
 - **Reports**: data centre indicators on the dashboards and in the monthly report; the whole data centre in XLSX; a rack sheet to print or as PDF with both sides, the equipment, its power and its cables.
 
+## Privileged access
+- **Vault** for privileged accounts, linked to configuration items and applications, with credentials encrypted under their own key.
+- Shown only to people granted access, with a fresh code and a reason; managing an account does not mean reading it, and nobody grants themselves.
+- **Access log** of who saw what, when and why.
+
 ## Projects
 - **Projects** with a code, sponsor, manager and team, in four phases (initiation, planning, execution, closure) with their dates.
 - **Tasks** per phase on a board (to do, in progress, blocked, done) or as a list; overdue tasks marked; **My tasks** across every open project.

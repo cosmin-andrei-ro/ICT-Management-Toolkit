@@ -9,6 +9,7 @@ namespace Modules\Core\Application\Authentication;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Database\ConnectionInterface;
+use Modules\Core\Application\Notifications\SecondFactorAdded;
 use Modules\Core\Domain\Audit\AuditEvent;
 use Modules\Core\Domain\Audit\AuditTrail;
 use Modules\Core\Domain\Models\SecuritySettings;
@@ -112,6 +113,7 @@ final readonly class TwoFactorAuthentication
         ])->save();
 
         $this->trail->record(AuditEvent::MfaEnabled, $user, null, null, $user->id);
+        $user->notify(new SecondFactorAdded);
 
         return $codes;
     }
