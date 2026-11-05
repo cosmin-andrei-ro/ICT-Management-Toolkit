@@ -1,5 +1,5 @@
-@props(['record', 'canChange' => false])
-{{-- The page knows who may change its record; the audit log readers see the history too. --}}
-@if (\Modules\Core\Http\Livewire\Audit\RecordHistory::visible($canChange))
-    @livewire(\Modules\Core\Http\Livewire\Audit\RecordHistory::class, ['record' => $record, 'canChange' => $canChange], key('history-'.$record->getKey()))
+@props(['record', 'ability' => 'update', 'target' => null])
+{{-- Those who may change the record, and the audit log readers, see its history. --}}
+@if (\Modules\Core\Http\Livewire\Audit\RecordHistory::visible($ability, $target ?? $record))
+    @livewire(\Modules\Core\Http\Livewire\Audit\RecordHistory::class, ['record' => $record, 'ability' => $ability, 'target' => $target], key('history-'.$record->getKey()))
 @endif

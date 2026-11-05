@@ -133,5 +133,5 @@
 
     <x-core::record-tags :record="$supplier" />
 
-    <x-core::record-history :record="$supplier" :can-change="auth()->user()->can('update', $supplier)" />
+    <x-core::record-history :record="$supplier" />
 </div>

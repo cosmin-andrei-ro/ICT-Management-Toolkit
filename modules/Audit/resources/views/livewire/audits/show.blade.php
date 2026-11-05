@@ -53,5 +53,5 @@
         @include('audit::livewire.findings.table', ['findings' => $findings])
     </section>
 
-    <x-core::record-history :record="$audit" :can-change="auth()->user()->can('update', $audit)" />
+    <x-core::record-history :record="$audit" />
 </div>

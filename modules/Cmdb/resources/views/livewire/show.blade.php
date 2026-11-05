@@ -154,5 +154,5 @@
 
     <x-core::record-tags :record="$item" />
 
-    <x-core::record-history :record="$item" :can-change="auth()->user()->can('update', $item)" />
+    <x-core::record-history :record="$item" />
 </div>

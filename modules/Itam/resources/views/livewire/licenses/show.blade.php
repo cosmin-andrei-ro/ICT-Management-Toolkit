@@ -133,5 +133,5 @@
         </section>
     </div>
 
-    <x-core::record-history :record="$license" :can-change="auth()->user()->can('update', $license)" />
+    <x-core::record-history :record="$license" />
 </div>

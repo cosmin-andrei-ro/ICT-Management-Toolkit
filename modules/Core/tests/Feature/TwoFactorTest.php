@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
+use Modules\Core\Application\Authentication\ProveAccountOwner;
 use Modules\Core\Application\Authentication\TwoFactorAuthentication;
 use Modules\Core\Application\Authorization\SyncPermissions;
 use Modules\Core\Domain\Audit\AuditEvent;
@@ -18,6 +19,7 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Livewire\Account\AccountSecurity;
 use Modules\Core\Http\Livewire\Auth\Login;
 use Modules\Core\Http\Livewire\Auth\TwoFactorChallenge;
+use Modules\Core\Http\Middleware\SetCurrentOrganization;
 use PragmaRX\Google2FA\Google2FA;
 
 const SECRET = 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP';
@@ -138,7 +140,7 @@ describe('setting it up', function (): void {
         $user = User::factory()->memberOf($this->organization)->create();
         $this->actingAs($user);
 
-        $component = Livewire::test(AccountSecurity::class)->call('startSetup')->assertSee('data:image/svg+xml', false);
+        $component = Livewire::test(AccountSecurity::class)->set('setupPassword', 'password')->call('startSetup')->assertSee('data:image/svg+xml', false);
         $secret = session('account.mfa_setup_secret');
 
         $component->set('code', '000000')->call('enable')->assertHasErrors(['code']);
@@ -181,6 +183,47 @@ describe('setting it up', function (): void {
 
         expect(AuditLog::query()->where('event', AuditEvent::MfaFailed)->where('auditable_id', $this->user->id)->count())->toBe(5)
             ->and($this->user->fresh()->failed_logins)->toBe(5);
+    });
+
+    it('asks for the password before showing a secret, and limits and audits wrong ones', function (): void {
+        $user = User::factory()->memberOf($this->organization)->create();
+        $this->actingAs($user);
+        $page = Livewire::test(AccountSecurity::class);
+
+        $page->call('startSetup')->assertHasErrors(['setupPassword'])->assertDontSee('data:image/svg+xml', false);
+
+        foreach (range(1, ProveAccountOwner::ATTEMPTS_PER_MINUTE + 1) as $attempt) {
+            $page->set('setupPassword', 'wrong')->call('startSetup')->assertHasErrors(['setupPassword']);
+        }
+
+        expect(session('account.mfa_setup_secret'))->toBeNull()
+            ->and(AuditLog::query()->where('event', AuditEvent::LoginFailed)->where('auditable_id', $user->id)->count())->toBe(ProveAccountOwner::ATTEMPTS_PER_MINUTE);
+        $page->set('settingUp', true)->call('$refresh')->assertDontSee('data:image/svg+xml', false);
+    });
+
+    it('asks an account without a password for a recent sign-in', function (): void {
+        $user = User::factory()->fromDirectory()->memberOf($this->organization)->create();
+        $this->actingAs($user);
+
+        session()->put(SetCurrentOrganization::SIGNED_IN_AT, now()->subMinutes(ProveAccountOwner::RECENT_SIGN_IN_MINUTES + 1)->getTimestamp());
+        Livewire::test(AccountSecurity::class)->call('startSetup')->assertHasErrors(['setupPassword']);
+        expect(session('account.mfa_setup_secret'))->toBeNull();
+
+        session()->put(SetCurrentOrganization::SIGNED_IN_AT, now()->subMinute()->getTimestamp());
+        Livewire::test(AccountSecurity::class)->call('startSetup')->assertHasNoErrors()->assertSee('data:image/svg+xml', false);
+    });
+
+    it('does not keep an abandoned setup usable', function (): void {
+        $user = User::factory()->memberOf($this->organization)->create();
+        $this->actingAs($user);
+        $page = Livewire::test(AccountSecurity::class)->set('setupPassword', 'password')->call('startSetup');
+        $secret = session('account.mfa_setup_secret');
+
+        $this->travel(16)->minutes();
+
+        $page->call('$refresh')->assertDontSee('data:image/svg+xml', false);
+        $page->set('code', (new Google2FA)->getCurrentOtp($secret))->call('enable');
+        expect($user->fresh()->two_factor_confirmed_at)->toBeNull();
     });
 
     it('turns off only with a valid code, and staff must then set it up again', function (): void {

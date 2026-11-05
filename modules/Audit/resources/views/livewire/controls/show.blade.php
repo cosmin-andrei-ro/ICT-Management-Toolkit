@@ -268,5 +268,5 @@
         @endif
     </section>
 
-    <x-core::record-history :record="$control" :can-change="auth()->user()->can('update', $control)" />
+    <x-core::record-history :record="$control" />
 </div>

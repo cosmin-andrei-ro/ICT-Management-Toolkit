@@ -253,5 +253,5 @@
 
     <x-core::record-tags :record="$risk" />
 
-    <x-core::record-history :record="$risk" :can-change="auth()->user()->can('update', $risk)" />
+    <x-core::record-history :record="$risk" />
 </div>
