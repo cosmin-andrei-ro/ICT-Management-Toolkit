@@ -62,6 +62,45 @@
             </div>
         @endif
 
+        <fieldset class="space-y-3 border-t border-gray-100 pt-4">
+            <legend class="text-sm font-semibold">{{ __('pam::accounts.ui.access_rules') }}</legend>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" wire:model="requiresApproval"> {{ __('pam::accounts.fields.requires_approval') }}</label>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                    <label for="approverId" class="block text-sm font-medium">{{ __('pam::accounts.fields.approver') }}</label>
+                    <select id="approverId" wire:model="approverId" class="mt-1 block w-full">
+                        <option value="">—</option>
+                        @foreach ($people as $id => $person) <option value="{{ $id }}">{{ $person }}</option> @endforeach
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500">{{ __('pam::accounts.ui.approver_help') }}</p>
+                    @error('approverId') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label for="accessMinutes" class="block text-sm font-medium">{{ __('pam::accounts.fields.access_minutes') }}</label>
+                    <input id="accessMinutes" type="number" min="5" max="1440" wire:model="accessMinutes" class="mt-1 block w-full">
+                    @error('accessMinutes') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label for="rotationDays" class="block text-sm font-medium">{{ __('pam::accounts.fields.rotation_days') }}</label>
+                    <input id="rotationDays" type="number" min="1" max="3650" wire:model="rotationDays" class="mt-1 block w-full">
+                    @error('rotationDays') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label for="reviewDays" class="block text-sm font-medium">{{ __('pam::accounts.fields.review_days') }}</label>
+                    <input id="reviewDays" type="number" min="1" max="3650" wire:model="reviewDays" class="mt-1 block w-full">
+                    @error('reviewDays') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+                </div>
+            </div>
+            @if ($accountId)
+                <div>
+                    <label for="code" class="block text-sm font-medium">{{ __('pam::accounts.ui.code') }}</label>
+                    <input id="code" type="text" wire:model="code" inputmode="numeric" autocomplete="one-time-code" maxlength="32" class="mt-1 block w-40">
+                    <p class="mt-1 text-xs text-gray-500">{{ __('pam::accounts.ui.code_rules_help') }}</p>
+                    @error('code') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+                </div>
+            @endif
+        </fieldset>
+
         <button type="submit" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">{{ __('pam::accounts.ui.save') }}</button>
     </form>
 </div>

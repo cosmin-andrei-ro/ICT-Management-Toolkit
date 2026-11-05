@@ -95,7 +95,7 @@ it('shows the credential to someone granted, with a fresh code and a reason, and
         ->call('hide')->assertDontSee(PAM_SECRET);
 
     $entry = AuditLog::query()->where('auditable_id', $this->account->id)->where('event', AuditEvent::SecretRevealed->value)->sole();
-    expect($entry->user_id)->toBe($this->agent->id)->and($entry->new_values)->toBe(['reason' => 'Night maintenance']);
+    expect($entry->user_id)->toBe($this->agent->id)->and($entry->new_values['reason'])->toBe('Night maintenance');
 });
 
 it('needs a valid code and a reason, and limits attempts', function (): void {

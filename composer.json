@@ -63,6 +63,7 @@
             "Modules\\Audit\\Database\\Seeders\\": "modules/Audit/database/seeders/",
             "Modules\\Documentation\\Database\\Seeders\\": "modules/Documentation/database/seeders/",
             "Modules\\Dcim\\Database\\Seeders\\": "modules/Dcim/database/seeders/",
+            "Modules\\Pam\\Database\\Seeders\\": "modules/Pam/database/seeders/",
             "Modules\\Projects\\Database\\Seeders\\": "modules/Projects/database/seeders/",
             "Modules\\Reporting\\Database\\Seeders\\": "modules/Reporting/database/seeders/",
             "Modules\\Cmdb\\": "modules/Cmdb/src/",

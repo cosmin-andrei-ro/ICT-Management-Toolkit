@@ -35,6 +35,8 @@ Every demo account has the password `password`. IT staff accounts also have two-
 | `projects@example.com` | Project manager |
 | `employee@example.com`, `finance@example.com`, `logistics@example.com`, `hr@example.com`, `sales@example.com`, `warehouse@example.com` | Requester (employees; no two-factor) |
 
+The **privileged access** vault needs a key of its own. Run `./vendor/bin/sail artisan pam:key`, put the result in `PAM_KEY` in `.env`, and seed again to get its made-up credentials. Without it, the demo accounts have none.
+
 Never seed demo data on a server people can reach: the passwords and the two-factor secret are public.
 
 ## Optional containers

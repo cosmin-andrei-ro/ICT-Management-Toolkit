@@ -22,6 +22,7 @@ use Modules\Core\Domain\Models\Organization;
 use Modules\Dcim\Database\Seeders\DcimDemoSeeder;
 use Modules\Documentation\Database\Seeders\DocumentationDemoSeeder;
 use Modules\Itam\Database\Seeders\ItamDemoSeeder;
+use Modules\Pam\Database\Seeders\PamDemoSeeder;
 use Modules\Projects\Database\Seeders\ProjectsDemoSeeder;
 use Modules\Reporting\Database\Seeders\ReportingDemoSeeder;
 use Modules\Risk\Database\Seeders\RiskDemoSeeder;
@@ -49,6 +50,7 @@ final class DatabaseSeeder extends Seeder
         DocumentationDemoSeeder::class,
         DcimDemoSeeder::class,
         ProjectsDemoSeeder::class,
+        PamDemoSeeder::class,
         RiskSuggestionsDemoSeeder::class,
         ReportingDemoSeeder::class,
     ];

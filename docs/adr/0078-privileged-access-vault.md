@@ -11,7 +11,6 @@ This makes the toolkit a target of much higher value. A vault holds the keys to 
 
 ## Decision
 
-This covers the vault. Approval, time limits, reminders and reviews follow in the next change.
 
 - **A key of its own (`PAM_KEY`), AES-256-GCM.** A leak of `APP_KEY` or of a database dump alone does not open the vault. A key equal to `APP_KEY` counts as none. Without a key, the module stores and shows nothing, and says so.
 - **Plain text exists only in `PamVault`.** The column is hidden from serialization and left out of the audit trail, which records that a credential was shown or changed, never its value. Credentials are not in exports, the API, search or webhooks.
@@ -25,6 +24,14 @@ This covers the vault. Approval, time limits, reminders and reviews follow in th
 - **Showings are in the append-only audit trail,** with the reason. The access log reads from there, so there is no second record to keep or to tamper with.
 - **Key rotation:** `pam:rekey` moves credentials to the current key, reading through `PAM_PREVIOUS_KEYS`. A credential it cannot read is reported and left alone. The run is recorded.
 - **Deleting an account destroys its credential.** The record stays, for the trail.
+
+### Approval, time limits, reminders and reviews
+
+- **Optional approval per account,** with a time limit (5 minutes to a day, 60 by default). Without a valid approval, a grant alone shows nothing. A person still gives their code at each showing.
+- **Who decides:** the named approver, the owner, and those who manage the vault, so that nothing gets stuck. Nobody decides on their own, also enforced by a database constraint. A row lock allows one decision.
+- **A decision needs a fresh code,** and so do changing the owner, the approver, how long access lasts or whether approval is needed, and confirming a review: those are what a stolen session would go for. Every sensitive step of the vault now applies the wait for a new authenticator app, not only showing a credential.
+- **Removing a grant ends access at once,** even with a valid approval, and also ends that approval, so giving access back does not bring it back.
+- **Rotation and access reviews are schedules per account,** with one reminder per period to the owner, or else to those who manage the vault. Rotation is a reminder only: a person changes the credential on the system.
 
 ## Alternatives considered
 

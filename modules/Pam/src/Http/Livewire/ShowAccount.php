@@ -15,7 +15,8 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
-use Modules\Core\Application\Authentication\ConfirmSecondFactor;
+use Modules\Core\Domain\Audit\AuditEvent;
+use Modules\Core\Domain\Audit\AuditTrail;
 use Modules\Core\Domain\Links\Applications;
 use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Models\User;
@@ -23,9 +24,12 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Pam\Application\Actions\ChangeSecret;
 use Modules\Pam\Application\Actions\DeleteAccount;
 use Modules\Pam\Application\Actions\GrantAccess;
+use Modules\Pam\Application\Actions\ManageAccessRequests;
 use Modules\Pam\Application\Actions\RevealSecret;
 use Modules\Pam\Application\PamVault;
+use Modules\Pam\Application\VaultSecondFactor;
 use Modules\Pam\Domain\Exceptions\VaultNotConfigured;
+use Modules\Pam\Domain\Models\AccessRequest;
 use Modules\Pam\Domain\Models\AccountGrant;
 use Modules\Pam\Domain\Models\PrivilegedAccount;
 
@@ -71,7 +75,7 @@ final class ShowAccount extends Component
     {
         $this->authorize('reveal', $this->account);
         $this->validate([
-            'reason' => ['required', 'string', 'max:500'],
+            'reason' => [$this->account->requires_approval ? 'nullable' : 'required', 'string', 'max:500'],
             'code' => ['required', 'string', 'max:32'],
         ]);
         $code = $this->code;
@@ -94,12 +98,34 @@ final class ShowAccount extends Component
         $this->reset('reason');
     }
 
+    public function askAccess(ManageAccessRequests $requests): void
+    {
+        $this->authorize('reveal', $this->account);
+        abort_unless($this->account->requires_approval, 404);
+        $this->validate(['reason' => ['required', 'string', 'max:500']]);
+        $requests->ask($this->account, $this->actor(), $this->reason);
+        $this->reset('reason');
+    }
+
+    /**
+     * Someone confirms who has access is still right. Needs a code: it hides a
+     * forgotten grant for another period.
+     */
+    public function confirmReview(VaultSecondFactor $secondFactor, AuditTrail $trail): void
+    {
+        $this->authorize('update', $this->account);
+        $this->confirm($secondFactor, 'pam_review');
+        $this->account->forceFill(['reviewed_at' => now(), 'reviewed_by' => $this->actor()->id, 'review_reminded_at' => null])->saveQuietly();
+        $trail->record(AuditEvent::Updated, $this->account, null, ['access_reviewed' => $this->account->grants()->count()], $this->actor()->id);
+        unset($this->account);
+    }
+
     /**
      * Rendering again without the value is what hides it.
      */
     public function hide(): void {}
 
-    public function changeSecret(ChangeSecret $change, ConfirmSecondFactor $secondFactor): void
+    public function changeSecret(ChangeSecret $change, VaultSecondFactor $secondFactor): void
     {
         $this->authorize('update', $this->account);
         $this->validate(['newSecret' => ['required', 'string', 'max:8192']]);
@@ -117,7 +143,7 @@ final class ShowAccount extends Component
         unset($this->account);
     }
 
-    public function grant(GrantAccess $grant, ConfirmSecondFactor $secondFactor): void
+    public function grant(GrantAccess $grant, VaultSecondFactor $secondFactor): void
     {
         $this->validate(['grantUserId' => ['required', 'uuid', Rule::in(array_keys($this->candidates()))]]);
         $person = User::query()->whereKey($this->grantUserId)->firstOrFail();
@@ -129,14 +155,16 @@ final class ShowAccount extends Component
         unset($this->account);
     }
 
-    public function revoke(string $grantId): void
+    public function revoke(string $grantId, ManageAccessRequests $requests): void
     {
         $this->authorize('update', $this->account);
-        AccountGrant::query()->where('account_id', $this->accountId)->whereKey($grantId)->firstOrFail()->delete();
+        $grant = AccountGrant::query()->where('account_id', $this->accountId)->whereKey($grantId)->firstOrFail();
+        $grant->delete();
+        $requests->endFor($grant->user_id, $this->accountId);
         unset($this->account);
     }
 
-    public function delete(DeleteAccount $delete, ConfirmSecondFactor $secondFactor): void
+    public function delete(DeleteAccount $delete, VaultSecondFactor $secondFactor): void
     {
         $this->authorize('delete', $this->account);
         $this->confirm($secondFactor, 'pam_delete');
@@ -152,12 +180,20 @@ final class ShowAccount extends Component
         return view('pam::livewire.show', [
             'account' => $account,
             'revealed' => $this->shown,
+            'myRequest' => $this->myRequest($account),
             'configured' => $vault->isConfigured(),
             'candidates' => auth()->user()?->can('update', $account) === true ? $this->candidates() : [],
             'item' => $account->configuration_item_id !== null ? ($items->find([$account->configuration_item_id])[$account->configuration_item_id] ?? null) : null,
             'application' => $account->application_id !== null ? ($applications->find([$account->application_id])[$account->application_id] ?? null) : null,
             'revealSeconds' => max(5, config()->integer('pam.vault.reveal_seconds', 60)),
         ])->title($account->name);
+    }
+
+    private function myRequest(PrivilegedAccount $account): ?AccessRequest
+    {
+        return $account->requires_approval
+            ? AccessRequest::query()->where('account_id', $account->id)->where('user_id', auth()->id())->latest()->first()
+            : null;
     }
 
     /**
@@ -183,7 +219,7 @@ final class ShowAccount extends Component
      * A stolen session must not be able to give itself access, or overwrite or
      * destroy a credential, for which there is no earlier copy.
      */
-    private function confirm(ConfirmSecondFactor $secondFactor, string $purpose): void
+    private function confirm(VaultSecondFactor $secondFactor, string $purpose): void
     {
         $this->validate(['actionCode' => ['required', 'string', 'max:32']]);
         $code = $this->actionCode;

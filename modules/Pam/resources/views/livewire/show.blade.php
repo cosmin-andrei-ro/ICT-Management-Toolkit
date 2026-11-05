@@ -26,6 +26,9 @@
                 <div><dt class="text-xs text-gray-500">{{ __('pam::accounts.fields.item') }}</dt><dd>@if ($item)<a href="{{ $item->url }}" class="text-blue-700 underline">{{ $item->name }}</a>@else — @endif</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('pam::accounts.fields.application') }}</dt><dd>@if ($application)<a href="{{ $application->url }}" class="text-blue-700 underline">{{ $application->name }}</a>@else — @endif</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('pam::accounts.fields.secret_changed') }}</dt><dd>{{ $account->secret_changed_at?->toDateString() ?? '—' }}</dd></div>
+                <div><dt class="text-xs text-gray-500">{{ __('pam::accounts.fields.rotation_due') }}</dt><dd @class(['font-medium text-amber-700' => $account->rotationDueOn()?->isPast()])>{{ $account->rotationDueOn()?->toDateString() ?? '—' }}</dd></div>
+                <div><dt class="text-xs text-gray-500">{{ __('pam::accounts.fields.review_due') }}</dt><dd @class(['font-medium text-amber-700' => $account->reviewDueOn()?->isPast()])>{{ $account->reviewDueOn()?->toDateString() ?? '—' }}</dd></div>
+                <div><dt class="text-xs text-gray-500">{{ __('pam::accounts.fields.requires_approval') }}</dt><dd>{{ $account->requires_approval ? __('pam::accounts.requests.yes_for', ['minutes' => $account->access_minutes]) : __('pam::accounts.requests.no') }}</dd></div>
                 <div><dt class="text-xs text-gray-500">{{ __('pam::accounts.fields.description') }}</dt><dd class="whitespace-pre-line">{{ $account->description ?? '—' }}</dd></div>
             </dl>
         </section>
@@ -42,20 +45,46 @@
             @elseif (! $account->hasSecret())
                 <p class="text-gray-500">{{ __('pam::accounts.ui.no_secret') }}</p>
             @elsecan('reveal', $account)
-                <form wire:submit="reveal" class="space-y-2">
-                    <p class="text-xs text-gray-500">{{ __('pam::accounts.ui.reveal_help') }}</p>
-                    <div>
-                        <label for="reason" class="block font-medium">{{ __('pam::accounts.ui.reason') }}</label>
-                        <input id="reason" type="text" wire:model="reason" maxlength="500" class="mt-1 block w-full">
-                        @error('reason') <p class="mt-1 text-red-700">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label for="code" class="block font-medium">{{ __('pam::accounts.ui.code') }}</label>
-                        <input id="code" type="text" wire:model="code" inputmode="numeric" autocomplete="one-time-code" maxlength="32" class="mt-1 block w-40">
-                        @error('code') <p class="mt-1 text-red-700">{{ $message }}</p> @enderror
-                    </div>
-                    <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 font-semibold text-white">{{ __('pam::accounts.ui.reveal') }}</button>
-                </form>
+                @php($active = $myRequest?->isActive() === true)
+                @if ($account->requires_approval && ! $active)
+                    @if ($myRequest?->status === \Modules\Pam\Domain\Enums\RequestStatus::Pending)
+                        <p class="text-gray-600">{{ __('pam::accounts.requests.waiting') }}</p>
+                    @else
+                        @if ($myRequest?->status === \Modules\Pam\Domain\Enums\RequestStatus::Rejected)
+                            <p class="text-red-700">{{ __('pam::accounts.requests.rejected_note', ['comment' => $myRequest->decision_comment ?? '']) }}</p>
+                        @elseif ($myRequest !== null)
+                            <p class="text-gray-600">{{ __('pam::accounts.requests.expired_note') }}</p>
+                        @endif
+                        <form wire:submit="askAccess" class="space-y-2">
+                            <p class="text-xs text-gray-500">{{ __('pam::accounts.requests.needs_approval', ['minutes' => $account->access_minutes]) }}</p>
+                            <div>
+                                <label for="reason" class="block font-medium">{{ __('pam::accounts.ui.reason') }}</label>
+                                <input id="reason" type="text" wire:model="reason" maxlength="500" class="mt-1 block w-full">
+                                @error('reason') <p class="mt-1 text-red-700">{{ $message }}</p> @enderror
+                            </div>
+                            <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 font-semibold text-white">{{ __('pam::accounts.requests.ask') }}</button>
+                        </form>
+                    @endif
+                @else
+                    <form wire:submit="reveal" class="space-y-2">
+                        <p class="text-xs text-gray-500">{{ __('pam::accounts.ui.reveal_help') }}</p>
+                        @if ($active)
+                            <p class="text-xs text-green-800">{{ __('pam::accounts.requests.approved_until', ['time' => $myRequest->expires_at?->timezone(config('app.display_timezone'))->format('H:i')]) }}</p>
+                        @else
+                            <div>
+                                <label for="reason" class="block font-medium">{{ __('pam::accounts.ui.reason') }}</label>
+                                <input id="reason" type="text" wire:model="reason" maxlength="500" class="mt-1 block w-full">
+                                @error('reason') <p class="mt-1 text-red-700">{{ $message }}</p> @enderror
+                            </div>
+                        @endif
+                        <div>
+                            <label for="code" class="block font-medium">{{ __('pam::accounts.ui.code') }}</label>
+                            <input id="code" type="text" wire:model="code" inputmode="numeric" autocomplete="one-time-code" maxlength="32" class="mt-1 block w-40">
+                            @error('code') <p class="mt-1 text-red-700">{{ $message }}</p> @enderror
+                        </div>
+                        <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 font-semibold text-white">{{ __('pam::accounts.ui.reveal') }}</button>
+                    </form>
+                @endif
             @else
                 <p class="text-gray-500">{{ __('pam::accounts.ui.not_granted') }}</p>
             @endif
@@ -86,6 +115,10 @@
         <section aria-labelledby="grants-heading" class="space-y-3 rounded-lg bg-white p-4 text-sm ring-1 ring-gray-200">
             <h2 id="grants-heading" class="font-semibold">{{ __('pam::accounts.ui.grants') }}</h2>
             <p class="text-xs text-gray-500">{{ __('pam::accounts.ui.grants_help') }}</p>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <p class="text-xs text-gray-600">{{ $account->reviewed_at ? __('pam::accounts.ui.last_reviewed', ['date' => $account->reviewed_at->toDateString()]) : __('pam::accounts.ui.never_reviewed') }}</p>
+                <button type="button" wire:click="confirmReview" class="rounded-md bg-white px-3 py-1.5 font-semibold ring-1 ring-gray-300">{{ __('pam::accounts.ui.confirm_review') }}</button>
+            </div>
             <ul class="divide-y divide-gray-100">
                 @forelse ($account->grants as $grant)
                     <li wire:key="grant-{{ $grant->id }}" class="flex items-center justify-between gap-2 py-1.5">

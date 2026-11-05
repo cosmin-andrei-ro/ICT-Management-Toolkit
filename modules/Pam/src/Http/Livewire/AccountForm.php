@@ -17,6 +17,7 @@ use Modules\Core\Domain\Links\Applications;
 use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Models\User;
 use Modules\Core\Domain\Tenancy\OrganizationContext;
+use Modules\Pam\Application\VaultSecondFactor;
 use Modules\Pam\Domain\Enums\AccountType;
 use Modules\Pam\Domain\Models\PrivilegedAccount;
 
@@ -40,6 +41,19 @@ final class AccountForm extends Component
 
     public string $applicationId = '';
 
+    public bool $requiresApproval = false;
+
+    public string $approverId = '';
+
+    public int $accessMinutes = 60;
+
+    public string $rotationDays = '';
+
+    public string $reviewDays = '';
+
+    /** Weakening who decides is what a stolen session would do first, so it needs a code. */
+    public string $code = '';
+
     public string $itemSearch = '';
 
     public string $applicationSearch = '';
@@ -61,6 +75,11 @@ final class AccountForm extends Component
         $this->ownerId = $account->owner_id ?? '';
         $this->configurationItemId = $account->configuration_item_id ?? '';
         $this->applicationId = $account->application_id ?? '';
+        $this->requiresApproval = $account->requires_approval;
+        $this->approverId = $account->approver_id ?? '';
+        $this->accessMinutes = $account->access_minutes;
+        $this->rotationDays = $account->rotation_days !== null ? (string) $account->rotation_days : '';
+        $this->reviewDays = $account->review_days !== null ? (string) $account->review_days : '';
     }
 
     public function pickItem(string $id): void
@@ -75,7 +94,7 @@ final class AccountForm extends Component
         $this->applicationSearch = '';
     }
 
-    public function save(ConfigurationItems $items, Applications $applications): void
+    public function save(ConfigurationItems $items, Applications $applications, VaultSecondFactor $secondFactor): void
     {
         $account = $this->accountId !== null ? PrivilegedAccount::query()->findOrFail($this->accountId) : null;
         $this->authorize($account !== null ? 'update' : 'create', $account ?? PrivilegedAccount::class);
@@ -88,7 +107,24 @@ final class AccountForm extends Component
             'ownerId' => ['nullable', 'uuid', Rule::in(array_keys($this->people()))],
             'configurationItemId' => ['nullable', 'uuid'],
             'applicationId' => ['nullable', 'uuid'],
+            'requiresApproval' => ['boolean'],
+            'approverId' => ['nullable', 'uuid', Rule::in(array_keys($this->people()))],
+            'accessMinutes' => ['required', 'integer', 'between:5,1440'],
+            'rotationDays' => ['nullable', 'integer', 'between:1,3650'],
+            'reviewDays' => ['nullable', 'integer', 'between:1,3650'],
         ]);
+
+        $newOwner = $this->ownerId !== '' ? $this->ownerId : null;
+        $newApprover = $this->approverId !== '' ? $this->approverId : null;
+
+        if ($account !== null && ($account->requires_approval !== $this->requiresApproval || $account->approver_id !== $newApprover || $account->owner_id !== $newOwner || $account->access_minutes !== (int) $this->accessMinutes)) {
+            $this->validate(['code' => ['required', 'string', 'max:32']]);
+            $code = $this->code;
+            $this->reset('code');
+            $user = auth()->user();
+            abort_unless($user instanceof User, 403);
+            $secondFactor->confirm($user, $code, 'pam_change_approval', 'code');
+        }
 
         // Through the contracts: an id of another organization is simply not found.
         $itemId = $this->configurationItemId !== '' && $items->find([$this->configurationItemId]) !== [] ? $this->configurationItemId : null;
@@ -100,10 +136,26 @@ final class AccountForm extends Component
             'username' => trim($this->username),
             'type' => $this->type,
             'description' => $this->description !== '' ? $this->description : null,
-            'owner_id' => $this->ownerId !== '' ? $this->ownerId : null,
+            'owner_id' => $newOwner,
+            'requires_approval' => $this->requiresApproval,
+            'approver_id' => $newApprover,
+            'access_minutes' => $this->accessMinutes,
+            'rotation_days' => $this->rotationDays !== '' ? (int) $this->rotationDays : null,
+            'review_days' => $this->reviewDays !== '' ? (int) $this->reviewDays : null,
             'configuration_item_id' => $itemId,
             'application_id' => $applicationId,
-        ])->save();
+        ]);
+
+        // A new schedule is a new period, with its own reminder.
+        if ($account->isDirty('rotation_days')) {
+            $account->rotation_reminded_at = null;
+        }
+
+        if ($account->isDirty('review_days')) {
+            $account->review_reminded_at = null;
+        }
+
+        $account->save();
 
         $this->redirectRoute('pam.accounts.show', $account);
     }

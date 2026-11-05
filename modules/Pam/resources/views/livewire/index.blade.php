@@ -5,6 +5,7 @@
             <p class="text-sm text-gray-600">{{ __('pam::accounts.ui.intro') }}</p>
         </div>
         <div class="flex flex-wrap gap-2">
+            <a href="{{ route('pam.requests') }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('pam::accounts.requests.title') }}</a>
             @can('pam.audit.view')
                 <a href="{{ route('pam.access-log') }}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold ring-1 ring-gray-300">{{ __('pam::accounts.log.title') }}</a>
             @endcan

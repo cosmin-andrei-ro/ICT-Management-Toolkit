@@ -31,7 +31,7 @@ final readonly class ChangeSecret
      */
     public function handle(PrivilegedAccount $account, #[SensitiveParameter] string $secret, User $actor): void
     {
-        $account->forceFill(['secret_ciphertext' => $this->vault->encrypt($account->id, $secret), 'secret_changed_at' => now()])->saveQuietly();
+        $account->forceFill(['secret_ciphertext' => $this->vault->encrypt($account->id, $secret), 'secret_changed_at' => now(), 'rotation_reminded_at' => null])->saveQuietly();
         $this->trail->record(AuditEvent::Updated, $account, null, ['secret' => 'changed'], $actor->id);
     }
 }
