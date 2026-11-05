@@ -15,6 +15,7 @@ What each module does today.
 - **Search** in the page header, across every module, showing only what the person may open.
 - **Attachments** checked by content, with optional antivirus scanning ([ClamAV](https://www.clamav.net)).
 - **Tags** on tickets, configuration items, assets, applications, risks, projects and suppliers, with a page listing what carries each one.
+- **Custom fields** on the same records, defined by administrators per kind of record, with changes in the record's history.
 
 ## Ticketing
 - **Incidents and service requests**: self-service portal, service catalog with request forms, agent desk with queues, assignment, internal notes, attachments and full-text search.

@@ -264,6 +264,8 @@
         </section>
     @endif
 
+    <x-core::record-custom-fields :record="$asset" />
+
     <x-core::record-tags :record="$asset" />
 
     <x-core::record-history :record="$asset" :can-change="auth()->user()->can('update', $asset)" />

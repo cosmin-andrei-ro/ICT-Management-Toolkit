@@ -150,6 +150,8 @@
         @endforeach
     </div>
 
+    <x-core::record-custom-fields :record="$item" />
+
     <x-core::record-tags :record="$item" />
 
     <x-core::record-history :record="$item" :can-change="auth()->user()->can('update', $item)" />

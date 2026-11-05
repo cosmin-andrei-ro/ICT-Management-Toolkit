@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
+use Modules\Core\Domain\Concerns\HasCustomFields;
 use Modules\Core\Domain\Concerns\HasTags;
 use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
@@ -63,6 +64,7 @@ final class Project extends Model implements Taggable
 {
     use Auditable;
     use BelongsToOrganization;
+    use HasCustomFields;
 
     /** @use HasFactory<ProjectFactory> */
     use HasFactory;

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\CustomFields\CustomFieldTypes;
 use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
@@ -52,6 +53,7 @@ final class ProjectsServiceProvider extends ModuleServiceProvider
             $records->register('projects.project', ProjectsSearchRecords::resolve(...));
             $records->registerGlobalSearch('projects.project', 'projects::projects.linked_kind', ProjectsSearchRecords::projects(...));
         });
+        $this->callAfterResolving(CustomFieldTypes::class, fn (CustomFieldTypes $types) => $types->register('projects.project', 'projects::projects.linked_kind'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
     }
 

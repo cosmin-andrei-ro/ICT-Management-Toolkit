@@ -135,6 +135,8 @@
         </section>
     @endif
 
+    <x-core::record-custom-fields :record="$application" />
+
     <x-core::record-tags :record="$application" />
 
     <x-core::record-history :record="$application" :can-change="auth()->user()->can('update', $application)" />

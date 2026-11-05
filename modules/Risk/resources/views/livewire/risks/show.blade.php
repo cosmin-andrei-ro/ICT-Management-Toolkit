@@ -249,6 +249,8 @@
         </table>
     </section>
 
+    <x-core::record-custom-fields :record="$risk" />
+
     <x-core::record-tags :record="$risk" />
 
     <x-core::record-history :record="$risk" :can-change="auth()->user()->can('update', $risk)" />

@@ -19,6 +19,7 @@ use Modules\Cmdb\Domain\Models\Relationship;
 use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\CustomFields\CustomFieldTypes;
 use Modules\Core\Domain\Links\ConfigurationItems;
 use Modules\Core\Domain\Links\LinkedRecords;
 use Modules\Core\Domain\Manual\Manual;
@@ -47,6 +48,7 @@ final class CmdbServiceProvider extends ModuleServiceProvider
             $records->register('cmdb.configuration_item', CmdbSearchRecords::resolve(...));
             $records->registerGlobalSearch('cmdb.configuration_item', 'cmdb::items.linked_kind', CmdbSearchRecords::items(...));
         });
+        $this->callAfterResolving(CustomFieldTypes::class, fn (CustomFieldTypes $types) => $types->register('cmdb.configuration_item', 'cmdb::items.linked_kind'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
     }
 

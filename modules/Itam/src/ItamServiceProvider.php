@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Gate;
 use Modules\Core\Application\Api\ApiAbility;
 use Modules\Core\Domain\Authorization\DefaultRole;
 use Modules\Core\Domain\Authorization\PermissionRegistry;
+use Modules\Core\Domain\CustomFields\CustomFieldTypes;
 use Modules\Core\Domain\Events\AssetPlaced;
 use Modules\Core\Domain\Exports\ExportRegistry;
 use Modules\Core\Domain\Links\ContractDependents;
@@ -76,6 +77,7 @@ final class ItamServiceProvider extends ModuleServiceProvider
             $records->registerGlobalSearch('itam.asset', 'itam::assets.linked_kind', ItamSearchRecords::assets(...));
             $records->registerGlobalSearch('itam.license', 'itam::licenses.linked_kind', ItamSearchRecords::licenses(...));
         });
+        $this->callAfterResolving(CustomFieldTypes::class, fn (CustomFieldTypes $types) => $types->register('itam.asset', 'itam::assets.linked_kind'));
         $this->callAfterResolving(Manual::class, fn (Manual $manual) => $manual->addDirectory($this->modulePath('resources/manual')));
         // The CMDB shows the assets linked to an item; contracts show the assets they cover.
         $this->callAfterResolving(LinkedRecords::class, fn (LinkedRecords $records) => $records->register('itam.asset', self::linkedAssets(...)));

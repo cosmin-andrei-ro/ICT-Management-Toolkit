@@ -24,6 +24,7 @@ use Modules\Core\Domain\Concerns\Auditable;
 use Modules\Core\Domain\Concerns\BelongsToOrganization;
 use Modules\Core\Domain\Concerns\HasAttachments;
 use Modules\Core\Domain\Concerns\HasComments;
+use Modules\Core\Domain\Concerns\HasCustomFields;
 use Modules\Core\Domain\Concerns\HasTags;
 use Modules\Core\Domain\Concerns\Taggable;
 use Modules\Core\Domain\Concerns\TracksAuthors;
@@ -90,6 +91,7 @@ final class Ticket extends Model implements Taggable
     use BelongsToOrganization;
     use HasAttachments;
     use HasComments;
+    use HasCustomFields;
 
     /** @use HasFactory<TicketFactory> */
     use HasFactory;

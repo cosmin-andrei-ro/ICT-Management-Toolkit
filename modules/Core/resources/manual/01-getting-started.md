@@ -63,6 +63,10 @@ The **Search** box at the top of every page looks through tickets, configuration
 
 IT staff can label tickets, configuration items, assets, applications, risks, projects and suppliers with free **tags**, such as `audit-2026` or `end of support`, in the **Tags** box on the record's page, if they may change that record. Click a tag to see everything carrying it that you may open. Tags also show up in the search. Each change is kept in the record's history. Administrators rename or delete tags in **Administration → Tags**.
 
+## More details on a record
+
+Administrators can add fields of their own to tickets, configuration items, assets, applications, risks, projects and suppliers. They appear in a **More details** box on the record's page. Whoever may change the record can fill them in with **Edit**, and each change is kept in the record's history.
+
 ## Notifications
 
 You receive an email when your ticket is registered, when IT replies, and when it is resolved. Emails contain the ticket number, its title and a link, but never the text of the conversation. Sign in to read it.
