@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Modules\Pam\Application\Actions;
 
 use Illuminate\Database\ConnectionInterface;
+use Modules\Pam\Domain\Enums\RequestStatus;
 use Modules\Pam\Domain\Models\PrivilegedAccount;
 
 /**
@@ -22,6 +23,7 @@ final readonly class DeleteAccount
         $this->db->transaction(function () use ($account): void {
             $account->forceFill(['secret_ciphertext' => null])->saveQuietly();
             $account->grants()->get()->each->delete();
+            $account->accessRequests()->where('status', RequestStatus::Pending)->get()->each->delete();
             $account->delete();
         });
     }

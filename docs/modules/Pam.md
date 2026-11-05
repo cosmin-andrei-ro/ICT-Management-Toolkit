@@ -1,6 +1,6 @@
 # Privileged access (PAM)
 
-A vault for privileged accounts ([ADR 0078](../adr/0078-privileged-access-vault.md)). Code: `modules/Pam/`. Data: `pam_accounts`, `pam_account_grants`.
+A vault for privileged accounts ([ADR 0078](../adr/0078-privileged-access-vault.md)). Code: `modules/Pam/`. Data: `pam_accounts`, `pam_account_grants`, `pam_access_requests`.
 
 ## What it does
 
@@ -9,7 +9,10 @@ A vault for privileged accounts ([ADR 0078](../adr/0078-privileged-access-vault.
 - **Grants:** who may ask for a credential. Only people with `pam.vault.use`, and nobody grants themselves.
 - **Showing:** `RevealSecret` needs a fresh code (`ConfirmSecondFactor`) from an app set up at least 24 hours ago (`PAM_SECOND_FACTOR_SETTLE_HOURS`), and a reason, and writes `secret_revealed` to the audit trail.
 - **Other changes:** giving access, replacing a credential and deleting an account also need a fresh code. Giving access emails the person, the owner and other managers.
+- **Approval:** optional per account (`ManageAccessRequests`), with a time limit; decided at `/privileged-access/requests` with a fresh code.
+- **Schedules:** credential replacement and access reviews per account; `pam:reminders` runs daily at 08:40.
 - **Access log:** `/privileged-access/log`, from the audit trail.
+- **Indicators:** credentials and reviews overdue, requests waiting.
 
 ## Rights
 

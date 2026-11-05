@@ -99,6 +99,8 @@ What each module does today.
 - **Vault** for privileged accounts, linked to configuration items and applications, with credentials encrypted under their own key.
 - Shown only to people granted access, with a fresh code and a reason; managing an account does not mean reading it, and nobody grants themselves.
 - **Access log** of who saw what, when and why.
+- **Optional approval** per account, for a limited time, decided by a named approver.
+- **Reminders** to replace credentials and review who has access, with indicators on the dashboards.
 
 ## Projects
 - **Projects** with a code, sponsor, manager and team, in four phases (initiation, planning, execution, closure) with their dates.

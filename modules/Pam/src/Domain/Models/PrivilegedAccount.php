@@ -44,15 +44,28 @@ use Modules\Pam\Domain\Enums\AccountType;
  * @property ?string $owner_id
  * @property ?string $secret_ciphertext
  * @property ?Carbon $secret_changed_at
+ * @property bool $requires_approval
+ * @property ?string $approver_id
+ * @property int $access_minutes
+ * @property ?int $rotation_days
+ * @property ?Carbon $rotation_reminded_at
+ * @property ?int $review_days
+ * @property ?Carbon $reviewed_at
+ * @property ?string $reviewed_by
+ * @property ?Carbon $review_reminded_at
+ * @property ?Carbon $created_at
  * @property-read ?User $owner
  */
 #[Table('pam_accounts')]
 #[UseFactory(PrivilegedAccountFactory::class)]
 #[UsePolicy(PrivilegedAccountPolicy::class)]
 #[Hidden(['secret_ciphertext'])]
-#[Fillable(['name', 'username', 'type', 'description', 'configuration_item_id', 'application_id', 'owner_id'])]
+#[Fillable(['name', 'username', 'type', 'description', 'configuration_item_id', 'application_id', 'owner_id', 'requires_approval', 'approver_id', 'access_minutes', 'rotation_days', 'review_days'])]
 final class PrivilegedAccount extends Model
 {
+    /** @var array<string, mixed> */
+    protected $attributes = ['requires_approval' => false, 'access_minutes' => 60];
+
     use Auditable;
     use BelongsToOrganization;
 
@@ -68,7 +81,25 @@ final class PrivilegedAccount extends Model
      */
     public function auditExclude(): array
     {
-        return ['secret_ciphertext', 'secret_changed_at'];
+        return ['secret_ciphertext', 'secret_changed_at', 'rotation_reminded_at', 'review_reminded_at'];
+    }
+
+    /**
+     * When the credential should be replaced; null without a schedule or a credential.
+     */
+    public function rotationDueOn(): ?Carbon
+    {
+        return $this->rotation_days !== null && $this->secret_changed_at !== null ? $this->secret_changed_at->copy()->addDays($this->rotation_days) : null;
+    }
+
+    /**
+     * When someone should confirm who has access; null without a schedule.
+     */
+    public function reviewDueOn(): ?Carbon
+    {
+        $since = $this->reviewed_at ?? $this->created_at;
+
+        return $this->review_days !== null && $since !== null ? $since->copy()->addDays($this->review_days) : null;
     }
 
     public function hasSecret(): bool
@@ -93,6 +124,14 @@ final class PrivilegedAccount extends Model
     }
 
     /**
+     * @return HasMany<AccessRequest, $this>
+     */
+    public function accessRequests(): HasMany
+    {
+        return $this->hasMany(AccessRequest::class, 'account_id');
+    }
+
+    /**
      * @return BelongsToMany<User, $this>
      */
     public function grantedUsers(): BelongsToMany
@@ -105,6 +144,13 @@ final class PrivilegedAccount extends Model
         return [
             'type' => AccountType::class,
             'secret_changed_at' => 'datetime',
+            'requires_approval' => 'boolean',
+            'access_minutes' => 'integer',
+            'rotation_days' => 'integer',
+            'rotation_reminded_at' => 'datetime',
+            'review_days' => 'integer',
+            'reviewed_at' => 'datetime',
+            'review_reminded_at' => 'datetime',
         ];
     }
 }
