@@ -138,5 +138,5 @@
         </form>
     @endcan
 
-    <x-core::record-history :record="$framework" :can-change="auth()->user()->can('update', $framework)" />
+    <x-core::record-history :record="$framework" />
 </div>

@@ -50,7 +50,17 @@
                 </li>
             </ol>
         @else
-            <button type="button" wire:click="startSetup" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white">{{ __('core::security.mfa.set_up') }}</button>
+            <form wire:submit="startSetup" class="space-y-2">
+                @if ($setupNeedsPassword)
+                    <div>
+                        <label for="setupPassword" class="block text-sm font-medium">{{ __('core::security.password.current') }}</label>
+                        <input id="setupPassword" type="password" wire:model="setupPassword" autocomplete="current-password" class="mt-1 block w-64">
+                        <p class="mt-1 text-xs text-gray-500">{{ __('core::security.mfa.set_up_password_help') }}</p>
+                    </div>
+                @endif
+                @error('setupPassword') <p class="text-sm text-red-700">{{ $message }}</p> @enderror
+                <button type="submit" class="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white">{{ __('core::security.mfa.set_up') }}</button>
+            </form>
         @endif
     </section>
 

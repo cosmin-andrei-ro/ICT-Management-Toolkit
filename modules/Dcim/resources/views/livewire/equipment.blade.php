@@ -254,5 +254,5 @@
         </section>
     @endif
 
-    <x-core::record-history :record="$equipment" :can-change="auth()->user()->can('update', $equipment->rack)" />
+    <x-core::record-history :record="$equipment" :target="$equipment->rack" />
 </div>

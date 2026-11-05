@@ -20,6 +20,7 @@ use Modules\Core\Domain\Tenancy\OrganizationContext;
 use Modules\Core\Http\Livewire\Audit\AuditLogIndex;
 use Modules\Core\Http\Livewire\Audit\RecordHistory;
 use Modules\Core\Tests\Support\ContractScenario;
+use Spatie\Permission\PermissionRegistrar;
 
 beforeEach(function (): void {
     $this->scenario = ContractScenario::create();
@@ -120,7 +121,7 @@ describe('the history of a record', function (): void {
         $supplier = $this->scenario->supplier;
         $supplier->update(['name' => 'Sample Renamed', 'is_active' => false]);
 
-        Livewire::test(RecordHistory::class, ['record' => $supplier, 'canChange' => true])
+        Livewire::test(RecordHistory::class, ['record' => $supplier])
             ->assertDontSee('Sample Renamed')
             ->call('toggle')
             ->assertSee('Changed')->assertSee('Sample Support')->assertSee('Sample Renamed')->assertSee($this->scenario->manager->name)
@@ -133,7 +134,18 @@ describe('the history of a record', function (): void {
         $this->actingAs($this->scenario->agent)->get(route('core.suppliers.show', $this->scenario->supplier))->assertOk()->assertDontSee('Show history');
 
         $this->actingAs($this->scenario->agent);
-        Livewire::test(RecordHistory::class, ['record' => $this->scenario->supplier, 'canChange' => false])->assertForbidden();
+        Livewire::test(RecordHistory::class, ['record' => $this->scenario->supplier])->assertForbidden();
+    });
+
+    it('stops showing the history on a page left open once the right is gone', function (): void {
+        $this->actingAs($this->scenario->manager);
+        $page = Livewire::test(RecordHistory::class, ['record' => $this->scenario->supplier])->assertOk();
+
+        $this->scenario->manager->syncRoles([]);
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->scenario->manager->unsetRelation('roles')->unsetRelation('permissions');
+
+        $page->call('toggle')->assertForbidden();
     });
 
     it('reads values as people do', function (): void {

@@ -12,6 +12,8 @@ return [
         'title' => 'Two-factor authentication',
         'intro' => 'After your password, you also give a 6-digit code from an authenticator app on your phone (any app that supports standard 6-digit codes). A stolen password alone is then not enough.',
         'set_up' => 'Set up two-factor authentication',
+        'set_up_password_help' => 'So that nobody else can add their own phone while you are away from your computer.',
+        'sign_in_again' => 'For your safety, this needs a sign-in within the last :minutes minutes. Sign out, sign in again, and try once more.',
         'step_install' => 'Install an authenticator app on your phone, if you do not have one.',
         'step_scan' => 'In the app, add an account and scan this code:',
         'qr_alt' => 'QR code to add this account to your authenticator app',

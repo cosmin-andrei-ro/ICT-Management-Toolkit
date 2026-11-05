@@ -14,7 +14,7 @@ With two-factor authentication, signing in takes your password **and** a 6-digit
 ### Setting it up
 
 1. Install an authenticator app on your phone: any app that supports standard 6-digit codes.
-2. On **Account security**, click **Set up two-factor authentication**.
+2. On **Account security**, enter your current password and click **Set up two-factor authentication**. If you sign in through your company's single sign-on or directory, there is no password to enter, but you must have signed in within the last 15 minutes.
 3. In the app, add an account and scan the QR code. If you cannot scan it, type the key shown under it.
 4. Enter the 6-digit code the app shows and click **Turn on**.
 5. **Save the ten recovery codes** shown next, for example in a password manager. **Download codes** saves them as a text file. They are shown only once.

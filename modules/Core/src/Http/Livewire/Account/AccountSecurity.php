@@ -15,6 +15,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Modules\Core\Application\Authentication\ConfirmSecondFactor;
 use Modules\Core\Application\Authentication\PasswordPolicy;
+use Modules\Core\Application\Authentication\ProveAccountOwner;
 use Modules\Core\Application\Authentication\SecurityKeys;
 use Modules\Core\Application\Authentication\SetPassword;
 use Modules\Core\Application\Authentication\TwoFactorAuthentication;
@@ -33,10 +34,16 @@ final class AccountSecurity extends Component
     /** The secret being set up is kept in the session, never in the page state. */
     private const string SETUP_SECRET = 'account.mfa_setup_secret';
 
+    /** Until when the secret being set up stays usable: an abandoned setup must not wait for a stolen session. */
+    private const string SETUP_UNTIL = 'account.mfa_setup_until';
+
     /** Until when a key may be added, once the person proved their second factor. */
     private const string KEY_ALLOWED_UNTIL = 'account.key_allowed_until';
 
     public string $code = '';
+
+    /** Proves it is them before a first second factor is set up. */
+    public string $setupPassword = '';
 
     public string $currentPassword = '';
 
@@ -56,9 +63,19 @@ final class AccountSecurity extends Component
 
     public bool $keyAdded = false;
 
-    public function startSetup(TwoFactorAuthentication $twoFactor): void
+    public function startSetup(TwoFactorAuthentication $twoFactor, ProveAccountOwner $owner): void
     {
+        if ($twoFactor->isEnabled($this->user())) {
+            return;
+        }
+
+        $this->validate(['setupPassword' => [$owner->needsPassword($this->user()) ? 'required' : 'nullable', 'string', 'max:255']]);
+        $password = $this->setupPassword;
+        $this->reset('setupPassword');
+        $owner->confirm($this->user(), $password, 'setupPassword');
+
         session()->put(self::SETUP_SECRET, $twoFactor->newSecret());
+        session()->put(self::SETUP_UNTIL, now()->addMinutes(15)->getTimestamp());
         $this->settingUp = true;
         $this->reset('code');
     }
@@ -66,9 +83,9 @@ final class AccountSecurity extends Component
     public function enable(TwoFactorAuthentication $twoFactor): void
     {
         $this->validate(['code' => ['required', 'string', 'max:16']]);
-        $secret = session()->get(self::SETUP_SECRET);
+        $secret = $this->setupSecret();
 
-        if (! is_string($secret) || $twoFactor->isEnabled($this->user())) {
+        if ($secret === null || $twoFactor->isEnabled($this->user())) {
             $this->settingUp = false;
 
             return;
@@ -83,7 +100,7 @@ final class AccountSecurity extends Component
             return;
         }
 
-        session()->forget(self::SETUP_SECRET);
+        session()->forget([self::SETUP_SECRET, self::SETUP_UNTIL]);
         $this->settingUp = false;
         $this->recoveryCodes = $codes;
     }
@@ -193,22 +210,31 @@ final class AccountSecurity extends Component
         session()->flash('password_changed', __('core::security.password.changed'));
     }
 
-    public function render(TwoFactorAuthentication $twoFactor, PasswordPolicy $passwordPolicy): View
+    public function render(TwoFactorAuthentication $twoFactor, PasswordPolicy $passwordPolicy, ProveAccountOwner $owner): View
     {
         $user = $this->user();
-        $secret = $this->settingUp ? session()->get(self::SETUP_SECRET) : null;
+        $secret = $this->settingUp ? $this->setupSecret() : null;
 
         return view('core::livewire.account.security', [
             'user' => $user,
             'enabled' => $twoFactor->isEnabled($user),
             'required' => $twoFactor->isRequiredFor($user),
             'remaining' => $twoFactor->remainingRecoveryCodes($user),
-            'secret' => is_string($secret) ? $secret : null,
-            'qrCode' => is_string($secret) ? $twoFactor->qrCode($user, $secret) : null,
+            'secret' => $secret,
+            'qrCode' => $secret !== null ? $twoFactor->qrCode($user, $secret) : null,
+            'setupNeedsPassword' => $owner->needsPassword($user),
             'passwordHint' => $passwordPolicy->hintFor($user),
             'pendingInvitations' => OrganizationInvitation::pendingFor($user)->count(),
             'securityKeys' => SecurityKey::query()->where('user_id', $user->id)->orderBy('created_at')->get(),
         ])->title(__('core::security.title'));
+    }
+
+    private function setupSecret(): ?string
+    {
+        $secret = session()->get(self::SETUP_SECRET);
+        $until = session()->get(self::SETUP_UNTIL);
+
+        return is_string($secret) && is_int($until) && $until >= now()->getTimestamp() ? $secret : null;
     }
 
     private function confirmWithCode(ConfirmSecondFactor $confirm, string $purpose): void

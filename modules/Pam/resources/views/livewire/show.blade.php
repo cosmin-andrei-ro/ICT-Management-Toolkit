@@ -161,5 +161,5 @@
         </section>
     @endcan
 
-    <x-core::record-history :record="$account" :can-change="auth()->user()->can('update', $account)" />
+    <x-core::record-history :record="$account" />
 </div>

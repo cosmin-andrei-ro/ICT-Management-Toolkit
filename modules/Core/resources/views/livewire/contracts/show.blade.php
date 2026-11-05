@@ -106,5 +106,5 @@
         </section>
     @endforeach
 
-    <x-core::record-history :record="$contract" :can-change="auth()->user()->can('update', $contract)" />
+    <x-core::record-history :record="$contract" />
 </div>

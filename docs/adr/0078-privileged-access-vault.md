@@ -17,7 +17,7 @@ This makes the toolkit a target of much higher value. A vault holds the keys to 
 - **Deny by default, and managing is not reading.** `pam.account.manage` and ownership let someone keep an account, but not see its credential. That needs a grant on that account and `pam.vault.use`. Nobody grants themselves. Grants are emailed to the person, the owner and other managers, because this does not stop someone creating a second account for themselves: an administrator can, but not unnoticed.
 - **Showing needs a fresh code from an authenticator app and a reason,** through `ConfirmSecondFactor`: rate limited, audited and counted towards the lockout.
 - **So do changes a stolen session could profit from:** giving access, replacing a credential and deleting an account also need a code. Removing someone's access does not, so that it stays quick.
-- **A new authenticator app must wait 24 hours before it can show credentials,** and setting one up emails the person. Enrolling needs no re-authentication, so a stolen session of someone without an app could otherwise create its own second factor.
+- **A new authenticator app must wait 24 hours before it can show credentials,** and setting one up emails the person. Setting up a first one needs the current password, or for accounts without one a sign-in within the last 15 minutes.
 - **A shown credential is never in Livewire's page state.** It is view data for one response, gone at the next request, so it is not sent back with later requests or restored from a saved page.
 - **A ciphertext is sealed to its account,** so someone able to write to the database cannot move it to an account they may read.
 - **Leavers lose access:** leaving an organization deletes their grants and ownership, so being added again later restores nothing.
@@ -46,7 +46,7 @@ This makes the toolkit a target of much higher value. A vault holds the keys to 
 - **Shown credentials reach the browser,** so a compromised browser can read them. Clipboard history and screenshots are beyond the toolkit's reach.
 - **People need an authenticator app:** passkey-only and single sign-on accounts must set one up to read credentials.
 - An organization with a single manager cannot give that person access; it needs a second person with the right to manage.
-- **The 24-hour wait delays a stolen session; it does not stop one** if the person misses the email. Requiring re-authentication to set up an authenticator app, in Core, would close this properly.
+- **A stolen session within 15 minutes of a single sign-on or directory sign-in can still set up its own app.** Such accounts have no password here to ask for. The 24-hour wait and the email then remain the protection, and the wait delays that attack without stopping it if the person misses the email.
 - **The value stays on screen until the poll runs.** The hide is done by the browser, so a modified browser can keep it, and it can be copied.
 - **Deactivated people and people who lost their role keep their grants,** which do nothing meanwhile, and work again if they are reactivated.
 - An internal review of this module's code found and fixed the points above. It ran no live tests. There has been no independent third-party review: have the module assessed before storing production credentials.

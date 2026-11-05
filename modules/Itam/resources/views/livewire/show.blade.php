@@ -268,5 +268,5 @@
 
     <x-core::record-tags :record="$asset" />
 
-    <x-core::record-history :record="$asset" :can-change="auth()->user()->can('update', $asset)" />
+    <x-core::record-history :record="$asset" />
 </div>
